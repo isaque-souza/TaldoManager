@@ -159,13 +159,60 @@ class TemporadaCriada(BaseModel):
     temporada: int
 
 
+class DestaqueTemporada(BaseModel):
+    """Artilheiro (valor = gols) ou MVP (valor = vezes melhor em campo)."""
+    nome: str
+    clube: str
+    valor: int
+
+
 class TemporadaDaCarreira(BaseModel):
     simulacao_id: int
     temporada: int
     seed: int | None
     campeao: str | None
+    vice: str | None = None
+    artilheiro: DestaqueTemporada | None = None
+    mvp: DestaqueTemporada | None = None
+    posicao_usuario: int | None = None
     estado: str
     rodada_atual: int | None = None
+
+
+class TituloClube(BaseModel):
+    clube: str
+    titulos: int
+    temporadas: list[int]
+
+
+class TotalCarreira(BaseModel):
+    """Um jogador somado em todas as temporadas concluídas da carreira."""
+    nome: str
+    posicao: str
+    clube: str
+    temporadas: int
+    partidas: int
+    gols: int
+    assistencias: int
+    titulos: int
+    artilharias: int
+    mvps: int
+    pico_overall: int
+
+
+class LideresCarreira(BaseModel):
+    gols: list[TotalCarreira]
+    assistencias: list[TotalCarreira]
+    partidas: list[TotalCarreira]
+    premios: list[TotalCarreira]
+
+
+class Lenda(TotalCarreira):
+    """Um aposentado no Hall da Fama."""
+    idade: int
+    ultima_temporada: int
+    pontos: int
+    motivo: str
 
 
 class CarreiraDetalhe(BaseModel):
@@ -174,6 +221,9 @@ class CarreiraDetalhe(BaseModel):
     seed: int | None
     criada_em: str
     temporadas: list[TemporadaDaCarreira]
+    titulos: list[TituloClube]
+    lideres: LideresCarreira
+    hall_da_fama: list[Lenda]
 
 
 class NovaSimulacao(BaseModel):

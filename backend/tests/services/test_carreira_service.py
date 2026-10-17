@@ -143,6 +143,68 @@ def test_temporada_3_e_historico_de_campeoes():
     assert temporadas[2]["campeao"] is None
     assert temporadas[2]["estado"] == "em_andamento"
 
+    # o histórico calculado bate com o que cada temporada registrou
+    for t in temporadas[:2]:
+        visao = simulacao_service.carregar_temporada(t["simulacao_id"])
+        assert t["campeao"] == visao["campeao"]
+        assert t["vice"] == visao["classificacao"][1]["clube"]
+        assert t["artilheiro"]["nome"] == visao["artilharia"][0]["nome"]
+        assert t["mvp"]["nome"] == visao["mvp"]["nome"]
+        minha = next(c for c in visao["classificacao"]
+                     if c["clube"] == carreira["clube_usuario"])
+        assert t["posicao_usuario"] == minha["posicao"]
+    assert temporadas[2]["artilheiro"] is None     # em andamento não conta
+    assert sum(c["titulos"] for c in carreira["titulos"]) == 2
+
+
+def test_lideres_somam_as_temporadas_concluidas():
+    sid = _temporada_concluida(seed=3)
+    r2 = carreira_service.proxima_temporada(sid)
+    while not temporada_service.avancar(r2["simulacao_id"])["concluida"]:
+        pass
+    carreira = carreira_service.detalhe_carreira(r2["carreira_id"])
+
+    lider = carreira["lideres"]["gols"][0]
+    gols = sum(
+        _gols(s, lider["nome"]) for s in (sid, r2["simulacao_id"])
+    )
+    assert lider["gols"] == gols
+    assert len(carreira["lideres"]["gols"]) == 10
+
+
+def _gols(sid, nome):
+    conn = conectar()
+    try:
+        r = conn.execute(
+            "SELECT gols FROM jogador WHERE simulacao_id = ? AND nome = ?",
+            (sid, nome),
+        ).fetchone()
+        return r["gols"] if r else 0
+    finally:
+        conn.close()
+
+
+def test_hall_da_fama_so_tem_aposentados_da_carreira():
+    sid = _temporada_concluida(seed=3)
+    r2 = carreira_service.proxima_temporada(sid)
+    while not temporada_service.avancar(r2["simulacao_id"])["concluida"]:
+        pass
+    r3 = carreira_service.proxima_temporada(r2["simulacao_id"])
+    carreira = carreira_service.detalhe_carreira(r3["carreira_id"])
+
+    aposentados = {
+        m["jogador"]
+        for s in (r2["simulacao_id"], r3["simulacao_id"])
+        for m in simulacao_service.carregar_temporada(s)["movimentos_virada"]
+        if m["tipo"] == "aposentou"
+    }
+    hall = carreira["hall_da_fama"]
+    assert all(l["nome"] in aposentados for l in hall)
+    assert all(l["pontos"] >= 5 for l in hall)
+    assert [l["pontos"] for l in hall] == sorted(
+        (l["pontos"] for l in hall), reverse=True
+    )
+
 
 def _jogadores(sid):
     conn = conectar()
