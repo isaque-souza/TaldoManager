@@ -11,6 +11,8 @@ não do `estado_json` (que é apagado quando a temporada termina): o banco é a
 fonte da verdade.
 """
 
+from app.domain.evolucao import evoluir
+
 
 def seed_da_temporada(seed_carreira, temporada):
     """Temporada N usa `seed + (N − 1)`: reproduzível, mas cada temporada
@@ -25,8 +27,9 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
     anterior.
 
     `clubes_finais`: dicts com `nome` e `dinheiro` (caixa final).
-    `jogadores_finais`: dicts com `nome`, `clube`, `salario`,
-    `contrato_anos` e `multa_rescisoria`, na ordem do elenco.
+    `jogadores_finais`: dicts com `nome`, `clube`, `idade`, `overall`,
+    `potencial`, `salario`, `contrato_anos` e `multa_rescisoria`, na ordem
+    do elenco.
     """
 
     # todos os jogadores da liga, por nome (os nomes são únicos na seed)
@@ -50,6 +53,9 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
 
     for final in jogadores_finais:
         jogador = por_nome[final["nome"]]
+        jogador.idade = final["idade"]
+        jogador.overall = final["overall"]
+        jogador.potencial = final["potencial"]
         jogador.salario = final["salario"]
         jogador.contrato_anos = final["contrato_anos"]
         jogador.multa_rescisoria = final["multa_rescisoria"]
@@ -60,5 +66,22 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
         clube = por_clube[final["nome"]]
         clube.dinheiro = final["dinheiro"]
         clube.dinheiro_inicial = final["dinheiro"]
+
+    return campeonato
+
+
+def envelhecer(campeonato, jogadores_finais, rng):
+    """Todo mundo fica 1 ano mais velho e evolui (ou cai) conforme a idade e
+    as partidas jogadas na temporada que acabou (ver `app.domain.evolucao`).
+    Chamar depois de `preparar_nova_temporada`."""
+
+    partidas = {j["nome"]: j["partidas"] for j in jogadores_finais}
+
+    for clube in campeonato.clubes:
+        for jogador in clube.jogadores:
+            jogador.idade, jogador.overall, jogador.potencial = evoluir(
+                jogador.idade, jogador.overall, jogador.potencial,
+                partidas.get(jogador.nome, 0), rng,
+            )
 
     return campeonato

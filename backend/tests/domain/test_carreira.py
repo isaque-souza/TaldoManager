@@ -21,6 +21,10 @@ def _finais(campeonato):
         {
             "nome": j.nome,
             "clube": c.nome,
+            "idade": j.idade,
+            "overall": j.overall,
+            "potencial": j.potencial,
+            "partidas": 0,
             "salario": j.salario,
             "contrato_anos": j.contrato_anos,
             "multa_rescisoria": j.multa_rescisoria,
@@ -71,3 +75,25 @@ def test_jogador_fora_da_seed_e_erro_claro():
 
     with pytest.raises(ValueError, match="fora da seed"):
         preparar_nova_temporada(carregar_campeonato(), clubes, jogadores)
+
+
+def test_envelhecer_aplica_a_evolucao_em_todos():
+    import random
+
+    from app.domain.carreira import envelhecer
+
+    base = carregar_campeonato()
+    clubes, jogadores = _finais(base)
+    novo = preparar_nova_temporada(carregar_campeonato(), clubes, jogadores)
+    envelhecer(novo, jogadores, random.Random(1))
+
+    antes = {j["nome"]: j for j in jogadores}
+    for c in novo.clubes:
+        for j in c.jogadores:
+            a = antes[j.nome]
+            assert j.idade == a["idade"] + 1
+            assert j.potencial >= j.overall
+            if a["idade"] >= 30:
+                assert j.overall <= a["overall"]
+            else:
+                assert j.overall >= a["overall"]

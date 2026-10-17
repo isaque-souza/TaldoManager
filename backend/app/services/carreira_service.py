@@ -10,7 +10,11 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain.carreira import preparar_nova_temporada, seed_da_temporada
+from app.domain.carreira import (
+    envelhecer,
+    preparar_nova_temporada,
+    seed_da_temporada,
+)
 from app.domain.temporada import snapshot_estado
 from app.repositories import carreira_repository as carreira_repo
 from app.repositories import clube_repository as clube_repo
@@ -80,6 +84,7 @@ def proxima_temporada(simulacao_id):
 
             campeonato = carregar_campeonato()
             preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais)
+            envelhecer(campeonato, jogadores_finais, random)
 
             # o técnico mantém tática, formação e XI — menos quem saiu do clube
             alvo = next(c for c in campeonato.clubes if c.nome == clube_usuario)

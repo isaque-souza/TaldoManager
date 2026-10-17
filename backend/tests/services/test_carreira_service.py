@@ -142,3 +142,49 @@ def test_temporada_3_e_historico_de_campeoes():
     assert temporadas[0]["campeao"] and temporadas[1]["campeao"]
     assert temporadas[2]["campeao"] is None
     assert temporadas[2]["estado"] == "em_andamento"
+
+
+def _jogadores(sid):
+    conn = conectar()
+    try:
+        return {
+            r["nome"]: dict(r)
+            for r in conn.execute(
+                "SELECT nome, idade, overall, potencial FROM jogador"
+                " WHERE simulacao_id = ?", (sid,)
+            )
+        }
+    finally:
+        conn.close()
+
+
+def test_virada_envelhece_e_evolui_os_jogadores():
+    sid = _temporada_concluida(seed=3)
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+
+    t1, t2 = _jogadores(sid), _jogadores(nova)
+    assert all(t2[n]["idade"] == t1[n]["idade"] + 1 for n in t1)
+
+    jovens = [n for n in t1 if t1[n]["potencial"] - t1[n]["overall"] >= 5]
+    velhos = [n for n in t1 if t1[n]["idade"] >= 32]
+    assert any(t2[n]["overall"] > t1[n]["overall"] for n in jovens)
+    assert all(t2[n]["overall"] < t1[n]["overall"] for n in velhos)
+
+
+def test_evolucao_nao_se_perde_ao_jogar_rodadas():
+    # overall/idade entram no snapshot: sem isso, a rodada 1 recarregaria
+    # os valores da seed e a evolução sumiria
+    sid = _temporada_concluida(seed=3)
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+    antes = _jogadores(nova)
+
+    temporada_service.avancar(nova)
+    temporada_service.avancar(nova)
+
+    assert _jogadores(nova) == antes
+
+
+def test_mesma_seed_evolui_igual():
+    a = carreira_service.proxima_temporada(_temporada_concluida(seed=3))
+    b = carreira_service.proxima_temporada(_temporada_concluida(seed=3))
+    assert _jogadores(a["simulacao_id"]) == _jogadores(b["simulacao_id"])
