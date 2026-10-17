@@ -1,7 +1,7 @@
 // Visão da temporada: abas de classificação, rankings e recordes.
 
 import { $, esconderTudo, estado, voltarUm } from "./nucleo.js";
-import { ligarLinks, tabela } from "./tabelas.js";
+import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { ligarEvolucao, renderEvolucao } from "./grafico.js";
 
 // ---------- visão temporada ----------
@@ -45,6 +45,7 @@ export const COLUNAS = {
 
 export const ABAS = [
   ["classificacao", "Classificação"], ["evolucao", "Evolução"],
+  ["financas", "Finanças"],
   ["artilharia", "Artilharia"], ["assistencias", "Assistências"],
   ["melhores_notas", "Notas"], ["clean_sheets", "Clean Sheets"],
   ["hat_tricks", "Hat-tricks"], ["disciplina", "Disciplina"],
@@ -74,11 +75,36 @@ export function renderPainel() {
     return;
   }
   const marcarEu =
-    estado.abaAtual === "classificacao" && estado.temporada.clube_usuario
+    ["classificacao", "financas"].includes(estado.abaAtual) && estado.temporada.clube_usuario
       ? (c) => (c.clube === estado.temporada.clube_usuario ? "eu" : "")
       : undefined;
+  if (estado.abaAtual === "financas") {
+    painel.innerHTML = tabelaFinancasLiga(estado.temporada.financas || [], marcarEu);
+    ligarLinks(painel);
+    return;
+  }
   painel.innerHTML = tabela(estado.temporada[estado.abaAtual], COLUNAS[estado.abaAtual], marcarEu);
   ligarLinks(painel);
+}
+
+// caixa, folha e saldo dos 20 clubes (na ordem da classificação)
+export function tabelaFinancasLiga(financas, marcarEu) {
+  if (!financas.some((f) => f.caixa_inicial)) {
+    return `<p class="vazio">Este save é anterior às finanças (v0.7).</p>`;
+  }
+  const linhas = financas.map((f) => ({
+    ...f,
+    ini: dinheiro(f.caixa_inicial),
+    rec: dinheiro(f.receitas),
+    desp: dinheiro(f.despesas),
+    sld: `<span class="${f.saldo < 0 ? "negativo" : ""}">${f.saldo > 0 ? "+" : ""}${dinheiro(f.saldo)}</span>`,
+    cx: `<span class="${f.caixa < 0 ? "negativo" : ""}">${dinheiro(f.caixa)}</span>`,
+    fol: dinheiro(f.folha),
+  }));
+  return tabela(linhas, [
+    ["posicao", "#"], ["clube", "Clube"], ["ini", "Caixa inicial"], ["rec", "Receitas"],
+    ["desp", "Despesas"], ["sld", "Saldo"], ["cx", "Caixa atual"], ["fol", "Folha/temp."],
+  ], marcarEu);
 }
 
 export function renderAbas() {

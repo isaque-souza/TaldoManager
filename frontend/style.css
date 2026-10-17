@@ -11,8 +11,6 @@ tr.eu td { background: color-mix(in srgb, var(--pico-primary) 16%, transparent);
 .saves button { width: auto; margin: 0; }
 .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
 .cards article { margin: 0; }
-.financas table { margin: 0; }
-.financas tfoot td { font-weight: 700; }
 .negativo { color: #d9534f; }
 .mercado-filtros { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin: .5rem 0; }
 .mercado-filtros label { margin: 0; }
@@ -59,3 +57,66 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .slots select.dup { border-color: #e53935; }
 #rodada .controles select { width: 10rem; }
 #rodada-confronto { font-size: 1.05rem; }
+
+/* ---------- dashboard financeiro ---------- */
+/* tokens de cor do gráfico: azul = receita/caixa, vermelho = despesa
+   (par validado para daltonismo e contraste nos dois modos) */
+.dashboard {
+  --viz-receita: #2a78d6;
+  --viz-despesa: #e34948;
+  --viz-grade: #e1e0d9;
+  --viz-base: #c3c2b7;
+  --viz-eixo: #898781;
+  --viz-superficie: var(--pico-background-color);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .dashboard {
+    --viz-receita: #3987e5;
+    --viz-despesa: #e66767;
+    --viz-grade: #2c2c2a;
+    --viz-base: #383835;
+  }
+}
+:root[data-theme="dark"] .dashboard {
+  --viz-receita: #3987e5;
+  --viz-despesa: #e66767;
+  --viz-grade: #2c2c2a;
+  --viz-base: #383835;
+}
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; margin: 1rem 0; }
+.tile { display: flex; flex-direction: column; gap: .15rem; padding: .9rem 1rem; border-radius: var(--pico-border-radius); background: var(--pico-card-background-color); box-shadow: var(--pico-card-box-shadow); }
+.tile-rotulo { font-size: .8rem; color: var(--pico-muted-color); }
+.tile-valor { font-size: 1.6rem; font-weight: 600; line-height: 1.2; }
+.tile-detalhe { font-size: .8rem; color: var(--pico-muted-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.dash-grade { display: grid; grid-template-columns: 3fr 2fr; gap: 1rem; }
+.dash-grade article { margin: 0; }
+@media (max-width: 800px) { .dash-grade { grid-template-columns: 1fr; } }
+
+.viz { position: relative; }
+.viz svg { display: block; width: 100%; height: auto; }
+.viz .grade { stroke: var(--viz-grade); stroke-width: 1; }
+.viz .base { stroke: var(--viz-base); stroke-width: 1; }
+.viz .eixo { fill: var(--viz-eixo); font-size: 11px; font-variant-numeric: tabular-nums; }
+.viz .linha { fill: none; stroke: var(--viz-receita); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.viz .area { fill: var(--viz-receita); opacity: .1; }
+.viz .cruz { stroke: var(--viz-eixo); stroke-width: 1; }
+.viz .ponto { fill: var(--viz-receita); stroke: var(--viz-superficie); stroke-width: 2; }
+.viz .rotulo-fim { fill: var(--pico-color); font-size: 12px; font-weight: 600; }
+.viz .alvo { fill: transparent; cursor: crosshair; }
+.viz .dica { position: absolute; top: 0; transform: translateX(-50%); pointer-events: none; display: flex; flex-direction: column; padding: .3rem .55rem; border-radius: 6px; background: var(--pico-card-background-color); box-shadow: var(--pico-card-box-shadow); font-size: .8rem; white-space: nowrap; }
+.viz .dica span { color: var(--pico-muted-color); }
+
+.legenda-fluxo { display: flex; gap: 1rem; font-size: .8rem; color: var(--pico-muted-color); margin-bottom: .6rem; }
+.legenda-fluxo .chave { display: inline-block; width: .75rem; height: .75rem; border-radius: 3px; margin-right: .35rem; vertical-align: -1px; }
+.chave.receita, .barra.receita { background: var(--viz-receita); }
+.chave.despesa, .barra.despesa { background: var(--viz-despesa); }
+.barras { display: flex; flex-direction: column; gap: .55rem; }
+.barra-linha { display: grid; grid-template-columns: 7.5rem 1fr; align-items: center; gap: .5rem; font-size: .85rem; border-radius: 4px; }
+.barra-linha:hover .barra, .barra-linha:focus .barra { filter: brightness(1.15); }
+.barra-rotulo { color: var(--pico-muted-color); white-space: nowrap; }
+.barra-trilho { display: flex; align-items: center; gap: .4rem; min-width: 0; }
+.barra { display: block; height: 14px; min-width: 2px; border-radius: 0 4px 4px 0; }
+.barra-valor { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.acoes-rodada { margin: .5rem 0 1rem; }

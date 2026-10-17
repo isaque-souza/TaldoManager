@@ -70,6 +70,7 @@ export function ligarLinks(container) {
 
 // 31540000 -> "31,5 mi" · 850000 -> "850 mil" · -2200000 -> "-2,2 mi"
 export function dinheiro(v) {
+  if (v === 0) return "0";
   const sinal = v < 0 ? "-" : "";
   const a = Math.abs(v);
   if (a >= 1_000_000) {

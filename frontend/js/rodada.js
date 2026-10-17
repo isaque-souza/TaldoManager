@@ -6,6 +6,7 @@ import { COLUNAS, mostrarTemporada } from "./temporada.js";
 import { carregarMercado } from "./mercado.js";
 import { carregarLista } from "./saves.js";
 import { renderSlots, xiEscolhido } from "./escalacao.js";
+import { renderDashboard } from "./financas.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -21,6 +22,44 @@ export async function carregarProximaRodada() {
   estado.rodadaResultado = null;
   estado.faseRodada = "antes";
   mostrarRodadaTela();
+}
+
+// ---------- abas da tela "antes da rodada" ----------
+
+export const ABAS_RODADA = [
+  ["partida", "⚽ Partida"], ["mercado", "🔁 Mercado"],
+  ["contratos", "📝 Contratos"], ["financas", "💰 Finanças"],
+];
+const selosAba = {};   // selo ao lado do rótulo: janela aberta, contratos acabando...
+
+export function renderAbasRodada() {
+  $("r-abas").innerHTML = ABAS_RODADA.map(([k, rot]) =>
+    `<button data-aba="${k}" class="${k === estado.abaRodada ? "ativa" : ""}">${rot}` +
+    `${selosAba[k] ? ` <small>${selosAba[k]}</small>` : ""}</button>`
+  ).join("");
+  $("r-abas").querySelectorAll("button").forEach((b) =>
+    b.addEventListener("click", () => {
+      estado.abaRodada = b.dataset.aba;
+      renderAbasRodada();
+      if (estado.abaRodada === "financas") carregarFinancasRodada();
+    })
+  );
+  document.querySelectorAll("#rodada-antes [data-painel]").forEach((p) => {
+    p.hidden = p.dataset.painel !== estado.abaRodada;
+  });
+}
+
+export function marcarAbasRodada(selos) {
+  Object.assign(selosAba, selos);
+  renderAbasRodada();
+}
+
+export async function carregarFinancasRodada() {
+  const meu = estado.rodadaInfo && estado.rodadaInfo.clube_usuario;
+  const linha = estado.temporada && estado.temporada.classificacao.find((c) => c.clube === meu);
+  if (!linha) return;
+  const c = await pedir(`/simulacoes/${estado.simId}/clubes/${linha.id}`);
+  if (c) renderDashboard($("r-financas"), c.clube, c.elenco);
 }
 
 export function mostrarRodadaTela() {
@@ -114,7 +153,9 @@ export function renderRodadaAntes() {
     : `▶ Avançar a rodada ${info.rodada}`;
   $("r-jogar").disabled = false;
 
+  renderAbasRodada();
   carregarMercado();
+  if (estado.abaRodada === "financas") carregarFinancasRodada();
 }
 
 export function renderRodadaDepois() {

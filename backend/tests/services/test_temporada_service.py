@@ -122,7 +122,8 @@ def test_financas_rodada_a_rodada_batem_com_a_temporada_continua():
     _jogar_ate_o_fim(sid)
 
     campos = ("nome", "dinheiro_inicial", "dinheiro", "receita_tv",
-              "receita_bilheteria", "receita_premiacao", "despesa_salarios")
+              "receita_bilheteria", "receita_premiacao", "despesa_salarios",
+              "historico_caixa")
     conn = conectar()
     try:
         a = [tuple(r[c] for c in campos) for r in clube_repo.listar_por_simulacao(conn, continua)]

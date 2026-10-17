@@ -34,7 +34,7 @@ _CLUBE_CAMPOS = (
     "vitorias", "empates", "derrotas",
     "dinheiro", "dinheiro_inicial", "receita_tv", "receita_bilheteria",
     "receita_premiacao", "despesa_salarios",
-    "receita_vendas", "despesa_compras",
+    "receita_vendas", "despesa_compras", "historico_caixa",
 )
 
 
@@ -46,6 +46,7 @@ def snapshot_estado(campeonato):
     clubes = {}
     for clube in campeonato.clubes:
         dados = {c: getattr(clube, c) for c in _CLUBE_CAMPOS}
+        dados["historico_caixa"] = list(clube.historico_caixa)
         dados["forma"] = list(clube.forma)
         dados["tatica"] = clube.tatica
         dados["formacao"] = clube.formacao

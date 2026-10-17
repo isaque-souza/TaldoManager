@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS clube (
     receita_premiacao  INTEGER NOT NULL DEFAULT 0,
     despesa_salarios   INTEGER NOT NULL DEFAULT 0,
     receita_vendas     INTEGER NOT NULL DEFAULT 0,
-    despesa_compras    INTEGER NOT NULL DEFAULT 0
+    despesa_compras    INTEGER NOT NULL DEFAULT 0,
+    historico_caixa    TEXT NOT NULL DEFAULT '[]'   -- JSON: caixa após cada rodada
 );
 
 CREATE TABLE IF NOT EXISTS jogador (

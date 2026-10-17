@@ -49,6 +49,9 @@ class Campeonato:
 
         if self.rodada > len(self.calendario):
             financas.pagar_premiacao(self.classificacao())
+
+        for clube in self.clubes:
+            clube.historico_caixa.append(clube.dinheiro)
             
     def mostrar_cabecalho(self):
 

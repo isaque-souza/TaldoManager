@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 
 from app.db.conexao import conectar
 from app.domain.clube import Clube
+from app.domain.jogador import Jogador
 from app.repositories import atuacao_repository as atuacao_repo
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
@@ -145,6 +146,7 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
             "despesa_salarios": clube.despesa_salarios,
             "receita_vendas": clube.receita_vendas,
             "despesa_compras": clube.despesa_compras,
+            "historico_caixa": json.dumps(clube.historico_caixa),
         })
 
         for jogador in clube.jogadores:
@@ -231,6 +233,36 @@ def _evolucao_pontos(partidas, clubes_ordenados):
     return {"rodadas": rodadas, "series": series}
 
 
+def _historico_caixa(clube):
+    """A coluna guarda JSON; saves antigos vêm com '[]'."""
+    return json.loads(clube.get("historico_caixa") or "[]")
+
+
+def _financas_da_liga(clubes, jogadores):
+    """Caixa, folha e saldo de cada clube, na ordem da classificação."""
+    folha = {}
+    for j in jogadores:
+        folha[j["clube"]] = folha.get(j["clube"], 0) + (j.get("salario") or 0)
+
+    linhas = []
+    for c in clubes:
+        receitas = (c.get("receita_tv", 0) + c.get("receita_bilheteria", 0)
+                    + c.get("receita_premiacao", 0) + c.get("receita_vendas", 0))
+        despesas = c.get("despesa_salarios", 0) + c.get("despesa_compras", 0)
+        linhas.append({
+            "id": c.get("id"),
+            "posicao": c["posicao_final"],
+            "clube": c["nome"],
+            "caixa_inicial": c.get("dinheiro_inicial", 0),
+            "caixa": c.get("dinheiro", 0),
+            "saldo": c.get("dinheiro", 0) - c.get("dinheiro_inicial", 0),
+            "receitas": receitas,
+            "despesas": despesas,
+            "folha": folha.get(c["nome"], 0),
+        })
+    return linhas
+
+
 def _montar_visao(cru):
     partidas = cru["partidas"]
     forma = _forma_por_clube(partidas)
@@ -293,6 +325,7 @@ def _montar_visao(cru):
         "formacao": cru.get("formacao"),
         "xi_preferido": cru.get("xi_preferido"),
         "classificacao": classificacao,
+        "financas": _financas_da_liga(clubes_ordenados, jogadores),
         "artilharia": ranking(
             lambda j: (j["gols"], j["assistencias"]),
             filtro=lambda j: j["gols"] > 0,
@@ -514,7 +547,10 @@ def detalhe_clube(simulacao_id, clube_id):
             return None
 
         elenco = [
-            {k: r[k] for k in r.keys() if k not in ("simulacao_id", "clube_id")}
+            {
+                **{k: r[k] for k in r.keys() if k not in ("simulacao_id", "clube_id")},
+                "salario_referencia": Jogador.salario_de_mercado(r["overall"]),
+            }
             for r in jogador_repo.listar_por_clube(conn, clube_id)
         ]
 
@@ -535,6 +571,7 @@ def detalhe_clube(simulacao_id, clube_id):
 
         c = dict(clube)
         c["saldo_gols"] = c["gols_marcados"] - c["gols_sofridos"]
+        c["historico_caixa"] = _historico_caixa(c)
 
         return {"clube": c, "elenco": elenco, "jogos": jogos}
     finally:
