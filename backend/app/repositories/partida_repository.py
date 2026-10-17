@@ -4,7 +4,7 @@ CAMPOS = (
     "rodada", "gols_mandante", "gols_visitante", "posse_mandante",
     "finalizacoes_mandante", "finalizacoes_visitante",
     "finalizacoes_gol_mandante", "finalizacoes_gol_visitante",
-    "escanteios_mandante", "escanteios_visitante",
+    "escanteios_mandante", "escanteios_visitante", "acrescimos",
 )
 
 

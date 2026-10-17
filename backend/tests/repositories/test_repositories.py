@@ -58,7 +58,7 @@ def test_ciclo_completo_de_escrita_e_leitura(conn):
             "gols_mandante": 3, "gols_visitante": 1, "posse_mandante": 60,
             "finalizacoes_mandante": 12, "finalizacoes_visitante": 6,
             "finalizacoes_gol_mandante": 5, "finalizacoes_gol_visitante": 2,
-            "escanteios_mandante": 7, "escanteios_visitante": 3,
+            "escanteios_mandante": 7, "escanteios_visitante": 3, "acrescimos": 2,
         }])
 
     assert len(mapa) == 2
@@ -108,7 +108,7 @@ def test_lance_e_atuacao_round_trip_e_cascata(conn):
         "gols_mandante": 2, "gols_visitante": 1, "posse_mandante": 55,
         "finalizacoes_mandante": 10, "finalizacoes_visitante": 7,
         "finalizacoes_gol_mandante": 4, "finalizacoes_gol_visitante": 3,
-        "escanteios_mandante": 6, "escanteios_visitante": 4,
+        "escanteios_mandante": 6, "escanteios_visitante": 4, "acrescimos": 3,
         "eventos": [
             {"minuto": 12, "tipo": "gol", "clube": "A FC",
              "jogador": "Craque", "detalhe": None},

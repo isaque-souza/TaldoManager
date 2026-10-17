@@ -29,7 +29,7 @@ export const estado = {
 };
 export const pilhaVoltar = [];   // thunks para o botão "← Voltar"
 
-export const SECOES = ["inicio", "prejogo", "temporada", "rodada", "clube", "partida", "jogador", "carreira"];
+export const SECOES = ["inicio", "prejogo", "aovivo", "temporada", "rodada", "clube", "partida", "jogador", "carreira"];
 
 export function esconderTudo() {
   SECOES.forEach((id) => ($(id).hidden = true));

@@ -167,6 +167,7 @@ a.temporada { cursor: pointer; }
   --refletor: #f4c430;
   --ao-vivo: #e63946;
   --ambar: #f0a52a;
+  --cartao-amarelo: #f7d117;
   --fonte-tarja: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
   --fonte-texto: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
 
@@ -564,3 +565,122 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   .peca-sinais { right: -9px; }
 }
 .aviso-fora { color: #ff8a92; }
+
+/* ---------- jogo ao vivo (v1.1) ---------- */
+.placar-tv {
+  display: flex; align-items: stretch; flex-wrap: wrap; overflow: hidden; margin-bottom: .8rem;
+  border: 1px solid var(--linha); border-radius: 4px; background: linear-gradient(180deg, #132033, #0d1724);
+  font-family: var(--fonte-tarja); text-transform: uppercase;
+}
+.placar-tv > * { display: flex; align-items: center; gap: .5rem; padding: .55rem .9rem; }
+.pt-rodada {
+  background: var(--gramado); color: #fff; font-weight: 800; letter-spacing: .06em;
+  padding-right: 1.6rem !important; clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+.pt-time b { font-size: 1.6rem; font-weight: 800; letter-spacing: .04em; }
+.pt-gols { gap: .35rem; }
+.pt-gols b {
+  min-width: 2.2rem; text-align: center; font-size: 1.9rem; font-weight: 800; line-height: 1.1;
+  background: #fff; color: var(--noite); border-radius: 2px; font-variant-numeric: tabular-nums;
+}
+.pt-gols i { font-style: normal; color: var(--texto-2); font-weight: 700; }
+.pt-relogio {
+  margin-left: auto; font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums;
+  color: var(--refletor); min-width: 5ch; justify-content: flex-end;
+}
+.placar-tv > .chip { align-self: center; margin-right: .9rem; padding: .3rem .55rem; }
+.chip-ao-vivo .luz {
+  width: .5rem; height: .5rem; border-radius: 50%; background: #fff; animation: luz 1.2s ease-in-out infinite;
+}
+@keyframes luz { 50% { opacity: .25; } }
+.placar-tv.pulso .pt-gols b { animation: pulso .9s cubic-bezier(.2, .7, .2, 1); }
+@keyframes pulso { 0% { transform: scale(1.35); background: var(--refletor); } 100% { transform: none; } }
+
+.faixa-gol {
+  position: fixed; left: 0; right: 0; top: 38%; z-index: 20; pointer-events: none;
+  display: flex; align-items: center; justify-content: center; gap: 1rem; padding: .9rem 1rem;
+  background: var(--cor-gol, var(--gramado)); color: var(--cor-gol-texto, #fff);
+  font-family: var(--fonte-tarja); text-transform: uppercase;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9);
+  transform: translateX(-105%); opacity: 0;
+}
+.faixa-gol b { font-size: clamp(2.4rem, 7vw, 4rem); font-weight: 800; letter-spacing: .06em; line-height: 1; }
+.faixa-gol span { font-size: clamp(1rem, 2.4vw, 1.3rem); font-weight: 700; }
+.faixa-gol.visivel { animation: faixa 2.4s cubic-bezier(.2, .7, .2, 1) forwards; }
+@keyframes faixa {
+  0% { transform: translateX(-105%); opacity: 1; }
+  15%, 80% { transform: none; opacity: 1; }
+  100% { transform: translateX(105%); opacity: 0; }
+}
+
+.av-controles { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.av-velocidades { display: inline-flex; width: auto; margin: 0; box-shadow: none; }
+.av-velocidades button { flex: none; }
+.av-velocidades button { width: auto; margin: 0; border-radius: 0; padding: .4rem .8rem; }
+.av-velocidades button:first-child { border-radius: 4px 0 0 4px; }
+.av-velocidades button:last-child { border-radius: 0 4px 4px 0; }
+.av-velocidades button + button { margin-left: -1px; }
+.av-velocidades button.ativa { background: var(--gramado); border-color: var(--gramado); color: #fff; }
+.av-progresso { flex: 1; min-width: 8rem; height: 4px; background: var(--linha); border-radius: 2px; overflow: hidden; }
+.av-progresso span { display: block; height: 100%; width: 0; background: var(--gramado-claro); transition: width .3s linear; }
+.av-controles > button { width: auto; margin: 0; padding: .4rem .9rem; }
+
+.av-corpo { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+.av-corpo > * { min-width: 0; }
+.av-corpo h3.secao { margin-top: .5rem; }
+.narracao { list-style: none; padding: 0; margin: 0; max-height: 26rem; overflow-y: auto; }
+.narracao li {
+  list-style: none; display: grid; grid-template-columns: 3.4rem 1fr; gap: .6rem; align-items: baseline;
+  padding: .5rem .2rem; border-bottom: 1px solid var(--linha); animation: entra .35s cubic-bezier(.2, .7, .2, 1);
+}
+@keyframes entra { from { opacity: 0; transform: translateY(-6px); } }
+.av-min { font-family: var(--fonte-tarja); font-weight: 800; color: var(--texto-2); text-align: right; font-variant-numeric: tabular-nums; }
+.narracao li.gol { background: color-mix(in srgb, var(--gramado) 22%, transparent); }
+.narracao li.gol b { color: #fff; font-family: var(--fonte-tarja); font-size: 1.1rem; letter-spacing: .04em; }
+.narracao li.vermelho b { color: #ff8a92; }
+.narracao li.amarelo span:last-child::before {
+  content: ""; display: inline-block; width: 8px; height: 11px; margin-right: .45rem; vertical-align: -1px;
+  border-radius: 1.5px; background: var(--cartao-amarelo, #f7d117);
+}
+.narracao li.apito, .narracao li.placa { color: var(--texto-2); font-style: italic; }
+.narracao li.placa b { color: var(--refletor); font-style: normal; }
+.narracao li.chute { color: var(--texto-2); }
+
+.outros { list-style: none; padding: 0; margin: 0; }
+.outros li {
+  list-style: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem;
+  padding: .4rem .3rem; border-bottom: 1px solid var(--linha);
+  font-family: var(--fonte-tarja); font-weight: 700; text-transform: uppercase;
+}
+.outros .o-time { display: inline-flex; align-items: center; gap: .35rem; }
+.outros .o-fora { justify-content: flex-end; }
+.outros b { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.outros li.mexeu { animation: mexeu 1.6s ease-out; }
+@keyframes mexeu { 0% { background: color-mix(in srgb, var(--refletor) 30%, transparent); } }
+
+.av-fim {
+  display: grid; gap: 1rem; margin-bottom: 1.2rem; padding: 1rem;
+  border: 1px solid var(--linha); border-radius: 4px; background: var(--superficie);
+}
+.av-fim > button { width: auto; justify-self: start; margin: 0; }
+.av-stats { display: grid; gap: .55rem; }
+.st-linha { display: grid; grid-template-columns: 3.5rem 1fr 3.5rem; align-items: center; row-gap: .2rem; }
+.st-valor { font-family: var(--fonte-tarja); font-weight: 800; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.st-linha .st-fora { text-align: right; }
+.st-rotulo { text-align: center; color: var(--texto-2); text-transform: uppercase; letter-spacing: .06em; font-family: var(--fonte-tarja); font-size: .82rem; font-weight: 700; }
+.st-barra { grid-column: 1 / -1; height: 4px; background: var(--superficie-2); border-radius: 2px; overflow: hidden; }
+.st-barra i { display: block; height: 100%; background: var(--gramado-claro); }
+
+@media (max-width: 640px) {
+  .placar-tv > * { padding: .45rem .55rem; }
+  .pt-rodada { width: 100%; clip-path: none; }
+  .pt-time b { font-size: 1.25rem; }
+  .pt-gols b { font-size: 1.5rem; min-width: 1.8rem; }
+  .pt-relogio { font-size: 1.3rem; }
+  .av-corpo { grid-template-columns: 1fr; }
+  .narracao { max-height: 20rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faixa-gol { display: none; }   /* o gol já aparece no placar e na narração */
+  .narracao li, .outros li.mexeu, .placar-tv.pulso .pt-gols b, .chip-ao-vivo .luz { animation: none; }
+}

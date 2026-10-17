@@ -4,6 +4,7 @@
 
 import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { jogarRodada, salvarEscalacaoAgora } from "./rodada.js";
+import { jogarAoVivo } from "./aovivo.js";
 import { camisa, escudo } from "./identidade.js";
 import { icone } from "./icones.js";
 
@@ -125,7 +126,7 @@ function voltarParaRodada() {
 $("pj-jogar").addEventListener("click", async () => {
   $("pj-jogar").disabled = true;
   voltarParaRodada();
-  await jogarRodada();   // lê a escalação desses mesmos seletores
+  await jogarAoVivo();   // envia a escalação desses mesmos seletores
   $("pj-jogar").disabled = false;
 });
 $("pj-voltar").addEventListener("click", voltarParaRodada);

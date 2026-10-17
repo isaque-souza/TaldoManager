@@ -21,6 +21,7 @@ from app.api.schemas import (
     RespostaProposta,
     RespostaRenovacao,
     PreJogo,
+    RodadaAoVivo,
     ProximaRodada,
     RodadaDecisao,
     RodadaJogada,
@@ -166,6 +167,20 @@ def obter_pre_jogo(simulacao_id: int):
         dados = temporada_service.pre_jogo(simulacao_id)
     except TemporadaConcluida as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/rodadas/{rodada}/ao-vivo",
+    response_model=RodadaAoVivo,
+    tags=["simulacoes"],
+)
+def obter_rodada_ao_vivo(simulacao_id: int, rodada: int):
+    """Os jogos de uma rodada já jogada com os gols por minuto (placar dos
+    outros jogos na transmissão ao vivo)."""
+    dados = simulacao_service.ao_vivo(simulacao_id, rodada)
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
     return dados

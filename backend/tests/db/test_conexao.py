@@ -147,7 +147,7 @@ def test_migracao_adiciona_stats_avancadas_a_partida(tmp_path, monkeypatch):
         colunas = {r["name"] for r in conn.execute("PRAGMA table_info(partida)")}
         assert {
             "finalizacoes_gol_mandante", "finalizacoes_gol_visitante",
-            "escanteios_mandante", "escanteios_visitante",
+            "escanteios_mandante", "escanteios_visitante", "acrescimos",
         } <= colunas
         linha = conn.execute("SELECT * FROM partida WHERE id = 1").fetchone()
         assert linha["escanteios_mandante"] == 0
