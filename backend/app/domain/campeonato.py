@@ -97,6 +97,7 @@ class Campeonato:
             "finalizacoes_gol_visitante": partida.finalizacoes_gol_c2,
             "escanteios_mandante": partida.escanteios_c1,
             "escanteios_visitante": partida.escanteios_c2,
+            "acrescimos": partida.acrescimos,
             "eventos": partida.resumo_eventos(),
             "atuacoes": partida.resumo_escalacao(),
         })

@@ -771,6 +771,42 @@ def _atuacao_visao(r):
     }
 
 
+# lances que mudam o placar (o pênalti convertido é um tipo à parte)
+TIPOS_GOL = ("gol", "penalti")
+
+
+def ao_vivo(simulacao_id, rodada):
+    """Os jogos de uma rodada com os gols minuto a minuto, para o placar dos
+    outros jogos na transmissão ao vivo (v1.1). None se a simulação não
+    existe; lista vazia se a rodada não foi jogada."""
+
+    conn = conectar()
+    try:
+        if simulacao_repo.buscar(conn, simulacao_id) is None:
+            return None
+        partidas = []
+        for p in partida_repo.listar_por_simulacao(conn, simulacao_id):
+            if p["rodada"] != rodada:
+                continue
+            gols = [
+                {"minuto": r["minuto"], "clube": r["clube_nome"]}
+                for r in lance_repo.listar_por_partida(conn, p["id"])
+                if r["tipo"] in TIPOS_GOL
+            ]
+            partidas.append({
+                "partida_id": p["id"],
+                "mandante": p["mandante_nome"],
+                "visitante": p["visitante_nome"],
+                "gols_mandante": p["gols_mandante"],
+                "gols_visitante": p["gols_visitante"],
+                "acrescimos": p["acrescimos"],
+                "gols": sorted(gols, key=lambda g: g["minuto"]),
+            })
+        return {"rodada": rodada, "partidas": partidas}
+    finally:
+        conn.close()
+
+
 def detalhe_partida(simulacao_id, partida_id):
     """Placar, estatísticas, timeline e as duas escalações (com nota) de uma
     partida. None se a partida não for da simulação."""
@@ -816,6 +852,7 @@ def detalhe_partida(simulacao_id, partida_id):
             "finalizacoes_gol_visitante": p["finalizacoes_gol_visitante"],
             "escanteios_mandante": p["escanteios_mandante"],
             "escanteios_visitante": p["escanteios_visitante"],
+            "acrescimos": p["acrescimos"],
         }
 
         return {

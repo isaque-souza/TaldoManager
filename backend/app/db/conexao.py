@@ -79,6 +79,7 @@ _COLUNAS_NOVAS = {
         ("finalizacoes_gol_visitante", "INTEGER NOT NULL DEFAULT 0"),
         ("escanteios_mandante", "INTEGER NOT NULL DEFAULT 0"),
         ("escanteios_visitante", "INTEGER NOT NULL DEFAULT 0"),
+        ("acrescimos", "INTEGER"),
     ),
 }
 

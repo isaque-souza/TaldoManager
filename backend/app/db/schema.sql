@@ -105,7 +105,8 @@ CREATE TABLE IF NOT EXISTS partida (
     finalizacoes_gol_mandante  INTEGER NOT NULL DEFAULT 0,
     finalizacoes_gol_visitante INTEGER NOT NULL DEFAULT 0,
     escanteios_mandante        INTEGER NOT NULL DEFAULT 0,
-    escanteios_visitante       INTEGER NOT NULL DEFAULT 0
+    escanteios_visitante       INTEGER NOT NULL DEFAULT 0,
+    acrescimos                 INTEGER   -- minutos de acréscimo (v1.1); NULL em saves antigos
 );
 
 -- Transferências feitas numa temporada rodada a rodada (v0.7).

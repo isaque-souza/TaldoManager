@@ -373,6 +373,27 @@ class PreJogo(BaseModel):
     visitante: EscalacaoPreJogo | None
 
 
+class GolAoVivo(BaseModel):
+    minuto: int
+    clube: str
+
+
+class PartidaAoVivo(BaseModel):
+    partida_id: int
+    mandante: str
+    visitante: str
+    gols_mandante: int
+    gols_visitante: int
+    acrescimos: int | None          # None em partidas de antes da v1.1
+    gols: list[GolAoVivo]           # em ordem de minuto
+
+
+class RodadaAoVivo(BaseModel):
+    """GET /simulacoes/{id}/rodadas/{rodada}/ao-vivo (v1.1)."""
+    rodada: int
+    partidas: list[PartidaAoVivo]
+
+
 class RodadaJogada(SimulacaoResponse):
     rodada_jogada: int
     concluida: bool
@@ -497,6 +518,7 @@ class PartidaInfo(BaseModel):
     finalizacoes_gol_visitante: int = 0
     escanteios_mandante: int = 0
     escanteios_visitante: int = 0
+    acrescimos: int | None = None   # v1.1; None em partidas antigas
 
 
 class PartidaDetalhe(BaseModel):

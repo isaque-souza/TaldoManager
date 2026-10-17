@@ -472,3 +472,14 @@ def test_pre_jogo_pela_api():
     assert len(pj["mandante"]["titulares"]) == 11
     assert {"numero", "linha", "craque", "pendurado"} <= set(pj["mandante"]["titulares"][0])
     assert client.get("/simulacoes/999999/pre-jogo").status_code == 404
+
+
+def test_rodada_ao_vivo_pela_api():
+    clube = client.get("/clubes").json()[0]["nome"]
+    sid = client.post("/simulacoes", json={"clube": clube, "modo": "rodada_a_rodada", "seed": 2}).json()["id"]
+    jogada = client.post(f"/simulacoes/{sid}/rodadas", json={}).json()
+
+    av = client.get(f"/simulacoes/{sid}/rodadas/1/ao-vivo").json()
+    assert len(av["partidas"]) == len(jogada["resultados"])
+    pid = av["partidas"][0]["partida_id"]
+    assert client.get(f"/simulacoes/{sid}/partidas/{pid}").json()["partida"]["acrescimos"] in range(1, 6)
