@@ -182,11 +182,11 @@ export function renderVirada() {
 
   return `
     <p class="vazio">O que mudou entre a temporada ${t.temporada - 1} e a ${t.temporada}.</p>
-    <h4>Seu clube — ${meu}</h4>
+    <h3 class="secao">Seu clube — ${meu}</h3>
     ${listaMovimentos(meus, false)}
-    <h4>Seu elenco: quem subiu e quem caiu</h4>
+    <h3 class="secao">Seu elenco: quem subiu e quem caiu</h3>
     ${tabelaEvolucao(t.evolucao_virada)}
-    <h4>Na liga</h4>
+    <h3 class="secao">Na liga</h3>
     <p><small>${renovacoes} renovações automáticas da CPU · ${jovens} jovens
       subiram da base nos outros clubes.</small></p>
     <h5>Aposentadorias</h5>

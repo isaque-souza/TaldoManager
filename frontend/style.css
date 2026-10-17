@@ -51,42 +51,6 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
   color: var(--pico-color); display: inline-flex; align-items: center; gap: .35rem; }
 .grafico-legenda button.sel { border-color: var(--pico-primary); color: var(--pico-primary); }
 .grafico-legenda .bolinha { width: .7rem; height: .7rem; border-radius: 50%; flex: none; }
-/* ---------- tela inicial (v1.0) ---------- */
-.topo { display: flex; justify-content: space-between; align-items: start; gap: 1rem; }
-.topo button { width: auto; margin: 0; }
-.continuar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
-  border-left: 4px solid var(--pico-primary); }
-.continuar h3, .continuar p { margin: 0; }
-.continuar small { color: var(--pico-muted-color); text-transform: uppercase; letter-spacing: .04em; }
-.continuar button { width: auto; margin: 0; }
-.grade-clubes { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: .75rem; }
-.card-clube { display: flex; flex-direction: column; align-items: flex-start; gap: .2rem; text-align: left;
-  margin: 0; padding: .8rem 1rem; background: var(--pico-card-background-color);
-  border: 1px solid var(--pico-muted-border-color); color: var(--pico-color); font-size: .85rem; }
-.card-clube:hover { border-color: var(--pico-primary); }
-.card-clube.escolhido { border: 2px solid var(--pico-primary);
-  background: color-mix(in srgb, var(--pico-primary) 12%, var(--pico-card-background-color)); }
-.card-clube strong { font-size: 1rem; }
-.card-clube small { color: var(--pico-muted-color); }
-.card-clube .estrelas { color: #fdd835; letter-spacing: .1em; }
-.save { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
-  margin: 0 0 .5rem; padding: .7rem 1rem; }
-.save small { display: block; color: var(--pico-muted-color); }
-.save-acoes { display: flex; gap: .5rem; }
-.save-acoes button { width: auto; margin: 0; padding: .3rem .8rem; font-size: .85rem; }
-.save-acoes button.confirmar { border-color: #e53935; color: #e53935; }
-#inicio-abas { justify-content: flex-start; }   /* o <nav> do Pico espalha os itens */
-.meta { padding: .6rem .9rem; border-left: 4px solid var(--pico-muted-border-color);
-  background: var(--pico-card-background-color); border-radius: 0 6px 6px 0; }
-.meta small { color: var(--pico-muted-color); }
-.meta-batida { border-left-color: #43a047; }
-.meta-perto { border-left-color: #fdd835; }
-.meta-longe { border-left-color: #e53935; }
-.fim-carreira { border-left: 4px solid #e53935; }
-.fim-carreira p { margin-bottom: .5rem; }
-.balanco { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; padding: 0; margin: 0; list-style: none; }
-.balanco li { list-style: none; margin: 0; }
-.fim-carreira footer button { width: auto; margin: 0; }
 /* ---------- identidade dos clubes (v1.1) ---------- */
 .com-escudo { display: inline-flex; align-items: center; gap: .45em; }
 .com-escudo svg, .confronto svg, .placar svg, .titulo-clube svg { flex: none; }
@@ -182,3 +146,332 @@ a.temporada { cursor: pointer; }
 .movimentos .tipo { display: inline-block; min-width: 12rem; color: var(--pico-muted-color); font-size: .85rem; }
 .sobe { color: #43a047; font-weight: 700; }
 .cai { color: #e53935; font-weight: 700; }
+
+/* =====================================================================
+   Tema "transmissão noturna" (v1.1)
+   O jogo como a transmissão de um jogo à noite: fundo de estádio escuro
+   com a luz fria do refletor no topo, tarjas de TV em verde-gramado,
+   dourado só para "você" e destaques, vermelho só para AO VIVO/derrota.
+   Barlow Condensed nas tarjas, placares e rótulos; Barlow no texto.
+   ===================================================================== */
+:root[data-theme="dark"] {
+  --noite: #070b10;
+  --superficie: #0f1620;
+  --superficie-2: #152030;
+  --linha: #22324a;
+  --texto: #eef3f7;
+  --texto-2: #9fb2c4;
+  --gramado: #14834b;
+  --gramado-claro: #22b46a;
+  --gramado-escuro: #0b5a33;
+  --refletor: #f4c430;
+  --ao-vivo: #e63946;
+  --ambar: #f0a52a;
+  --fonte-tarja: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --fonte-texto: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* o Pico pinta tudo a partir destas */
+  --pico-font-family: var(--fonte-texto);
+  --pico-font-family-sans-serif: var(--fonte-texto);
+  --pico-background-color: var(--noite);
+  --pico-color: var(--texto);
+  --pico-muted-color: var(--texto-2);
+  --pico-muted-border-color: var(--linha);
+  --pico-h1-color: var(--texto);
+  --pico-h2-color: var(--texto);
+  --pico-h3-color: var(--texto);
+  --pico-h4-color: var(--texto);
+  --pico-primary: var(--gramado-claro);
+  --pico-primary-background: var(--gramado);
+  --pico-primary-border: var(--gramado);
+  --pico-primary-underline: color-mix(in srgb, var(--gramado-claro) 50%, transparent);
+  --pico-primary-hover: #3bd184;
+  --pico-primary-hover-background: #18995a;
+  --pico-primary-hover-border: #18995a;
+  --pico-primary-focus: color-mix(in srgb, var(--refletor) 45%, transparent);
+  --pico-primary-inverse: #ffffff;
+  --pico-secondary: var(--texto-2);
+  --pico-secondary-background: var(--superficie-2);
+  --pico-secondary-border: var(--linha);
+  --pico-secondary-hover: var(--texto);
+  --pico-secondary-hover-background: #1c2a3e;
+  --pico-secondary-hover-border: #34496a;
+  --pico-secondary-inverse: var(--texto);
+  --pico-card-background-color: var(--superficie);
+  --pico-card-sectioning-background-color: var(--superficie-2);
+  --pico-card-box-shadow: 0 1px 0 rgba(255, 255, 255, .03) inset, 0 8px 24px -12px rgba(0, 0, 0, .7);
+  --pico-form-element-background-color: #0b121b;
+  --pico-form-element-border-color: var(--linha);
+  --pico-form-element-focus-color: var(--refletor);
+  --pico-table-border-color: var(--linha);
+  --pico-table-row-stripped-background-color: rgba(255, 255, 255, .02);
+  --pico-border-radius: 4px;
+  --pico-spacing: 1rem;
+  color-scheme: dark;
+}
+
+html { scrollbar-color: #2b3d57 var(--noite); }
+::selection { background: var(--gramado); color: #fff; }
+:focus-visible { outline: 2px solid var(--refletor); outline-offset: 2px; }
+
+body {
+  max-width: 1180px;
+  padding: 0 clamp(1rem, 3vw, 2rem) 3rem;
+  background:
+    radial-gradient(120% 50% at 50% -12%, rgba(200, 228, 255, .13), transparent 62%),
+    radial-gradient(80% 40% at 50% 115%, rgba(20, 131, 75, .14), transparent 70%),
+    var(--noite);
+  background-attachment: fixed;
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
+
+/* tipografia de transmissão: títulos e rótulos condensados */
+h1, h2, h3, h4, .tarja, .abas button, th, button, [role="button"], .chip, summary {
+  font-family: var(--fonte-tarja);
+}
+h1, h2, h3 { letter-spacing: .01em; text-wrap: balance; }
+h2 { font-weight: 800; text-transform: uppercase; font-size: clamp(1.6rem, 3.2vw, 2.1rem); }
+h4, h3.secao {
+  font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+  font-size: .95rem; color: var(--texto-2); margin: 2rem 0 .75rem;
+}
+button, [role="button"] {
+  font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  display: inline-flex; align-items: center; justify-content: center; gap: .45em;
+}
+.icone { flex: none; }
+
+/* ---------- barra superior: a "logo do canal" ---------- */
+.topo {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  margin: 0 calc(-1 * clamp(1rem, 3vw, 2rem)) 1.5rem;
+  padding: .7rem clamp(1rem, 3vw, 2rem);
+  background: color-mix(in srgb, var(--noite) 82%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--linha);
+}
+.marca { display: flex; align-items: stretch; font-family: var(--fonte-tarja); line-height: 1; }
+.marca-bug {
+  background: var(--gramado); color: #fff; font-weight: 800; letter-spacing: .12em;
+  padding: .42rem .6rem .38rem .7rem; font-size: 1.15rem;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+.marca-nome {
+  background: #fff; color: var(--noite); font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; padding: .42rem .7rem .38rem 1rem; margin-left: -8px; font-size: 1.15rem;
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%);
+}
+.topo button { width: auto; margin: 0; padding: .45rem .9rem; font-size: .9rem; }
+
+/* ---------- abas de transmissão ---------- */
+.abas, #inicio-abas { justify-content: flex-start; gap: 0; border-bottom: 1px solid var(--linha); }
+.abas button {
+  border-radius: 0; padding: .65rem 1.1rem; font-size: 1rem; color: var(--texto-2);
+  border: 0; margin-bottom: -1px;
+}
+.abas button:hover { color: var(--texto); background: rgba(255, 255, 255, .03); }
+.abas button.ativa {
+  color: #fff; background: rgba(34, 180, 106, .08);
+  box-shadow: inset 0 -3px 0 var(--gramado-claro);   /* indicador da aba ativa */
+}
+.abas button small { font-family: var(--fonte-texto); text-transform: none; letter-spacing: 0; }
+
+/* ---------- tabelas: placar de estatística da TV ---------- */
+figure { margin-bottom: 1rem; }
+table { font-size: .92rem; }
+th {
+  text-transform: uppercase; letter-spacing: .07em; font-weight: 700; font-size: .82rem;
+  color: var(--texto-2); background: var(--superficie) !important; white-space: nowrap;
+}
+td, th { padding: .55rem .75rem; border-bottom-color: var(--linha); }
+tbody tr:hover td { background: rgba(255, 255, 255, .03); }
+tr.eu td {
+  background: color-mix(in srgb, var(--refletor) 13%, transparent);
+  color: #fff; font-weight: 600;
+}
+tr.eu td:first-child { box-shadow: inset 3px 0 0 var(--refletor); }
+td.num, th.num { font-variant-numeric: tabular-nums; }
+.V { color: var(--gramado-claro); } .E { color: var(--refletor); } .D { color: var(--ao-vivo); }
+.forma span { font-family: var(--fonte-tarja); font-size: 1rem; }
+
+/* ---------- selos de status (chips da transmissão) ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: .35em;
+  font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .78rem;
+  padding: .2rem .5rem .16rem; border-radius: 2px; line-height: 1.2; white-space: nowrap;
+  color: #fff; background: var(--superficie-2);
+}
+.chip-batida { background: var(--gramado); }
+.chip-perto { background: var(--ambar); color: #1b1300; }
+.chip-longe { background: var(--ao-vivo); }
+
+/* ---------- a tarja (assinatura): faixa de placar da TV ---------- */
+.tarja {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0;
+  padding: 0; overflow: hidden; border: 1px solid var(--linha);
+  background: linear-gradient(180deg, #132033, #0d1724);
+}
+.tarja-clube {
+  align-self: stretch; display: flex; align-items: center;
+  padding: .9rem 2.2rem .9rem 1.1rem; background: var(--gramado);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
+}
+.tarja-clube h2 { margin: 0; color: #fff; font-size: clamp(1.35rem, 3vw, 1.9rem); }
+.tarja-info { margin: 0; padding: .6rem 1.1rem; color: var(--texto-2); font-size: .95rem; }
+.tarja > button { margin: 0 .8rem; width: auto; padding: .7rem 1.4rem; font-size: 1.05rem; }
+
+/* ---------- menu principal ---------- */
+.abertura {
+  font-weight: 800; text-transform: uppercase; line-height: .98;
+  font-size: clamp(2rem, 5vw, 3.4rem); max-width: 18ch; margin: 1.25rem 0 1.5rem;
+}
+.continuar { margin: 0 0 2rem; }
+.instrucao { color: var(--texto-2); margin: 1rem 0; }
+
+.grade-clubes { display: grid; grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); gap: .8rem; }
+.card-clube {
+  position: relative; display: grid; grid-template-columns: 1fr; justify-items: start; gap: .25rem;
+  margin: 0; padding: 1rem 1rem .9rem; text-align: left; font-family: var(--fonte-texto);
+  text-transform: none; letter-spacing: 0; font-weight: 400; font-size: .86rem;
+  color: var(--texto); background: linear-gradient(180deg, #142133, var(--superficie) 60%);
+  border: 1px solid var(--linha); border-radius: 6px;
+  transition: transform .18s cubic-bezier(.2, .7, .2, 1), border-color .18s, box-shadow .18s;
+}
+.card-clube:hover {
+  transform: translateY(-3px); border-color: #34496a;
+  box-shadow: 0 14px 28px -16px rgba(0, 0, 0, .9);
+}
+.card-clube.escolhido {
+  border-color: var(--gramado-claro);
+  box-shadow: 0 0 0 1px var(--gramado-claro), 0 14px 28px -16px rgba(0, 0, 0, .9);
+  background: linear-gradient(180deg, #123323, var(--superficie) 70%);
+}
+.card-clube-visual { display: flex; align-items: flex-end; gap: .2rem; margin-bottom: .45rem; }
+.card-clube-visual .escudo { margin-left: -14px; margin-bottom: -4px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .6)); }
+.card-clube strong {
+  font-family: var(--fonte-tarja); font-size: 1.2rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .02em; line-height: 1.05;
+}
+.card-clube small { color: var(--texto-2); }
+.card-clube .estrelas { color: var(--refletor); letter-spacing: .12em; font-size: .9rem; }
+.card-clube span { color: var(--texto-2); }
+
+.save {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  margin: 0 0 .5rem; padding: .75rem 1rem; border: 1px solid var(--linha);
+}
+.save strong { font-family: var(--fonte-tarja); font-size: 1.15rem; text-transform: uppercase; }
+.save small { display: block; color: var(--texto-2); }
+.save-acoes { display: flex; gap: .5rem; }
+.save-acoes button { width: auto; margin: 0; padding: .35rem .9rem; font-size: .88rem; }
+.save-acoes button.confirmar { border-color: var(--ao-vivo); color: #ff8a92; }
+
+.dev { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--linha); }
+.dev > summary { display: inline-flex; align-items: center; gap: .4em; color: var(--texto-2); text-transform: uppercase; letter-spacing: .06em; }
+
+/* ---------- meta da diretoria: tarja inferior ---------- */
+.meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .6rem;
+  padding: .7rem 1rem; background: var(--superficie); border: 1px solid var(--linha); border-radius: 4px;
+}
+.meta .icone { color: var(--refletor); }
+.meta-rotulo {
+  font-family: var(--fonte-tarja); text-transform: uppercase; letter-spacing: .08em;
+  font-size: .82rem; font-weight: 700; color: var(--texto-2);
+}
+.meta strong { font-family: var(--fonte-tarja); font-size: 1.1rem; text-transform: uppercase; letter-spacing: .02em; }
+.meta small { color: var(--texto-2); }
+.meta-onde { color: var(--texto); margin-left: auto; }
+.meta-aviso { flex-basis: 100%; display: flex; align-items: center; gap: .5rem; color: var(--texto-2); }
+
+/* ---------- fim de carreira ---------- */
+.fim-carreira { border: 1px solid color-mix(in srgb, var(--ao-vivo) 45%, var(--linha)); }
+.fim-carreira header { display: flex; align-items: center; gap: .6rem; }
+.fim-carreira header strong { font-size: 1.3rem; text-transform: uppercase; }
+.balanco { display: flex; flex-wrap: wrap; gap: 1rem 2.2rem; padding: 0; margin: .5rem 0 0; }
+.balanco li { list-style: none; margin: 0; display: flex; flex-direction: column; }
+.balanco b { font-family: var(--fonte-tarja); font-size: 2rem; font-weight: 800; line-height: 1; }
+.balanco span { color: var(--texto-2); font-size: .85rem; }
+
+/* ---------- celular ---------- */
+@media (max-width: 640px) {
+  .grade-clubes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+  .card-clube { padding: .8rem .75rem; font-size: .8rem; }
+  .card-clube strong { font-size: 1.05rem; }
+  .tarja { grid-template-columns: 1fr; }
+  .tarja-clube { clip-path: none; padding: .8rem 1rem; }
+  .tarja > button { margin: 0 1rem 1rem; justify-self: stretch; }
+  .abas button { padding: .6rem .8rem; font-size: .95rem; }
+  .meta-onde { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-clube { transition: none; }
+  .card-clube:hover { transform: none; }
+}
+
+/* a tarja nos cabeçalhos de jogo: rodada e partida */
+#rodada > hgroup {
+  display: flex; flex-wrap: wrap; align-items: stretch; margin-bottom: 1rem; overflow: hidden;
+  border: 1px solid var(--linha); border-radius: 4px; background: linear-gradient(180deg, #132033, #0d1724);
+}
+#rodada-titulo {
+  margin: 0; padding: .7rem 2rem .7rem 1rem; background: var(--gramado); color: #fff;
+  font-size: clamp(1.25rem, 2.6vw, 1.6rem); white-space: nowrap;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+}
+#rodada-confronto {
+  margin: 0; padding: .55rem 1rem; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+  font-family: var(--fonte-tarja); font-size: 1.15rem; text-transform: uppercase; color: var(--texto);
+}
+#rodada-confronto:empty { display: none; }
+#rodada-confronto small { font-family: var(--fonte-texto); text-transform: none; color: var(--texto-2); font-size: .85rem; }
+#partida-placar .placar { font-weight: 800; text-transform: uppercase; gap: .7rem; }
+#partida-placar .placar b {
+  background: #fff; color: var(--noite); padding: .05em .45em; border-radius: 2px;
+  font-variant-numeric: tabular-nums; letter-spacing: .04em;
+}
+@media (max-width: 640px) {
+  #rodada-titulo { clip-path: none; width: 100%; }
+}
+
+/* ficha do clube no card e barra de começar */
+.card-clube-visual .escudo { margin-left: -16px; margin-bottom: -2px; }
+.card-clube small .estrelas { font-size: .82rem; }
+.ficha { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: .2rem 1.1rem; margin: .45rem 0 .2rem; }
+.ficha div { display: flex; flex-direction: column; }
+.ficha dt {
+  font-family: var(--fonte-tarja); text-transform: uppercase; letter-spacing: .08em;
+  font-size: .72rem; font-weight: 700; color: var(--texto-2); margin: 0;
+}
+.ficha dd { margin: 0; font-family: var(--fonte-tarja); font-size: 1.1rem; font-weight: 700; color: var(--texto); }
+.ficha dd small { font-size: .8rem; color: var(--refletor); font-weight: 700; }
+.card-meta { display: flex; gap: .45rem; align-items: baseline; color: var(--texto) !important; margin-top: .15rem; }
+.barra-comecar {
+  position: sticky; bottom: 0; z-index: 5; display: flex; justify-content: flex-end;
+  margin: 1rem calc(-1 * clamp(1rem, 3vw, 2rem)) 0; padding: .8rem clamp(1rem, 3vw, 2rem);
+  background: color-mix(in srgb, var(--noite) 88%, transparent); backdrop-filter: blur(10px);
+  border-top: 1px solid var(--linha);
+  transform: translateY(110%); opacity: 0; pointer-events: none;
+  transition: transform .25s cubic-bezier(.2, .7, .2, 1), opacity .2s;
+}
+.barra-comecar.visivel { transform: none; opacity: 1; pointer-events: auto; }
+.barra-comecar button { width: auto; margin: 0; padding: .75rem 1.6rem; font-size: 1.05rem; }
+@media (max-width: 640px) {
+  .ficha { grid-template-columns: repeat(2, auto); }
+  .card-clube-visual .camisa { width: 50px; height: 50px; }
+  .barra-comecar button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .barra-comecar { transition: none; } }
+.luz-aberta {
+  display: inline-block; width: .55rem; height: .55rem; border-radius: 50%;
+  background: var(--gramado-claro); box-shadow: 0 0 0 3px rgba(34, 180, 106, .22);
+}
+.abas button .chip { font-size: .7rem; padding: .1rem .35rem; }
+
+/* correções da inspeção */
+.colunas > *, .dash-grade > * { min-width: 0; }   /* tabela larga não estica a coluna */
+.timeline li { list-style: none; }
+.acoes-rodada { display: flex; flex-wrap: wrap; gap: .5rem; }
+.acoes-rodada button { width: auto; margin: 0 !important; }

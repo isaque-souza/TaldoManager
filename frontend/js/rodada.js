@@ -9,6 +9,7 @@ import { renderSlots, xiEscolhido } from "./escalacao.js";
 import { renderDashboard } from "./financas.js";
 import { renderMeta } from "./diretoria.js";
 import { escudo } from "./identidade.js";
+import { icone } from "./icones.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -30,14 +31,14 @@ export async function carregarProximaRodada() {
 // ---------- abas da tela "antes da rodada" ----------
 
 export const ABAS_RODADA = [
-  ["partida", "⚽ Partida"], ["mercado", "🔁 Mercado"],
-  ["contratos", "📝 Contratos"], ["financas", "💰 Finanças"],
+  ["partida", "camisa", "Partida"], ["mercado", "troca", "Mercado"],
+  ["contratos", "contrato", "Contratos"], ["financas", "carteira", "Finanças"],
 ];
 const selosAba = {};   // selo ao lado do rótulo: janela aberta, contratos acabando...
 
 export function renderAbasRodada() {
-  $("r-abas").innerHTML = ABAS_RODADA.map(([k, rot]) =>
-    `<button data-aba="${k}" class="${k === estado.abaRodada ? "ativa" : ""}">${rot}` +
+  $("r-abas").innerHTML = ABAS_RODADA.map(([k, ic, rot]) =>
+    `<button data-aba="${k}" class="${k === estado.abaRodada ? "ativa" : ""}">${icone(ic)} ${rot}` +
     `${selosAba[k] ? ` <small>${selosAba[k]}</small>` : ""}</button>`
   ).join("");
   $("r-abas").querySelectorAll("button").forEach((b) =>
@@ -89,7 +90,7 @@ export function renderRodadaAntes() {
     $("rodada-confronto").innerHTML =
       `<span class="confronto">${escudo(info.clube_usuario, 28)} <strong>${info.clube_usuario}</strong>` +
       ` <span class="x">x</span> ${escudo(info.adversario, 28)} <strong>${info.adversario}</strong>` +
-      ` <small>(${loc})</small></span>`;
+      ` <small>(${loc})</small></span> <span class="chip">Pré-jogo</span>`;
   } else {
     $("rodada-confronto").textContent =
       `${info.clube_usuario} folga nesta rodada`;
@@ -137,7 +138,7 @@ export function renderRodadaAntes() {
   const situacao = (j) => {
     if (j.lesionado) return `🚑 Lesionado (${j.rodadas_lesao}r)`;
     if (j.suspenso) return `🚫 Suspenso (${j.jogos_suspensao}j)`;
-    if (j.amarelos_ciclo === 4) return "⚠️ pendurado";
+    if (j.amarelos_ciclo === 4) return `<span class="chip chip-perto">Pendurado</span>`;
     return j.condicao;
   };
   const elenco = [...info.elenco]
@@ -155,9 +156,9 @@ export function renderRodadaAntes() {
     marcarEu
   );
 
-  $("r-jogar").textContent = info.adversario
-    ? `▶ Jogar a rodada ${info.rodada}`
-    : `▶ Avançar a rodada ${info.rodada}`;
+  $("r-jogar").innerHTML = info.adversario
+    ? `${icone("play")} Jogar a rodada ${info.rodada}`
+    : `${icone("play")} Avançar a rodada ${info.rodada}`;
   $("r-jogar").disabled = false;
 
   renderAbasRodada();
@@ -173,9 +174,9 @@ export function renderRodadaDepois() {
   $("rodada-titulo").textContent = res.concluida
     ? "Temporada encerrada"
     : `Rodada ${res.rodada_jogada} — resultados`;
-  $("rodada-confronto").textContent = res.concluida
-    ? `${res.campeao} é o campeão`
-    : "";
+  $("rodada-confronto").innerHTML = res.concluida
+    ? `${res.campeao} é o campeão <span class="chip chip-batida">Fim de temporada</span>`
+    : `<span class="chip">Encerrada</span>`;
   $("r-res-titulo").textContent = `Rodada ${res.rodada_jogada}`;
 
   const meu = res.clube_usuario;
