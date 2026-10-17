@@ -26,6 +26,9 @@ _JOGADOR_CAMPOS = (
     "jogos_suspensao", "amarelos_ciclo", "rodadas_lesao",
     # contrato (v0.7): muda com renovações e transferências
     "salario", "contrato_anos", "multa_rescisoria",
+    # carreira (v0.8): mudam na virada de temporada (envelhecimento e
+    # evolução); sem eles, cada rodada voltaria aos valores da seed
+    "idade", "overall", "potencial",
 )
 
 # campos acumulados de Clube (penalidade_expulsao é zerada a cada jogo)

@@ -289,7 +289,7 @@ jogador da temporada.
 * [x] Renovação de contrato (salário, duração e multa; o jogador aceita, contrapropõe ou recusa)
 * [x] Contrato novo ao ser transferido (3 temporadas, salário de mercado, sem multa)
 * [ ] Vontade do jogador (querer sair, recusar renovar por estar no banco, "time do sonho")
-* [ ] Evolução por idade → vai para a v0.8 (precisa da virada de temporada)
+* [x] Evolução por idade (feita na v0.8, na virada de temporada)
 * [x] Potencial dos jogadores (na seed; o jogador ainda não evolui)
 * [x] Duração de contrato (temporadas restantes, na seed)
 
@@ -328,7 +328,9 @@ crescer (ou encolher) com as decisões do técnico:
       herda elencos, contratos e caixa e zera pontos e estatísticas;
       a temporada N usa `seed + N − 1`)
 * [ ] Histórico de campeões
-* [ ] Envelhecimento
+* [x] Envelhecimento e evolução (na virada: jovens crescem rumo ao potencial,
+      mais rápido se jogam; a partir dos 30 o overall cai; o potencial é
+      revisado a cada temporada, então nem todo jovem chega ao teto)
 * [ ] Aposentadoria
 * [ ] Geração de jovens
 * [ ] Categorias de base
