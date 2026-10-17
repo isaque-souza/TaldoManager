@@ -69,6 +69,8 @@ def test_migracao_adiciona_colunas_de_temporada_em_andamento(tmp_path, monkeypat
         linha = conn.execute("SELECT * FROM simulacao WHERE id = 1").fetchone()
         assert linha["estado"] == "concluida"
         assert linha["rodada_atual"] is None
+        # autosave (v0.9): saves antigos assumem a criação como última mudança
+        assert linha["atualizada_em"] == "2026-01-01"
     finally:
         conn.close()
 

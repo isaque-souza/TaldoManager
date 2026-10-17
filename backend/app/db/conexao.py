@@ -51,6 +51,7 @@ _COLUNAS_NOVAS = {
         ("estado_json", "TEXT"),
         ("carreira_id", "INTEGER REFERENCES carreira(id) ON DELETE SET NULL"),
         ("temporada", "INTEGER NOT NULL DEFAULT 1"),
+        ("atualizada_em", "TEXT"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")
@@ -89,3 +90,9 @@ def _migrar(conn):
                 conn.execute(
                     f"ALTER TABLE {tabela} ADD COLUMN {nome} {tipo}"
                 )
+
+    # saves de antes do autosave: a última mudança conhecida é a criação
+    conn.execute(
+        "UPDATE simulacao SET atualizada_em = criada_em "
+        "WHERE atualizada_em IS NULL"
+    )
