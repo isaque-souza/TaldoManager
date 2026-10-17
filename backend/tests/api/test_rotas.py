@@ -442,3 +442,18 @@ def test_simulacao_salva_expoe_a_meta_da_diretoria():
     assert meta["posicao"] == clube["meta_posicao"]
     assert meta["descricao"] == clube["meta"]
     assert meta["situacao"] in {"batida", "perto", "longe"}
+
+
+def test_proxima_temporada_de_tecnico_demitido_da_409():
+    clube = sorted(client.get("/clubes").json(), key=lambda c: c["ranking_forca"])[-1]
+    sid = client.post("/simulacoes", json={"clube": clube["nome"], "seed": 3}).json()["id"]
+    from app.db.conexao import conectar
+    conn = conectar()
+    with conn:   # meta de campeão para o mais fraco: muito abaixo → demitido
+        conn.execute("UPDATE simulacao SET meta_posicao = 1 WHERE id = ?", (sid,))
+    conn.close()
+
+    visao = client.get(f"/simulacoes/{sid}").json()
+    assert visao["cargo"]["estado"] == "demitido"
+    assert visao["fim_de_carreira"]["temporadas"] == 1
+    assert client.post(f"/simulacoes/{sid}/proxima-temporada").status_code == 409

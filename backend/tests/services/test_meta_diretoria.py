@@ -89,3 +89,80 @@ def test_nova_temporada_da_carreira_ganha_meta_propria():
     # recalculada com os elencos depois da virada
     assert meta is not None
     assert meta["posicao"] == diretoria.meta_da_temporada(meta["ranking_forca"])
+
+
+# --- cargo e demissão (passo 4) ---
+
+import pytest  # noqa: E402
+
+from app.services.carreira_service import CarreiraInvalida  # noqa: E402
+
+
+def _forcar_meta(sid, meta):
+    conn = conectar()
+    with conn:
+        conn.execute("UPDATE simulacao SET meta_posicao = ? WHERE id = ?", (meta, sid))
+    conn.close()
+
+
+def _temporada_com_meta(distancia, seed=3):
+    """Save concluído do clube mais fraco com a meta `distancia` posições
+    acima de onde ele terminou (positivo = abaixo da meta)."""
+    clube = _clube_do_ranking(20)["nome"]
+    sid = simulacao_service.salvar_temporada(seed=seed, clube_usuario=clube)
+    pos = simulacao_service.carregar_temporada(sid)["meta"]["posicao_atual"]
+    assert pos - distancia >= 1, "seed ruim para o teste"
+    _forcar_meta(sid, pos - distancia)
+    return sid
+
+
+def test_dentro_da_meta_mantem_e_continua():
+    sid = _temporada_com_meta(0)
+    visao = simulacao_service.carregar_temporada(sid)
+    assert visao["cargo"]["estado"] == "mantido"
+    assert visao["fim_de_carreira"] is None
+    assert carreira_service.proxima_temporada(sid)
+
+
+def test_longe_uma_vez_ameaca_e_a_seguinte_herda_o_aviso():
+    sid = _temporada_com_meta(5)
+    assert simulacao_service.carregar_temporada(sid)["cargo"]["estado"] == "ameacado"
+
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+    assert simulacao_service.carregar_temporada(nova)["cargo"]["estado"] == "ameacado"
+
+
+def test_muito_abaixo_demite_e_fecha_a_carreira():
+    sid = _temporada_com_meta(9)
+
+    visao = simulacao_service.carregar_temporada(sid)
+    assert visao["cargo"]["estado"] == "demitido"
+    fim = visao["fim_de_carreira"]
+    assert fim["clube"] == visao["clube_usuario"]
+    assert (fim["temporadas"], fim["metas_batidas"], fim["metas_avaliadas"]) == (1, 0, 1)
+
+    with pytest.raises(CarreiraInvalida, match="demitido"):
+        carreira_service.proxima_temporada(sid)
+
+    resumo = next(s for s in simulacao_service.listar_simulacoes() if s["id"] == sid)
+    assert resumo["fim_de_carreira"] is True
+
+
+def test_longe_duas_temporadas_seguidas_demite():
+    t1 = _temporada_com_meta(5)
+    t2 = carreira_service.proxima_temporada(t1)["simulacao_id"]
+    while not temporada_service.proxima_rodada(t2)["concluida"]:
+        temporada_service.avancar(t2)
+    pos = simulacao_service.carregar_temporada(t2)["meta"]["posicao_atual"]
+    _forcar_meta(t2, max(1, pos - 5))
+
+    visao = simulacao_service.carregar_temporada(t2)
+    assert visao["cargo"]["estado"] == "demitido"
+    assert visao["fim_de_carreira"]["temporadas"] == 2
+
+
+def test_save_sem_meta_nao_tem_cargo_e_nao_bloqueia():
+    sid = simulacao_service.salvar_temporada(seed=3)
+    visao = simulacao_service.carregar_temporada(sid)
+    assert visao["cargo"] is None
+    assert visao["fim_de_carreira"] is None

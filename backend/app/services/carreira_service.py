@@ -68,6 +68,9 @@ def proxima_temporada(simulacao_id):
             conn, simulacao_id
         ):
             raise CarreiraInvalida("Esta temporada já foi continuada")
+        cargo = simulacao_service.cargo_da_temporada(conn, sim)
+        if cargo and cargo["estado"] == "demitido":
+            raise CarreiraInvalida(f"Você foi demitido: {cargo['motivo']}")
 
         clube_usuario = sim["clube_usuario"]
         agora = datetime.now(timezone.utc).isoformat()

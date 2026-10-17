@@ -21,6 +21,7 @@ from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
 from app.repositories import atuacao_repository as atuacao_repo
+from app.repositories import carreira_repository as carreira_repo
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import lance_repository as lance_repo
@@ -296,7 +297,7 @@ def _meta_da_visao(cru, clubes_ordenados):
         "descricao": diretoria.descricao_meta(meta),
         "ranking_forca": cru["ranking_forca"],
         "posicao_atual": posicao,
-        "situacao": diretoria.situacao(posicao, meta),
+        "situacao": diretoria.situacao(posicao, meta, len(clubes_ordenados)),
     }
 
 
@@ -357,6 +358,8 @@ def _montar_visao(cru):
         "evolucao_virada": cru.get("evolucao_virada", []),
         "clube_usuario": cru.get("clube_usuario"),
         "meta": _meta_da_visao(cru, clubes_ordenados),
+        "cargo": cru.get("cargo"),
+        "fim_de_carreira": cru.get("fim_de_carreira"),
         "tatica": cru.get("tatica"),
         "formacao": cru.get("formacao"),
         "xi_preferido": cru.get("xi_preferido"),
@@ -482,9 +485,71 @@ def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
 def listar_simulacoes():
     conn = conectar()
     try:
-        return [dict(r) for r in simulacao_repo.listar(conn)]
+        sims = []
+        for r in simulacao_repo.listar(conn):
+            cargo = cargo_da_temporada(conn, r)
+            sims.append({
+                **dict(r),
+                "fim_de_carreira": bool(cargo) and cargo["estado"] == "demitido",
+            })
+        return sims
     finally:
         conn.close()
+
+
+# ---------------------------------------------------------------------------
+# diretoria: cargo do técnico (v1.0) — calculado, nada guardado
+# ---------------------------------------------------------------------------
+
+def _posicao_do_tecnico(conn, sim):
+    return next(
+        c["posicao_final"]
+        for c in clube_repo.listar_por_simulacao(conn, sim["id"])
+        if c["nome"] == sim["clube_usuario"]
+    )
+
+
+def _resultado(conn, sim):
+    """(posição final do técnico, meta) de uma temporada concluída com
+    meta; None se não existe, está em andamento ou é anterior à v1.0."""
+    if sim is None or sim["estado"] != "concluida" or sim["meta_posicao"] is None:
+        return None
+    return _posicao_do_tecnico(conn, sim), sim["meta_posicao"]
+
+
+def cargo_da_temporada(conn, sim):
+    """{estado, motivo} do técnico nesta temporada (olhando também a
+    anterior da carreira), ou None se ela não tem meta."""
+    if sim["meta_posicao"] is None:
+        return None
+    anterior = _resultado(conn, simulacao_repo.antecessora(conn, sim["id"]))
+    return diretoria.avaliar_cargo(_resultado(conn, sim), anterior)
+
+
+def _fim_de_carreira(conn, sim, cargo):
+    """O balanço do técnico demitido: as temporadas concluídas da carreira
+    até esta (ou só esta, se ainda não virou carreira)."""
+    if sim["carreira_id"] is None:
+        ids = [sim["id"]]
+    else:
+        ids = [
+            t["id"]
+            for t in carreira_repo.listar_temporadas(conn, sim["carreira_id"])
+            if t["temporada"] <= sim["temporada"] and t["estado"] == "concluida"
+        ]
+    temporadas = []
+    for sid in ids:
+        t = simulacao_repo.buscar(conn, sid)
+        temporadas.append({
+            "posicao": _posicao_do_tecnico(conn, t),
+            "meta": t["meta_posicao"],
+            "campeao": t["campeao"] == t["clube_usuario"],
+        })
+    return {
+        "clube": sim["clube_usuario"],
+        "motivo": cargo["motivo"],
+        **diretoria.resumo_carreira(temporadas),
+    }
 
 
 def listar_clubes():
@@ -608,8 +673,13 @@ def _cru_do_banco(conn, simulacao_id):
         dict(r) for r in movimento_repo.listar_por_simulacao(conn, simulacao_id)
     ]
 
+    cargo = cargo_da_temporada(conn, sim)
+    demitido = cargo is not None and cargo["estado"] == "demitido"
+
     return {
         "seed": sim["seed"],
+        "cargo": cargo,
+        "fim_de_carreira": _fim_de_carreira(conn, sim, cargo) if demitido else None,
         "carreira_id": sim["carreira_id"],
         "temporada": sim["temporada"],
         "proxima_temporada_id": sucessora["id"] if sucessora else None,
