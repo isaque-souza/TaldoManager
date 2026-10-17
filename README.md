@@ -327,7 +327,9 @@ crescer (ou encolher) com as decisões do técnico:
 * [x] Temporadas (uma carreira agrupa as temporadas; "▶ Próxima temporada"
       herda elencos, contratos e caixa e zera pontos e estatísticas;
       a temporada N usa `seed + N − 1`)
-* [ ] Histórico de campeões
+* [x] Histórico de campeões (`GET /carreiras/{id}`: campeão, vice,
+      artilheiro, MVP e a sua posição em cada temporada; títulos por clube e
+      líderes históricos de gols, assistências, partidas e prêmios)
 * [x] Envelhecimento e evolução (na virada: jovens crescem rumo ao potencial,
       mais rápido se jogam; a partir dos 30 o overall cai; o potencial é
       revisado a cada temporada, então nem todo jovem chega ao teto)
@@ -340,7 +342,9 @@ crescer (ou encolher) com as decisões do técnico:
       jovens de 16–18 anos até completar 18 jogadores, no mínimo 1; posição
       mais carente; overall = média do elenco − 10, potencial +8 a +22)
 * [x] CPU dispensa veteranos reservas (30+) com o elenco acima de 18
-* [ ] Hall da Fama
+* [x] Hall da Fama (aposentados com 5+ pontos de lenda: título 2 — só
+      com 10+ jogos —, artilharia/MVP 3, 1 a cada 25 gols, pico 90+ vale 2;
+      tudo calculado das temporadas, nada guardado)
 
 ---
 

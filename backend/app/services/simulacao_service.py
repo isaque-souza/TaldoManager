@@ -16,6 +16,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
+from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
 from app.repositories import atuacao_repository as atuacao_repo
@@ -299,14 +300,7 @@ def _montar_visao(cru):
             itens = itens[:limite]
         return itens
 
-    mvp_lista = ranking(
-        lambda j: (
-            j["melhor_em_campo"],
-            j["nota_media"],
-            j["gols"] + j["assistencias"],
-            j["hat_tricks"],
-        )
-    )
+    mvp_lista = ranking(historico_carreira.chave_mvp)
 
     historico = [
         f"Rodada {p['rodada']}: {p['mandante']} "

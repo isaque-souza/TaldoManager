@@ -329,6 +329,12 @@ def test_proxima_temporada_cria_e_lista_a_carreira():
 
     carreira = client.get(f"/carreiras/{corpo['carreira_id']}").json()
     assert [t["temporada"] for t in carreira["temporadas"]] == [1, 2]
+    t1 = carreira["temporadas"][0]
+    assert t1["vice"] and t1["artilheiro"]["valor"] > 0 and t1["mvp"]
+    assert t1["posicao_usuario"] >= 1
+    assert carreira["titulos"][0]["temporadas"] == [1]
+    assert carreira["lideres"]["gols"]
+    assert isinstance(carreira["hall_da_fama"], list)
 
     resumo = {s["id"]: s for s in client.get("/simulacoes").json()}
     assert resumo[corpo["simulacao_id"]]["temporada"] == 2

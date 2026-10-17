@@ -10,6 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
+from app.domain import historico
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -153,30 +154,65 @@ def proxima_temporada(simulacao_id):
 
 
 def detalhe_carreira(carreira_id):
-    """A carreira e suas temporadas (com o campeão de cada). None se não
-    existe."""
+    """A carreira: as temporadas (campeão, vice, artilheiro, MVP e a posição
+    do técnico), os títulos por clube, os líderes históricos e o Hall da
+    Fama. Tudo calculado das tabelas de cada temporada. None se não existe."""
 
     conn = conectar()
     try:
         carreira = carreira_repo.buscar(conn, carreira_id)
         if carreira is None:
             return None
+        clube_usuario = carreira["clube_usuario"]
+
+        temporadas, concluidas, aposentados = [], [], []
+        for t in carreira_repo.listar_temporadas(conn, carreira_id):
+            linha = {
+                "simulacao_id": t["id"],
+                "temporada": t["temporada"],
+                "seed": t["seed"],
+                "campeao": None,
+                "vice": None,
+                "artilheiro": None,
+                "mvp": None,
+                "posicao_usuario": None,
+                "estado": t["estado"],
+                "rodada_atual": t["rodada_atual"],
+            }
+            # quem se aposentou na virada para esta temporada jogou a anterior
+            aposentados += [
+                {**dict(m), "ultima_temporada": t["temporada"] - 1}
+                for m in movimento_repo.listar_por_simulacao(conn, t["id"])
+                if m["tipo"] == "aposentou"
+            ]
+            if t["estado"] == "concluida":
+                jogadores = [
+                    dict(r) for r in jogador_repo.listar_por_simulacao(conn, t["id"])
+                ]
+                clubes = [
+                    dict(r) for r in clube_repo.listar_por_simulacao(conn, t["id"])
+                ]
+                resumo = historico.resumo_temporada(clubes, jogadores, clube_usuario)
+                linha.update(resumo)
+                concluidas.append({
+                    "temporada": t["temporada"],
+                    "jogadores": jogadores,
+                    "resumo": resumo,
+                })
+            temporadas.append(linha)
+
+        totais = historico.totais_por_jogador(concluidas)
         return {
             "id": carreira["id"],
-            "clube_usuario": carreira["clube_usuario"],
+            "clube_usuario": clube_usuario,
             "seed": carreira["seed"],
             "criada_em": carreira["criada_em"],
-            "temporadas": [
-                {
-                    "simulacao_id": t["id"],
-                    "temporada": t["temporada"],
-                    "seed": t["seed"],
-                    "campeao": t["campeao"] or None,
-                    "estado": t["estado"],
-                    "rodada_atual": t["rodada_atual"],
-                }
-                for t in carreira_repo.listar_temporadas(conn, carreira_id)
-            ],
+            "temporadas": temporadas,
+            "titulos": historico.titulos_por_clube(
+                [(t["temporada"], t["resumo"]) for t in concluidas]
+            ),
+            "lideres": historico.lideres(totais),
+            "hall_da_fama": historico.hall_da_fama(totais, aposentados),
         }
     finally:
         conn.close()
