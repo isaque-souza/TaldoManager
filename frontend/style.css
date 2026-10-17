@@ -30,6 +30,8 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .voltar { width: auto; margin: 0 0 1rem; }
 #erro { color: #e53935; }
 .vazio { color: var(--pico-muted-color); font-style: italic; }
+.salvo { color: var(--pico-muted-color); font-size: .85rem; }
+.salvo.erro { color: #e53935; }
 .timeline { list-style: none; padding: 0; }
 .timeline li { padding: .3rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
 .timeline li strong { display: inline-block; width: 3.4rem; text-align: right; margin-right: .5rem; white-space: nowrap; }

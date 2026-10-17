@@ -1,6 +1,6 @@
 // Modo rodada a rodada: antes (escalação) e depois (resultados).
 
-import { $, esconderTudo, estado, limparAviso, navegarPara, ocupado, pedir, pilhaVoltar } from "./nucleo.js";
+import { $, api, esconderTudo, estado, limparAviso, navegarPara, ocupado, pedir, pilhaVoltar } from "./nucleo.js";
 import { ligarLinks, tabela } from "./tabelas.js";
 import { COLUNAS, mostrarTemporada } from "./temporada.js";
 import { carregarMercado } from "./mercado.js";
@@ -16,6 +16,7 @@ export const COLS_ELENCO_RODADA = [
 ];
 
 export async function carregarProximaRodada() {
+  await salvarEscalacaoAgora();   // não deixa o recarregamento engolir uma mudança
   const info = await pedir(`/simulacoes/${estado.simId}/rodadas/proxima`);
   if (!info) return;
   estado.rodadaInfo = info;
@@ -93,6 +94,7 @@ export function renderRodadaAntes() {
     .map((f) => `<option${f === info.formacao ? " selected" : ""}>${f}</option>`)
     .join("");
   $("r-tatica").value = info.tatica || "equilibrado";
+  marcarSalvo("");
 
   // suspensos e lesionados não entram na escalação
   const disponiveis = info.elenco.filter(
@@ -201,12 +203,12 @@ export function renderRodadaDepois() {
 
 export async function jogarRodada() {
   limparAviso();
-  const corpo = {
-    tatica: $("r-tatica").value,
-    formacao: $("r-formacao").value,
-    xi: [...new Set(xiEscolhido($("r-slots")))],
-  };
+  const corpo = decisaoAtual();
   $("r-jogar").disabled = true;
+  // o POST já leva a escalação: o autosave pendente vira redundante, e um
+  // PATCH em voo precisa terminar antes (senão chega depois da rodada)
+  cancelarAutosave();
+  await emVoo;
   $("r-mercado-msg").textContent = "";
   $("r-contrato-msg").textContent = "";
   $("c-form").innerHTML = "";
@@ -236,14 +238,92 @@ export async function avancarAposResultado() {
   }
 }
 
+// ---------- autosave da escalação (v0.9) ----------
+// Mexeu na formação, na tática ou num slot: 800 ms sem novas mudanças e a
+// escalação vai pro servidor (PATCH /decisao) — sem jogar a rodada.
+
+const ESPERA_AUTOSAVE = 800;
+let timerAutosave = null;
+let simAgendada = null;   // o save da mudança pendente (pode trocar em 800 ms)
+let emVoo = Promise.resolve();
+
+function decisaoAtual() {
+  return {
+    tatica: $("r-tatica").value,
+    formacao: $("r-formacao").value,
+    xi: [...new Set(xiEscolhido($("r-slots")))],   // dedup, mantém a ordem
+  };
+}
+
+function marcarSalvo(texto, erro = false) {
+  $("r-salvo").textContent = texto;
+  $("r-salvo").classList.toggle("erro", erro);
+}
+
+function cancelarAutosave() {
+  clearTimeout(timerAutosave);
+  timerAutosave = null;
+}
+
+function agendarAutosave() {
+  cancelarAutosave();
+  simAgendada = estado.simId;
+  marcarSalvo("alterações não salvas…");
+  timerAutosave = setTimeout(salvarEscalacaoAgora, ESPERA_AUTOSAVE);
+}
+
+// grava já o que estiver pendente (e espera um PATCH em voo terminar)
+export async function salvarEscalacaoAgora() {
+  if (timerAutosave === null) return emVoo;
+  cancelarAutosave();
+  const simId = simAgendada;
+  const corpo = decisaoAtual();
+  marcarSalvo("salvando…");
+  emVoo = emVoo.then(async () => {
+    // fetch direto em vez de `pedir`: falha de autosave não deve sujar o
+    // aviso de erro global — o indicador ao lado da tática já conta
+    try {
+      const resp = await fetch(`${api()}/simulacoes/${simId}/decisao`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(corpo),
+      });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      if (estado.simId === simId) marcarSalvo("✔ salvo");
+    } catch {
+      if (estado.simId === simId) marcarSalvo("⚠ não salvo — será enviado ao jogar", true);
+    }
+  });
+  return emVoo;
+}
+
+// fechando/recarregando a aba com mudança pendente: `keepalive` deixa o
+// pedido terminar mesmo depois que a página some
+window.addEventListener("pagehide", () => {
+  if (timerAutosave === null) return;
+  cancelarAutosave();
+  fetch(`${api()}/simulacoes/${simAgendada}/decisao`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(decisaoAtual()),
+    keepalive: true,
+  });
+});
+
+$("r-tatica").addEventListener("change", agendarAutosave);
+// os <select> dos slots são recriados a cada render; o `change` sobe até o
+// contêiner, então um ouvinte só aqui cobre todos
+$("r-slots").addEventListener("change", agendarAutosave);
+
 $("r-jogar").addEventListener("click", jogarRodada);
 $("r-proxima").addEventListener("click", avancarAposResultado);
 $("r-ver-tabela").addEventListener("click", () => navegarPara(mostrarTemporada));
-$("r-formacao").addEventListener("change", () =>
+$("r-formacao").addEventListener("change", () => {
   renderSlots(
     $("r-slots"),
     $("r-formacao").value,
     estado.rodadaInfo.elenco.filter((j) => !j.suspenso && !j.lesionado),
     $("r-aviso")
-  )
-);
+  );
+  agendarAutosave();
+});
