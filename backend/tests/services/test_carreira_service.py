@@ -403,3 +403,43 @@ def test_nomes_nao_se_repetem_na_carreira():
         vistos |= set(_jogadores(sid))
         while not temporada_service.avancar(sid)["concluida"]:
             pass
+
+
+# --- frontend da carreira (passo 6) ---
+
+def test_evolucao_virada_compara_o_elenco_com_a_temporada_anterior():
+    sid, nova = _virada()
+    visao = simulacao_service.carregar_temporada(nova)
+    antes = _jogadores(sid)
+    agora = _jogadores(nova)
+    meu = visao["clube_usuario"]
+    conn = conectar()
+    try:
+        elenco = {
+            r["nome"] for r in conn.execute(
+                "SELECT j.nome FROM jogador j JOIN clube c ON c.id = j.clube_id"
+                " WHERE j.simulacao_id = ? AND c.nome = ?", (nova, meu),
+            )
+        }
+    finally:
+        conn.close()
+
+    evo = visao["evolucao_virada"]
+    assert {l["nome"] for l in evo} == elenco
+    for l in evo:
+        if l["overall_antes"] is None:              # subiu da base
+            assert l["nome"] not in antes
+        else:
+            assert l["overall_antes"] == antes[l["nome"]]["overall"]
+            assert l["overall"] == agora[l["nome"]]["overall"]
+    # quem mais subiu primeiro; os jovens da base no fim
+    deltas = [l["overall"] - l["overall_antes"] for l in evo
+              if l["overall_antes"] is not None]
+    assert deltas == sorted(deltas, reverse=True)
+    novos = [l["overall_antes"] is None for l in evo]
+    assert novos == sorted(novos)
+
+
+def test_primeira_temporada_nao_tem_evolucao_virada():
+    sid, _ = _virada()
+    assert simulacao_service.carregar_temporada(sid)["evolucao_virada"] == []

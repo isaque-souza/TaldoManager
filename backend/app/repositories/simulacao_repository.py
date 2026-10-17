@@ -81,3 +81,18 @@ def sucessora(conn, simulacao_id):
 def deletar(conn, simulacao_id):
     cur = conn.execute("DELETE FROM simulacao WHERE id = ?", (simulacao_id,))
     return cur.rowcount > 0
+
+
+def antecessora(conn, simulacao_id):
+    """A temporada anterior a esta na mesma carreira (ou None)."""
+    return conn.execute(
+        """
+        SELECT ant.*
+        FROM simulacao atual
+        JOIN simulacao ant
+          ON ant.carreira_id = atual.carreira_id
+         AND ant.temporada = atual.temporada - 1
+        WHERE atual.id = ?
+        """,
+        (simulacao_id,),
+    ).fetchone()

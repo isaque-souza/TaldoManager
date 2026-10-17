@@ -144,3 +144,10 @@ def test_hall_ordenado_pelos_pontos():
     assert [(l["nome"], l["pontos"]) for l in hall] == [
         ("Lenda", 14), ("Coadjuvante", 7),   # 6 de prêmios + 28 gols
     ]
+
+
+def test_motivo_no_singular():
+    from app.domain.historico import motivo
+    total = {"titulos": 1, "artilharias": 0, "mvps": 0, "gols": 1,
+             "pico_overall": 90}
+    assert motivo(total) == "1× campeão · 1 gol · pico 90"

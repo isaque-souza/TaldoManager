@@ -120,3 +120,18 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .barra { display: block; height: 14px; min-width: 2px; border-radius: 0 4px 4px 0; }
 .barra-valor { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .acoes-rodada { margin: .5rem 0 1rem; }
+
+/* ---------- modo carreira (v0.8) ---------- */
+.botoes-carreira { display: inline-flex; flex-wrap: wrap; gap: .5rem; margin-right: .75rem; }
+.botoes-carreira button { width: auto; margin: 0; }
+a.temporada { cursor: pointer; }
+.hall { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; }
+.hall article { margin: 0; }
+.hall article.eu { outline: 2px solid var(--pico-primary); }
+.hall header { display: flex; gap: .5rem; align-items: baseline; flex-wrap: wrap; }
+.hall .pontos { margin-left: auto; color: var(--pico-primary); font-weight: 700; }
+.movimentos { list-style: none; padding: 0; }
+.movimentos li { list-style: none; padding: .25rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
+.movimentos .tipo { display: inline-block; min-width: 12rem; color: var(--pico-muted-color); font-size: .85rem; }
+.sobe { color: #43a047; font-weight: 700; }
+.cai { color: #e53935; font-weight: 700; }
