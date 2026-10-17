@@ -25,6 +25,13 @@ export async function mostrarInicio() {
   mostrarPainel(painel ?? (sims?.length ? "carregar" : "novo"));
 }
 
+// "✚ Novo jogo" de fora do menu (ex.: fim de carreira)
+export function novoJogo() {
+  painel = "novo";
+  mostrarInicio();
+  window.scrollTo(0, 0);
+}
+
 function mostrarPainel(qual) {
   painel = qual;
   document.querySelectorAll("[data-inicio]").forEach((b) =>
@@ -45,6 +52,7 @@ async function abrir(id, abas) {
 
 function situacao(s) {
   const temporada = `temporada ${s.temporada}`;
+  if (s.fim_de_carreira) return `${temporada} · ❌ fim de carreira (demitido)`;
   return s.estado === "em_andamento"
     ? `${temporada} · rodada ${s.rodada_atual}/${s.rodadas}`
     : `${temporada} encerrada · 🏆 ${s.campeao}`;
@@ -61,10 +69,12 @@ function tituloSave(s) {
 }
 
 function renderContinuar(sims) {
-  // o save aberto por último (lembrado no navegador) ou, sem isso, o
-  // jogado por último — a lista já vem nessa ordem
+  // o save jogado por último (a lista já vem nessa ordem) — e não o
+  // último aberto: olhar uma temporada antiga não muda onde você parou.
+  // O navegador só lembra a aba. Demitido é fim de jogo: nada a continuar.
   const sessao = lerSessao();
-  const alvo = sims.find((s) => s.id === Number(sessao.simId)) || sims[0];
+  const ultimo = sims[0];
+  const alvo = ultimo && !ultimo.fim_de_carreira ? ultimo : null;
   $("inicio-continuar").hidden = !alvo;
   if (!alvo) return;
 

@@ -117,6 +117,23 @@ class MetaDiretoria(BaseModel):
     situacao: Literal["batida", "perto", "longe"]
 
 
+class Cargo(BaseModel):
+    """O cargo do técnico (v1.0): avaliado no fim de cada temporada."""
+    estado: Literal["mantido", "ameacado", "demitido"]
+    motivo: str | None = None
+
+
+class FimDeCarreira(BaseModel):
+    """Balanço do técnico demitido (temporadas concluídas da carreira)."""
+    clube: str
+    motivo: str
+    temporadas: int
+    titulos: int
+    metas_batidas: int
+    metas_avaliadas: int          # temporadas com meta (saves antigos não têm)
+    melhor_posicao: int | None
+
+
 class SimulacaoResponse(BaseModel):
     campeonato: str
     seed: int | None
@@ -132,6 +149,8 @@ class SimulacaoResponse(BaseModel):
     evolucao_virada: list[EvolucaoVirada] = []      # seu elenco: subiu/caiu
     clube_usuario: str | None = None    # clube dirigido pelo usuário
     meta: MetaDiretoria | None = None   # None sem clube ou em save antigo
+    cargo: Cargo | None = None          # None quando não há meta
+    fim_de_carreira: FimDeCarreira | None = None   # só quando demitido
     tatica: Tatica | None = None
     formacao: str | None = None
     xi_preferido: list[str] | None = None
@@ -170,6 +189,7 @@ class SimulacaoResumo(BaseModel):
     carreira_id: int | None = None
     temporada: int = 1
     atualizada_em: str | None = None   # última mudança (autosave, v0.9)
+    fim_de_carreira: bool = False      # técnico demitido nesta temporada (v1.0)
 
 
 class SimulacaoCriada(BaseModel):

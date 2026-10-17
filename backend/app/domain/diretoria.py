@@ -2,7 +2,9 @@
 
 A expectativa nasce da força do elenco comparada com a liga: o ranking
 de força define a meta da temporada (a posição mínima no fim), e a
-posição na tabela diz se o técnico está no caminho.
+posição na tabela diz se o técnico está no caminho. No fim de cada
+temporada a diretoria avalia o cargo: longe da meta duas vezes seguidas,
+ou muito abaixo numa só, é demissão — e fim de carreira.
 """
 
 # o melhor XI no 4-3-3 (a formação padrão), como o motor escala
@@ -22,6 +24,11 @@ FAIXAS_META = (
 
 # até quantas posições abaixo da meta ainda é "perto" (em risco)
 MARGEM_PERTO = 3
+
+# terminar tantas posições (ou mais) abaixo da meta demite numa temporada só
+MUITO_ABAIXO = 8
+
+TOTAL_CLUBES = 20
 
 
 def forca_do_elenco(clube):
@@ -68,13 +75,72 @@ def descricao_meta(meta):
     return f"Terminar até o {meta}º lugar"
 
 
-def situacao(posicao, meta):
+def situacao(posicao, meta, total=TOTAL_CLUBES):
     """'batida' (dentro da meta), 'perto' (até MARGEM_PERTO abaixo) ou 'longe'.
 
-    Durante a temporada vale a posição atual; no fim, a final.
+    Terminar em último é sempre 'longe': sem isso, quem tem meta "até 18º"
+    nunca ficaria longe (18 + 3 passa do 20º). Durante a temporada vale a
+    posição atual; no fim, a final.
     """
     if posicao <= meta:
         return "batida"
-    if posicao <= meta + MARGEM_PERTO:
+    if posicao <= meta + MARGEM_PERTO and posicao < total:
         return "perto"
     return "longe"
+
+
+def avaliar_cargo(atual, anterior=None, total=TOTAL_CLUBES):
+    """O cargo do técnico: {"estado": mantido | ameacado | demitido, "motivo"}.
+
+    `atual` e `anterior` são (posição final, meta) de uma temporada
+    concluída, ou None (sem meta, em andamento, ou não existe). Com
+    `atual` None (temporada em andamento), só avisa a ameaça herdada.
+    """
+    def longe(t):
+        return t is not None and situacao(t[0], t[1], total) == "longe"
+
+    if atual is None:
+        if longe(anterior):
+            return {
+                "estado": "ameacado",
+                "motivo": "Longe da meta na temporada passada: "
+                          "outra temporada assim e você está fora.",
+            }
+        return {"estado": "mantido", "motivo": None}
+
+    posicao, meta = atual
+    if posicao - meta >= MUITO_ABAIXO:
+        return {
+            "estado": "demitido",
+            "motivo": f"Terminou em {posicao}º, {posicao - meta} posições "
+                      f"abaixo da meta ({meta}º).",
+        }
+    if longe(atual) and longe(anterior):
+        return {
+            "estado": "demitido",
+            "motivo": "Longe da meta em duas temporadas seguidas.",
+        }
+    if longe(atual):
+        return {
+            "estado": "ameacado",
+            "motivo": "Longe da meta: outra temporada assim e você está fora.",
+        }
+    return {"estado": "mantido", "motivo": None}
+
+
+def resumo_carreira(temporadas, total=TOTAL_CLUBES):
+    """Balanço do técnico para a tela de fim de carreira.
+
+    temporadas: [{"posicao", "meta", "campeao"}] das temporadas concluídas
+    (meta None = save antigo, não entra na conta de metas).
+    """
+    com_meta = [t for t in temporadas if t["meta"] is not None]
+    return {
+        "temporadas": len(temporadas),
+        "titulos": sum(t["campeao"] for t in temporadas),
+        "metas_batidas": sum(
+            situacao(t["posicao"], t["meta"], total) == "batida" for t in com_meta
+        ),
+        "metas_avaliadas": len(com_meta),
+        "melhor_posicao": min((t["posicao"] for t in temporadas), default=None),
+    }

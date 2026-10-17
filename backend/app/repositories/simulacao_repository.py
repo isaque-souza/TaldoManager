@@ -53,7 +53,7 @@ def listar(conn):
         """
         SELECT id, seed, criada_em, campeao, rodadas, clube_usuario,
                tatica, formacao, xi_preferido, estado, rodada_atual,
-               carreira_id, temporada, atualizada_em
+               carreira_id, temporada, atualizada_em, meta_posicao
         FROM simulacao
         ORDER BY atualizada_em DESC, id DESC
         """

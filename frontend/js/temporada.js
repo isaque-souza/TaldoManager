@@ -5,7 +5,7 @@ import { carregarLista } from "./saves.js";
 import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { ligarEvolucao, renderEvolucao } from "./grafico.js";
 import { abrirCarreira, renderVirada } from "./carreira.js";
-import { renderMeta } from "./diretoria.js";
+import { renderFimDeCarreira, renderMeta } from "./diretoria.js";
 
 // ---------- visão temporada ----------
 
@@ -171,6 +171,7 @@ export function mostrarTemporada() {
   }
 
   renderMeta("meta-diretoria", estado.temporada);
+  renderFimDeCarreira(estado.temporada);
   renderCarreira(emAndamento, meu);
   renderAbas();
   renderPainel();
@@ -184,7 +185,8 @@ export function mostrarTemporada() {
 function renderCarreira(emAndamento, meu) {
   const acao = $("carreira-acao");
   const t = estado.temporada;
-  const podeContinuar = !emAndamento && meu;
+  // demitido não continua: o bloco de fim de carreira toma o lugar
+  const podeContinuar = !emAndamento && meu && !t.fim_de_carreira;
   acao.hidden = !podeContinuar && !t.carreira_id;
   if (acao.hidden) return;
 
