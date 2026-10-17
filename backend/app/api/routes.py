@@ -6,6 +6,7 @@ from app.api.schemas import (
     CarreiraDetalhe,
     ClubeComElenco,
     ContratoJogador,
+    DecisaoSalva,
     ClubeDetalhe,
     ClubeSeed,
     HealthResponse,
@@ -34,6 +35,7 @@ from app.domain.mercado import TransferenciaInvalida
 from app.services import (
     carreira_service,
     contrato_service,
+    escalacao_service,
     mercado_service,
     simulacao_service,
     temporada_service,
@@ -96,7 +98,7 @@ def simulacao_rapida(
 
 @router.get("/simulacoes", response_model=list[SimulacaoResumo], tags=["simulacoes"])
 def listar_simulacoes():
-    """Lista as simulações salvas, da mais recente para a mais antiga."""
+    """Lista as simulações salvas, da jogada por último para a mais antiga."""
     return simulacao_service.listar_simulacoes()
 
 
@@ -179,6 +181,30 @@ def jogar_proxima_rodada(
     if resultado is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
     return resultado
+
+
+@router.patch(
+    "/simulacoes/{simulacao_id}/decisao",
+    response_model=DecisaoSalva,
+    tags=["simulacoes"],
+)
+def salvar_decisao(simulacao_id: int, decisao: RodadaDecisao):
+    """Autosave da escalação: grava `tatica`, `formacao` e `xi` para a
+    próxima rodada sem jogá-la. O que não vier fica como está."""
+    try:
+        salva = escalacao_service.salvar_decisao(
+            simulacao_id,
+            tatica=decisao.tatica,
+            formacao=decisao.formacao,
+            xi_preferido=decisao.xi,
+        )
+    except TemporadaConcluida as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
+    except ValueError as e:
+        raise _erro_de_valor(e) from e
+    if salva is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return salva
 
 
 @router.get(

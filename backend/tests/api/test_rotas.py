@@ -236,6 +236,58 @@ def test_proxima_rodada_de_simulacao_inexistente_404():
     assert client.post("/simulacoes/99999/rodadas").status_code == 404
 
 
+def test_autosave_da_escalacao_via_api():
+    clube = _clube_qualquer()
+    sid = client.post(
+        "/simulacoes",
+        json={"seed": 8, "clube": clube, "modo": "rodada_a_rodada"},
+    ).json()["id"]
+
+    salva = client.patch(f"/simulacoes/{sid}/decisao", json={"tatica": "defensivo"})
+    assert salva.status_code == 200
+    assert salva.json()["tatica"] == "defensivo"
+    assert salva.json()["atualizada_em"]
+
+    # reabrindo a tela, a escolha está lá — e nenhuma rodada foi jogada
+    pr = client.get(f"/simulacoes/{sid}/rodadas/proxima").json()
+    assert pr["rodada"] == 1
+    assert pr["tatica"] == "defensivo"
+
+    assert client.patch(
+        f"/simulacoes/{sid}/decisao", json={"xi": ["Ninguém Daqui"]}
+    ).status_code == 400
+    assert client.patch(
+        f"/simulacoes/{sid}/decisao", json={"tatica": "retranca"}
+    ).status_code == 422
+    assert client.patch(
+        "/simulacoes/99999/decisao", json={"tatica": "ofensivo"}
+    ).status_code == 404
+
+
+def test_autosave_em_temporada_concluida_409():
+    sid = client.post("/simulacoes", json={"seed": 2}).json()["id"]
+    assert client.patch(
+        f"/simulacoes/{sid}/decisao", json={"tatica": "ofensivo"}
+    ).status_code == 409
+
+
+def test_lista_vem_pela_ultima_jogada():
+    clube = _clube_qualquer()
+    antiga = client.post(
+        "/simulacoes", json={"seed": 1, "clube": clube, "modo": "rodada_a_rodada"}
+    ).json()["id"]
+    nova = client.post(
+        "/simulacoes", json={"seed": 2, "clube": clube, "modo": "rodada_a_rodada"}
+    ).json()["id"]
+    assert client.get("/simulacoes").json()[0]["id"] == nova
+
+    # jogar na antiga a coloca no topo, mesmo tendo sido criada antes
+    client.post(f"/simulacoes/{antiga}/rodadas")
+    lista = client.get("/simulacoes").json()
+    assert [s["id"] for s in lista[:2]] == [antiga, nova]
+    assert lista[0]["atualizada_em"] > lista[0]["criada_em"]
+
+
 def test_fluxo_do_mercado():
     sid = client.post(
         "/simulacoes", json={"seed": 4, "clube": "Real Taldo", "modo": "rodada_a_rodada"}

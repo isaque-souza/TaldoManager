@@ -26,7 +26,9 @@ CREATE TABLE IF NOT EXISTS simulacao (
     estado_json    TEXT,              -- snapshot do estado vivo (só em andamento)
     -- carreira (v0.8): NULL = save avulso; temporada = 1, 2, 3...
     carreira_id    INTEGER REFERENCES carreira(id) ON DELETE SET NULL,
-    temporada      INTEGER NOT NULL DEFAULT 1
+    temporada      INTEGER NOT NULL DEFAULT 1,
+    -- autosave (v0.9): última vez que o save mudou (ISO 8601, UTC)
+    atualizada_em  TEXT
 );
 
 CREATE TABLE IF NOT EXISTS clube (

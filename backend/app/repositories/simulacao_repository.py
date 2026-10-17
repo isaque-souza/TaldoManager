@@ -1,5 +1,11 @@
 """Acesso à tabela `simulacao`."""
 
+from datetime import datetime, timezone
+
+
+def _agora():
+    return datetime.now(timezone.utc).isoformat()
+
 
 def criar(conn, seed, campeao, rodadas, criada_em,
           clube_usuario=None, tatica=None, formacao=None, xi_preferido=None,
@@ -10,12 +16,14 @@ def criar(conn, seed, campeao, rodadas, criada_em,
         INSERT INTO simulacao
             (seed, criada_em, campeao, rodadas,
              clube_usuario, tatica, formacao, xi_preferido,
-             estado, rodada_atual, estado_json, carreira_id, temporada)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             estado, rodada_atual, estado_json, carreira_id, temporada,
+             atualizada_em)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (seed, criada_em, campeao, rodadas,
          clube_usuario, tatica, formacao, xi_preferido,
-         estado, rodada_atual, estado_json, carreira_id, temporada),
+         estado, rodada_atual, estado_json, carreira_id, temporada,
+         criada_em),
     )
     return cur.lastrowid
 
@@ -24,16 +32,18 @@ def atualizar_estado(conn, simulacao_id, *, estado, rodada_atual,
                      estado_json, campeao, tatica=None, formacao=None,
                      xi_preferido=None):
     """Avança (ou encerra) uma temporada em andamento. `tatica`/`formacao`/
-    `xi_preferido` refletem a escolha do técnico para a rodada recém-jogada."""
+    `xi_preferido` refletem a escolha do técnico para a rodada recém-jogada.
+    Todo save do estado vivo passa por aqui, então é aqui que `atualizada_em`
+    (o "jogado por último" da listagem) anda."""
     conn.execute(
         """
         UPDATE simulacao
            SET estado = ?, rodada_atual = ?, estado_json = ?, campeao = ?,
-               tatica = ?, formacao = ?, xi_preferido = ?
+               tatica = ?, formacao = ?, xi_preferido = ?, atualizada_em = ?
          WHERE id = ?
         """,
         (estado, rodada_atual, estado_json, campeao,
-         tatica, formacao, xi_preferido, simulacao_id),
+         tatica, formacao, xi_preferido, _agora(), simulacao_id),
     )
 
 
@@ -43,9 +53,9 @@ def listar(conn):
         """
         SELECT id, seed, criada_em, campeao, rodadas, clube_usuario,
                tatica, formacao, xi_preferido, estado, rodada_atual,
-               carreira_id, temporada
+               carreira_id, temporada, atualizada_em
         FROM simulacao
-        ORDER BY criada_em DESC, id DESC
+        ORDER BY atualizada_em DESC, id DESC
         """
     ).fetchall()
 

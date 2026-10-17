@@ -159,6 +159,7 @@ class SimulacaoResumo(BaseModel):
     rodada_atual: int | None = None
     carreira_id: int | None = None
     temporada: int = 1
+    atualizada_em: str | None = None   # última mudança (autosave, v0.9)
 
 
 class SimulacaoCriada(BaseModel):
@@ -258,6 +259,15 @@ class RodadaDecisao(BaseModel):
     tatica: Tatica | None = None
     formacao: str | None = None
     xi: list[str] | None = None
+
+
+class DecisaoSalva(BaseModel):
+    """Resposta do PATCH /simulacoes/{id}/decisao — a escalação que ficou
+    gravada para a próxima rodada."""
+    tatica: Tatica
+    formacao: str
+    xi_preferido: list[str] | None
+    atualizada_em: str
 
 
 class ConfrontoRodada(BaseModel):
