@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Taldo Manager — Resultados</title>
+  <title>Taldo Manager</title>
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css"
@@ -11,64 +11,102 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <hgroup>
-    <h1>⚽ Taldo Manager</h1>
-    <p>Simule temporadas e navegue nos resultados.</p>
-  </hgroup>
-
-  <div class="controles">
-    <label>
-      Seed (opcional)
-      <input id="seed" type="number" placeholder="aleatório" />
-    </label>
-    <label>
-      Seu clube
-      <select id="meu-clube" style="width: 12rem">
-        <option value="">— nenhum —</option>
-      </select>
-    </label>
-    <label>
-      Tática
-      <select id="tatica" style="width: 9rem" disabled>
-        <option value="equilibrado">Equilibrado</option>
-        <option value="ofensivo">Ofensivo</option>
-        <option value="defensivo">Defensivo</option>
-      </select>
-    </label>
-    <label>
-      Modo
-      <select id="modo" style="width: 11rem">
-        <option value="completa">Simular tudo</option>
-        <option value="rodada_a_rodada">Rodada a rodada</option>
-      </select>
-    </label>
-    <button id="nova">Nova temporada</button>
-  </div>
-
-  <!-- montar a escalação (só quando há um clube escolhido) -->
-  <details id="escalacao" hidden>
-    <summary>Escalação — <span id="escalacao-clube"></span></summary>
-    <div class="controles" style="margin: .75rem 0">
-      <label>
-        Formação
-        <select id="formacao"></select>
-      </label>
-      <span id="escalacao-aviso" class="vazio"></span>
-    </div>
-    <div id="slots" class="slots"></div>
-    <p class="vazio" style="margin-top: .5rem">
-      Deixe um slot em <em>automático</em> e o motor escolhe. O XI é a
-      preferência: jogadores muito cansados dão lugar a reservas.
-    </p>
-  </details>
-
-  <div class="saves">
-    <select id="lista"></select>
-    <button id="apagar" class="secondary outline">Apagar</button>
-  </div>
+  <header class="topo">
+    <hgroup>
+      <h1>⚽ Taldo Manager</h1>
+      <p>Assuma um clube e faça história.</p>
+    </hgroup>
+    <button id="menu" class="secondary outline" hidden>🏠 Menu</button>
+  </header>
 
   <p id="status" aria-busy="false"></p>
   <p id="erro"></p>
+
+  <!-- tela inicial (v1.0): continuar / novo jogo / carregar -->
+  <section id="inicio" hidden>
+    <article id="inicio-continuar" class="continuar" hidden>
+      <div>
+        <small>Continuar</small>
+        <h3 id="inicio-continuar-titulo"></h3>
+        <p id="inicio-continuar-info"></p>
+      </div>
+      <button id="continuar">▶ Continuar</button>
+    </article>
+
+    <nav class="abas" id="inicio-abas">
+      <button data-inicio="novo">✚ Novo jogo</button>
+      <button data-inicio="carregar">📂 Carregar</button>
+    </nav>
+
+    <div data-inicio-painel="novo" hidden>
+      <p class="vazio">Escolha o clube que você vai dirigir. Clubes fortes
+        brigam pelo título; os fracos, para não cair.</p>
+      <div id="inicio-clubes" class="grade-clubes"></div>
+      <p class="acoes-rodada">
+        <button id="comecar" disabled style="width: auto">Escolha um clube</button>
+      </p>
+    </div>
+
+    <div data-inicio-painel="carregar" hidden>
+      <div id="inicio-saves"></div>
+    </div>
+
+    <!-- ferramentas de desenvolvimento: seed, simular tudo, saves crus -->
+    <details id="dev" class="dev">
+      <summary>🛠 Modo dev</summary>
+
+      <div class="controles">
+        <label>
+          Seed (opcional)
+          <input id="seed" type="number" placeholder="aleatório" />
+        </label>
+        <label>
+          Seu clube
+          <select id="meu-clube" style="width: 12rem">
+            <option value="">— nenhum —</option>
+          </select>
+        </label>
+        <label>
+          Tática
+          <select id="tatica" style="width: 9rem" disabled>
+            <option value="equilibrado">Equilibrado</option>
+            <option value="ofensivo">Ofensivo</option>
+            <option value="defensivo">Defensivo</option>
+          </select>
+        </label>
+        <label>
+          Modo
+          <select id="modo" style="width: 11rem">
+            <option value="completa">Simular tudo</option>
+            <option value="rodada_a_rodada">Rodada a rodada</option>
+          </select>
+        </label>
+        <button id="nova">Nova temporada</button>
+      </div>
+
+      <!-- montar a escalação (só quando há um clube escolhido) -->
+      <details id="escalacao" hidden>
+        <summary>Escalação — <span id="escalacao-clube"></span></summary>
+        <div class="controles" style="margin: .75rem 0">
+          <label>
+            Formação
+            <select id="formacao"></select>
+          </label>
+          <span id="escalacao-aviso" class="vazio"></span>
+        </div>
+        <div id="slots" class="slots"></div>
+        <p class="vazio" style="margin-top: .5rem">
+          Deixe um slot em <em>automático</em> e o motor escolhe. O XI é a
+          preferência: jogadores muito cansados dão lugar a reservas.
+        </p>
+      </details>
+
+      <div class="saves">
+        <select id="lista"></select>
+        <button id="apagar" class="secondary outline">Apagar</button>
+      </div>
+    </details>
+  </section>
 
   <!-- visão temporada -->
   <section id="temporada" hidden>

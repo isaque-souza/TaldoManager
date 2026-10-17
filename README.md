@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 334 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 341 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -375,7 +375,7 @@ crescer (ou encolher) com as decisões do técnico:
 # 🌐 Web / Jogável (v1.0) — em andamento
 
 * [x] Um comando só: a API serve o frontend em `http://localhost:8000` (sem CORS, sem campo "API" na tela)
-* [ ] Tela inicial de jogador (Continuar / Novo jogo / Carregar; escolha do clube em cards; seed e "Simular tudo" num painel de modo dev)
+* [x] Tela inicial de jogador (o jogo abre nela: Continuar / Novo jogo / Carregar; clubes em cards com o ranking de força — `GET /clubes` traz `forca` e `ranking_forca`; seed e "Simular tudo" num painel "🛠 Modo dev"; botão "🏠 Menu")
 * [ ] Meta da diretoria por temporada (pela força do clube: título, G-4, meio da tabela, não cair)
 * [ ] Demissão no fim da temporada (longe da meta 2× seguidas ou muito abaixo → fim de carreira)
 
@@ -409,7 +409,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 334 testes (domain, db, repositories, services, api)
+│   └── tests/              # 341 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas
