@@ -87,6 +87,13 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .balanco { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; padding: 0; margin: 0; list-style: none; }
 .balanco li { list-style: none; margin: 0; }
 .fim-carreira footer button { width: auto; margin: 0; }
+/* ---------- identidade dos clubes (v1.1) ---------- */
+.com-escudo { display: inline-flex; align-items: center; gap: .45em; }
+.com-escudo svg, .confronto svg, .placar svg, .titulo-clube svg { flex: none; }
+.confronto, .placar, .titulo-clube { display: inline-flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.confronto .x { color: var(--pico-muted-color); }
+.placar b { padding: 0 .4rem; }
+.card-clube-visual { display: flex; align-items: center; gap: .5rem; margin-bottom: .3rem; }
 .dev { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--pico-muted-border-color); }
 .dev > summary { cursor: pointer; color: var(--pico-muted-color); }
 #escalacao { margin: 0 0 1rem; }

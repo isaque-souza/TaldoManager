@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 389 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 392 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -404,6 +404,22 @@ crescer (ou encolher) com as decisões do técnico:
 
 ---
 
+# 🎨 Cara de jogo (v1.1) — em andamento
+
+Visual de jogo de verdade, no clima "estádio noturno".
+
+* [x] Identidade dos clubes — cada clube tem cores, formato de escudo e
+      padrão de camisa na seed (`identidade` em `clubes.json`, rivais sem
+      a mesma cor); o front desenha escudo e camisa em SVG
+      (`frontend/js/identidade.js`) no menu, tabelas, confrontos, placar e
+      página do clube
+* [ ] Tema visual + menu principal de jogo
+* [ ] Pré-jogo: as duas escalações no campo, com número e ícones por jogador
+* [ ] Jogo ao vivo minuto a minuto (replay dos lances com relógio e placar)
+* [ ] Polimento (transições, animação de gol)
+
+---
+
 # 📁 Estrutura
 
 ```text
@@ -420,7 +436,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 389 testes (domain, db, repositories, services, api)
+│   └── tests/              # 392 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

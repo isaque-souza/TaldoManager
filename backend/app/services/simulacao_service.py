@@ -570,6 +570,7 @@ def listar_clubes():
             "meta": diretoria.descricao_meta(meta),
             "dinheiro": c.dinheiro,
             "torcedores": c.torcedores,
+            "identidade": c.identidade,
         })
     return clubes
 

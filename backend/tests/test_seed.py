@@ -1,7 +1,9 @@
 """Garante que a seed em disco tem uma hierarquia de forças entre os clubes
 (tiers), e não 20 elencos praticamente iguais."""
 
+import json
 import statistics
+from pathlib import Path
 
 from scripts.data_loader import carregar_jogadores, carregar_clubes
 
@@ -53,3 +55,25 @@ def test_seed_tem_dados_de_mercado_coerentes():
     assert all(j.potencial == j.overall for j in jogadores if j.idade >= 30)
     # e pelo menos alguns jovens são promessas
     assert any(j.potencial - j.overall >= 8 for j in jogadores if j.idade <= 20)
+
+
+def _clubes_json():
+    return json.loads((Path(__file__).parent.parent / "data/seeds/clubes.json").read_text())
+
+
+def test_todo_clube_tem_identidade_visual_e_siglas_unicas():
+    clubes = _clubes_json()
+    for c in clubes:
+        ident = c["identidade"]
+        assert ident["cor_primaria"].startswith("#") and len(ident["cor_primaria"]) == 7
+        assert ident["cor_secundaria"].startswith("#") and len(ident["cor_secundaria"]) == 7
+        assert len(ident["sigla"]) == 3
+    assert len({c["identidade"]["sigla"] for c in clubes}) == len(clubes)
+
+
+def test_rivais_nao_tem_a_mesma_cor_principal():
+    clubes = _clubes_json()
+    cor = {c["nome"]: c["identidade"]["cor_primaria"] for c in clubes}
+    for c in clubes:
+        for rival in c.get("rivais", []):
+            assert cor[c["nome"]] != cor[rival], (c["nome"], rival)

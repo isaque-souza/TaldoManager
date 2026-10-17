@@ -6,6 +6,7 @@ import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { ligarEvolucao, renderEvolucao } from "./grafico.js";
 import { abrirCarreira, renderVirada } from "./carreira.js";
 import { renderFimDeCarreira, renderMeta } from "./diretoria.js";
+import { comEscudo } from "./identidade.js";
 
 // ---------- visão temporada ----------
 
@@ -143,9 +144,10 @@ export function mostrarTemporada() {
   $("temporada-voltar").hidden = !emAndamento;
 
   const campeao = estado.temporada.classificacao[0];
-  $("campeao").textContent = emAndamento
-    ? `${campeao.clube} (líder)`
-    : estado.temporada.campeao;
+  const nomeCampeao = emAndamento ? campeao.clube : estado.temporada.campeao;
+  $("campeao").innerHTML = comEscudo(
+    nomeCampeao, emAndamento ? `${nomeCampeao} (líder)` : nomeCampeao, 30
+  );
   $("campeao-info").textContent =
     (estado.temporada.carreira_id ? `temporada ${estado.temporada.temporada} · ` : "") +
     (emAndamento ? `rodada ${estado.temporada.rodada_atual} de ${estado.temporada.rodadas} · ` : "") +

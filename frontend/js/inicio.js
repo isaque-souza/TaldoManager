@@ -3,6 +3,7 @@
 import { $, esconderTudo, limparAviso, pedir, pilhaVoltar } from "./nucleo.js";
 import { carregarLista, lerSessao, preencherLista } from "./saves.js";
 import { dinheiro } from "./tabelas.js";
+import { camisa, escudo } from "./identidade.js";
 
 let clubes = null;      // cache de GET /clubes (a seed não muda)
 let escolhido = null;   // nome do clube marcado em "Novo jogo"
@@ -65,7 +66,11 @@ function quando(s) {
 }
 
 function tituloSave(s) {
-  return s.clube_usuario ? `🎮 ${s.clube_usuario}` : `Simulação #${s.id}`;
+  return s.clube_usuario ? s.clube_usuario : `Simulação #${s.id}`;
+}
+
+function escudoSave(s, tamanho) {
+  return s.clube_usuario ? escudo(s.clube_usuario, tamanho) : "";
 }
 
 function renderContinuar(sims) {
@@ -78,7 +83,8 @@ function renderContinuar(sims) {
   $("inicio-continuar").hidden = !alvo;
   if (!alvo) return;
 
-  $("inicio-continuar-titulo").textContent = tituloSave(alvo);
+  $("inicio-continuar-titulo").innerHTML =
+    `<span class="com-escudo">${escudoSave(alvo, 30)}${tituloSave(alvo)}</span>`;
   $("inicio-continuar-info").textContent = `${situacao(alvo)} · jogado em ${quando(alvo)}`;
   $("continuar").onclick = () =>
     abrir(alvo.id, alvo.id === Number(sessao.simId) ? sessao : undefined);
@@ -98,6 +104,7 @@ function renderClubes() {
     .sort((a, b) => a.ranking_forca - b.ranking_forca)
     .map((c) => `
       <button class="card-clube${c.nome === escolhido ? " escolhido" : ""}" data-clube="${c.nome}">
+        <span class="card-clube-visual">${escudo(c.nome, 40)}${camisa(c.nome, { tamanho: 48 })}</span>
         <strong>${c.nome}</strong>
         <small>${c.pais}</small>
         <span class="estrelas" title="${c.ranking_forca}º elenco mais forte">${estrelas(c.ranking_forca)}</span>
@@ -151,9 +158,10 @@ function renderSaves(sims) {
   $("inicio-saves").innerHTML = sims.length
     ? sims.map((s) => `
         <article class="save">
-          <div>
-            <strong>${tituloSave(s)}</strong>
-            <small>${situacao(s)} · jogado em ${quando(s)}</small>
+          <div class="com-escudo">
+            ${escudoSave(s, 28)}
+            <span><strong>${tituloSave(s)}</strong>
+            <small>${situacao(s)} · jogado em ${quando(s)}</small></span>
           </div>
           <div class="save-acoes">
             <button data-abrir="${s.id}">Abrir</button>
