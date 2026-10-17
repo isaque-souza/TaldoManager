@@ -1,7 +1,7 @@
 # Frontend — Taldo Manager
 
-Visualização básica dos resultados da simulação. **Sem build, sem npm**: é um
-único arquivo `index.html` com JavaScript puro que consome a API.
+Interface web do jogo. **Sem build, sem npm**: HTML + CSS + JavaScript puro
+(módulos ES nativos do navegador) consumindo a API.
 
 ## Como rodar
 
@@ -24,8 +24,35 @@ python -m http.server 5500
 
 Abra `http://localhost:5500` no navegador e clique em **Nova temporada**.
 
-> Dá pra abrir o `index.html` direto (dois cliques), mas servir via
-> `http.server` evita problemas de CORS/caminho e é mais parecido com produção.
+> **Precisa** ser servido via `http.server`: o JavaScript usa módulos ES
+> (`<script type="module">`), que o navegador não carrega de `file://` — abrir
+> o `index.html` com dois cliques deixa a página sem funcionar.
+
+## Organização
+
+```text
+frontend/
+├── index.html        só a marcação (seções de cada tela)
+├── style.css         estilos (sobre o Pico.css)
+└── js/
+    ├── main.js       ponto de entrada: liga os botões do topo e carrega os dados
+    ├── nucleo.js     estado compartilhado, navegação (← Voltar) e rede (pedir)
+    ├── tabelas.js    tabela genérica, links, formatação de dinheiro
+    ├── saves.js      lista de simulações salvas (abrir / apagar)
+    ├── escalacao.js  montar formação + XI e criar uma temporada nova
+    ├── temporada.js  visão da temporada (abas de classificação e rankings)
+    ├── grafico.js    gráfico de pontos por rodada (SVG puro)
+    ├── rodada.js     modo rodada a rodada (antes / depois de jogar)
+    ├── mercado.js    propostas de compra e ofertas de venda
+    ├── contratos.js  lista de contratos e renovação
+    ├── clube.js      página do clube (finanças, jogos, elenco)
+    ├── partida.js    página da partida
+    └── jogador.js    página do jogador
+```
+
+O estado que várias telas leem e mudam (simulação aberta, aba atual, rodada...)
+fica num objeto só, `estado`, em `nucleo.js`: um módulo não pode reatribuir uma
+variável importada de outro, mas pode mudar a propriedade de um objeto.
 
 ## O que dá pra fazer
 
@@ -54,4 +81,5 @@ O botão **← Voltar** desfaz a última navegação.
 
 ## Próximos passos
 
-1. Simular rodada a rodada.
+1. Abas no modo rodada a rodada (Partida / Mercado / Contratos / Finanças).
+2. Dashboard financeiro (evolução do caixa, receitas × despesas).
