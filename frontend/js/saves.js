@@ -13,7 +13,8 @@ export function rotuloSim(s) {
     s.estado === "em_andamento"
       ? `⏳ rodada ${s.rodada_atual}/${s.rodadas}`
       : `🏆 ${s.campeao}`;
-  return `#${s.id} · ${cabeca} · seed ${s.seed ?? "aleatório"}${eu} · ${data}`;
+  const temporada = s.carreira_id ? ` · 📅 temporada ${s.temporada}` : "";
+  return `#${s.id}${temporada} · ${cabeca} · seed ${s.seed ?? "aleatório"}${eu} · ${data}`;
 }
 
 export async function carregarClubes() {

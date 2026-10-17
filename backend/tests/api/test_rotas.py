@@ -310,3 +310,38 @@ def test_financas_na_temporada_e_historico_no_clube():
     clube = client.get(f"/simulacoes/{sid}/clubes/{fin[0]['id']}").json()["clube"]
     assert len(clube["historico_caixa"]) == 38
     assert clube["historico_caixa"][-1] == clube["dinheiro"]
+
+
+# --- carreira (v0.8) ---
+
+def _save_concluido_com_clube():
+    clube = client.get("/clubes").json()[0]["nome"]
+    return client.post("/simulacoes", json={"seed": 3, "clube": clube}).json()["id"]
+
+
+def test_proxima_temporada_cria_e_lista_a_carreira():
+    sid = _save_concluido_com_clube()
+
+    resp = client.post(f"/simulacoes/{sid}/proxima-temporada")
+    assert resp.status_code == 201
+    corpo = resp.json()
+    assert corpo["temporada"] == 2
+
+    carreira = client.get(f"/carreiras/{corpo['carreira_id']}").json()
+    assert [t["temporada"] for t in carreira["temporadas"]] == [1, 2]
+
+    resumo = {s["id"]: s for s in client.get("/simulacoes").json()}
+    assert resumo[corpo["simulacao_id"]]["temporada"] == 2
+    assert resumo[sid]["carreira_id"] == corpo["carreira_id"]
+
+
+def test_proxima_temporada_ja_continuada_da_409():
+    sid = _save_concluido_com_clube()
+    client.post(f"/simulacoes/{sid}/proxima-temporada")
+    resp = client.post(f"/simulacoes/{sid}/proxima-temporada")
+    assert resp.status_code == 409
+
+
+def test_proxima_temporada_e_carreira_inexistentes_dao_404():
+    assert client.post("/simulacoes/999/proxima-temporada").status_code == 404
+    assert client.get("/carreiras/999").status_code == 404

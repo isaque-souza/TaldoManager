@@ -1,6 +1,7 @@
 // Visão da temporada: abas de classificação, rankings e recordes.
 
-import { $, esconderTudo, estado, voltarUm } from "./nucleo.js";
+import { $, esconderTudo, estado, limparAviso, ocupado, pedir, voltarUm } from "./nucleo.js";
+import { carregarLista } from "./saves.js";
 import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { ligarEvolucao, renderEvolucao } from "./grafico.js";
 
@@ -133,6 +134,7 @@ export function mostrarTemporada() {
     ? `${campeao.clube} (líder)`
     : estado.temporada.campeao;
   $("campeao-info").textContent =
+    (estado.temporada.carreira_id ? `temporada ${estado.temporada.temporada} · ` : "") +
     (emAndamento ? `rodada ${estado.temporada.rodada_atual} de ${estado.temporada.rodadas} · ` : "") +
     `${campeao.pontos} pts · ${campeao.vitorias}V ${campeao.empates}E ${campeao.derrotas}D · saldo ${campeao.saldo_gols}`;
 
@@ -155,8 +157,37 @@ export function mostrarTemporada() {
       `${c.gols_marcados} gols pró e ${c.gols_sofridos} sofridos.`;
   }
 
+  renderCarreira(emAndamento, meu);
   renderAbas();
   renderPainel();
+}
+
+// ---------- modo carreira (v0.8) ----------
+
+// Temporada concluída com clube dirigido: continua na próxima (ou leva até
+// ela, se já foi continuada — só a última temporada da carreira continua).
+function renderCarreira(emAndamento, meu) {
+  const acao = $("carreira-acao");
+  const t = estado.temporada;
+  acao.hidden = emAndamento || !meu;
+  if (acao.hidden) return;
+
+  const proxima = (t.temporada ?? 1) + 1;
+  acao.innerHTML = t.proxima_temporada_id
+    ? `<button id="carreira-ir" class="secondary">Ir para a temporada ${proxima} →</button>`
+    : `<button id="carreira-continuar">▶ Próxima temporada (temporada ${proxima})</button>
+       <small>Elencos, contratos e caixa continuam; pontos e estatísticas começam do zero.</small>`;
+
+  $("carreira-ir")?.addEventListener("click", () => carregarLista(t.proxima_temporada_id));
+  $("carreira-continuar")?.addEventListener("click", continuarCarreira);
+}
+
+async function continuarCarreira() {
+  limparAviso();
+  ocupado(true, "Preparando a próxima temporada…");
+  const criada = await pedir(`/simulacoes/${estado.simId}/proxima-temporada`, { method: "POST" });
+  ocupado(false);
+  if (criada) await carregarLista(criada.simulacao_id);
 }
 
 $("temporada-voltar").addEventListener("click", voltarUm);
