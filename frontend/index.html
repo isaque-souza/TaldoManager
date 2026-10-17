@@ -22,6 +22,9 @@
     .saves button { width: auto; margin: 0; }
     .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
     .cards article { margin: 0; }
+    .financas table { margin: 0; }
+    .financas tfoot td { font-weight: 700; }
+    .negativo { color: #d9534f; }
     .abas { display: flex; flex-wrap: wrap; gap: .25rem; border-bottom: 1px solid var(--pico-muted-border-color); margin-bottom: 1rem; }
     .abas button { width: auto; margin: 0; border-radius: 6px 6px 0 0; background: transparent; border: none; color: var(--pico-muted-color); padding: .5rem .9rem; }
     .abas button.ativa { color: var(--pico-primary); border-bottom: 2px solid var(--pico-primary); }
@@ -210,6 +213,7 @@
       <h2 id="clube-nome"></h2>
       <p id="clube-info"></p>
     </hgroup>
+    <div id="clube-financas"></div>
     <h4>Jogos</h4>
     <div id="clube-jogos"></div>
     <h4>Elenco</h4>
@@ -768,12 +772,39 @@
       ["nota_media", "Nota"], ["melhor_em_campo", "MVPs"], ["valor", "Valor"],
     ];
 
-    // 31540000 -> "31,5 mi" · 850000 -> "850 mil"
+    // 31540000 -> "31,5 mi" · 850000 -> "850 mil" · -2200000 -> "-2,2 mi"
     function dinheiro(v) {
-      if (v >= 1_000_000) {
-        return `${(v / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+      const sinal = v < 0 ? "-" : "";
+      const a = Math.abs(v);
+      if (a >= 1_000_000) {
+        return `${sinal}${(a / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
       }
-      return `${Math.round(v / 1_000)} mil`;
+      return `${sinal}${Math.round(a / 1_000)} mil`;
+    }
+
+    // card de finanças do clube; saves anteriores à v0.7 vêm zerados
+    function cardFinancas(cl) {
+      if (!cl.dinheiro_inicial) return "";
+      const saldo = cl.dinheiro - cl.dinheiro_inicial;
+      const linha = (rotulo, v) =>
+        `<tr><td>${rotulo}</td><td class="num${v < 0 ? " negativo" : ""}">${dinheiro(v)}</td></tr>`;
+      return `
+        <article class="financas">
+          <header><strong>💰 Finanças da temporada</strong></header>
+          <table>
+            <tbody>
+              ${linha("Caixa inicial", cl.dinheiro_inicial)}
+              ${linha("📺 Cota de TV", cl.receita_tv)}
+              ${linha("🎟️ Bilheteria", cl.receita_bilheteria)}
+              ${linha("🏆 Premiação", cl.receita_premiacao)}
+              ${linha("💸 Salários", -cl.despesa_salarios)}
+            </tbody>
+            <tfoot>
+              ${linha("Caixa atual", cl.dinheiro)}
+              ${linha("Saldo da temporada", saldo)}
+            </tfoot>
+          </table>
+        </article>`;
     }
 
     async function abrirClube(clubeId) {
@@ -790,6 +821,7 @@
       $("clube-info").textContent =
         `${cl.posicao_final}º lugar · ${cl.pontos} pts · ${cl.vitorias}V ${cl.empates}E ${cl.derrotas}D · ` +
         `${cl.gols_marcados}-${cl.gols_sofridos} (saldo ${cl.saldo_gols})`;
+      $("clube-financas").innerHTML = cardFinancas(cl);
 
       const jogos = c.jogos.map((j) => ({
         ...j,

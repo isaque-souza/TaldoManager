@@ -50,6 +50,13 @@ _COLUNAS_NOVAS = {
         ("rodada_atual", "INTEGER"),
         ("estado_json", "TEXT"),
     ),
+    "clube": tuple(
+        (c, "INTEGER NOT NULL DEFAULT 0")
+        for c in (
+            "dinheiro_inicial", "dinheiro", "receita_tv",
+            "receita_bilheteria", "receita_premiacao", "despesa_salarios",
+        )
+    ),
     "jogador": (
         ("penaltis", "INTEGER NOT NULL DEFAULT 0"),
         ("penaltis_perdidos", "INTEGER NOT NULL DEFAULT 0"),

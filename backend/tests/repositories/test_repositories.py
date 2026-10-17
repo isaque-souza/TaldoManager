@@ -21,6 +21,9 @@ def _clube(nome, posicao):
         "nome": nome, "pais": "Brasil", "posicao_final": posicao,
         "pontos": 90 - posicao, "jogos": 38, "vitorias": 20,
         "empates": 10, "derrotas": 8, "gols_marcados": 60, "gols_sofridos": 40,
+        "dinheiro_inicial": 10_000_000, "dinheiro": 12_500_000,
+        "receita_tv": 1_500_000, "receita_bilheteria": 2_000_000,
+        "receita_premiacao": 9_000_000, "despesa_salarios": 10_000_000,
     }
 
 
@@ -58,6 +61,8 @@ def test_ciclo_completo_de_escrita_e_leitura(conn):
 
     clubes = clube_repo.listar_por_simulacao(conn, sid)
     assert [c["nome"] for c in clubes] == ["A FC", "B FC"]  # ordena por posição
+    assert clubes[0]["dinheiro"] == 12_500_000
+    assert clubes[0]["receita_premiacao"] == 9_000_000
 
     elenco = jogador_repo.listar_por_clube(conn, mapa["A FC"])
     assert len(elenco) == 1

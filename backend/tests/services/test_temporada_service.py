@@ -1,5 +1,7 @@
 import pytest
 
+from app.db.conexao import conectar
+from app.repositories import clube_repository as clube_repo
 from app.services import simulacao_service, temporada_service
 from app.services.temporada_service import TemporadaConcluida
 
@@ -109,6 +111,27 @@ def test_rodada_a_rodada_reproduz_a_temporada_continua():
     tab_b = [(c["clube"], c["pontos"], c["saldo_gols"]) for c in passo_a_passo["classificacao"]]
     assert tab_a == tab_b
     assert continua["campeao"] == passo_a_passo["campeao"]
+
+
+def test_financas_rodada_a_rodada_batem_com_a_temporada_continua():
+    # o caixa e os totais passam pelo snapshot entre as rodadas; se algum
+    # campo ficasse de fora, o save rodada a rodada divergiria
+    clube = _um_clube()
+    continua = simulacao_service.salvar_temporada(seed=77, clube_usuario=clube)
+    sid = temporada_service.iniciar(seed=77, clube_usuario=clube)
+    _jogar_ate_o_fim(sid)
+
+    campos = ("nome", "dinheiro_inicial", "dinheiro", "receita_tv",
+              "receita_bilheteria", "receita_premiacao", "despesa_salarios")
+    conn = conectar()
+    try:
+        a = [tuple(r[c] for c in campos) for r in clube_repo.listar_por_simulacao(conn, continua)]
+        b = [tuple(r[c] for c in campos) for r in clube_repo.listar_por_simulacao(conn, sid)]
+    finally:
+        conn.close()
+
+    assert a == b
+    assert all(r[2] != r[1] for r in a)   # o caixa de fato se moveu
 
 
 def test_avancar_persiste_partidas_para_as_paginas_de_navegacao():
