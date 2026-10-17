@@ -224,6 +224,8 @@ class ClubeInfo(BaseModel):
     receita_bilheteria: int = 0
     receita_premiacao: int = 0
     despesa_salarios: int = 0
+    receita_vendas: int = 0
+    despesa_compras: int = 0
 
 
 class JogoResumo(BaseModel):
@@ -341,3 +343,58 @@ class JogadorInfo(BaseModel):
 class JogadorDetalhe(BaseModel):
     jogador: JogadorInfo
     jogos: list[JogoLog]
+
+
+# --- mercado de transferências (v0.7) ---
+
+class FichaMercado(BaseModel):
+    jogador_id: int
+    nome: str
+    clube: str
+    posicao: str
+    idade: int
+    overall: int
+    potencial: int
+    valor_mercado: int
+    salario: int
+    contrato_anos: int
+    bloqueio: str | None = None   # por que não dá pra negociar (None = dá)
+
+
+class TransferenciaFeita(BaseModel):
+    rodada: int
+    jogador_id: int
+    jogador: str
+    posicao: str
+    de_clube: str
+    para_clube: str
+    valor: int
+
+
+class Mercado(BaseModel):
+    rodada: int
+    janela_aberta: bool
+    janelas: list[int]
+    clube_usuario: str
+    caixa: int
+    elenco_min: int
+    elenco_max: int
+    elenco: list[FichaMercado]
+    disponiveis: list[FichaMercado]
+    transferencias: list[TransferenciaFeita]
+
+
+class PedidoTransferencia(BaseModel):
+    jogador_id: int
+    tipo: Literal["compra", "venda"]
+
+
+class TransferenciaResultado(BaseModel):
+    tipo: str
+    rodada: int
+    jogador_id: int
+    jogador: str
+    de_clube: str
+    para_clube: str
+    valor: int
+    caixa: int

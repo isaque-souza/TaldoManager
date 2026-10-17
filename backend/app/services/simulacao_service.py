@@ -142,6 +142,8 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
             "receita_bilheteria": clube.receita_bilheteria,
             "receita_premiacao": clube.receita_premiacao,
             "despesa_salarios": clube.despesa_salarios,
+            "receita_vendas": clube.receita_vendas,
+            "despesa_compras": clube.despesa_compras,
         })
 
         for jogador in clube.jogadores:

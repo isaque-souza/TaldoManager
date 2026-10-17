@@ -30,19 +30,26 @@ def inserir(conn, simulacao_id, mapa_clubes, jogadores):
 
 def atualizar(conn, simulacao_id, mapa_clubes, jogadores):
     """Regrava as stats acumuladas dos jogadores de uma temporada em andamento.
-    UPDATE por (clube_id, nome). Devolve o mesmo mapa {(clube, nome): id} que
-    `inserir`, para ligar lances e atuações da rodada recém-jogada."""
+    UPDATE por (simulacao_id, nome) — e não por clube, porque com
+    transferências o jogador muda de clube; o `clube_id` é regravado junto.
+    Devolve o mesmo mapa {(clube, nome): id} que `inserir`, para ligar
+    lances e atuações da rodada recém-jogada."""
 
     mapa = {}
     for j in jogadores:
-        clube_id = mapa_clubes[j["clube"]]
         conn.execute(
             f"""
             UPDATE jogador
-               SET {", ".join(f"{c} = ?" for c in CAMPOS if c != "nome")}
-             WHERE clube_id = ? AND nome = ?
+               SET clube_id = ?,
+                   {", ".join(f"{c} = ?" for c in CAMPOS if c != "nome")}
+             WHERE simulacao_id = ? AND nome = ?
             """,
-            (*(j[c] for c in CAMPOS if c != "nome"), clube_id, j["nome"]),
+            (
+                mapa_clubes[j["clube"]],
+                *(j[c] for c in CAMPOS if c != "nome"),
+                simulacao_id,
+                j["nome"],
+            ),
         )
 
     for r in conn.execute(
@@ -77,6 +84,12 @@ def listar_por_clube(conn, clube_id):
         _SELECT + " WHERE j.clube_id = ? ORDER BY j.nota_media DESC",
         (clube_id,),
     ).fetchall()
+
+
+def buscar_por_nome(conn, simulacao_id, nome):
+    return conn.execute(
+        _SELECT + " WHERE j.simulacao_id = ? AND j.nome = ?", (simulacao_id, nome)
+    ).fetchone()
 
 
 def buscar(conn, jogador_id):

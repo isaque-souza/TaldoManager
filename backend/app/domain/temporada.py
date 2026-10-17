@@ -32,6 +32,7 @@ _CLUBE_CAMPOS = (
     "vitorias", "empates", "derrotas",
     "dinheiro", "dinheiro_inicial", "receita_tv", "receita_bilheteria",
     "receita_premiacao", "despesa_salarios",
+    "receita_vendas", "despesa_compras",
 )
 
 
@@ -47,6 +48,9 @@ def snapshot_estado(campeonato):
         dados["tatica"] = clube.tatica
         dados["formacao"] = clube.formacao
         dados["xi_preferido"] = sorted(j.nome for j in clube.xi_preferido)
+        # o elenco entra no snapshot porque transferências mudam quem joga
+        # onde; sem isso, cada jogador voltaria para o clube da seed
+        dados["elenco"] = [j.nome for j in clube.jogadores]
         dados["jogadores"] = {
             j.nome: {c: getattr(j, c) for c in _JOGADOR_CAMPOS}
             for j in clube.jogadores
@@ -68,15 +72,25 @@ def restaurar_estado(campeonato, blob):
     versao, estado, gauss_next = blob["rng"]
     random.setstate((versao, tuple(estado), gauss_next))
 
+    # todos os jogadores da liga, por nome (os nomes são únicos na seed)
+    por_nome = {j.nome: j for c in campeonato.clubes for j in c.jogadores}
+
     for clube in campeonato.clubes:
         dados = blob["clubes"][clube.nome]
         for c in _CLUBE_CAMPOS:
-            setattr(clube, c, dados[c])
+            # .get: snapshots antigos não têm os campos mais novos
+            setattr(clube, c, dados.get(c, getattr(clube, c)))
         clube.forma = list(dados["forma"])
         clube.tatica = dados["tatica"]
         clube.formacao = dados["formacao"]
 
-        por_nome = {j.nome: j for j in clube.jogadores}
+        # remonta o elenco a partir do snapshot (snapshots antigos, sem
+        # "elenco", ficam com o elenco da seed)
+        if "elenco" in dados:
+            clube.jogadores = [por_nome[n] for n in dados["elenco"]]
+            clube.titulares = []
+            clube.reservas = []
+
         clube.xi_preferido = {
             por_nome[n] for n in dados["xi_preferido"] if n in por_nome
         }

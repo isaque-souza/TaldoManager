@@ -234,3 +234,42 @@ def test_rodada_a_rodada_ate_o_fim_via_api():
 def test_proxima_rodada_de_simulacao_inexistente_404():
     assert client.get("/simulacoes/99999/rodadas/proxima").status_code == 404
     assert client.post("/simulacoes/99999/rodadas").status_code == 404
+
+
+def test_fluxo_do_mercado():
+    clube = client.get("/clubes").json()[0]["nome"]
+    sid = client.post(
+        "/simulacoes", json={"seed": 4, "clube": clube, "modo": "rodada_a_rodada"}
+    ).json()["id"]
+
+    m = client.get(f"/simulacoes/{sid}/mercado", params={"posicao": "Atacante"})
+    assert m.status_code == 200
+    corpo = m.json()
+    assert corpo["janela_aberta"] is True
+    assert all(f["posicao"] == "Atacante" for f in corpo["disponiveis"])
+
+    alvo = next(f for f in corpo["disponiveis"] if f["bloqueio"] is None)
+    feita = client.post(
+        f"/simulacoes/{sid}/transferencias",
+        json={"jogador_id": alvo["jogador_id"], "tipo": "compra"},
+    )
+    assert feita.status_code == 200
+    assert feita.json()["para_clube"] == clube
+
+    # regra de negócio quebrada -> 400; tipo fora do enum -> 422
+    de_novo = client.post(
+        f"/simulacoes/{sid}/transferencias",
+        json={"jogador_id": alvo["jogador_id"], "tipo": "compra"},
+    )
+    assert de_novo.status_code == 400
+    assert client.post(
+        f"/simulacoes/{sid}/transferencias",
+        json={"jogador_id": alvo["jogador_id"], "tipo": "emprestimo"},
+    ).status_code == 422
+
+    assert client.get("/simulacoes/999999/mercado").status_code == 404
+
+
+def test_mercado_de_temporada_concluida_da_409():
+    sid = client.post("/simulacoes", json={"seed": 2}).json()["id"]
+    assert client.get(f"/simulacoes/{sid}/mercado").status_code == 409

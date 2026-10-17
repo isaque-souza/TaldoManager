@@ -8,8 +8,10 @@ from app.api.schemas import (
     ClubeSeed,
     HealthResponse,
     JogadorDetalhe,
+    Mercado,
     NovaSimulacao,
     PartidaDetalhe,
+    PedidoTransferencia,
     ProximaRodada,
     RodadaDecisao,
     RodadaJogada,
@@ -17,8 +19,10 @@ from app.api.schemas import (
     SimulacaoResponse,
     SimulacaoResumo,
     Tatica,
+    TransferenciaResultado,
 )
-from app.services import simulacao_service, temporada_service
+from app.domain.mercado import TransferenciaInvalida
+from app.services import mercado_service, simulacao_service, temporada_service
 from app.services.temporada_service import TemporadaConcluida
 
 router = APIRouter()
@@ -159,6 +163,46 @@ def jogar_proxima_rodada(
     if resultado is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
     return resultado
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/mercado",
+    response_model=Mercado,
+    tags=["mercado"],
+)
+def obter_mercado(
+    simulacao_id: int,
+    posicao: str | None = Query(None, description="Goleiro, Defesa, Meio-Campo ou Atacante"),
+    valor_max: int | None = Query(None, ge=0, description="Só jogadores até este valor"),
+):
+    """Janela, caixa, o elenco dirigido e os jogadores dos outros clubes."""
+    try:
+        dados = mercado_service.ver_mercado(simulacao_id, posicao, valor_max)
+    except TemporadaConcluida as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/transferencias",
+    response_model=TransferenciaResultado,
+    tags=["mercado"],
+)
+def fazer_transferencia(simulacao_id: int, pedido: PedidoTransferencia):
+    """Compra ou vende um jogador pelo valor de mercado (janela aberta)."""
+    try:
+        feita = mercado_service.transferir(
+            simulacao_id, pedido.jogador_id, pedido.tipo
+        )
+    except TemporadaConcluida as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
+    except TransferenciaInvalida as e:
+        raise _erro_de_valor(e) from e
+    if feita is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return feita
 
 
 @router.get(

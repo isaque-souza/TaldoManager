@@ -24,6 +24,7 @@ def _clube(nome, posicao):
         "dinheiro_inicial": 10_000_000, "dinheiro": 12_500_000,
         "receita_tv": 1_500_000, "receita_bilheteria": 2_000_000,
         "receita_premiacao": 9_000_000, "despesa_salarios": 10_000_000,
+        "receita_vendas": 0, "despesa_compras": 0,
     }
 
 

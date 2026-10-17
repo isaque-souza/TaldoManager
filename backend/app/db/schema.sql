@@ -36,7 +36,9 @@ CREATE TABLE IF NOT EXISTS clube (
     receita_tv         INTEGER NOT NULL DEFAULT 0,
     receita_bilheteria INTEGER NOT NULL DEFAULT 0,
     receita_premiacao  INTEGER NOT NULL DEFAULT 0,
-    despesa_salarios   INTEGER NOT NULL DEFAULT 0
+    despesa_salarios   INTEGER NOT NULL DEFAULT 0,
+    receita_vendas     INTEGER NOT NULL DEFAULT 0,
+    despesa_compras    INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS jogador (
@@ -82,6 +84,17 @@ CREATE TABLE IF NOT EXISTS partida (
     finalizacoes_gol_visitante INTEGER NOT NULL DEFAULT 0,
     escanteios_mandante        INTEGER NOT NULL DEFAULT 0,
     escanteios_visitante       INTEGER NOT NULL DEFAULT 0
+);
+
+-- Transferências feitas numa temporada rodada a rodada (v0.7).
+CREATE TABLE IF NOT EXISTS transferencia (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    rodada        INTEGER NOT NULL,   -- feita antes desta rodada
+    jogador_id    INTEGER NOT NULL REFERENCES jogador(id) ON DELETE CASCADE,
+    de_clube_id   INTEGER NOT NULL REFERENCES clube(id) ON DELETE CASCADE,
+    para_clube_id INTEGER NOT NULL REFERENCES clube(id) ON DELETE CASCADE,
+    valor         INTEGER NOT NULL
 );
 
 -- Timeline da partida: um registro por evento (gol, cartão, substituição, ...).

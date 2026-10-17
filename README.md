@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 176 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 198 testes.
 * **Frontend** (`frontend/`) — `index.html` único, JS puro, consome a API.
 
 Já dá pra:
@@ -277,9 +277,13 @@ jogador da temporada.
 * [x] Valor de mercado (calculado de overall, idade e potencial)
 * [x] Salários (por temporada, calculado do overall)
 * [x] Sistema financeiro (cota de TV, bilheteria, salários e premiação; card na página do clube)
-* [ ] Compra de jogadores
-* [ ] Venda de jogadores
+* [x] Compra de jogadores (pelo valor de mercado, no modo rodada a rodada)
+* [x] Venda de jogadores (para o clube mais rico que puder pagar)
+* [x] Janela de transferências (pré-temporada e virada do turno) + limites de elenco (16–25, 2+ goleiros)
 * [ ] Negociações
+* [ ] Disputa pela contratação, como no futebol real: qual clube paga mais,
+      qual é mais famoso, onde o jogador seria titular (ou banco, se já há
+      jogadores melhores na posição), se é o "time do sonho" dele...
 * [ ] Renovação de contrato
 * [ ] Evolução por idade
 * [x] Potencial dos jogadores (na seed; o jogador ainda não evolui)
@@ -331,7 +335,7 @@ crescer (ou encolher) com as decisões do técnico:
 * [x] Interação: montar a escalação (formação + XI titular)
 * [x] Interação: simular rodada a rodada
 * [ ] Dashboard financeiro
-* [ ] Mercado de transferências
+* [ ] Mercado de transferências (painel básico no modo rodada a rodada já existe)
 * [ ] Estatísticas avançadas (chutes no gol, escanteios, faltas)
 
 ---
@@ -352,7 +356,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 176 testes (domain, db, repositories, services, api)
+│   └── tests/              # 198 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   └── index.html          # SPA em JS puro, consome a API
