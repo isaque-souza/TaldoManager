@@ -29,7 +29,14 @@ CREATE TABLE IF NOT EXISTS clube (
     empates        INTEGER NOT NULL,
     derrotas       INTEGER NOT NULL,
     gols_marcados  INTEGER NOT NULL,
-    gols_sofridos  INTEGER NOT NULL
+    gols_sofridos  INTEGER NOT NULL,
+    -- finanças da temporada (v0.7); dinheiro = caixa atual / final
+    dinheiro_inicial   INTEGER NOT NULL DEFAULT 0,
+    dinheiro           INTEGER NOT NULL DEFAULT 0,
+    receita_tv         INTEGER NOT NULL DEFAULT 0,
+    receita_bilheteria INTEGER NOT NULL DEFAULT 0,
+    receita_premiacao  INTEGER NOT NULL DEFAULT 0,
+    despesa_salarios   INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS jogador (

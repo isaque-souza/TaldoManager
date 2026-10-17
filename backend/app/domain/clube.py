@@ -36,6 +36,13 @@ class Clube:
         self.dinheiro = dinheiro
         self.torcedores = torcedores
 
+        # finanças da temporada (v0.7) — ver app.domain.financas
+        self.dinheiro_inicial = dinheiro
+        self.receita_tv = 0
+        self.receita_bilheteria = 0
+        self.receita_premiacao = 0
+        self.despesa_salarios = 0
+
         self.jogadores = []
         self.titulares = []
         self.reservas = []
@@ -55,6 +62,17 @@ class Clube:
         
         self.penalidade_expulsao = 0
         
+    def lancar(self, categoria, valor):
+        """Registra um lançamento financeiro: soma no total da `categoria` e
+        mexe no caixa (receita_* entra, despesa_* sai). O caixa pode ficar
+        negativo — o clube entra em dívida."""
+
+        setattr(self, categoria, getattr(self, categoria) + valor)
+        if categoria.startswith("despesa_"):
+            self.dinheiro -= valor
+        else:
+            self.dinheiro += valor
+
     def atualizar_forma(self, resultado):
 
         self.forma.append(resultado)

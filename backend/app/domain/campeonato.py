@@ -1,3 +1,4 @@
+from . import financas
 from .partida import Partida
 
 
@@ -42,7 +43,12 @@ class Campeonato:
 
             self.atualizar_recordes(partida)
 
+        financas.processar_rodada(rodada_atual, len(self.calendario))
+
         self.rodada += 1
+
+        if self.rodada > len(self.calendario):
+            financas.pagar_premiacao(self.classificacao())
             
     def mostrar_cabecalho(self):
 

@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 166 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 176 testes.
 * **Frontend** (`frontend/`) — `index.html` único, JS puro, consome a API.
 
 Já dá pra:
@@ -276,7 +276,7 @@ jogador da temporada.
 
 * [x] Valor de mercado (calculado de overall, idade e potencial)
 * [x] Salários (por temporada, calculado do overall)
-* [ ] Sistema financeiro
+* [x] Sistema financeiro (cota de TV, bilheteria, salários e premiação; card na página do clube)
 * [ ] Compra de jogadores
 * [ ] Venda de jogadores
 * [ ] Negociações
@@ -284,6 +284,18 @@ jogador da temporada.
 * [ ] Evolução por idade
 * [x] Potencial dos jogadores (na seed; o jogador ainda não evolui)
 * [x] Duração de contrato (temporadas restantes, na seed)
+
+---
+
+# 📣 Torcida (ideia futura — a desenvolver)
+
+Hoje `torcedores` é fixo e só alimenta a bilheteria. A ideia é a torcida
+crescer (ou encolher) com as decisões do técnico:
+
+* [ ] Crescimento da torcida (campanha boa, títulos, sequência de vitórias)
+* [ ] Campanhas de marketing (gastar dinheiro para atrair torcedores)
+* [ ] Fama dos jogadores (cada jogador tem sua fama; craques famosos atraem torcida)
+* [ ] Contratar ídolos que a torcida ama (impacto na torcida e na bilheteria)
 
 ---
 
@@ -340,7 +352,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 166 testes (domain, db, repositories, services, api)
+│   └── tests/              # 176 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   └── index.html          # SPA em JS puro, consome a API

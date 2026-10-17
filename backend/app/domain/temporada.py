@@ -30,6 +30,8 @@ _JOGADOR_CAMPOS = (
 _CLUBE_CAMPOS = (
     "pontos", "gols_marcados", "gols_sofridos",
     "vitorias", "empates", "derrotas",
+    "dinheiro", "dinheiro_inicial", "receita_tv", "receita_bilheteria",
+    "receita_premiacao", "despesa_salarios",
 )
 
 

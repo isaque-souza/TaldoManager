@@ -217,6 +217,13 @@ class ClubeInfo(BaseModel):
     gols_marcados: int
     gols_sofridos: int
     saldo_gols: int
+    # finanças (v0.7); saves antigos vêm zerados
+    dinheiro_inicial: int = 0
+    dinheiro: int = 0
+    receita_tv: int = 0
+    receita_bilheteria: int = 0
+    receita_premiacao: int = 0
+    despesa_salarios: int = 0
 
 
 class JogoResumo(BaseModel):

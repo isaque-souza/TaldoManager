@@ -3,6 +3,8 @@
 CAMPOS = (
     "nome", "pais", "posicao_final", "pontos", "jogos",
     "vitorias", "empates", "derrotas", "gols_marcados", "gols_sofridos",
+    "dinheiro_inicial", "dinheiro", "receita_tv", "receita_bilheteria",
+    "receita_premiacao", "despesa_salarios",
 )
 
 
