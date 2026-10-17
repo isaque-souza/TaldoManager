@@ -192,7 +192,8 @@ def test_clube_ou_tatica_invalidos_dao_erro():
 def test_listar_clubes_traz_os_20_do_seed():
     clubes = simulacao_service.listar_clubes()
     assert len(clubes) == 20
-    campos = {"nome", "pais", "forca", "ranking_forca", "dinheiro", "torcedores"}
+    campos = {"nome", "pais", "forca", "ranking_forca", "meta_posicao", "meta",
+              "dinheiro", "torcedores"}
     assert all(campos == set(c) for c in clubes)
     assert "Taldo City" in {c["nome"] for c in clubes}
 

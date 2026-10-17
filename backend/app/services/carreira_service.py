@@ -139,6 +139,8 @@ def proxima_temporada(simulacao_id):
                 estado_json=json.dumps(snapshot_estado(campeonato)),
                 carreira_id=carreira_id,
                 temporada=temporada,
+                # a meta nasce do elenco depois da virada (base, saídas...)
+                **simulacao_service.meta_inicial(campeonato, clube_usuario),
             )
             mapa = clube_repo.inserir(conn, nova_id, cru["clubes"])
             jogador_repo.inserir(conn, nova_id, mapa, cru["jogadores"])

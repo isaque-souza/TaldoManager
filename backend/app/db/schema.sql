@@ -28,7 +28,12 @@ CREATE TABLE IF NOT EXISTS simulacao (
     carreira_id    INTEGER REFERENCES carreira(id) ON DELETE SET NULL,
     temporada      INTEGER NOT NULL DEFAULT 1,
     -- autosave (v0.9): última vez que o save mudou (ISO 8601, UTC)
-    atualizada_em  TEXT
+    atualizada_em  TEXT,
+    -- diretoria (v1.0), fixadas no início da temporada (NULL sem clube
+    -- dirigido ou em saves antigos): posição mínima cobrada e o ranking
+    -- de força do clube que a definiu
+    meta_posicao   INTEGER,
+    ranking_forca  INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS clube (

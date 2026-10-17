@@ -108,6 +108,15 @@ class EvolucaoVirada(BaseModel):
     clube_antes: str | None
 
 
+class MetaDiretoria(BaseModel):
+    """Meta da temporada (v1.0), fixada no início pelo ranking de força."""
+    posicao: int             # posição mínima cobrada
+    descricao: str           # "Terminar no G-4"
+    ranking_forca: int       # o clube era o Nº elenco mais forte
+    posicao_atual: int       # na tabela de agora (a final, se concluída)
+    situacao: Literal["batida", "perto", "longe"]
+
+
 class SimulacaoResponse(BaseModel):
     campeonato: str
     seed: int | None
@@ -122,6 +131,7 @@ class SimulacaoResponse(BaseModel):
     movimentos_virada: list[MovimentoVirada] = []   # o que a virada mudou
     evolucao_virada: list[EvolucaoVirada] = []      # seu elenco: subiu/caiu
     clube_usuario: str | None = None    # clube dirigido pelo usuário
+    meta: MetaDiretoria | None = None   # None sem clube ou em save antigo
     tatica: Tatica | None = None
     formacao: str | None = None
     xi_preferido: list[str] | None = None
@@ -323,6 +333,8 @@ class ClubeSeed(BaseModel):
     pais: str
     forca: float            # média de overall dos 11 melhores
     ranking_forca: int      # 1 = elenco mais forte da liga
+    meta_posicao: int       # a meta que a diretoria daria
+    meta: str               # descrição dela ("Terminar no G-4")
     dinheiro: int
     torcedores: int
 

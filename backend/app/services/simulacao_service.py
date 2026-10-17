@@ -63,6 +63,20 @@ def _configurar_clube(clube, tatica, formacao, xi_preferido):
         clube.xi_preferido = {do_elenco[n] for n in nomes}
 
 
+def meta_inicial(campeonato, clube_usuario):
+    """Meta da diretoria fixada no início da temporada, a partir do ranking
+    de força dos elencos de agora: {meta_posicao, ranking_forca}, ou {} sem
+    clube dirigido. Gravada no save — vender craques depois não baixa a meta.
+    """
+    if not clube_usuario:
+        return {}
+    ranking = diretoria.ranking_de_forca(campeonato.clubes)[clube_usuario]
+    return {
+        "meta_posicao": diretoria.meta_da_temporada(ranking),
+        "ranking_forca": ranking,
+    }
+
+
 def _rodar(seed, clube_usuario=None, tatica="equilibrado",
            formacao=None, xi_preferido=None):
     if seed is not None:
@@ -267,6 +281,25 @@ def _financas_da_liga(clubes, jogadores):
     return linhas
 
 
+def _meta_da_visao(cru, clubes_ordenados):
+    """Meta da diretoria com a situação na tabela de agora (ou a final).
+    None quando o save não tem meta (sem clube dirigido ou anterior à v1.0)."""
+    meta = cru.get("meta_posicao")
+    if meta is None:
+        return None
+    posicao = next(
+        c["posicao_final"] for c in clubes_ordenados
+        if c["nome"] == cru["clube_usuario"]
+    )
+    return {
+        "posicao": meta,
+        "descricao": diretoria.descricao_meta(meta),
+        "ranking_forca": cru["ranking_forca"],
+        "posicao_atual": posicao,
+        "situacao": diretoria.situacao(posicao, meta),
+    }
+
+
 def _montar_visao(cru):
     partidas = cru["partidas"]
     forma = _forma_por_clube(partidas)
@@ -323,6 +356,7 @@ def _montar_visao(cru):
         "movimentos_virada": cru.get("movimentos_virada", []),
         "evolucao_virada": cru.get("evolucao_virada", []),
         "clube_usuario": cru.get("clube_usuario"),
+        "meta": _meta_da_visao(cru, clubes_ordenados),
         "tatica": cru.get("tatica"),
         "formacao": cru.get("formacao"),
         "xi_preferido": cru.get("xi_preferido"),
@@ -408,6 +442,9 @@ def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
                      formacao=None, xi_preferido=None):
     """Roda a temporada, grava no banco e devolve o id da simulação."""
     cru = _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido)
+    # a seed não muda: o campeonato recém-carregado é o do início (e o
+    # clube já foi validado por _visao_crua)
+    meta = meta_inicial(carregar_campeonato(), clube_usuario)
 
     conn = conectar()
     try:
@@ -426,6 +463,7 @@ def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
                     if cru["xi_preferido"]
                     else None
                 ),
+                **meta,
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
             mapa_jog = jogador_repo.inserir(conn, sim_id, mapa, cru["jogadores"])
@@ -451,20 +489,24 @@ def listar_simulacoes():
 
 def listar_clubes():
     """Os clubes do seed (para o usuário escolher qual dirigir), com a
-    força do elenco e a posição no ranking de força da liga."""
+    força do elenco, a posição no ranking de força e a meta que a
+    diretoria daria."""
     campeonato = carregar_campeonato()
     ranking = diretoria.ranking_de_forca(campeonato.clubes)
-    return [
-        {
+    clubes = []
+    for c in campeonato.clubes:
+        meta = diretoria.meta_da_temporada(ranking[c.nome])
+        clubes.append({
             "nome": c.nome,
             "pais": c.pais,
             "forca": diretoria.forca_do_elenco(c),
             "ranking_forca": ranking[c.nome],
+            "meta_posicao": meta,
+            "meta": diretoria.descricao_meta(meta),
             "dinheiro": c.dinheiro,
             "torcedores": c.torcedores,
-        }
-        for c in campeonato.clubes
-    ]
+        })
+    return clubes
 
 
 def elenco_do_clube(nome):
@@ -578,6 +620,8 @@ def _cru_do_banco(conn, simulacao_id):
         "estado": sim["estado"],
         "rodada_atual": sim["rodada_atual"],
         "clube_usuario": sim["clube_usuario"],
+        "meta_posicao": sim["meta_posicao"],
+        "ranking_forca": sim["ranking_forca"],
         "tatica": sim["tatica"],
         "formacao": sim["formacao"],
         "xi_preferido": json.loads(xi) if xi else None,

@@ -93,6 +93,7 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
                 estado="em_andamento",
                 rodada_atual=1,
                 estado_json=json.dumps(snapshot_estado(campeonato)),
+                **simulacao_service.meta_inicial(campeonato, clube_usuario),
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
             jogador_repo.inserir(conn, sim_id, mapa, cru["jogadores"])

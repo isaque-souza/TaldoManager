@@ -10,20 +10,20 @@ def _agora():
 def criar(conn, seed, campeao, rodadas, criada_em,
           clube_usuario=None, tatica=None, formacao=None, xi_preferido=None,
           estado="concluida", rodada_atual=None, estado_json=None,
-          carreira_id=None, temporada=1):
+          carreira_id=None, temporada=1, meta_posicao=None, ranking_forca=None):
     cur = conn.execute(
         """
         INSERT INTO simulacao
             (seed, criada_em, campeao, rodadas,
              clube_usuario, tatica, formacao, xi_preferido,
              estado, rodada_atual, estado_json, carreira_id, temporada,
-             atualizada_em)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             atualizada_em, meta_posicao, ranking_forca)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (seed, criada_em, campeao, rodadas,
          clube_usuario, tatica, formacao, xi_preferido,
          estado, rodada_atual, estado_json, carreira_id, temporada,
-         criada_em),
+         criada_em, meta_posicao, ranking_forca),
     )
     return cur.lastrowid
 

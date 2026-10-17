@@ -5,6 +5,7 @@ import { carregarLista } from "./saves.js";
 import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { ligarEvolucao, renderEvolucao } from "./grafico.js";
 import { abrirCarreira, renderVirada } from "./carreira.js";
+import { renderMeta } from "./diretoria.js";
 
 // ---------- visão temporada ----------
 
@@ -169,6 +170,7 @@ export function mostrarTemporada() {
       `${c.gols_marcados} gols pró e ${c.gols_sofridos} sofridos.`;
   }
 
+  renderMeta("meta-diretoria", estado.temporada);
   renderCarreira(emAndamento, meu);
   renderAbas();
   renderPainel();
