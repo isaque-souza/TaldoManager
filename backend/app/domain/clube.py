@@ -189,7 +189,8 @@ class Clube:
 
         # faltou gente numa posição (venda, lesão, suspensão)? Improvisa os
         # melhores jogadores de linha que sobraram, em vez de jogar com 10.
-        # Com o elenco completo isto não faz nada.
+        # Com o elenco completo isto não faz nada. (Roadmap: quando houver
+        # overall por posição, improvisar quem SABE jogar ali.)
         if len(self.titulares) < 11:
             sobra = [
                 j for j in disponiveis

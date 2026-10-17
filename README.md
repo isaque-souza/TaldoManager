@@ -291,6 +291,20 @@ jogador da temporada.
 
 ---
 
+# 🧬 Atributos e posições (ideia futura — a desenvolver)
+
+Hoje cada jogador tem uma posição e um overall só. A ideia é ele ter
+qualidades próprias e um mapa de rendimento por posição:
+
+* [ ] Atributos do jogador (ex.: passe, finalização, marcação, velocidade...)
+* [ ] Overall por posição (ex.: um volante que rende 80 de volante e 74 de zagueiro)
+* [ ] Posições mais específicas (zagueiro, lateral, volante, meia, ponta, centroavante)
+* [ ] Improvisação inteligente: sem zagueiros disponíveis, o volante que sabe
+      jogar de zagueiro recua e outro volante entra no lugar dele (hoje a
+      escalação só pega o melhor jogador de linha que sobrou)
+
+---
+
 # 📣 Torcida (ideia futura — a desenvolver)
 
 Hoje `torcedores` é fixo e só alimenta a bilheteria. A ideia é a torcida
