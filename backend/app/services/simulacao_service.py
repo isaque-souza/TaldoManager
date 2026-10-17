@@ -48,7 +48,8 @@ def _configurar_clube(clube, tatica, formacao, xi_preferido):
             raise ValueError(f"Formação inválida: {formacao!r}")
         clube.formacao = formacao
 
-    if xi_preferido:
+    # None = não mexe; [] = todos no automático (limpa a preferência)
+    if xi_preferido is not None:
         nomes = list(dict.fromkeys(xi_preferido))   # sem duplicatas, na ordem
         if len(nomes) > 11:
             raise ValueError("O XI titular tem no máximo 11 jogadores")

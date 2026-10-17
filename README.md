@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 233 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 331 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -177,8 +177,9 @@ Já dá pra:
   página da partida.
 
 **v0.6 concluída** (eventos avançados, suspensões, lesões, rankings de
-disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado) e v0.8
-(Modo Carreira) concluídas** — ver as seções abaixo.
+disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado), v0.8
+(Modo Carreira) e v0.9 (Persistência/autosave) concluídas** — ver as seções
+abaixo.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -355,12 +356,19 @@ crescer (ou encolher) com as decisões do técnico:
 
 ---
 
-# 💾 Persistência (v0.9) — em andamento
+# ✅ Persistência (v0.9) — Concluída
 
 * [x] SQLite (puro, sem ORM; schema em `backend/app/db/schema.sql`)
 * [x] Sistema de Save (salvar temporada simulada)
 * [x] Carregar Save (listar / abrir / apagar simulações)
-* [ ] Autosave
+* [x] Autosave
+  * cada rodada, transferência e renovação já é gravada na hora
+  * a escalação (formação, tática, XI) se salva sozinha, sem jogar a rodada
+    (`PATCH /simulacoes/{id}/decisao`, 800 ms depois da última mudança;
+    indicador "✔ salvo")
+  * ao recarregar a página, o jogo reabre o último save e a aba em que você
+    estava (o navegador guarda só isso; o progresso fica no servidor)
+  * a lista de saves vem pela última jogada (`atualizada_em`)
 
 ---
 
@@ -396,7 +404,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 233 testes (domain, db, repositories, services, api)
+│   └── tests/              # 331 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

@@ -255,7 +255,8 @@ class NovaSimulacao(BaseModel):
 
 class RodadaDecisao(BaseModel):
     """Corpo do POST /simulacoes/{id}/rodadas — o que o técnico muda antes da
-    próxima rodada. Tudo opcional: o que não vier fica como está."""
+    próxima rodada. Tudo opcional: o que não vier fica como está. `xi: []`
+    põe todos os slots no automático (limpa o XI preferido)."""
     tatica: Tatica | None = None
     formacao: str | None = None
     xi: list[str] | None = None
