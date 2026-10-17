@@ -52,6 +52,8 @@ _COLUNAS_NOVAS = {
         ("carreira_id", "INTEGER REFERENCES carreira(id) ON DELETE SET NULL"),
         ("temporada", "INTEGER NOT NULL DEFAULT 1"),
         ("atualizada_em", "TEXT"),
+        ("meta_posicao", "INTEGER"),
+        ("ranking_forca", "INTEGER"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")

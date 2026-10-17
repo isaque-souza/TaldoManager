@@ -55,7 +55,8 @@ def test_listar_clubes():
     assert resp.status_code == 200
     clubes = resp.json()
     assert len(clubes) == 20
-    assert {"nome", "pais", "forca", "ranking_forca", "dinheiro", "torcedores"} == set(clubes[0])
+    assert {"nome", "pais", "forca", "ranking_forca", "meta_posicao", "meta",
+            "dinheiro", "torcedores"} == set(clubes[0])
 
 
 def test_listar_clubes_ranking_segue_a_forca():
@@ -429,3 +430,15 @@ def test_proxima_temporada_ja_continuada_da_409():
 def test_proxima_temporada_e_carreira_inexistentes_dao_404():
     assert client.post("/simulacoes/999/proxima-temporada").status_code == 404
     assert client.get("/carreiras/999").status_code == 404
+
+
+def test_simulacao_salva_expoe_a_meta_da_diretoria():
+    clube = client.get("/clubes").json()[0]
+    sid = client.post(
+        "/simulacoes", json={"clube": clube["nome"], "modo": "rodada_a_rodada"}
+    ).json()["id"]
+
+    meta = client.get(f"/simulacoes/{sid}").json()["meta"]
+    assert meta["posicao"] == clube["meta_posicao"]
+    assert meta["descricao"] == clube["meta"]
+    assert meta["situacao"] in {"batida", "perto", "longe"}
