@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Query, Response
 
 from app.api.schemas import (
     ClubeComElenco,
+    ContratoJogador,
     ClubeDetalhe,
     ClubeSeed,
     HealthResponse,
@@ -12,9 +13,11 @@ from app.api.schemas import (
     NovaSimulacao,
     PartidaDetalhe,
     NovaProposta,
+    NovaRenovacao,
     NovaVenda,
     OfertasJogador,
     RespostaProposta,
+    RespostaRenovacao,
     ProximaRodada,
     RodadaDecisao,
     RodadaJogada,
@@ -24,8 +27,14 @@ from app.api.schemas import (
     Tatica,
     TransferenciaResultado,
 )
+from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
-from app.services import mercado_service, simulacao_service, temporada_service
+from app.services import (
+    contrato_service,
+    mercado_service,
+    simulacao_service,
+    temporada_service,
+)
 from app.services.temporada_service import TemporadaConcluida
 
 router = APIRouter()
@@ -243,6 +252,41 @@ def fazer_venda(simulacao_id: int, venda: NovaVenda):
     if feita is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
     return feita
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/jogadores/{jogador_id}/contrato",
+    response_model=ContratoJogador,
+    tags=["contratos"],
+)
+def obter_contrato(simulacao_id: int, jogador_id: int):
+    """Contrato atual de um jogador do seu elenco e as opções de renovação."""
+    try:
+        dados = contrato_service.ver_contrato(simulacao_id, jogador_id)
+    except (TemporadaConcluida, ContratoInvalido) as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/renovacoes",
+    response_model=RespostaRenovacao,
+    tags=["contratos"],
+)
+def fazer_renovacao(simulacao_id: int, proposta: NovaRenovacao):
+    """Proposta de renovação: o jogador aceita, contrapropõe ou recusa."""
+    try:
+        resposta = contrato_service.renovar(
+            simulacao_id, proposta.jogador_id, proposta.salario,
+            proposta.anos, proposta.multa,
+        )
+    except (TemporadaConcluida, ContratoInvalido) as e:
+        raise _erro_de_mercado(e) from e
+    if resposta is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return resposta
 
 
 @router.get(

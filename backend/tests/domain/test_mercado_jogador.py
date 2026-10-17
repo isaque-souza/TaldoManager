@@ -47,17 +47,29 @@ def test_potencial_nao_pesa_para_quem_ja_passou_da_idade_de_evoluir():
 def test_valor_e_salario_tem_piso_e_sao_arredondados():
     fraco = _jogador(idade=36, overall=40)
     assert fraco.valor_mercado() >= 10_000
-    assert fraco.salario() >= 1_000
+    assert fraco.salario_referencia() >= 1_000
     craque = _jogador(overall=92)
     assert craque.valor_mercado() % 10_000 == 0
-    assert craque.salario() % 1_000 == 0
+    assert craque.salario_referencia() % 1_000 == 0
 
 
 def test_salario_depende_do_overall_nao_da_idade():
-    assert _jogador(idade=19).salario() == _jogador(idade=33).salario()
-    assert _jogador(overall=88).salario() > _jogador(overall=78).salario()
+    assert _jogador(idade=19).salario_referencia() == _jogador(idade=33).salario_referencia()
+    assert _jogador(overall=88).salario_referencia() > _jogador(overall=78).salario_referencia()
 
 
 def test_salario_e_bem_menor_que_o_valor():
     j = _jogador(overall=85)
-    assert j.salario() < j.valor_mercado() / 5
+    assert j.salario_referencia() < j.valor_mercado() / 5
+
+
+def test_salario_de_contrato_comeca_no_de_referencia_e_fica_fixo():
+    j = _jogador(overall=80)
+    assert j.salario == j.salario_referencia()
+    j.overall = 88   # evoluiu: o contrato não muda sozinho
+    assert j.salario < j.salario_referencia()
+
+
+def test_salario_de_contrato_informado():
+    j = Jogador("Teste", 25, "Atacante", 80, salario=123_000)
+    assert j.salario == 123_000

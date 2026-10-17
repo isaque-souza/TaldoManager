@@ -111,7 +111,7 @@ def _serializar_jogador(jogador, clube_nome):
         "potencial": jogador.potencial,
         "contrato_anos": jogador.contrato_anos,
         "valor_mercado": jogador.valor_mercado(),
-        "salario": jogador.salario(),
+        "salario": jogador.salario,
         "multa_rescisoria": jogador.multa_rescisoria,
     }
 

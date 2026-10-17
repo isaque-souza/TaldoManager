@@ -9,7 +9,8 @@ class Jogador:
     AMARELOS_PARA_SUSPENSAO = 5
 
     def __init__(self, nome, idade, posicao, overall,
-                 potencial=None, contrato_anos=3, multa_rescisoria=None):
+                 potencial=None, contrato_anos=3, multa_rescisoria=None,
+                 salario=None):
         self.nome = nome
         self.idade = idade
         self.posicao = posicao
@@ -19,6 +20,9 @@ class Jogador:
         self.contrato_anos = contrato_anos   # temporadas restantes
         # valor fixo de contrato; None = sem multa (o clube só vende se quiser)
         self.multa_rescisoria = multa_rescisoria
+        # salário de CONTRATO, por temporada: fica fixo até a renovação, mesmo
+        # que o jogador evolua. Sem contrato informado, começa no de mercado.
+        self.salario = salario if salario is not None else self.salario_referencia()
         self.gols = 0
         self.assistencias = 0
         self.partidas = 0
@@ -174,8 +178,9 @@ class Jogador:
         return int(peso)
     
     # --- mercado -----------------------------------------------------------
-    # valor e salário são CALCULADOS, não guardados: derivam de overall, idade
-    # e potencial, então nunca ficam desatualizados quando esses mudam.
+    # valor de mercado e salário de referência são CALCULADOS: derivam de
+    # overall, idade e potencial, então nunca ficam desatualizados. Já o
+    # salário que o jogador RECEBE (`self.salario`) é fato de contrato.
 
     @staticmethod
     def _base_overall(overall):
@@ -203,12 +208,19 @@ class Jogador:
 
         return max(10_000, round(valor / 10_000) * 10_000)
 
-    def salario(self):
-        """Salário por temporada, múltiplo de mil. Depende só do overall:
-        o clube paga pelo que o jogador rende hoje, não pelo que vai render."""
+    def salario_referencia(self):
+        """Quanto o mercado paga por temporada a um jogador deste overall,
+        múltiplo de mil. É a base das negociações de contrato; depende só do
+        overall: paga-se pelo que o jogador rende hoje, não pelo que vai
+        render."""
 
         salario = 0.08 * self._base_overall(self.overall)
         return max(1_000, round(salario / 1_000) * 1_000)
+
+    def assinar_contrato(self, anos, salario, multa_rescisoria):
+        self.contrato_anos = anos
+        self.salario = salario
+        self.multa_rescisoria = multa_rescisoria
 
     def nota_media(self):
         if self.partidas == 0:

@@ -21,6 +21,9 @@ from dataclasses import dataclass
 # rodadas ANTES das quais a janela está aberta: pré-temporada e virada do turno
 JANELAS = (1, 20)
 
+# contrato que o reforço assina ao chegar (renovável depois)
+CONTRATO_PADRAO_ANOS = 3
+
 ELENCO_MIN = 16
 ELENCO_MAX = 25
 GOLEIROS_MIN = 2
@@ -80,6 +83,12 @@ def transferir(jogador, vendedor, comprador, preco):
             lista.remove(jogador)
     vendedor.xi_preferido.discard(jogador)
     comprador.contratar_jogador(jogador)
+    # chega com contrato novo: o do clube antigo não vale no novo
+    jogador.assinar_contrato(
+        anos=CONTRATO_PADRAO_ANOS,
+        salario=jogador.salario_referencia(),
+        multa_rescisoria=None,
+    )
 
     comprador.lancar("despesa_compras", preco)
     vendedor.lancar("receita_vendas", preco)

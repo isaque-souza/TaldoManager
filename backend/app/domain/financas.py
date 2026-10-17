@@ -29,7 +29,7 @@ def bilheteria(clube):
 def folha_salarial(clube):
     """Soma dos salários do elenco atual, por temporada. Calculada na hora:
     quando o elenco mudar (transferências), a folha acompanha."""
-    return sum(j.salario() for j in clube.jogadores)
+    return sum(j.salario for j in clube.jogadores)
 
 
 def salarios_rodada(clube, total_rodadas):

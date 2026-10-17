@@ -361,6 +361,7 @@ class FichaMercado(BaseModel):
     salario: int
     contrato_anos: int
     multa_rescisoria: int | None = None
+    salario_referencia: int = 0          # quanto o mercado paga a esse overall
     bloqueio: str | None = None          # por que não dá pra negociar (None = dá)
     # só nos jogadores de outros clubes
     rival: bool = False
@@ -436,3 +437,56 @@ class OfertasJogador(BaseModel):
 class NovaVenda(BaseModel):
     jogador_id: int
     clube: str                           # o clube cuja oferta foi aceita
+
+
+# --- renovação de contrato (v0.7) ---
+
+OpcaoMulta = Literal["sem", "2x", "3x", "5x"]
+
+
+class OpcaoMultaValor(BaseModel):
+    opcao: OpcaoMulta
+    valor: int | None                    # None = sem multa
+
+
+class ContraContrato(BaseModel):
+    salario: int
+    anos: int
+    multa: OpcaoMulta
+
+
+class ContratoJogador(BaseModel):
+    jogador_id: int
+    jogador: str
+    idade: int
+    overall: int
+    contrato_anos: int
+    salario: int
+    salario_referencia: int
+    multa_rescisoria: int | None = None
+    valor_mercado: int
+    duracao_max: int
+    opcoes_multa: list[OpcaoMultaValor]
+    tentativas_restantes: int
+    contraproposta: ContraContrato | None = None
+
+
+class NovaRenovacao(BaseModel):
+    jogador_id: int
+    salario: int
+    anos: int
+    multa: OpcaoMulta
+
+
+class ContratoNovo(BaseModel):
+    contrato_anos: int
+    salario: int
+    multa_rescisoria: int | None = None
+
+
+class RespostaRenovacao(BaseModel):
+    resposta: Literal["aceita", "contraproposta", "recusada"]
+    motivo: str
+    salario_pedido: int | None = None    # só na contraproposta
+    tentativas_restantes: int
+    contrato: ContratoNovo | None = None

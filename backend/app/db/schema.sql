@@ -110,6 +110,19 @@ CREATE TABLE IF NOT EXISTS proposta (
     valor_pedido  INTEGER           -- só nas contrapropostas
 );
 
+-- Propostas de renovação de contrato do técnico (v0.7).
+CREATE TABLE IF NOT EXISTS renovacao (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    rodada        INTEGER NOT NULL,
+    jogador_id    INTEGER NOT NULL REFERENCES jogador(id) ON DELETE CASCADE,
+    salario       INTEGER NOT NULL,
+    anos          INTEGER NOT NULL,
+    multa         TEXT NOT NULL,     -- opção: sem | 2x | 3x | 5x
+    resposta      TEXT NOT NULL,     -- aceita | contraproposta | recusada
+    salario_pedido INTEGER           -- só nas contrapropostas
+);
+
 -- Timeline da partida: um registro por evento (gol, cartão, substituição, ...).
 CREATE TABLE IF NOT EXISTS lance (
     id          INTEGER PRIMARY KEY,

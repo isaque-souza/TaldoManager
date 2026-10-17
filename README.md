@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 211 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 231 testes.
 * **Frontend** (`frontend/`) — `index.html` único, JS puro, consome a API.
 
 Já dá pra:
@@ -275,7 +275,7 @@ jogador da temporada.
 # 💰 Mercado (v0.7) — em andamento
 
 * [x] Valor de mercado (calculado de overall, idade e potencial)
-* [x] Salários (por temporada, calculado do overall)
+* [x] Salários (de contrato, por temporada; o "salário de mercado" é calculado do overall)
 * [x] Sistema financeiro (cota de TV, bilheteria, salários e premiação; card na página do clube)
 * [x] Compra de jogadores (pelo valor de mercado, no modo rodada a rodada)
 * [x] Venda de jogadores (os clubes fazem ofertas; você escolhe qual aceitar)
@@ -286,7 +286,9 @@ jogador da temporada.
 * [ ] Disputa pela contratação, como no futebol real: qual clube paga mais,
       qual é mais famoso, onde o jogador seria titular (ou banco, se já há
       jogadores melhores na posição), se é o "time do sonho" dele...
-* [ ] Renovação de contrato
+* [x] Renovação de contrato (salário, duração e multa; o jogador aceita, contrapropõe ou recusa)
+* [x] Contrato novo ao ser transferido (3 temporadas, salário de mercado, sem multa)
+* [ ] Vontade do jogador (querer sair, recusar renovar por estar no banco, "time do sonho")
 * [ ] Evolução por idade
 * [x] Potencial dos jogadores (na seed; o jogador ainda não evolui)
 * [x] Duração de contrato (temporadas restantes, na seed)
@@ -373,7 +375,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 211 testes (domain, db, repositories, services, api)
+│   └── tests/              # 231 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   └── index.html          # SPA em JS puro, consome a API
