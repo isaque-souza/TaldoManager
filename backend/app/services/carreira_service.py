@@ -11,14 +11,17 @@ from datetime import datetime, timezone
 
 from app.db.conexao import conectar
 from app.domain.carreira import (
+    aposentar,
     envelhecer,
     preparar_nova_temporada,
+    resolver_contratos,
     seed_da_temporada,
 )
 from app.domain.temporada import snapshot_estado
 from app.repositories import carreira_repository as carreira_repo
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
+from app.repositories import movimento_repository as movimento_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import simulacao_service
 from scripts.data_loader import carregar_campeonato
@@ -85,6 +88,9 @@ def proxima_temporada(simulacao_id):
             campeonato = carregar_campeonato()
             preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais)
             envelhecer(campeonato, jogadores_finais, random)
+            # aposentadoria antes dos contratos: quem vai parar não renova
+            movimentos = aposentar(campeonato, random)
+            movimentos += resolver_contratos(campeonato, clube_usuario)
 
             # o técnico mantém tática, formação e XI — menos quem saiu do clube
             alvo = next(c for c in campeonato.clubes if c.nome == clube_usuario)
@@ -118,6 +124,7 @@ def proxima_temporada(simulacao_id):
             )
             mapa = clube_repo.inserir(conn, nova_id, cru["clubes"])
             jogador_repo.inserir(conn, nova_id, mapa, cru["jogadores"])
+            movimento_repo.inserir(conn, nova_id, movimentos)
 
         return {
             "simulacao_id": nova_id,

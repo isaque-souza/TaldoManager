@@ -22,6 +22,7 @@ from app.repositories import atuacao_repository as atuacao_repo
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import lance_repository as lance_repo
+from app.repositories import movimento_repository as movimento_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from scripts.data_loader import carregar_campeonato
@@ -323,6 +324,7 @@ def _montar_visao(cru):
         "carreira_id": cru.get("carreira_id"),
         "temporada": cru.get("temporada", 1),
         "proxima_temporada_id": cru.get("proxima_temporada_id"),
+        "movimentos_virada": cru.get("movimentos_virada", []),
         "clube_usuario": cru.get("clube_usuario"),
         "tatica": cru.get("tatica"),
         "formacao": cru.get("formacao"),
@@ -515,12 +517,16 @@ def _cru_do_banco(conn, simulacao_id):
 
     xi = sim["xi_preferido"]
     sucessora = simulacao_repo.sucessora(conn, simulacao_id)
+    movimentos = [
+        dict(r) for r in movimento_repo.listar_por_simulacao(conn, simulacao_id)
+    ]
 
     return {
         "seed": sim["seed"],
         "carreira_id": sim["carreira_id"],
         "temporada": sim["temporada"],
         "proxima_temporada_id": sucessora["id"] if sucessora else None,
+        "movimentos_virada": movimentos,
         "campeao": sim["campeao"],
         "rodadas": sim["rodadas"],
         "estado": sim["estado"],

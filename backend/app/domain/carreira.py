@@ -11,6 +11,7 @@ não do `estado_json` (que é apagado quando a temporada termina): o banco é a
 fonte da verdade.
 """
 
+from app.domain import contrato, mercado
 from app.domain.evolucao import evoluir
 
 
@@ -85,3 +86,153 @@ def envelhecer(campeonato, jogadores_finais, rng):
             )
 
     return campeonato
+
+
+# ---------------------------------------------------------------------------
+# aposentadoria e contratos vencidos (passo 3)
+# ---------------------------------------------------------------------------
+
+# chance de se aposentar pela idade NOVA (depois de envelhecer)
+CHANCE_APOSENTADORIA = {34: 0.15, 35: 0.25, 36: 0.40, 37: 0.60}
+CHANCE_APOSENTADORIA_MAX = 0.85          # 38+
+BONUS_CONTRATO_VENCENDO = 0.20           # sem contrato, pendura as chuteiras
+ANOS_RENOVACAO_CPU = 3
+ANOS_RENOVACAO_CPU_VETERANO = 2          # 32+ (como na renovação do técnico)
+ANOS_EMERGENCIA = 1
+
+
+def chance_aposentadoria(idade, contrato_vencendo):
+    if idade < min(CHANCE_APOSENTADORIA):
+        return 0.0
+    chance = CHANCE_APOSENTADORIA.get(idade, CHANCE_APOSENTADORIA_MAX)
+    if contrato_vencendo:
+        chance += BONUS_CONTRATO_VENCENDO
+    return min(1.0, chance)
+
+
+def _movimento(tipo, jogador, clube, detalhe=""):
+    return {
+        "tipo": tipo,
+        "jogador": jogador.nome,
+        "clube": clube.nome,
+        "posicao": jogador.posicao,
+        "idade": jogador.idade,
+        "overall": jogador.overall,
+        "detalhe": detalhe,
+    }
+
+
+def _remover(clube, jogador):
+    clube.jogadores.remove(jogador)
+    for lista in (clube.titulares, clube.reservas):
+        if jogador in lista:
+            lista.remove(jogador)
+    clube.xi_preferido.discard(jogador)
+
+
+def aposentar(campeonato, rng):
+    """Veteranos se aposentam por sorte (ver `chance_aposentadoria`). Quem
+    deixaria o clube abaixo do elenco mínimo adia por um ano. Chamar depois
+    de `envelhecer` e ANTES de `resolver_contratos` (o contrato ainda não foi
+    descontado). Devolve a lista de movimentos."""
+
+    movimentos = []
+    for clube in campeonato.clubes:
+        for jogador in list(clube.jogadores):
+            chance = chance_aposentadoria(jogador.idade, jogador.contrato_anos <= 1)
+            if not chance or rng.random() >= chance:
+                continue
+            if mercado.motivo_saida_bloqueada(clube, jogador):
+                movimentos.append(_movimento(
+                    "adiou", jogador, clube,
+                    "adiou a aposentadoria: o elenco ficaria curto",
+                ))
+                continue
+            _remover(clube, jogador)
+            movimentos.append(_movimento("aposentou", jogador, clube))
+    return movimentos
+
+
+def _renovar(jogador, anos):
+    """Contrato novo pelo salário de mercado; quem tinha multa ganha uma
+    nova (3× o valor atual), quem não tinha continua sem."""
+    multa = (
+        contrato.valor_multa(jogador, "3x")
+        if jogador.multa_rescisoria is not None else None
+    )
+    jogador.assinar_contrato(anos, jogador.salario_referencia(), multa)
+
+
+def _destino_livre(campeonato, jogador, origem, clube_usuario):
+    """Clube da CPU com vaga onde o jogador seria titular — o mais rico, que
+    pode pagar melhor. None se nenhum serve (ele deixa a liga)."""
+    candidatos = [
+        c for c in campeonato.clubes
+        if c is not origem
+        and c.nome != clube_usuario
+        and len(c.jogadores) < mercado.ELENCO_MAX
+        and mercado.seria_titular(c, jogador)
+    ]
+    return max(candidatos, key=lambda c: c.dinheiro, default=None)
+
+
+def resolver_contratos(campeonato, clube_usuario):
+    """Desconta uma temporada de cada contrato. Quem chega a 0:
+
+    - clube da CPU: renova sozinho (salário de mercado, 3 temporadas ou 2
+      para veteranos);
+    - clube do técnico: sai de graça (não foi renovado) para o clube da CPU
+      com vaga onde seria titular, ou deixa a liga. Se a saída deixaria o
+      elenco abaixo do mínimo, assina 1 temporada de emergência.
+
+    Devolve a lista de movimentos."""
+
+    movimentos = []
+    vencidos = []
+    for clube in campeonato.clubes:
+        for jogador in clube.jogadores:
+            jogador.contrato_anos -= 1
+            if jogador.contrato_anos <= 0:
+                vencidos.append((clube, jogador))
+
+    # as saídas vêm depois de descontar todo mundo: quem chega de graça
+    # assina contrato novo e não pode ser descontado de novo
+    for clube, jogador in vencidos:
+        if clube.nome != clube_usuario:
+            anos = (ANOS_RENOVACAO_CPU_VETERANO
+                    if jogador.idade >= contrato.IDADE_VETERANO
+                    else ANOS_RENOVACAO_CPU)
+            _renovar(jogador, anos)
+            movimentos.append(_movimento(
+                "renovou", jogador, clube, f"{anos} temporadas"
+            ))
+            continue
+
+        if mercado.motivo_saida_bloqueada(clube, jogador):
+            _renovar(jogador, ANOS_EMERGENCIA)
+            movimentos.append(_movimento(
+                "renovou", jogador, clube,
+                "contrato de emergência (1 temporada): o elenco ficaria curto",
+            ))
+            continue
+
+        _remover(clube, jogador)
+        destino = _destino_livre(campeonato, jogador, clube, clube_usuario)
+        if destino is None:
+            movimentos.append(_movimento(
+                "saiu_livre", jogador, clube, "deixou a liga"
+            ))
+            continue
+
+        destino.contratar_jogador(jogador)
+        jogador.assinar_contrato(
+            mercado.CONTRATO_PADRAO_ANOS, jogador.salario_referencia(), None
+        )
+        movimentos.append(_movimento(
+            "saiu_livre", jogador, clube, f"assinou com {destino.nome}"
+        ))
+        movimentos.append(_movimento(
+            "chegou_livre", jogador, destino, f"veio de graça do {clube.nome}"
+        ))
+
+    return movimentos
