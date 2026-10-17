@@ -166,7 +166,7 @@ def motivo(total):
     if total["mvps"]:
         partes.append(f"MVP {total['mvps']}×")
     if total["gols"]:
-        partes.append(f"{total['gols']} gols")
+        partes.append(f"{total['gols']} gol{'s' if total['gols'] > 1 else ''}")
     partes.append(f"pico {total['pico_overall']}")
     return " · ".join(partes)
 

@@ -1,9 +1,10 @@
 // Visão da temporada: abas de classificação, rankings e recordes.
 
-import { $, esconderTudo, estado, limparAviso, ocupado, pedir, voltarUm } from "./nucleo.js";
+import { $, esconderTudo, estado, limparAviso, navegarPara, ocupado, pedir, voltarUm } from "./nucleo.js";
 import { carregarLista } from "./saves.js";
 import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { ligarEvolucao, renderEvolucao } from "./grafico.js";
+import { abrirCarreira, renderVirada } from "./carreira.js";
 
 // ---------- visão temporada ----------
 
@@ -54,8 +55,19 @@ export const ABAS = [
   ["recordes", "Recordes"],
 ];
 
+// abas da temporada aberta: a "Virada" só existe da temporada 2 em diante
+function abasDaTemporada() {
+  return estado.temporada.movimentos_virada?.length
+    ? [...ABAS, ["virada", "Virada"]]
+    : ABAS;
+}
+
 export function renderPainel() {
   const painel = $("painel");
+  if (estado.abaAtual === "virada") {
+    painel.innerHTML = renderVirada();
+    return;
+  }
   if (estado.abaAtual === "historico") {
     painel.innerHTML = `<figure><table><tbody>${estado.temporada.historico
       .map((l) => `<tr><td>${l}</td></tr>`)
@@ -109,7 +121,7 @@ export function tabelaFinancasLiga(financas, marcarEu) {
 }
 
 export function renderAbas() {
-  $("abas").innerHTML = ABAS.map(
+  $("abas").innerHTML = abasDaTemporada().map(
     ([k, rot]) =>
       `<button data-aba="${k}" class="${k === estado.abaAtual ? "ativa" : ""}">${rot}</button>`
   ).join("");
@@ -166,20 +178,32 @@ export function mostrarTemporada() {
 
 // Temporada concluída com clube dirigido: continua na próxima (ou leva até
 // ela, se já foi continuada — só a última temporada da carreira continua).
+// O botão "📜 Carreira" aparece em toda temporada de uma carreira.
 function renderCarreira(emAndamento, meu) {
   const acao = $("carreira-acao");
   const t = estado.temporada;
-  acao.hidden = emAndamento || !meu;
+  const podeContinuar = !emAndamento && meu;
+  acao.hidden = !podeContinuar && !t.carreira_id;
   if (acao.hidden) return;
 
   const proxima = (t.temporada ?? 1) + 1;
-  acao.innerHTML = t.proxima_temporada_id
-    ? `<button id="carreira-ir" class="secondary">Ir para a temporada ${proxima} →</button>`
-    : `<button id="carreira-continuar">▶ Próxima temporada (temporada ${proxima})</button>
-       <small>Elencos, contratos e caixa continuam; pontos e estatísticas começam do zero.</small>`;
+  const continuar = !podeContinuar ? ""
+    : t.proxima_temporada_id
+      ? `<button id="carreira-ir" class="secondary">Ir para a temporada ${proxima} →</button>`
+      : `<button id="carreira-continuar">▶ Próxima temporada (temporada ${proxima})</button>`;
+  const verCarreira = t.carreira_id
+    ? `<button id="carreira-ver" class="secondary outline">📜 Carreira</button>`
+    : "";
+  const dica = podeContinuar && !t.proxima_temporada_id
+    ? `<small>Elencos, contratos e caixa continuam; pontos e estatísticas começam do zero.</small>`
+    : "";
+  acao.innerHTML = `<span class="botoes-carreira">${continuar}${verCarreira}</span>${dica}`;
 
   $("carreira-ir")?.addEventListener("click", () => carregarLista(t.proxima_temporada_id));
   $("carreira-continuar")?.addEventListener("click", continuarCarreira);
+  $("carreira-ver")?.addEventListener("click", () =>
+    navegarPara(() => abrirCarreira(t.carreira_id))
+  );
 }
 
 async function continuarCarreira() {

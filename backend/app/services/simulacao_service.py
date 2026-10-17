@@ -319,6 +319,7 @@ def _montar_visao(cru):
         "temporada": cru.get("temporada", 1),
         "proxima_temporada_id": cru.get("proxima_temporada_id"),
         "movimentos_virada": cru.get("movimentos_virada", []),
+        "evolucao_virada": cru.get("evolucao_virada", []),
         "clube_usuario": cru.get("clube_usuario"),
         "tatica": cru.get("tatica"),
         "formacao": cru.get("formacao"),
@@ -478,6 +479,42 @@ def apagar_simulacao(simulacao_id):
         conn.close()
 
 
+def _evolucao_virada(conn, sim, jogadores):
+    """Carreira (v0.8): o elenco do técnico com overall/potencial antes
+    (fim da temporada anterior) e agora (depois da virada). Quem não jogou a
+    anterior (jovem da base) vem com `overall_antes` None. Ordenado pela
+    variação, quem mais subiu primeiro; os novos no fim."""
+
+    if not sim["clube_usuario"] or sim["carreira_id"] is None:
+        return []
+    anterior = simulacao_repo.antecessora(conn, sim["id"])
+    if anterior is None:
+        return []
+    antes = {
+        r["nome"]: r for r in jogador_repo.listar_por_simulacao(conn, anterior["id"])
+    }
+    linhas = []
+    for j in jogadores:
+        if j["clube"] != sim["clube_usuario"]:
+            continue
+        a = antes.get(j["nome"])
+        linhas.append({
+            "nome": j["nome"],
+            "posicao": j["posicao"],
+            "idade": j["idade"],
+            "overall_antes": a["overall"] if a else None,
+            "overall": j["overall"],
+            "potencial_antes": a["potencial"] if a else None,
+            "potencial": j["potencial"],
+            "clube_antes": a["clube"] if a else None,
+        })
+    return sorted(
+        linhas,
+        key=lambda l: (l["overall_antes"] is None,
+                       -(l["overall"] - (l["overall_antes"] or 0))),
+    )
+
+
 def _cru_do_banco(conn, simulacao_id):
     sim = simulacao_repo.buscar(conn, simulacao_id)
     if sim is None:
@@ -521,6 +558,7 @@ def _cru_do_banco(conn, simulacao_id):
         "temporada": sim["temporada"],
         "proxima_temporada_id": sucessora["id"] if sucessora else None,
         "movimentos_virada": movimentos,
+        "evolucao_virada": _evolucao_virada(conn, sim, jogadores),
         "campeao": sim["campeao"],
         "rodadas": sim["rodadas"],
         "estado": sim["estado"],

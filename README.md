@@ -177,7 +177,8 @@ Já dá pra:
   página da partida.
 
 **v0.6 concluída** (eventos avançados, suspensões, lesões, rankings de
-disciplina/pênaltis, estatísticas da partida).
+disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado) e v0.8
+(Modo Carreira) concluídas** — ver as seções abaixo.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -322,7 +323,7 @@ crescer (ou encolher) com as decisões do técnico:
 
 ---
 
-# 🏆 Modo Carreira (v0.8) — em andamento
+# ✅ Modo Carreira (v0.8) — Concluída
 
 * [x] Temporadas (uma carreira agrupa as temporadas; "▶ Próxima temporada"
       herda elencos, contratos e caixa e zera pontos e estatísticas;
@@ -345,6 +346,12 @@ crescer (ou encolher) com as decisões do técnico:
 * [x] Hall da Fama (aposentados com 5+ pontos de lenda: título 2 — só
       com 10+ jogos —, artilharia/MVP 3, 1 a cada 25 gols, pico 90+ vale 2;
       tudo calculado das temporadas, nada guardado)
+* [x] Tela da carreira (botão "📜 Carreira": temporadas com campeão, vice,
+      artilheiro, MVP e a sua posição — clique abre a temporada —, títulos,
+      líderes históricos em abas e os cards do Hall da Fama)
+* [x] Aba "Virada" (temporada 2 em diante: o que mudou no seu clube, o seu
+      elenco antes → depois com quem subiu e quem caiu, e aposentadorias,
+      saídas e joias da base na liga)
 
 ---
 

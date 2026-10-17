@@ -87,12 +87,25 @@ class FinancaClube(BaseModel):
 
 class MovimentoVirada(BaseModel):
     tipo: str        # aposentou | adiou | saiu_livre | chegou_livre | renovou
+                     # | subiu_da_base
     jogador: str
     clube: str
     posicao: str
     idade: int
     overall: int
     detalhe: str = ""
+
+
+class EvolucaoVirada(BaseModel):
+    """Um jogador do técnico antes e depois da virada (None = veio da base)."""
+    nome: str
+    posicao: str
+    idade: int
+    overall_antes: int | None
+    overall: int
+    potencial_antes: int | None
+    potencial: int
+    clube_antes: str | None
 
 
 class SimulacaoResponse(BaseModel):
@@ -107,6 +120,7 @@ class SimulacaoResponse(BaseModel):
     temporada: int = 1
     proxima_temporada_id: int | None = None   # já continuada → id da seguinte
     movimentos_virada: list[MovimentoVirada] = []   # o que a virada mudou
+    evolucao_virada: list[EvolucaoVirada] = []      # seu elenco: subiu/caiu
     clube_usuario: str | None = None    # clube dirigido pelo usuário
     tatica: Tatica | None = None
     formacao: str | None = None
