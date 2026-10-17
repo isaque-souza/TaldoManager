@@ -16,6 +16,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
+from app.domain import diretoria
 from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
@@ -449,9 +450,21 @@ def listar_simulacoes():
 
 
 def listar_clubes():
-    """Os clubes do seed (para o usuário escolher qual dirigir)."""
+    """Os clubes do seed (para o usuário escolher qual dirigir), com a
+    força do elenco e a posição no ranking de força da liga."""
     campeonato = carregar_campeonato()
-    return [{"nome": c.nome, "pais": c.pais} for c in campeonato.clubes]
+    ranking = diretoria.ranking_de_forca(campeonato.clubes)
+    return [
+        {
+            "nome": c.nome,
+            "pais": c.pais,
+            "forca": diretoria.forca_do_elenco(c),
+            "ranking_forca": ranking[c.nome],
+            "dinheiro": c.dinheiro,
+            "torcedores": c.torcedores,
+        }
+        for c in campeonato.clubes
+    ]
 
 
 def elenco_do_clube(nome):

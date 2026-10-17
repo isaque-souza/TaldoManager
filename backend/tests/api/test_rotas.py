@@ -55,7 +55,14 @@ def test_listar_clubes():
     assert resp.status_code == 200
     clubes = resp.json()
     assert len(clubes) == 20
-    assert {"nome", "pais"} == set(clubes[0])
+    assert {"nome", "pais", "forca", "ranking_forca", "dinheiro", "torcedores"} == set(clubes[0])
+
+
+def test_listar_clubes_ranking_segue_a_forca():
+    clubes = sorted(client.get("/clubes").json(), key=lambda c: c["ranking_forca"])
+    assert [c["ranking_forca"] for c in clubes] == list(range(1, 21))
+    forcas = [c["forca"] for c in clubes]
+    assert forcas == sorted(forcas, reverse=True)
 
 
 def test_criar_simulacao_com_clube_e_tatica():

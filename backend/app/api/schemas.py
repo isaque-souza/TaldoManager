@@ -321,6 +321,10 @@ class RodadaJogada(SimulacaoResponse):
 class ClubeSeed(BaseModel):
     nome: str
     pais: str
+    forca: float            # média de overall dos 11 melhores
+    ranking_forca: int      # 1 = elenco mais forte da liga
+    dinheiro: int
+    torcedores: int
 
 
 class ElencoJogador(BaseModel):
