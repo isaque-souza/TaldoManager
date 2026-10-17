@@ -40,6 +40,7 @@ def _jogador(nome, clube):
         "potencial": 84, "contrato_anos": 3,
         "valor_mercado": 3_000_000, "salario": 250_000,
         "multa_rescisoria": 9_000_000,
+        "numero": 10,
     }
 
 

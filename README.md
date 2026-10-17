@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 392 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 409 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -418,7 +418,13 @@ Visual de jogo de verdade, no clima "estádio noturno".
       rodada, partida), Barlow/Barlow Condensed, ícones Lucide no lugar dos
       emojis da moldura, cards de clube com camisa + escudo + ficha, barra
       "Começar" fixa; celular e desktop. Sistema registrado em `DESIGN.md`
-* [ ] Pré-jogo: as duas escalações no campo, com número e ícones por jogador
+* [x] Pré-jogo — "Jogar a rodada" abre as duas escalações no campo (gramado
+      listrado, deitado no computador e em pé no celular), exatamente como o
+      motor vai escalar (`GET /simulacoes/{id}/pre-jogo`, só leitura); cada
+      jogador com camisa numerada, overall e sinais (craque 88+, cansado,
+      pendurado); banco dos dois times; "Ir para o jogo" ou "Mexer na escalação"
+* [x] Número de camisa fixo por jogador (único no clube; goleiro titular é o
+      1, centroavante o 9; quem chega mantém o número se estiver livre)
 * [ ] Jogo ao vivo minuto a minuto (replay dos lances com relógio e placar)
 * [ ] Polimento (transições, animação de gol)
 
@@ -440,7 +446,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 392 testes (domain, db, repositories, services, api)
+│   └── tests/              # 409 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

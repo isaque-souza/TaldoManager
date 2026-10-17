@@ -342,6 +342,37 @@ class ResultadoRodada(BaseModel):
     gols_visitante: int
 
 
+class JogadorPreJogo(BaseModel):
+    nome: str
+    numero: int | None
+    posicao: str
+    overall: int
+    energia: int
+    condicao: str                 # "Normal" | "Cansado" | "Exausto"
+    pendurado: bool               # mais um amarelo e está suspenso
+    craque: bool                  # overall 88+
+    linha: int | None = None      # titular: 0 goleiro, 1 defesa, 2 meio, 3 ataque
+
+
+class EscalacaoPreJogo(BaseModel):
+    clube: str
+    formacao: str
+    tatica: Tatica
+    titulares: list[JogadorPreJogo]
+    banco: list[JogadorPreJogo]
+
+
+class PreJogo(BaseModel):
+    """GET /simulacoes/{id}/pre-jogo (v1.1)."""
+    rodada: int
+    total_rodadas: int
+    clube_usuario: str
+    adversario: str | None        # None = folga nesta rodada
+    mando: Literal["casa", "fora"] | None
+    mandante: EscalacaoPreJogo | None
+    visitante: EscalacaoPreJogo | None
+
+
 class RodadaJogada(SimulacaoResponse):
     rodada_jogada: int
     concluida: bool

@@ -443,3 +443,31 @@ def test_evolucao_virada_compara_o_elenco_com_a_temporada_anterior():
 def test_primeira_temporada_nao_tem_evolucao_virada():
     sid, _ = _virada()
     assert simulacao_service.carregar_temporada(sid)["evolucao_virada"] == []
+
+
+def test_numero_de_camisa_atravessa_a_virada_e_a_base_ganha_o_seu():
+    sid = _temporada_concluida(seed=3)
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+
+    conn = conectar()
+    try:
+        def camisas(s):
+            return {
+                (r["clube"], r["nome"]): r["numero"]
+                for r in conn.execute(
+                    "SELECT c.nome AS clube, j.nome, j.numero FROM jogador j"
+                    " JOIN clube c ON c.id = j.clube_id WHERE j.simulacao_id = ?",
+                    (s,),
+                )
+            }
+        antes, depois = camisas(sid), camisas(nova)
+    finally:
+        conn.close()
+
+    assert None not in depois.values()
+    ficaram = set(antes) & set(depois)
+    assert ficaram and all(antes[k] == depois[k] for k in ficaram)
+    por_clube = {}
+    for (clube, _), numero in depois.items():
+        por_clube.setdefault(clube, []).append(numero)
+    assert all(len(set(n)) == len(n) for n in por_clube.values())

@@ -15,6 +15,7 @@ class Jogador:
         self.idade = idade
         self.posicao = posicao
         self.overall = overall
+        self.numero = None   # camisa (v1.1): dado ao entrar no clube
         # mercado (v0.7): potencial nunca fica abaixo do overall atual
         self.potencial = max(overall, potencial or overall)
         self.contrato_anos = contrato_anos   # temporadas restantes

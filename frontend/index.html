@@ -193,7 +193,7 @@
               <span id="r-aviso" class="vazio"></span>
               <span id="r-salvo" class="salvo" aria-live="polite"></span>
             </div>
-            <p id="r-suspensos" hidden style="color:#e53935"></p>
+            <p id="r-suspensos" class="aviso-fora" hidden></p>
             <div id="r-slots" class="slots"></div>
             <p class="vazio" style="margin-top: .5rem">
               Slot em <em>automático</em> = o motor escolhe. Fique de olho na
@@ -234,6 +234,37 @@
       <p style="margin-top: 1rem">
         <button id="r-proxima" style="width: auto; margin: 0"></button>
       </p>
+    </div>
+  </section>
+
+  <!-- pré-jogo (v1.1): as duas escalações no campo, antes do apito -->
+  <section id="prejogo" hidden>
+    <hgroup>
+      <h2 id="pj-titulo"></h2>
+      <p id="pj-confronto"></p>
+    </hgroup>
+
+    <div class="pj-times">
+      <div id="pj-tarja-eu" class="pj-tarja"></div>
+      <div id="pj-tarja-rival" class="pj-tarja pj-tarja-rival"></div>
+    </div>
+
+    <div id="pj-campo" class="campo" role="img"></div>
+
+    <p class="pj-legenda">
+      <span><span class="pj-ic pj-craque" data-icone="estrela"></span> craque (overall 88+)</span>
+      <span><span class="pj-ic pj-cansado" data-icone="raio"></span> cansado</span>
+      <span><span class="cartao"></span> pendurado: mais um amarelo e está fora</span>
+    </p>
+
+    <p class="acoes-rodada">
+      <button id="pj-jogar"><span data-icone="play"></span> Ir para o jogo</button>
+      <button id="pj-voltar" class="secondary outline"><span data-icone="voltar"></span> Mexer na escalação</button>
+    </p>
+
+    <div class="colunas">
+      <div><h3 class="secao" id="pj-banco-eu-titulo"></h3><ol id="pj-banco-eu" class="banco"></ol></div>
+      <div><h3 class="secao" id="pj-banco-rival-titulo"></h3><ol id="pj-banco-rival" class="banco"></ol></div>
     </div>
   </section>
 

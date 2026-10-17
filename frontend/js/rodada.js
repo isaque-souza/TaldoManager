@@ -10,6 +10,7 @@ import { renderDashboard } from "./financas.js";
 import { renderMeta } from "./diretoria.js";
 import { escudo } from "./identidade.js";
 import { icone } from "./icones.js";
+import { abrirPreJogo } from "./prejogo.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -321,7 +322,8 @@ $("r-tatica").addEventListener("change", agendarAutosave);
 // contêiner, então um ouvinte só aqui cobre todos
 $("r-slots").addEventListener("change", agendarAutosave);
 
-$("r-jogar").addEventListener("click", jogarRodada);
+// "Jogar a rodada" passa pelo pré-jogo (v1.1), que chama jogarRodada
+$("r-jogar").addEventListener("click", abrirPreJogo);
 $("r-proxima").addEventListener("click", avancarAposResultado);
 $("r-ver-tabela").addEventListener("click", () => navegarPara(mostrarTemporada));
 $("r-formacao").addEventListener("change", () => {

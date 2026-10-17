@@ -180,6 +180,92 @@ def proxima_rodada(simulacao_id):
 
 
 # ---------------------------------------------------------------------------
+# pré-jogo (v1.1): as duas escalações como vão entrar em campo
+# ---------------------------------------------------------------------------
+
+# overall a partir do qual o jogador ganha a estrela de craque no pré-jogo
+CRAQUE = 88
+
+
+def _jogador_pre_jogo(j, linha=None):
+    dados = {
+        "nome": j.nome,
+        "numero": j.numero,
+        "posicao": j.posicao,
+        "overall": j.overall,
+        "energia": round(j.energia),
+        "condicao": j.condicao,
+        "pendurado": j.amarelos_ciclo == 4,
+        "craque": j.overall >= CRAQUE,
+    }
+    if linha is not None:
+        dados["linha"] = linha
+    return dados
+
+
+def _escalacao(clube):
+    """XI e banco exatamente como o motor escala no apito
+    (Clube.escalar_time é determinístico). Cada titular vem com a `linha`
+    do campo onde a formação o coloca: 0 goleiro, 1 defesa, 2 meio,
+    3 ataque — um improvisado fica na linha da vaga, não na posição dele."""
+    clube.escalar_time()
+    n_def, n_mei, n_ata = clube.FORMACOES.get(clube.formacao, (4, 3, 3))
+    linhas = [0] + [1] * n_def + [2] * n_mei + [3] * n_ata
+    return {
+        "clube": clube.nome,
+        "formacao": clube.formacao,
+        "tatica": clube.tatica,
+        "titulares": [
+            _jogador_pre_jogo(j, linha)
+            for j, linha in zip(clube.titulares, linhas)
+        ],
+        "banco": [_jogador_pre_jogo(j) for j in clube.reservas],
+    }
+
+
+def pre_jogo(simulacao_id):
+    """As duas escalações da partida do técnico na próxima rodada, com a
+    decisão salva (tática, formação, XI). Só leitura: nada é gravado e o
+    gerador aleatório volta ao estado de antes. None se a simulação não
+    existe; `TemporadaConcluida` se já terminou; `adversario` None na folga."""
+
+    conn = conectar()
+    try:
+        sim = simulacao_repo.buscar(conn, simulacao_id)
+    finally:
+        conn.close()
+    if sim is None:
+        return None
+    if sim["estado"] != "em_andamento":
+        raise TemporadaConcluida("Esta temporada já foi concluída")
+
+    estado_rng = random.getstate()
+    try:
+        campeonato = carregar_campeonato()
+        restaurar_estado(campeonato, json.loads(sim["estado_json"]))
+    finally:
+        random.setstate(estado_rng)
+
+    r = campeonato.rodada
+    alvo = _achar_clube(campeonato, sim["clube_usuario"])
+    adversario, mando = _confronto_do_clube(campeonato.calendario[r - 1], alvo.nome)
+
+    base = {
+        "rodada": r,
+        "total_rodadas": len(campeonato.calendario),
+        "clube_usuario": alvo.nome,
+        "adversario": adversario,
+        "mando": mando,
+    }
+    if adversario is None:
+        return {**base, "mandante": None, "visitante": None}
+
+    rival = _achar_clube(campeonato, adversario)
+    mandante, visitante = (alvo, rival) if mando == "casa" else (rival, alvo)
+    return {**base, "mandante": _escalacao(mandante), "visitante": _escalacao(visitante)}
+
+
+# ---------------------------------------------------------------------------
 # avançar uma rodada
 # ---------------------------------------------------------------------------
 
