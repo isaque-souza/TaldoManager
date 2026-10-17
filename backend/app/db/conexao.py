@@ -57,7 +57,7 @@ _COLUNAS_NOVAS = {
             "receita_bilheteria", "receita_premiacao", "despesa_salarios",
             "receita_vendas", "despesa_compras",
         )
-    ),
+    ) + (("historico_caixa", "TEXT NOT NULL DEFAULT '[]'"),),
     "jogador": (
         ("penaltis", "INTEGER NOT NULL DEFAULT 0"),
         ("penaltis_perdidos", "INTEGER NOT NULL DEFAULT 0"),

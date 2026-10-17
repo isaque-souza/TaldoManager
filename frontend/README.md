@@ -45,6 +45,7 @@ frontend/
     ├── rodada.js     modo rodada a rodada (antes / depois de jogar)
     ├── mercado.js    propostas de compra e ofertas de venda
     ├── contratos.js  lista de contratos e renovação
+    ├── financas.js   dashboard financeiro (números, gráfico do caixa, fluxo, folha)
     ├── clube.js      página do clube (finanças, jogos, elenco)
     ├── partida.js    página da partida
     └── jogador.js    página do jogador
@@ -62,8 +63,10 @@ variável importada de outro, mas pode mudar a propriedade de um objeto.
   remove a selecionada.
 - **Visão da temporada** — campeão, MVP, classificação (com forma), artilharia,
   assistências, notas, clean sheets, hat-tricks, histórico, recordes.
-- **Página do clube** — clique no nome de um clube na classificação: elenco
-  completo + tabela das 38 partidas (mando, placar, resultado).
+- **Página do clube** — clique no nome de um clube: dashboard financeiro
+  (caixa, saldo, folha, maior salário; gráfico do caixa rodada a rodada com
+  crosshair; receitas × despesas; maiores salários × o que o mercado paga),
+  tabela das 38 partidas e elenco.
 - **Página da partida** — clique no placar de um jogo: posse, finalizações,
   linha do tempo (gols, cartões, substituições) e as duas escalações com nota.
 - **Página do jogador** — clique no nome em qualquer tabela: ficha + game log
@@ -79,7 +82,12 @@ variável importada de outro, mas pode mudar a propriedade de um objeto.
 
 O botão **← Voltar** desfaz a última navegação.
 
+- **Rodada a rodada** — abas ⚽ Partida (escalação, tática), 🔁 Mercado
+  (propostas, ofertas; 🟢/🔒 conforme a janela), 📝 Contratos (⚠️ quantos
+  acabam) e 💰 Finanças. O botão de jogar fica acima das abas.
+- **Aba Finanças** da temporada — caixa, receitas, despesas, saldo e folha
+  dos 20 clubes.
+
 ## Próximos passos
 
-1. Abas no modo rodada a rodada (Partida / Mercado / Contratos / Finanças).
-2. Dashboard financeiro (evolução do caixa, receitas × despesas).
+1. Modo carreira (v0.8): virar a temporada, envelhecimento, contratos vencendo.

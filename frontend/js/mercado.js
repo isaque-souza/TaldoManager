@@ -2,7 +2,7 @@
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
-import { carregarProximaRodada } from "./rodada.js";
+import { carregarProximaRodada, marcarAbasRodada } from "./rodada.js";
 import { renderContratos } from "./contratos.js";
 
 // ---------- mercado de transferências ----------
@@ -109,6 +109,11 @@ export function renderMercado(m) {
   }
 
   renderContratos(m.elenco);
+  const acabando = m.elenco.filter((f) => f.contrato_anos <= 1).length;
+  marcarAbasRodada({
+    mercado: m.janela_aberta ? "🟢" : "🔒",
+    contratos: acabando ? `⚠️ ${acabando}` : "",
+  });
 
   const box = $("r-mercado");
   box.innerHTML = html;

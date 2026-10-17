@@ -296,3 +296,17 @@ def test_fluxo_de_renovacao():
                        json={"jogador_id": meu["jogador_id"], "salario": ref, "anos": 2, "multa": "9x"}).status_code == 422
     assert client.post(f"/simulacoes/{sid}/renovacoes",
                        json={"jogador_id": meu["jogador_id"], "salario": ref, "anos": 9, "multa": "3x"}).status_code == 400
+
+
+def test_financas_na_temporada_e_historico_no_clube():
+    sid = client.post("/simulacoes", json={"seed": 8}).json()["id"]
+    visao = client.get(f"/simulacoes/{sid}").json()
+    fin = visao["financas"]
+    assert len(fin) == 20
+    assert [f["clube"] for f in fin] == [c["clube"] for c in visao["classificacao"]]
+    assert all(f["saldo"] == f["caixa"] - f["caixa_inicial"] for f in fin)
+    assert all(f["folha"] > 0 for f in fin)
+
+    clube = client.get(f"/simulacoes/{sid}/clubes/{fin[0]['id']}").json()["clube"]
+    assert len(clube["historico_caixa"]) == 38
+    assert clube["historico_caixa"][-1] == clube["dinheiro"]

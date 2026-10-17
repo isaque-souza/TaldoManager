@@ -45,6 +45,10 @@ class Clube:
         self.despesa_salarios = 0
         self.receita_vendas = 0
         self.despesa_compras = 0
+        # caixa ao fim de cada rodada (para o gráfico). Guardado, não
+        # reconstruído: transferências e renovações mexem no caixa e na folha
+        # ENTRE as rodadas, então as partidas sozinhas não contam a história
+        self.historico_caixa = []
 
         self.jogadores = []
         self.titulares = []

@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 231 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 233 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -272,7 +272,7 @@ jogador da temporada.
 
 ---
 
-# 💰 Mercado (v0.7) — em andamento
+# ✅ Mercado (v0.7) — Concluída
 
 * [x] Valor de mercado (calculado de overall, idade e potencial)
 * [x] Salários (de contrato, por temporada; o "salário de mercado" é calculado do overall)
@@ -289,7 +289,7 @@ jogador da temporada.
 * [x] Renovação de contrato (salário, duração e multa; o jogador aceita, contrapropõe ou recusa)
 * [x] Contrato novo ao ser transferido (3 temporadas, salário de mercado, sem multa)
 * [ ] Vontade do jogador (querer sair, recusar renovar por estar no banco, "time do sonho")
-* [ ] Evolução por idade
+* [ ] Evolução por idade → vai para a v0.8 (precisa da virada de temporada)
 * [x] Potencial dos jogadores (na seed; o jogador ainda não evolui)
 * [x] Duração de contrato (temporadas restantes, na seed)
 
@@ -353,9 +353,9 @@ crescer (ou encolher) com as decisões do técnico:
 * [x] Interação: escolher clube + tática antes de simular
 * [x] Interação: montar a escalação (formação + XI titular)
 * [x] Interação: simular rodada a rodada
-* [ ] Dashboard financeiro
-* [ ] Mercado de transferências (painel básico no modo rodada a rodada já existe)
-* [ ] Estatísticas avançadas (chutes no gol, escanteios, faltas)
+* [x] Dashboard financeiro (caixa rodada a rodada, receitas × despesas, folha; aba Finanças da liga)
+* [x] Mercado de transferências (abas Partida / Mercado / Contratos / Finanças no modo rodada a rodada)
+* [x] Estatísticas avançadas (chutes no gol, escanteios, faltas — v0.6)
 
 ---
 
@@ -375,7 +375,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 231 testes (domain, db, repositories, services, api)
+│   └── tests/              # 233 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

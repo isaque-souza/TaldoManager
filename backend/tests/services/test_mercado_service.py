@@ -198,3 +198,19 @@ def test_simulacao_ou_jogador_inexistente():
     sid, _ = _iniciar()
     assert mercado_service.propor(sid, 999_999, 1_000) is None
     assert mercado_service.ofertas(sid, 999_999) is None
+
+
+def test_compra_aparece_no_historico_do_caixa():
+    sid, clube = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    alvo = _alvo(m)
+    r = mercado_service.propor(sid, alvo["jogador_id"], alvo["valor_mercado"] * 3)
+    assert r["transferencia"]
+    temporada_service.avancar(sid)
+
+    visao = simulacao_service.carregar_temporada(sid)
+    cid = next(c["id"] for c in visao["classificacao"] if c["clube"] == clube)
+    hist = simulacao_service.detalhe_clube(sid, cid)["clube"]["historico_caixa"]
+    assert len(hist) == 1
+    # caixa após a R1 = antes da compra - compra + finanças da rodada
+    assert hist[0] < m["caixa"] - r["transferencia"]["valor"] + 2_000_000

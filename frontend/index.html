@@ -101,49 +101,61 @@
       <p id="rodada-confronto"></p>
     </hgroup>
 
-    <!-- antes de jogar: montar o time -->
+    <!-- antes de jogar: abas (o botão de jogar fica fora delas) -->
     <div id="rodada-antes">
-      <div class="colunas">
-        <div>
-          <h4>Sua escalação</h4>
-          <div class="controles" style="margin: .5rem 0">
-            <label>Formação <select id="r-formacao"></select></label>
-            <label>Tática
-              <select id="r-tatica">
-                <option value="equilibrado">Equilibrado</option>
-                <option value="ofensivo">Ofensivo</option>
-                <option value="defensivo">Defensivo</option>
-              </select>
-            </label>
-            <span id="r-aviso" class="vazio"></span>
-          </div>
-          <p id="r-suspensos" hidden style="color:#e53935"></p>
-          <div id="r-slots" class="slots"></div>
-          <p class="vazio" style="margin-top: .5rem">
-            Slot em <em>automático</em> = o motor escolhe. Fique de olho na
-            energia — quem joga demais chega cansado.
-          </p>
-        </div>
-        <div>
-          <h4>Elenco</h4>
-          <div id="r-elenco"></div>
-        </div>
-      </div>
-      <p style="margin-top: 1rem">
+      <p class="acoes-rodada">
         <button id="r-jogar" style="width: auto; margin: 0"></button>
         <button id="r-ver-tabela" class="secondary outline" style="width: auto; margin: 0 0 0 .5rem">
           Ver tabela completa
         </button>
       </p>
-      <h4 style="margin-top: 1.5rem">🔁 Mercado de transferências</h4>
-      <p id="r-mercado-msg"></p>
-      <div id="r-mercado"></div>
-      <h4 style="margin-top: 1.5rem">📝 Contratos</h4>
-      <p id="r-contrato-msg"></p>
-      <div id="c-form"></div>
-      <div id="r-contratos"></div>
-      <h4 style="margin-top: 1.5rem">Outros jogos da rodada</h4>
-      <div id="r-confrontos"></div>
+      <nav class="abas" id="r-abas"></nav>
+
+      <div data-painel="partida">
+        <div class="colunas">
+          <div>
+            <h4>Sua escalação</h4>
+            <div class="controles" style="margin: .5rem 0">
+              <label>Formação <select id="r-formacao"></select></label>
+              <label>Tática
+                <select id="r-tatica">
+                  <option value="equilibrado">Equilibrado</option>
+                  <option value="ofensivo">Ofensivo</option>
+                  <option value="defensivo">Defensivo</option>
+                </select>
+              </label>
+              <span id="r-aviso" class="vazio"></span>
+            </div>
+            <p id="r-suspensos" hidden style="color:#e53935"></p>
+            <div id="r-slots" class="slots"></div>
+            <p class="vazio" style="margin-top: .5rem">
+              Slot em <em>automático</em> = o motor escolhe. Fique de olho na
+              energia — quem joga demais chega cansado.
+            </p>
+          </div>
+          <div>
+            <h4>Elenco</h4>
+            <div id="r-elenco"></div>
+          </div>
+        </div>
+        <h4 style="margin-top: 1.5rem">Outros jogos da rodada</h4>
+        <div id="r-confrontos"></div>
+      </div>
+
+      <div data-painel="mercado" hidden>
+        <p id="r-mercado-msg"></p>
+        <div id="r-mercado"></div>
+      </div>
+
+      <div data-painel="contratos" hidden>
+        <p id="r-contrato-msg"></p>
+        <div id="c-form"></div>
+        <div id="r-contratos"></div>
+      </div>
+
+      <div data-painel="financas" hidden>
+        <div id="r-financas"></div>
+      </div>
     </div>
 
     <!-- depois de jogar: resultados -->

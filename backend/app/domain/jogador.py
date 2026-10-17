@@ -213,8 +213,13 @@ class Jogador:
         múltiplo de mil. É a base das negociações de contrato; depende só do
         overall: paga-se pelo que o jogador rende hoje, não pelo que vai
         render."""
+        return self.salario_de_mercado(self.overall)
 
-        salario = 0.08 * self._base_overall(self.overall)
+    @classmethod
+    def salario_de_mercado(cls, overall):
+        """`salario_referencia` sem precisar de um Jogador (ex.: a partir de
+        uma linha do banco)."""
+        salario = 0.08 * cls._base_overall(overall)
         return max(1_000, round(salario / 1_000) * 1_000)
 
     def assinar_contrato(self, anos, salario, multa_rescisoria):

@@ -78,6 +78,10 @@ def test_temporada_completa_fecha_as_contas():
         assert abs(clube.receita_tv - financas.COTA_TV_TEMPORADA) < 100
         assert abs(clube.despesa_salarios - financas.folha_salarial(clube)) < 100
 
+        # um ponto por rodada; o último é o caixa final (já com a premiação)
+        assert len(clube.historico_caixa) == len(campeonato.calendario)
+        assert clube.historico_caixa[-1] == clube.dinheiro
+
     campeao = campeonato.classificacao()[0]
     lanterna = campeonato.classificacao()[-1]
     assert campeao.receita_premiacao == financas.PREMIO_CAMPEAO

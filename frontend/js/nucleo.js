@@ -21,6 +21,7 @@ export const estado = {
   rodadaInfo: null,   // payload de /rodadas/proxima
   rodadaResultado: null,   // payload de POST /rodadas
   faseRodada: "antes",   // "antes" | "depois"
+  abaRodada: "partida",   // aba da tela antes da rodada
   elencoClube: null,   // { elenco, formacoes } do clube escolhido
 };
 export const pilhaVoltar = [];   // thunks para o botão "← Voltar"

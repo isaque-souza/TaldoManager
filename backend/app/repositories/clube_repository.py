@@ -5,7 +5,7 @@ CAMPOS = (
     "vitorias", "empates", "derrotas", "gols_marcados", "gols_sofridos",
     "dinheiro_inicial", "dinheiro", "receita_tv", "receita_bilheteria",
     "receita_premiacao", "despesa_salarios",
-    "receita_vendas", "despesa_compras",
+    "receita_vendas", "despesa_compras", "historico_caixa",
 )
 
 

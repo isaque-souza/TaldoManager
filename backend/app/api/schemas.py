@@ -54,6 +54,7 @@ class JogadorStats(BaseModel):
     valor_mercado: int = 0
     salario: int = 0
     multa_rescisoria: int | None = None
+    salario_referencia: int | None = None   # só no elenco da página do clube
 
 
 class Recorde(BaseModel):
@@ -72,6 +73,18 @@ class Evolucao(BaseModel):
     series: list[EvolucaoSerie]      # na ordem da classificação final
 
 
+class FinancaClube(BaseModel):
+    id: int | None = None
+    posicao: int
+    clube: str
+    caixa_inicial: int
+    caixa: int
+    saldo: int
+    receitas: int
+    despesas: int
+    folha: int                           # salários do elenco, por temporada
+
+
 class SimulacaoResponse(BaseModel):
     campeonato: str
     seed: int | None
@@ -84,6 +97,7 @@ class SimulacaoResponse(BaseModel):
     formacao: str | None = None
     xi_preferido: list[str] | None = None
     classificacao: list[ClubeClassificacao]
+    financas: list[FinancaClube] = []
     artilharia: list[JogadorStats]
     assistencias: list[JogadorStats]
     melhores_notas: list[JogadorStats]
@@ -227,6 +241,7 @@ class ClubeInfo(BaseModel):
     despesa_salarios: int = 0
     receita_vendas: int = 0
     despesa_compras: int = 0
+    historico_caixa: list[int] = []      # caixa após cada rodada
 
 
 class JogoResumo(BaseModel):
