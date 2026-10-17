@@ -25,7 +25,9 @@ def carregar_jogadores():
             j["nome"],
             j["idade"],
             j["posicao"],
-            j["overall"]
+            j["overall"],
+            potencial=j.get("potencial"),
+            contrato_anos=j.get("contrato_anos", 3),
         )
 
     return jogadores

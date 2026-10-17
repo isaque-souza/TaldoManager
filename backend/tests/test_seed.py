@@ -42,3 +42,14 @@ def test_seed_tem_um_espalhamento_de_forca_realista():
 
     # do pior ao melhor elenco deve haver uma diferença clara
     assert forcas[-1] - forcas[0] >= 9
+
+
+def test_seed_tem_dados_de_mercado_coerentes():
+    jogadores = carregar_jogadores().values()
+
+    assert all(j.overall <= j.potencial <= 99 for j in jogadores)
+    assert all(1 <= j.contrato_anos <= 5 for j in jogadores)
+    # veteranos não têm margem de crescimento
+    assert all(j.potencial == j.overall for j in jogadores if j.idade >= 30)
+    # e pelo menos alguns jovens são promessas
+    assert any(j.potencial - j.overall >= 8 for j in jogadores if j.idade <= 20)

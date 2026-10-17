@@ -54,6 +54,10 @@ _COLUNAS_NOVAS = {
         ("penaltis", "INTEGER NOT NULL DEFAULT 0"),
         ("penaltis_perdidos", "INTEGER NOT NULL DEFAULT 0"),
         ("faltas", "INTEGER NOT NULL DEFAULT 0"),
+        ("potencial", "INTEGER NOT NULL DEFAULT 0"),
+        ("contrato_anos", "INTEGER NOT NULL DEFAULT 0"),
+        ("valor_mercado", "INTEGER NOT NULL DEFAULT 0"),
+        ("salario", "INTEGER NOT NULL DEFAULT 0"),
     ),
     "partida": (
         ("finalizacoes_gol_mandante", "INTEGER NOT NULL DEFAULT 0"),

@@ -108,6 +108,10 @@ def _serializar_jogador(jogador, clube_nome):
         "penaltis": jogador.penaltis,
         "penaltis_perdidos": jogador.penaltis_perdidos,
         "faltas": jogador.faltas,
+        "potencial": jogador.potencial,
+        "contrato_anos": jogador.contrato_anos,
+        "valor_mercado": jogador.valor_mercado(),
+        "salario": jogador.salario(),
     }
 
 
@@ -654,6 +658,10 @@ def game_log_jogador(simulacao_id, jogador_id):
             "penaltis": j["penaltis"],
             "penaltis_perdidos": j["penaltis_perdidos"],
             "faltas": j["faltas"],
+            "potencial": j["potencial"],
+            "contrato_anos": j["contrato_anos"],
+            "valor_mercado": j["valor_mercado"],
+            "salario": j["salario"],
         }
 
         return {"jogador": jogador, "jogos": jogos}

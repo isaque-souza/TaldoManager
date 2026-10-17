@@ -4,2519 +4,3239 @@
         "nome": "Leonardo Araujo",
         "idade": 22,
         "posicao": "Goleiro",
-        "overall": 78
+        "overall": 78,
+        "potencial": 80,
+        "contrato_anos": 3
     },
     {
         "id": 2,
         "nome": "Liam Santos",
         "idade": 17,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 90,
+        "contrato_anos": 5
     },
     {
         "id": 3,
         "nome": "André Souza",
         "idade": 29,
         "posicao": "Defesa",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 2
     },
     {
         "id": 4,
         "nome": "Leonardo Silva",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 85
+        "overall": 85,
+        "potencial": 91,
+        "contrato_anos": 5
     },
     {
         "id": 5,
         "nome": "Liam Wilson",
         "idade": 24,
         "posicao": "Defesa",
-        "overall": 86
+        "overall": 86,
+        "potencial": 92,
+        "contrato_anos": 4
     },
     {
         "id": 6,
         "nome": "Arthur Taylor",
         "idade": 18,
         "posicao": "Meio-Campo",
-        "overall": 82
+        "overall": 82,
+        "potencial": 96,
+        "contrato_anos": 5
     },
     {
         "id": 7,
         "nome": "Caio Santos",
         "idade": 29,
         "posicao": "Meio-Campo",
-        "overall": 88
+        "overall": 88,
+        "potencial": 91,
+        "contrato_anos": 5
     },
     {
         "id": 8,
         "nome": "Arthur Lopez",
         "idade": 35,
         "posicao": "Meio-Campo",
-        "overall": 88
+        "overall": 88,
+        "potencial": 88,
+        "contrato_anos": 2
     },
     {
         "id": 9,
         "nome": "Diego Ferreira",
         "idade": 17,
         "posicao": "Atacante",
-        "overall": 84
+        "overall": 84,
+        "potencial": 92,
+        "contrato_anos": 1
     },
     {
         "id": 10,
         "nome": "André Almeida",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 1
     },
     {
         "id": 11,
         "nome": "Jack Gomes",
         "idade": 24,
         "posicao": "Atacante",
-        "overall": 81
+        "overall": 81,
+        "potencial": 85,
+        "contrato_anos": 1
     },
     {
         "id": 12,
         "nome": "Miguel Gomes",
         "idade": 24,
         "posicao": "Goleiro",
-        "overall": 73
+        "overall": 73,
+        "potencial": 78,
+        "contrato_anos": 1
     },
     {
         "id": 13,
         "nome": "Luca Taylor",
         "idade": 29,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 82,
+        "contrato_anos": 3
     },
     {
         "id": 14,
         "nome": "Isaque Souza",
         "idade": 18,
         "posicao": "Meio-Campo",
-        "overall": 99
+        "overall": 99,
+        "potencial": 99,
+        "contrato_anos": 4
     },
     {
         "id": 15,
         "nome": "Oliver Garcia",
         "idade": 20,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 89,
+        "contrato_anos": 3
     },
     {
         "id": 16,
         "nome": "Francesco Johnson",
         "idade": 37,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 76,
+        "contrato_anos": 2
     },
     {
         "id": 17,
         "nome": "Rafael Rodriguez",
         "idade": 20,
         "posicao": "Atacante",
-        "overall": 73
+        "overall": 73,
+        "potencial": 84,
+        "contrato_anos": 5
     },
     {
         "id": 18,
         "nome": "Liam Johnson",
         "idade": 23,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 84,
+        "contrato_anos": 1
     },
     {
         "id": 19,
         "nome": "Matheus Lima",
         "idade": 27,
         "posicao": "Goleiro",
-        "overall": 86
+        "overall": 86,
+        "potencial": 88,
+        "contrato_anos": 1
     },
     {
         "id": 20,
         "nome": "Luca Rodriguez",
         "idade": 30,
         "posicao": "Defesa",
-        "overall": 85
+        "overall": 85,
+        "potencial": 85,
+        "contrato_anos": 5
     },
     {
         "id": 21,
         "nome": "Matheus Garcia",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 90
+        "overall": 90,
+        "potencial": 92,
+        "contrato_anos": 3
     },
     {
         "id": 22,
         "nome": "Luca Silva",
         "idade": 34,
         "posicao": "Defesa",
-        "overall": 89
+        "overall": 89,
+        "potencial": 89,
+        "contrato_anos": 2
     },
     {
         "id": 23,
         "nome": "Pierre Barbosa",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 89
+        "overall": 89,
+        "potencial": 92,
+        "contrato_anos": 5
     },
     {
         "id": 24,
         "nome": "Pierre Ribeiro",
         "idade": 17,
         "posicao": "Meio-Campo",
-        "overall": 85
+        "overall": 85,
+        "potencial": 94,
+        "contrato_anos": 1
     },
     {
         "id": 25,
         "nome": "Antoine Silva",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 94
+        "overall": 94,
+        "potencial": 96,
+        "contrato_anos": 3
     },
     {
         "id": 26,
         "nome": "Rodrigo Araujo",
         "idade": 20,
         "posicao": "Meio-Campo",
-        "overall": 88
+        "overall": 88,
+        "potencial": 99,
+        "contrato_anos": 4
     },
     {
         "id": 27,
         "nome": "Arthur Costa",
         "idade": 22,
         "posicao": "Atacante",
-        "overall": 91
+        "overall": 91,
+        "potencial": 93,
+        "contrato_anos": 4
     },
     {
         "id": 28,
         "nome": "Felipe Pereira",
         "idade": 29,
         "posicao": "Atacante",
-        "overall": 86
+        "overall": 86,
+        "potencial": 89,
+        "contrato_anos": 1
     },
     {
         "id": 29,
         "nome": "Bruno Rodriguez",
         "idade": 27,
         "posicao": "Atacante",
-        "overall": 94
+        "overall": 94,
+        "potencial": 97,
+        "contrato_anos": 5
     },
     {
         "id": 30,
         "nome": "Diego Perez",
         "idade": 26,
         "posicao": "Goleiro",
-        "overall": 81
+        "overall": 81,
+        "potencial": 84,
+        "contrato_anos": 4
     },
     {
         "id": 31,
         "nome": "Louis Bianchi",
         "idade": 17,
         "posicao": "Defesa",
-        "overall": 83
+        "overall": 83,
+        "potencial": 96,
+        "contrato_anos": 3
     },
     {
         "id": 32,
         "nome": "André Mendes",
         "idade": 16,
         "posicao": "Defesa",
-        "overall": 82
+        "overall": 82,
+        "potencial": 93,
+        "contrato_anos": 5
     },
     {
         "id": 33,
         "nome": "André Ferreira",
         "idade": 35,
         "posicao": "Meio-Campo",
-        "overall": 84
+        "overall": 84,
+        "potencial": 84,
+        "contrato_anos": 2
     },
     {
         "id": 34,
         "nome": "Francesco Martins",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 83
+        "overall": 83,
+        "potencial": 83,
+        "contrato_anos": 5
     },
     {
         "id": 35,
         "nome": "Vinicius Dubois",
         "idade": 33,
         "posicao": "Atacante",
-        "overall": 86
+        "overall": 86,
+        "potencial": 86,
+        "contrato_anos": 1
     },
     {
         "id": 36,
         "nome": "Alejandro Rossi",
         "idade": 21,
         "posicao": "Atacante",
-        "overall": 85
+        "overall": 85,
+        "potencial": 93,
+        "contrato_anos": 2
     },
     {
         "id": 37,
         "nome": "Pablo Almeida",
         "idade": 24,
         "posicao": "Goleiro",
-        "overall": 77
+        "overall": 77,
+        "potencial": 85,
+        "contrato_anos": 1
     },
     {
         "id": 38,
         "nome": "Leonardo Moretti",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 80
+        "overall": 80,
+        "potencial": 87,
+        "contrato_anos": 5
     },
     {
         "id": 39,
         "nome": "Marco Almeida",
         "idade": 20,
         "posicao": "Defesa",
-        "overall": 84
+        "overall": 84,
+        "potencial": 99,
+        "contrato_anos": 1
     },
     {
         "id": 40,
         "nome": "Vinicius Gomes",
         "idade": 28,
         "posicao": "Defesa",
-        "overall": 73
+        "overall": 73,
+        "potencial": 76,
+        "contrato_anos": 4
     },
     {
         "id": 41,
         "nome": "Carlos Johnson",
         "idade": 32,
         "posicao": "Defesa",
-        "overall": 73
+        "overall": 73,
+        "potencial": 73,
+        "contrato_anos": 1
     },
     {
         "id": 42,
         "nome": "Caio Moretti",
         "idade": 29,
         "posicao": "Meio-Campo",
-        "overall": 86
+        "overall": 86,
+        "potencial": 89,
+        "contrato_anos": 2
     },
     {
         "id": 43,
         "nome": "Francesco Lima",
         "idade": 17,
         "posicao": "Meio-Campo",
-        "overall": 84
+        "overall": 84,
+        "potencial": 90,
+        "contrato_anos": 4
     },
     {
         "id": 44,
         "nome": "Antoine Oliveira",
         "idade": 21,
         "posicao": "Meio-Campo",
-        "overall": 79
+        "overall": 79,
+        "potencial": 86,
+        "contrato_anos": 4
     },
     {
         "id": 45,
         "nome": "Gabriel Dubois",
         "idade": 29,
         "posicao": "Atacante",
-        "overall": 84
+        "overall": 84,
+        "potencial": 86,
+        "contrato_anos": 5
     },
     {
         "id": 46,
         "nome": "Arthur Barbosa",
         "idade": 16,
         "posicao": "Atacante",
-        "overall": 87
+        "overall": 87,
+        "potencial": 98,
+        "contrato_anos": 3
     },
     {
         "id": 47,
         "nome": "Vinicius Johnson",
         "idade": 20,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 93,
+        "contrato_anos": 5
     },
     {
         "id": 48,
         "nome": "Arthur Walker",
         "idade": 29,
         "posicao": "Goleiro",
-        "overall": 79
+        "overall": 79,
+        "potencial": 82,
+        "contrato_anos": 4
     },
     {
         "id": 49,
         "nome": "Caio Martins",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 75
+        "overall": 75,
+        "potencial": 78,
+        "contrato_anos": 2
     },
     {
         "id": 50,
         "nome": "Rodrigo Moretti",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 78
+        "overall": 78,
+        "potencial": 82,
+        "contrato_anos": 3
     },
     {
         "id": 51,
         "nome": "João Moretti",
         "idade": 22,
         "posicao": "Meio-Campo",
-        "overall": 77
+        "overall": 77,
+        "potencial": 79,
+        "contrato_anos": 1
     },
     {
         "id": 52,
         "nome": "Caio Pereira",
         "idade": 31,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 76,
+        "contrato_anos": 2
     },
     {
         "id": 53,
         "nome": "Vinicius Brown",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 78
+        "overall": 78,
+        "potencial": 81,
+        "contrato_anos": 5
     },
     {
         "id": 54,
         "nome": "Louis Silva",
         "idade": 29,
         "posicao": "Atacante",
-        "overall": 71
+        "overall": 71,
+        "potencial": 74,
+        "contrato_anos": 3
     },
     {
         "id": 55,
         "nome": "Caio Rocha",
         "idade": 32,
         "posicao": "Goleiro",
-        "overall": 86
+        "overall": 86,
+        "potencial": 86,
+        "contrato_anos": 1
     },
     {
         "id": 56,
         "nome": "Carlos Rodriguez",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 91
+        "overall": 91,
+        "potencial": 93,
+        "contrato_anos": 4
     },
     {
         "id": 57,
         "nome": "Gabriel Costa",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 90
+        "overall": 90,
+        "potencial": 93,
+        "contrato_anos": 5
     },
     {
         "id": 58,
         "nome": "Felipe Rodriguez",
         "idade": 19,
         "posicao": "Defesa",
-        "overall": 88
+        "overall": 88,
+        "potencial": 99,
+        "contrato_anos": 4
     },
     {
         "id": 59,
         "nome": "Liam Silva",
         "idade": 17,
         "posicao": "Defesa",
-        "overall": 81
+        "overall": 81,
+        "potencial": 94,
+        "contrato_anos": 1
     },
     {
         "id": 60,
         "nome": "Rafael Rossi",
         "idade": 18,
         "posicao": "Meio-Campo",
-        "overall": 85
+        "overall": 85,
+        "potencial": 94,
+        "contrato_anos": 3
     },
     {
         "id": 61,
         "nome": "Jack Santos",
         "idade": 33,
         "posicao": "Meio-Campo",
-        "overall": 85
+        "overall": 85,
+        "potencial": 85,
+        "contrato_anos": 2
     },
     {
         "id": 62,
         "nome": "Alejandro Walker",
         "idade": 32,
         "posicao": "Meio-Campo",
-        "overall": 83
+        "overall": 83,
+        "potencial": 83,
+        "contrato_anos": 1
     },
     {
         "id": 63,
         "nome": "Thiago Walker",
         "idade": 18,
         "posicao": "Atacante",
-        "overall": 88
+        "overall": 88,
+        "potencial": 99,
+        "contrato_anos": 5
     },
     {
         "id": 64,
         "nome": "Vinicius Garcia",
         "idade": 16,
         "posicao": "Atacante",
-        "overall": 84
+        "overall": 84,
+        "potencial": 93,
+        "contrato_anos": 4
     },
     {
         "id": 65,
         "nome": "Harry Santos",
         "idade": 33,
         "posicao": "Atacante",
-        "overall": 89
+        "overall": 89,
+        "potencial": 89,
+        "contrato_anos": 1
     },
     {
         "id": 66,
         "nome": "Alejandro Perez",
         "idade": 33,
         "posicao": "Goleiro",
-        "overall": 88
+        "overall": 88,
+        "potencial": 88,
+        "contrato_anos": 2
     },
     {
         "id": 67,
         "nome": "Pedro Ribeiro",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 87
+        "overall": 87,
+        "potencial": 90,
+        "contrato_anos": 1
     },
     {
         "id": 68,
         "nome": "Leonardo Smith",
         "idade": 27,
         "posicao": "Defesa",
-        "overall": 76
+        "overall": 76,
+        "potencial": 78,
+        "contrato_anos": 4
     },
     {
         "id": 69,
         "nome": "Antoine Wilson",
         "idade": 31,
         "posicao": "Meio-Campo",
-        "overall": 84
+        "overall": 84,
+        "potencial": 84,
+        "contrato_anos": 3
     },
     {
         "id": 70,
         "nome": "Enzo Rossi",
         "idade": 26,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 2
     },
     {
         "id": 71,
         "nome": "Liam Rocha",
         "idade": 24,
         "posicao": "Atacante",
-        "overall": 82
+        "overall": 82,
+        "potencial": 89,
+        "contrato_anos": 4
     },
     {
         "id": 72,
         "nome": "João Ribeiro",
         "idade": 22,
         "posicao": "Atacante",
-        "overall": 87
+        "overall": 87,
+        "potencial": 90,
+        "contrato_anos": 4
     },
     {
         "id": 73,
         "nome": "Matheus Perez",
         "idade": 27,
         "posicao": "Goleiro",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 1
     },
     {
         "id": 74,
         "nome": "Felipe Ribeiro",
         "idade": 27,
         "posicao": "Defesa",
-        "overall": 84
+        "overall": 84,
+        "potencial": 84,
+        "contrato_anos": 4
     },
     {
         "id": 75,
         "nome": "Thiago Perez",
         "idade": 21,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 85,
+        "contrato_anos": 5
     },
     {
         "id": 76,
         "nome": "Juan Moretti",
         "idade": 24,
         "posicao": "Defesa",
-        "overall": 82
+        "overall": 82,
+        "potencial": 90,
+        "contrato_anos": 1
     },
     {
         "id": 77,
         "nome": "Pierre Dubois",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 85,
+        "contrato_anos": 2
     },
     {
         "id": 78,
         "nome": "Pablo Costa",
         "idade": 33,
         "posicao": "Meio-Campo",
-        "overall": 78
+        "overall": 78,
+        "potencial": 78,
+        "contrato_anos": 1
     },
     {
         "id": 79,
         "nome": "Rodrigo Mendes",
         "idade": 32,
         "posicao": "Meio-Campo",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 1
     },
     {
         "id": 80,
         "nome": "Giovanni Ferreira",
         "idade": 24,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 86,
+        "contrato_anos": 1
     },
     {
         "id": 81,
         "nome": "Harry Martin",
         "idade": 23,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 88,
+        "contrato_anos": 5
     },
     {
         "id": 82,
         "nome": "André Barbosa",
         "idade": 37,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 2
     },
     {
         "id": 83,
         "nome": "Gabriel Araujo",
         "idade": 31,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 3
     },
     {
         "id": 84,
         "nome": "Louis Fernandez",
         "idade": 37,
         "posicao": "Goleiro",
-        "overall": 79
+        "overall": 79,
+        "potencial": 79,
+        "contrato_anos": 1
     },
     {
         "id": 85,
         "nome": "Pierre Rossi",
         "idade": 37,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 79,
+        "contrato_anos": 1
     },
     {
         "id": 86,
         "nome": "Giovanni Bianchi",
         "idade": 24,
         "posicao": "Defesa",
-        "overall": 72
+        "overall": 72,
+        "potencial": 76,
+        "contrato_anos": 5
     },
     {
         "id": 87,
         "nome": "Leonardo Martin",
         "idade": 25,
         "posicao": "Meio-Campo",
-        "overall": 70
+        "overall": 70,
+        "potencial": 73,
+        "contrato_anos": 2
     },
     {
         "id": 88,
         "nome": "Pablo Fernandez",
         "idade": 31,
         "posicao": "Meio-Campo",
-        "overall": 77
+        "overall": 77,
+        "potencial": 77,
+        "contrato_anos": 5
     },
     {
         "id": 89,
         "nome": "Felipe Lima",
         "idade": 23,
         "posicao": "Atacante",
-        "overall": 75
+        "overall": 75,
+        "potencial": 78,
+        "contrato_anos": 4
     },
     {
         "id": 90,
         "nome": "Noah Wilson",
         "idade": 27,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 75,
+        "contrato_anos": 5
     },
     {
         "id": 91,
         "nome": "Harry Souza",
         "idade": 36,
         "posicao": "Goleiro",
-        "overall": 75
+        "overall": 75,
+        "potencial": 75,
+        "contrato_anos": 2
     },
     {
         "id": 92,
         "nome": "Harry Walker",
         "idade": 29,
         "posicao": "Defesa",
-        "overall": 84
+        "overall": 84,
+        "potencial": 84,
+        "contrato_anos": 4
     },
     {
         "id": 93,
         "nome": "André Martin",
         "idade": 27,
         "posicao": "Defesa",
-        "overall": 80
+        "overall": 80,
+        "potencial": 81,
+        "contrato_anos": 2
     },
     {
         "id": 94,
         "nome": "Oliver Gomes",
         "idade": 32,
         "posicao": "Defesa",
-        "overall": 83
+        "overall": 83,
+        "potencial": 83,
+        "contrato_anos": 2
     },
     {
         "id": 95,
         "nome": "Antoine Souza",
         "idade": 30,
         "posicao": "Defesa",
-        "overall": 86
+        "overall": 86,
+        "potencial": 86,
+        "contrato_anos": 5
     },
     {
         "id": 96,
         "nome": "Luca Barbosa",
         "idade": 19,
         "posicao": "Meio-Campo",
-        "overall": 85
+        "overall": 85,
+        "potencial": 96,
+        "contrato_anos": 4
     },
     {
         "id": 97,
         "nome": "Juan Martins",
         "idade": 26,
         "posicao": "Meio-Campo",
-        "overall": 83
+        "overall": 83,
+        "potencial": 84,
+        "contrato_anos": 5
     },
     {
         "id": 98,
         "nome": "Noah Rodriguez",
         "idade": 37,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 1
     },
     {
         "id": 99,
         "nome": "Pedro Oliveira",
         "idade": 35,
         "posicao": "Atacante",
-        "overall": 83
+        "overall": 83,
+        "potencial": 83,
+        "contrato_anos": 2
     },
     {
         "id": 100,
         "nome": "Lucas Souza",
         "idade": 33,
         "posicao": "Atacante",
-        "overall": 84
+        "overall": 84,
+        "potencial": 84,
+        "contrato_anos": 1
     },
     {
         "id": 101,
         "nome": "Pedro Lima",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 81
+        "overall": 81,
+        "potencial": 81,
+        "contrato_anos": 4
     },
     {
         "id": 102,
         "nome": "Carlos Moretti",
         "idade": 26,
         "posicao": "Goleiro",
-        "overall": 73
+        "overall": 73,
+        "potencial": 73,
+        "contrato_anos": 1
     },
     {
         "id": 103,
         "nome": "Matheus Gomes",
         "idade": 31,
         "posicao": "Defesa",
-        "overall": 72
+        "overall": 72,
+        "potencial": 72,
+        "contrato_anos": 3
     },
     {
         "id": 104,
         "nome": "Harry Johnson",
         "idade": 33,
         "posicao": "Defesa",
-        "overall": 75
+        "overall": 75,
+        "potencial": 75,
+        "contrato_anos": 2
     },
     {
         "id": 105,
         "nome": "Miguel Araujo",
         "idade": 18,
         "posicao": "Meio-Campo",
-        "overall": 81
+        "overall": 81,
+        "potencial": 86,
+        "contrato_anos": 1
     },
     {
         "id": 106,
         "nome": "Matheus Santos",
         "idade": 27,
         "posicao": "Meio-Campo",
-        "overall": 74
+        "overall": 74,
+        "potencial": 77,
+        "contrato_anos": 3
     },
     {
         "id": 107,
         "nome": "Jack Ferreira",
         "idade": 26,
         "posicao": "Atacante",
-        "overall": 81
+        "overall": 81,
+        "potencial": 83,
+        "contrato_anos": 4
     },
     {
         "id": 108,
         "nome": "Francesco Almeida",
         "idade": 26,
         "posicao": "Atacante",
-        "overall": 78
+        "overall": 78,
+        "potencial": 80,
+        "contrato_anos": 1
     },
     {
         "id": 109,
         "nome": "Thiago Garcia",
         "idade": 29,
         "posicao": "Goleiro",
-        "overall": 86
+        "overall": 86,
+        "potencial": 89,
+        "contrato_anos": 4
     },
     {
         "id": 110,
         "nome": "Leonardo Fernandez",
         "idade": 31,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 79,
+        "contrato_anos": 5
     },
     {
         "id": 111,
         "nome": "Leonardo Bianchi",
         "idade": 28,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 80,
+        "contrato_anos": 2
     },
     {
         "id": 112,
         "nome": "Pablo Souza",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 81
+        "overall": 81,
+        "potencial": 82,
+        "contrato_anos": 4
     },
     {
         "id": 113,
         "nome": "Thiago Martin",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 81,
+        "contrato_anos": 4
     },
     {
         "id": 114,
         "nome": "Louis Ribeiro",
         "idade": 19,
         "posicao": "Meio-Campo",
-        "overall": 89
+        "overall": 89,
+        "potencial": 99,
+        "contrato_anos": 2
     },
     {
         "id": 115,
         "nome": "Francesco Araujo",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 5
     },
     {
         "id": 116,
         "nome": "Gustavo Mendes",
         "idade": 24,
         "posicao": "Meio-Campo",
-        "overall": 83
+        "overall": 83,
+        "potencial": 88,
+        "contrato_anos": 1
     },
     {
         "id": 117,
         "nome": "Rodrigo Brown",
         "idade": 29,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 78,
+        "contrato_anos": 2
     },
     {
         "id": 118,
         "nome": "Pablo Smith",
         "idade": 25,
         "posicao": "Atacante",
-        "overall": 92
+        "overall": 92,
+        "potencial": 92,
+        "contrato_anos": 5
     },
     {
         "id": 119,
         "nome": "Rodrigo Rodriguez",
         "idade": 24,
         "posicao": "Atacante",
-        "overall": 81
+        "overall": 81,
+        "potencial": 89,
+        "contrato_anos": 1
     },
     {
         "id": 120,
         "nome": "Thiago Ribeiro",
         "idade": 28,
         "posicao": "Goleiro",
-        "overall": 83
+        "overall": 83,
+        "potencial": 86,
+        "contrato_anos": 2
     },
     {
         "id": 121,
         "nome": "Louis Lopez",
         "idade": 33,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 77,
+        "contrato_anos": 2
     },
     {
         "id": 122,
         "nome": "Rodrigo Silva",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 81
+        "overall": 81,
+        "potencial": 88,
+        "contrato_anos": 1
     },
     {
         "id": 123,
         "nome": "Leonardo Santos",
         "idade": 34,
         "posicao": "Meio-Campo",
-        "overall": 77
+        "overall": 77,
+        "potencial": 77,
+        "contrato_anos": 1
     },
     {
         "id": 124,
         "nome": "João Lopez",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 77,
+        "contrato_anos": 5
     },
     {
         "id": 125,
         "nome": "Pablo Barbosa",
         "idade": 34,
         "posicao": "Atacante",
-        "overall": 81
+        "overall": 81,
+        "potencial": 81,
+        "contrato_anos": 1
     },
     {
         "id": 126,
         "nome": "Miguel Johnson",
         "idade": 21,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 80,
+        "contrato_anos": 2
     },
     {
         "id": 127,
         "nome": "Rodrigo Costa",
         "idade": 31,
         "posicao": "Goleiro",
-        "overall": 77
+        "overall": 77,
+        "potencial": 77,
+        "contrato_anos": 4
     },
     {
         "id": 128,
         "nome": "André Taylor",
         "idade": 28,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 79,
+        "contrato_anos": 4
     },
     {
         "id": 129,
         "nome": "Rodrigo Rossi",
         "idade": 21,
         "posicao": "Defesa",
-        "overall": 74
+        "overall": 74,
+        "potencial": 80,
+        "contrato_anos": 4
     },
     {
         "id": 130,
         "nome": "Carlos Martins",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 75
+        "overall": 75,
+        "potencial": 83,
+        "contrato_anos": 1
     },
     {
         "id": 131,
         "nome": "Bruno Araujo",
         "idade": 16,
         "posicao": "Defesa",
-        "overall": 80
+        "overall": 80,
+        "potencial": 91,
+        "contrato_anos": 3
     },
     {
         "id": 132,
         "nome": "Giovanni Lopez",
         "idade": 18,
         "posicao": "Meio-Campo",
-        "overall": 81
+        "overall": 81,
+        "potencial": 88,
+        "contrato_anos": 3
     },
     {
         "id": 133,
         "nome": "Gustavo Moretti",
         "idade": 17,
         "posicao": "Meio-Campo",
-        "overall": 83
+        "overall": 83,
+        "potencial": 90,
+        "contrato_anos": 3
     },
     {
         "id": 134,
         "nome": "Diego Rossi",
         "idade": 17,
         "posicao": "Meio-Campo",
-        "overall": 75
+        "overall": 75,
+        "potencial": 87,
+        "contrato_anos": 4
     },
     {
         "id": 135,
         "nome": "Rafael Garcia",
         "idade": 31,
         "posicao": "Atacante",
-        "overall": 83
+        "overall": 83,
+        "potencial": 83,
+        "contrato_anos": 4
     },
     {
         "id": 136,
         "nome": "Gustavo Bianchi",
         "idade": 18,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 89,
+        "contrato_anos": 4
     },
     {
         "id": 137,
         "nome": "Pierre Martin",
         "idade": 21,
         "posicao": "Atacante",
-        "overall": 82
+        "overall": 82,
+        "potencial": 85,
+        "contrato_anos": 3
     },
     {
         "id": 138,
         "nome": "Caio Souza",
         "idade": 20,
         "posicao": "Goleiro",
-        "overall": 72
+        "overall": 72,
+        "potencial": 85,
+        "contrato_anos": 4
     },
     {
         "id": 139,
         "nome": "Pedro Garcia",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 68
+        "overall": 68,
+        "potencial": 73,
+        "contrato_anos": 1
     },
     {
         "id": 140,
         "nome": "Leonardo Barbosa",
         "idade": 36,
         "posicao": "Defesa",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 2
     },
     {
         "id": 141,
         "nome": "Francesco Costa",
         "idade": 27,
         "posicao": "Meio-Campo",
-        "overall": 71
+        "overall": 71,
+        "potencial": 71,
+        "contrato_anos": 2
     },
     {
         "id": 142,
         "nome": "Bruno Wilson",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 77
+        "overall": 77,
+        "potencial": 78,
+        "contrato_anos": 1
     },
     {
         "id": 143,
         "nome": "Gustavo Johnson",
         "idade": 30,
         "posicao": "Atacante",
-        "overall": 70
+        "overall": 70,
+        "potencial": 70,
+        "contrato_anos": 1
     },
     {
         "id": 144,
         "nome": "Juan Rocha",
         "idade": 36,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 2
     },
     {
         "id": 145,
         "nome": "Noah Oliveira",
         "idade": 18,
         "posicao": "Goleiro",
-        "overall": 76
+        "overall": 76,
+        "potencial": 91,
+        "contrato_anos": 3
     },
     {
         "id": 146,
         "nome": "Gabriel Martins",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 75
+        "overall": 75,
+        "potencial": 80,
+        "contrato_anos": 5
     },
     {
         "id": 147,
         "nome": "Francesco Rocha",
         "idade": 20,
         "posicao": "Defesa",
-        "overall": 80
+        "overall": 80,
+        "potencial": 95,
+        "contrato_anos": 2
     },
     {
         "id": 148,
         "nome": "Noah Costa",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 73
+        "overall": 73,
+        "potencial": 75,
+        "contrato_anos": 3
     },
     {
         "id": 149,
         "nome": "Luca Rocha",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 73
+        "overall": 73,
+        "potencial": 81,
+        "contrato_anos": 2
     },
     {
         "id": 150,
         "nome": "Pierre Garcia",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 78
+        "overall": 78,
+        "potencial": 80,
+        "contrato_anos": 5
     },
     {
         "id": 151,
         "nome": "Giovanni Araujo",
         "idade": 23,
         "posicao": "Meio-Campo",
-        "overall": 73
+        "overall": 73,
+        "potencial": 80,
+        "contrato_anos": 5
     },
     {
         "id": 152,
         "nome": "Pierre Pereira",
         "idade": 34,
         "posicao": "Meio-Campo",
-        "overall": 83
+        "overall": 83,
+        "potencial": 83,
+        "contrato_anos": 1
     },
     {
         "id": 153,
         "nome": "Rodrigo Martin",
         "idade": 37,
         "posicao": "Atacante",
-        "overall": 75
+        "overall": 75,
+        "potencial": 75,
+        "contrato_anos": 1
     },
     {
         "id": 154,
         "nome": "Antoine Taylor",
         "idade": 26,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 79,
+        "contrato_anos": 5
     },
     {
         "id": 155,
         "nome": "Diego Araujo",
         "idade": 24,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 88,
+        "contrato_anos": 5
     },
     {
         "id": 156,
         "nome": "Juan Dubois",
         "idade": 27,
         "posicao": "Goleiro",
-        "overall": 71
+        "overall": 71,
+        "potencial": 72,
+        "contrato_anos": 5
     },
     {
         "id": 157,
         "nome": "Rafael Martin",
         "idade": 32,
         "posicao": "Defesa",
-        "overall": 69
+        "overall": 69,
+        "potencial": 69,
+        "contrato_anos": 2
     },
     {
         "id": 158,
         "nome": "Enzo Bianchi",
         "idade": 19,
         "posicao": "Defesa",
-        "overall": 73
+        "overall": 73,
+        "potencial": 87,
+        "contrato_anos": 3
     },
     {
         "id": 159,
         "nome": "João Lima",
         "idade": 23,
         "posicao": "Meio-Campo",
-        "overall": 78
+        "overall": 78,
+        "potencial": 85,
+        "contrato_anos": 5
     },
     {
         "id": 160,
         "nome": "Caio Wilson",
         "idade": 27,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 77,
+        "contrato_anos": 1
     },
     {
         "id": 161,
         "nome": "Arthur Wilson",
         "idade": 36,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 77,
+        "contrato_anos": 2
     },
     {
         "id": 162,
         "nome": "Francesco Santos",
         "idade": 24,
         "posicao": "Atacante",
-        "overall": 72
+        "overall": 72,
+        "potencial": 74,
+        "contrato_anos": 4
     },
     {
         "id": 163,
         "nome": "Arthur Rossi",
         "idade": 31,
         "posicao": "Goleiro",
-        "overall": 73
+        "overall": 73,
+        "potencial": 73,
+        "contrato_anos": 2
     },
     {
         "id": 164,
         "nome": "Lucas Fernandez",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 1
     },
     {
         "id": 165,
         "nome": "Alejandro Brown",
         "idade": 24,
         "posicao": "Defesa",
-        "overall": 76
+        "overall": 76,
+        "potencial": 84,
+        "contrato_anos": 3
     },
     {
         "id": 166,
         "nome": "Thiago Gomes",
         "idade": 20,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 86,
+        "contrato_anos": 1
     },
     {
         "id": 167,
         "nome": "Harry Araujo",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 81
+        "overall": 81,
+        "potencial": 87,
+        "contrato_anos": 3
     },
     {
         "id": 168,
         "nome": "Gustavo Gomes",
         "idade": 18,
         "posicao": "Meio-Campo",
-        "overall": 85
+        "overall": 85,
+        "potencial": 94,
+        "contrato_anos": 5
     },
     {
         "id": 169,
         "nome": "Rodrigo Ribeiro",
         "idade": 37,
         "posicao": "Meio-Campo",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 1
     },
     {
         "id": 170,
         "nome": "Alejandro Lopez",
         "idade": 34,
         "posicao": "Meio-Campo",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 2
     },
     {
         "id": 171,
         "nome": "Pedro Johnson",
         "idade": 21,
         "posicao": "Atacante",
-        "overall": 84
+        "overall": 84,
+        "potencial": 88,
+        "contrato_anos": 2
     },
     {
         "id": 172,
         "nome": "Alejandro Mendes",
         "idade": 25,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 79,
+        "contrato_anos": 3
     },
     {
         "id": 173,
         "nome": "Felipe Almeida",
         "idade": 30,
         "posicao": "Atacante",
-        "overall": 79
+        "overall": 79,
+        "potencial": 79,
+        "contrato_anos": 1
     },
     {
         "id": 174,
         "nome": "Jack Pereira",
         "idade": 18,
         "posicao": "Goleiro",
-        "overall": 78
+        "overall": 78,
+        "potencial": 83,
+        "contrato_anos": 4
     },
     {
         "id": 175,
         "nome": "Noah Barbosa",
         "idade": 29,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 79,
+        "contrato_anos": 4
     },
     {
         "id": 176,
         "nome": "Pablo Rocha",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 73
+        "overall": 73,
+        "potencial": 75,
+        "contrato_anos": 1
     },
     {
         "id": 177,
         "nome": "Rafael Mendes",
         "idade": 36,
         "posicao": "Meio-Campo",
-        "overall": 81
+        "overall": 81,
+        "potencial": 81,
+        "contrato_anos": 1
     },
     {
         "id": 178,
         "nome": "Jack Costa",
         "idade": 21,
         "posicao": "Meio-Campo",
-        "overall": 74
+        "overall": 74,
+        "potencial": 77,
+        "contrato_anos": 1
     },
     {
         "id": 179,
         "nome": "Luca Brown",
         "idade": 25,
         "posicao": "Atacante",
-        "overall": 70
+        "overall": 70,
+        "potencial": 72,
+        "contrato_anos": 1
     },
     {
         "id": 180,
         "nome": "Jack Almeida",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 72
+        "overall": 72,
+        "potencial": 72,
+        "contrato_anos": 5
     },
     {
         "id": 181,
         "nome": "Juan Mendes",
         "idade": 28,
         "posicao": "Goleiro",
-        "overall": 83
+        "overall": 83,
+        "potencial": 85,
+        "contrato_anos": 3
     },
     {
         "id": 182,
         "nome": "Matheus Pereira",
         "idade": 16,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 91,
+        "contrato_anos": 5
     },
     {
         "id": 183,
         "nome": "Matheus Almeida",
         "idade": 29,
         "posicao": "Defesa",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 4
     },
     {
         "id": 184,
         "nome": "Antoine Walker",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 83
+        "overall": 83,
+        "potencial": 87,
+        "contrato_anos": 5
     },
     {
         "id": 185,
         "nome": "Noah Almeida",
         "idade": 36,
         "posicao": "Defesa",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 1
     },
     {
         "id": 186,
         "nome": "Jack Martins",
         "idade": 24,
         "posicao": "Meio-Campo",
-        "overall": 79
+        "overall": 79,
+        "potencial": 85,
+        "contrato_anos": 4
     },
     {
         "id": 187,
         "nome": "Jack Smith",
         "idade": 18,
         "posicao": "Meio-Campo",
-        "overall": 81
+        "overall": 81,
+        "potencial": 92,
+        "contrato_anos": 1
     },
     {
         "id": 188,
         "nome": "Luca Costa",
         "idade": 21,
         "posicao": "Meio-Campo",
-        "overall": 82
+        "overall": 82,
+        "potencial": 89,
+        "contrato_anos": 3
     },
     {
         "id": 189,
         "nome": "Gabriel Wilson",
         "idade": 23,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 88,
+        "contrato_anos": 5
     },
     {
         "id": 190,
         "nome": "André Wilson",
         "idade": 21,
         "posicao": "Atacante",
-        "overall": 78
+        "overall": 78,
+        "potencial": 85,
+        "contrato_anos": 3
     },
     {
         "id": 191,
         "nome": "Leonardo Lima",
         "idade": 34,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 2
     },
     {
         "id": 192,
         "nome": "Pedro Pereira",
         "idade": 17,
         "posicao": "Goleiro",
-        "overall": 76
+        "overall": 76,
+        "potencial": 85,
+        "contrato_anos": 3
     },
     {
         "id": 193,
         "nome": "Juan Souza",
         "idade": 16,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 82,
+        "contrato_anos": 4
     },
     {
         "id": 194,
         "nome": "Matheus Ferreira",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 77,
+        "contrato_anos": 3
     },
     {
         "id": 195,
         "nome": "Pierre Almeida",
         "idade": 24,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 83,
+        "contrato_anos": 3
     },
     {
         "id": 196,
         "nome": "Louis Perez",
         "idade": 21,
         "posicao": "Meio-Campo",
-        "overall": 75
+        "overall": 75,
+        "potencial": 79,
+        "contrato_anos": 1
     },
     {
         "id": 197,
         "nome": "Oliver Rossi",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 76,
+        "contrato_anos": 4
     },
     {
         "id": 198,
         "nome": "Arthur Fernandez",
         "idade": 22,
         "posicao": "Atacante",
-        "overall": 72
+        "overall": 72,
+        "potencial": 76,
+        "contrato_anos": 5
     },
     {
         "id": 199,
         "nome": "Juan Taylor",
         "idade": 34,
         "posicao": "Goleiro",
-        "overall": 72
+        "overall": 72,
+        "potencial": 72,
+        "contrato_anos": 1
     },
     {
         "id": 200,
         "nome": "Matheus Martins",
         "idade": 24,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 85,
+        "contrato_anos": 3
     },
     {
         "id": 201,
         "nome": "Luca Johnson",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 80,
+        "contrato_anos": 5
     },
     {
         "id": 202,
         "nome": "Caio Brown",
         "idade": 37,
         "posicao": "Defesa",
-        "overall": 81
+        "overall": 81,
+        "potencial": 81,
+        "contrato_anos": 1
     },
     {
         "id": 203,
         "nome": "Miguel Costa",
         "idade": 31,
         "posicao": "Defesa",
-        "overall": 73
+        "overall": 73,
+        "potencial": 73,
+        "contrato_anos": 1
     },
     {
         "id": 204,
         "nome": "Matheus Walker",
         "idade": 27,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 81,
+        "contrato_anos": 5
     },
     {
         "id": 205,
         "nome": "Gabriel Lopez",
         "idade": 26,
         "posicao": "Meio-Campo",
-        "overall": 81
+        "overall": 81,
+        "potencial": 81,
+        "contrato_anos": 1
     },
     {
         "id": 206,
         "nome": "Rafael Dubois",
         "idade": 22,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 82,
+        "contrato_anos": 2
     },
     {
         "id": 207,
         "nome": "André Rossi",
         "idade": 30,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 5
     },
     {
         "id": 208,
         "nome": "Leonardo Souza",
         "idade": 18,
         "posicao": "Atacante",
-        "overall": 75
+        "overall": 75,
+        "potencial": 85,
+        "contrato_anos": 5
     },
     {
         "id": 209,
         "nome": "João Barbosa",
         "idade": 36,
         "posicao": "Atacante",
-        "overall": 83
+        "overall": 83,
+        "potencial": 83,
+        "contrato_anos": 2
     },
     {
         "id": 210,
         "nome": "Pedro Costa",
         "idade": 24,
         "posicao": "Goleiro",
-        "overall": 76
+        "overall": 76,
+        "potencial": 78,
+        "contrato_anos": 4
     },
     {
         "id": 211,
         "nome": "Noah Moretti",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 72
+        "overall": 72,
+        "potencial": 73,
+        "contrato_anos": 3
     },
     {
         "id": 212,
         "nome": "Arthur Oliveira",
         "idade": 20,
         "posicao": "Defesa",
-        "overall": 76
+        "overall": 76,
+        "potencial": 87,
+        "contrato_anos": 4
     },
     {
         "id": 213,
         "nome": "Liam Martin",
         "idade": 27,
         "posicao": "Meio-Campo",
-        "overall": 72
+        "overall": 72,
+        "potencial": 75,
+        "contrato_anos": 2
     },
     {
         "id": 214,
         "nome": "Matheus Smith",
         "idade": 25,
         "posicao": "Meio-Campo",
-        "overall": 78
+        "overall": 78,
+        "potencial": 81,
+        "contrato_anos": 2
     },
     {
         "id": 215,
         "nome": "Francesco Perez",
         "idade": 19,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 81,
+        "contrato_anos": 2
     },
     {
         "id": 216,
         "nome": "Carlos Perez",
         "idade": 32,
         "posicao": "Atacante",
-        "overall": 73
+        "overall": 73,
+        "potencial": 73,
+        "contrato_anos": 1
     },
     {
         "id": 217,
         "nome": "Matheus Silva",
         "idade": 27,
         "posicao": "Goleiro",
-        "overall": 80
+        "overall": 80,
+        "potencial": 83,
+        "contrato_anos": 3
     },
     {
         "id": 218,
         "nome": "Pierre Smith",
         "idade": 16,
         "posicao": "Defesa",
-        "overall": 83
+        "overall": 83,
+        "potencial": 90,
+        "contrato_anos": 2
     },
     {
         "id": 219,
         "nome": "Liam Souza",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 83
+        "overall": 83,
+        "potencial": 85,
+        "contrato_anos": 1
     },
     {
         "id": 220,
         "nome": "Oliver Walker",
         "idade": 27,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 79,
+        "contrato_anos": 5
     },
     {
         "id": 221,
         "nome": "Pedro Fernandez",
         "idade": 20,
         "posicao": "Defesa",
-        "overall": 75
+        "overall": 75,
+        "potencial": 87,
+        "contrato_anos": 4
     },
     {
         "id": 222,
         "nome": "Liam Almeida",
         "idade": 27,
         "posicao": "Meio-Campo",
-        "overall": 81
+        "overall": 81,
+        "potencial": 83,
+        "contrato_anos": 3
     },
     {
         "id": 223,
         "nome": "Louis Costa",
         "idade": 25,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 81,
+        "contrato_anos": 5
     },
     {
         "id": 224,
         "nome": "Bruno Ferreira",
         "idade": 22,
         "posicao": "Meio-Campo",
-        "overall": 78
+        "overall": 78,
+        "potencial": 80,
+        "contrato_anos": 2
     },
     {
         "id": 225,
         "nome": "Alejandro Smith",
         "idade": 23,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 86,
+        "contrato_anos": 1
     },
     {
         "id": 226,
         "nome": "Diego Barbosa",
         "idade": 22,
         "posicao": "Atacante",
-        "overall": 82
+        "overall": 82,
+        "potencial": 89,
+        "contrato_anos": 5
     },
     {
         "id": 227,
         "nome": "Luca Bianchi",
         "idade": 26,
         "posicao": "Atacante",
-        "overall": 83
+        "overall": 83,
+        "potencial": 85,
+        "contrato_anos": 3
     },
     {
         "id": 228,
         "nome": "Rafael Bianchi",
         "idade": 19,
         "posicao": "Goleiro",
-        "overall": 72
+        "overall": 72,
+        "potencial": 87,
+        "contrato_anos": 5
     },
     {
         "id": 229,
         "nome": "Leonardo Oliveira",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 74
+        "overall": 74,
+        "potencial": 82,
+        "contrato_anos": 3
     },
     {
         "id": 230,
         "nome": "Gabriel Brown",
         "idade": 31,
         "posicao": "Defesa",
-        "overall": 78
+        "overall": 78,
+        "potencial": 78,
+        "contrato_anos": 1
     },
     {
         "id": 231,
         "nome": "Luca Santos",
         "idade": 24,
         "posicao": "Meio-Campo",
-        "overall": 73
+        "overall": 73,
+        "potencial": 80,
+        "contrato_anos": 1
     },
     {
         "id": 232,
         "nome": "Rafael Oliveira",
         "idade": 26,
         "posicao": "Meio-Campo",
-        "overall": 78
+        "overall": 78,
+        "potencial": 79,
+        "contrato_anos": 4
     },
     {
         "id": 233,
         "nome": "Lucas Araujo",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 71
+        "overall": 71,
+        "potencial": 71,
+        "contrato_anos": 2
     },
     {
         "id": 234,
         "nome": "Jack Brown",
         "idade": 36,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 1
     },
     {
         "id": 235,
         "nome": "Miguel Wilson",
         "idade": 19,
         "posicao": "Goleiro",
-        "overall": 84
+        "overall": 84,
+        "potencial": 95,
+        "contrato_anos": 3
     },
     {
         "id": 236,
         "nome": "Rafael Wilson",
         "idade": 17,
         "posicao": "Defesa",
-        "overall": 88
+        "overall": 88,
+        "potencial": 96,
+        "contrato_anos": 5
     },
     {
         "id": 237,
         "nome": "Oliver Pereira",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 82
+        "overall": 82,
+        "potencial": 90,
+        "contrato_anos": 3
     },
     {
         "id": 238,
         "nome": "Pablo Pereira",
         "idade": 29,
         "posicao": "Defesa",
-        "overall": 86
+        "overall": 86,
+        "potencial": 88,
+        "contrato_anos": 2
     },
     {
         "id": 239,
         "nome": "Pierre Brown",
         "idade": 18,
         "posicao": "Defesa",
-        "overall": 84
+        "overall": 84,
+        "potencial": 94,
+        "contrato_anos": 3
     },
     {
         "id": 240,
         "nome": "Francesco Ribeiro",
         "idade": 23,
         "posicao": "Meio-Campo",
-        "overall": 85
+        "overall": 85,
+        "potencial": 90,
+        "contrato_anos": 4
     },
     {
         "id": 241,
         "nome": "Rafael Ferreira",
         "idade": 22,
         "posicao": "Meio-Campo",
-        "overall": 79
+        "overall": 79,
+        "potencial": 85,
+        "contrato_anos": 4
     },
     {
         "id": 242,
         "nome": "Louis Santos",
         "idade": 23,
         "posicao": "Meio-Campo",
-        "overall": 83
+        "overall": 83,
+        "potencial": 91,
+        "contrato_anos": 5
     },
     {
         "id": 243,
         "nome": "Harry Lima",
         "idade": 20,
         "posicao": "Atacante",
-        "overall": 84
+        "overall": 84,
+        "potencial": 93,
+        "contrato_anos": 2
     },
     {
         "id": 244,
         "nome": "Marco Santos",
         "idade": 24,
         "posicao": "Atacante",
-        "overall": 81
+        "overall": 81,
+        "potencial": 84,
+        "contrato_anos": 4
     },
     {
         "id": 245,
         "nome": "Marco Lopez",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 83
+        "overall": 83,
+        "potencial": 84,
+        "contrato_anos": 4
     },
     {
         "id": 246,
         "nome": "Giovanni Ribeiro",
         "idade": 28,
         "posicao": "Goleiro",
-        "overall": 81
+        "overall": 81,
+        "potencial": 81,
+        "contrato_anos": 3
     },
     {
         "id": 247,
         "nome": "Gustavo Taylor",
         "idade": 27,
         "posicao": "Defesa",
-        "overall": 84
+        "overall": 84,
+        "potencial": 87,
+        "contrato_anos": 1
     },
     {
         "id": 248,
         "nome": "Louis Rocha",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 84,
+        "contrato_anos": 2
     },
     {
         "id": 249,
         "nome": "Pierre Lima",
         "idade": 31,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 1
     },
     {
         "id": 250,
         "nome": "Marco Smith",
         "idade": 36,
         "posicao": "Meio-Campo",
-        "overall": 77
+        "overall": 77,
+        "potencial": 77,
+        "contrato_anos": 2
     },
     {
         "id": 251,
         "nome": "Gabriel Johnson",
         "idade": 24,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 81,
+        "contrato_anos": 5
     },
     {
         "id": 252,
         "nome": "Juan Almeida",
         "idade": 35,
         "posicao": "Atacante",
-        "overall": 79
+        "overall": 79,
+        "potencial": 79,
+        "contrato_anos": 2
     },
     {
         "id": 253,
         "nome": "Gustavo Dubois",
         "idade": 23,
         "posicao": "Goleiro",
-        "overall": 80
+        "overall": 80,
+        "potencial": 83,
+        "contrato_anos": 1
     },
     {
         "id": 254,
         "nome": "João Costa",
         "idade": 17,
         "posicao": "Defesa",
-        "overall": 74
+        "overall": 74,
+        "potencial": 79,
+        "contrato_anos": 5
     },
     {
         "id": 255,
         "nome": "Matheus Lopez",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 81
+        "overall": 81,
+        "potencial": 84,
+        "contrato_anos": 5
     },
     {
         "id": 256,
         "nome": "Luca Ferreira",
         "idade": 19,
         "posicao": "Defesa",
-        "overall": 79
+        "overall": 79,
+        "potencial": 88,
+        "contrato_anos": 5
     },
     {
         "id": 257,
         "nome": "Pierre Araujo",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 4
     },
     {
         "id": 258,
         "nome": "Vinicius Walker",
         "idade": 16,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 91,
+        "contrato_anos": 5
     },
     {
         "id": 259,
         "nome": "Louis Brown",
         "idade": 20,
         "posicao": "Meio-Campo",
-        "overall": 73
+        "overall": 73,
+        "potencial": 86,
+        "contrato_anos": 2
     },
     {
         "id": 260,
         "nome": "Pierre Souza",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 76,
+        "contrato_anos": 1
     },
     {
         "id": 261,
         "nome": "Lucas Taylor",
         "idade": 34,
         "posicao": "Atacante",
-        "overall": 78
+        "overall": 78,
+        "potencial": 78,
+        "contrato_anos": 1
     },
     {
         "id": 262,
         "nome": "Miguel Smith",
         "idade": 22,
         "posicao": "Atacante",
-        "overall": 75
+        "overall": 75,
+        "potencial": 82,
+        "contrato_anos": 4
     },
     {
         "id": 263,
         "nome": "Lucas Smith",
         "idade": 23,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 84,
+        "contrato_anos": 5
     },
     {
         "id": 264,
         "nome": "Giovanni Barbosa",
         "idade": 31,
         "posicao": "Goleiro",
-        "overall": 70
+        "overall": 70,
+        "potencial": 70,
+        "contrato_anos": 3
     },
     {
         "id": 265,
         "nome": "Lucas Lopez",
         "idade": 24,
         "posicao": "Defesa",
-        "overall": 75
+        "overall": 75,
+        "potencial": 79,
+        "contrato_anos": 1
     },
     {
         "id": 266,
         "nome": "Rodrigo Johnson",
         "idade": 37,
         "posicao": "Defesa",
-        "overall": 71
+        "overall": 71,
+        "potencial": 71,
+        "contrato_anos": 1
     },
     {
         "id": 267,
         "nome": "Diego Lopez",
         "idade": 21,
         "posicao": "Meio-Campo",
-        "overall": 75
+        "overall": 75,
+        "potencial": 78,
+        "contrato_anos": 3
     },
     {
         "id": 268,
         "nome": "Matheus Brown",
         "idade": 27,
         "posicao": "Meio-Campo",
-        "overall": 71
+        "overall": 71,
+        "potencial": 73,
+        "contrato_anos": 5
     },
     {
         "id": 269,
         "nome": "Marco Taylor",
         "idade": 23,
         "posicao": "Atacante",
-        "overall": 69
+        "overall": 69,
+        "potencial": 73,
+        "contrato_anos": 3
     },
     {
         "id": 270,
         "nome": "Louis Garcia",
         "idade": 36,
         "posicao": "Atacante",
-        "overall": 73
+        "overall": 73,
+        "potencial": 73,
+        "contrato_anos": 1
     },
     {
         "id": 271,
         "nome": "Thiago Lopez",
         "idade": 22,
         "posicao": "Goleiro",
-        "overall": 80
+        "overall": 80,
+        "potencial": 85,
+        "contrato_anos": 2
     },
     {
         "id": 272,
         "nome": "Liam Gomes",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 5
     },
     {
         "id": 273,
         "nome": "Felipe Ferreira",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 75
+        "overall": 75,
+        "potencial": 78,
+        "contrato_anos": 4
     },
     {
         "id": 274,
         "nome": "Lucas Lima",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 86
+        "overall": 86,
+        "potencial": 88,
+        "contrato_anos": 5
     },
     {
         "id": 275,
         "nome": "Jack Bianchi",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 80,
+        "contrato_anos": 5
     },
     {
         "id": 276,
         "nome": "Matheus Souza",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 79
+        "overall": 79,
+        "potencial": 79,
+        "contrato_anos": 2
     },
     {
         "id": 277,
         "nome": "Louis Taylor",
         "idade": 31,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 3
     },
     {
         "id": 278,
         "nome": "Marco Martins",
         "idade": 34,
         "posicao": "Meio-Campo",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 1
     },
     {
         "id": 279,
         "nome": "Miguel Bianchi",
         "idade": 19,
         "posicao": "Atacante",
-        "overall": 86
+        "overall": 86,
+        "potencial": 93,
+        "contrato_anos": 1
     },
     {
         "id": 280,
         "nome": "Juan Smith",
         "idade": 29,
         "posicao": "Atacante",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 5
     },
     {
         "id": 281,
         "nome": "Antoine Lopez",
         "idade": 32,
         "posicao": "Atacante",
-        "overall": 78
+        "overall": 78,
+        "potencial": 78,
+        "contrato_anos": 1
     },
     {
         "id": 282,
         "nome": "Thiago Brown",
         "idade": 22,
         "posicao": "Goleiro",
-        "overall": 67
+        "overall": 67,
+        "potencial": 75,
+        "contrato_anos": 3
     },
     {
         "id": 283,
         "nome": "Felipe Araujo",
         "idade": 21,
         "posicao": "Defesa",
-        "overall": 72
+        "overall": 72,
+        "potencial": 74,
+        "contrato_anos": 3
     },
     {
         "id": 284,
         "nome": "Luca Pereira",
         "idade": 22,
         "posicao": "Defesa",
-        "overall": 78
+        "overall": 78,
+        "potencial": 82,
+        "contrato_anos": 2
     },
     {
         "id": 285,
         "nome": "Miguel Perez",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 70
+        "overall": 70,
+        "potencial": 71,
+        "contrato_anos": 5
     },
     {
         "id": 286,
         "nome": "Miguel Pereira",
         "idade": 31,
         "posicao": "Meio-Campo",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 5
     },
     {
         "id": 287,
         "nome": "Marco Moretti",
         "idade": 26,
         "posicao": "Atacante",
-        "overall": 79
+        "overall": 79,
+        "potencial": 80,
+        "contrato_anos": 2
     },
     {
         "id": 288,
         "nome": "Thiago Pereira",
         "idade": 21,
         "posicao": "Atacante",
-        "overall": 79
+        "overall": 79,
+        "potencial": 81,
+        "contrato_anos": 3
     },
     {
         "id": 289,
         "nome": "Rodrigo Gomes",
         "idade": 17,
         "posicao": "Goleiro",
-        "overall": 76
+        "overall": 76,
+        "potencial": 88,
+        "contrato_anos": 1
     },
     {
         "id": 290,
         "nome": "Arthur Rodriguez",
         "idade": 20,
         "posicao": "Defesa",
-        "overall": 86
+        "overall": 86,
+        "potencial": 92,
+        "contrato_anos": 4
     },
     {
         "id": 291,
         "nome": "Leonardo Pereira",
         "idade": 29,
         "posicao": "Defesa",
-        "overall": 84
+        "overall": 84,
+        "potencial": 86,
+        "contrato_anos": 5
     },
     {
         "id": 292,
         "nome": "Rafael Gomes",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 83
+        "overall": 83,
+        "potencial": 85,
+        "contrato_anos": 1
     },
     {
         "id": 293,
         "nome": "Arthur Santos",
         "idade": 34,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 77,
+        "contrato_anos": 2
     },
     {
         "id": 294,
         "nome": "Noah Souza",
         "idade": 29,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 79,
+        "contrato_anos": 4
     },
     {
         "id": 295,
         "nome": "Gustavo Perez",
         "idade": 27,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 5
     },
     {
         "id": 296,
         "nome": "Gabriel Gomes",
         "idade": 28,
         "posicao": "Meio-Campo",
-        "overall": 81
+        "overall": 81,
+        "potencial": 82,
+        "contrato_anos": 3
     },
     {
         "id": 297,
         "nome": "Luca Martins",
         "idade": 23,
         "posicao": "Atacante",
-        "overall": 78
+        "overall": 78,
+        "potencial": 85,
+        "contrato_anos": 4
     },
     {
         "id": 298,
         "nome": "Alejandro Johnson",
         "idade": 18,
         "posicao": "Atacante",
-        "overall": 85
+        "overall": 85,
+        "potencial": 99,
+        "contrato_anos": 3
     },
     {
         "id": 299,
         "nome": "Juan Araujo",
         "idade": 25,
         "posicao": "Atacante",
-        "overall": 78
+        "overall": 78,
+        "potencial": 78,
+        "contrato_anos": 1
     },
     {
         "id": 300,
         "nome": "Juan Fernandez",
         "idade": 17,
         "posicao": "Goleiro",
-        "overall": 77
+        "overall": 77,
+        "potencial": 83,
+        "contrato_anos": 4
     },
     {
         "id": 301,
         "nome": "Pierre Moretti",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 74
+        "overall": 74,
+        "potencial": 76,
+        "contrato_anos": 3
     },
     {
         "id": 302,
         "nome": "Oliver Moretti",
         "idade": 33,
         "posicao": "Defesa",
-        "overall": 75
+        "overall": 75,
+        "potencial": 75,
+        "contrato_anos": 1
     },
     {
         "id": 303,
         "nome": "Alejandro Oliveira",
         "idade": 19,
         "posicao": "Meio-Campo",
-        "overall": 70
+        "overall": 70,
+        "potencial": 77,
+        "contrato_anos": 3
     },
     {
         "id": 304,
         "nome": "Jack Johnson",
         "idade": 27,
         "posicao": "Meio-Campo",
-        "overall": 71
+        "overall": 71,
+        "potencial": 74,
+        "contrato_anos": 5
     },
     {
         "id": 305,
         "nome": "Gabriel Ribeiro",
         "idade": 25,
         "posicao": "Atacante",
-        "overall": 78
+        "overall": 78,
+        "potencial": 80,
+        "contrato_anos": 3
     },
     {
         "id": 306,
         "nome": "Leonardo Rocha",
         "idade": 16,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 92,
+        "contrato_anos": 4
     },
     {
         "id": 307,
         "nome": "Jack Lima",
         "idade": 20,
         "posicao": "Goleiro",
-        "overall": 72
+        "overall": 72,
+        "potencial": 83,
+        "contrato_anos": 3
     },
     {
         "id": 308,
         "nome": "Felipe Wilson",
         "idade": 37,
         "posicao": "Defesa",
-        "overall": 76
+        "overall": 76,
+        "potencial": 76,
+        "contrato_anos": 1
     },
     {
         "id": 309,
         "nome": "Rafael Pereira",
         "idade": 26,
         "posicao": "Defesa",
-        "overall": 80
+        "overall": 80,
+        "potencial": 81,
+        "contrato_anos": 4
     },
     {
         "id": 310,
         "nome": "Rodrigo Wilson",
         "idade": 29,
         "posicao": "Defesa",
-        "overall": 83
+        "overall": 83,
+        "potencial": 84,
+        "contrato_anos": 3
     },
     {
         "id": 311,
         "nome": "Antoine Martin",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 74
+        "overall": 74,
+        "potencial": 76,
+        "contrato_anos": 4
     },
     {
         "id": 312,
         "nome": "Noah Perez",
         "idade": 21,
         "posicao": "Meio-Campo",
-        "overall": 75
+        "overall": 75,
+        "potencial": 83,
+        "contrato_anos": 5
     },
     {
         "id": 313,
         "nome": "Giovanni Rodriguez",
         "idade": 33,
         "posicao": "Meio-Campo",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 2
     },
     {
         "id": 314,
         "nome": "Bruno Taylor",
         "idade": 17,
         "posicao": "Meio-Campo",
-        "overall": 71
+        "overall": 71,
+        "potencial": 79,
+        "contrato_anos": 2
     },
     {
         "id": 315,
         "nome": "Lucas Rocha",
         "idade": 19,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 86,
+        "contrato_anos": 5
     },
     {
         "id": 316,
         "nome": "Carlos Walker",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 78,
+        "contrato_anos": 4
     },
     {
         "id": 317,
         "nome": "Gabriel Pereira",
         "idade": 29,
         "posicao": "Atacante",
-        "overall": 73
+        "overall": 73,
+        "potencial": 75,
+        "contrato_anos": 3
     },
     {
         "id": 318,
         "nome": "Juan Barbosa",
         "idade": 29,
         "posicao": "Goleiro",
-        "overall": 74
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 3
     },
     {
         "id": 319,
         "nome": "Antoine Smith",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 68
+        "overall": 68,
+        "potencial": 70,
+        "contrato_anos": 4
     },
     {
         "id": 320,
         "nome": "Rodrigo Lopez",
         "idade": 28,
         "posicao": "Defesa",
-        "overall": 69
+        "overall": 69,
+        "potencial": 71,
+        "contrato_anos": 2
     },
     {
         "id": 321,
         "nome": "Alejandro Garcia",
         "idade": 29,
         "posicao": "Meio-Campo",
-        "overall": 63
+        "overall": 63,
+        "potencial": 65,
+        "contrato_anos": 2
     },
     {
         "id": 322,
         "nome": "Alejandro Lima",
         "idade": 25,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 78,
+        "contrato_anos": 2
     },
     {
         "id": 323,
         "nome": "Arthur Smith",
         "idade": 34,
         "posicao": "Atacante",
-        "overall": 70
+        "overall": 70,
+        "potencial": 70,
+        "contrato_anos": 1
     },
     {
         "id": 324,
         "nome": "Antoine Garcia",
         "idade": 34,
         "posicao": "Atacante",
-        "overall": 68
+        "overall": 68,
+        "potencial": 68,
+        "contrato_anos": 2
     },
     {
         "id": 325,
         "nome": "Vinicius Araujo",
         "idade": 20,
         "posicao": "Goleiro",
-        "overall": 78
+        "overall": 78,
+        "potencial": 87,
+        "contrato_anos": 5
     },
     {
         "id": 326,
         "nome": "Giovanni Almeida",
         "idade": 23,
         "posicao": "Defesa",
-        "overall": 82
+        "overall": 82,
+        "potencial": 87,
+        "contrato_anos": 4
     },
     {
         "id": 327,
         "nome": "João Gomes",
         "idade": 28,
         "posicao": "Defesa",
-        "overall": 78
+        "overall": 78,
+        "potencial": 81,
+        "contrato_anos": 1
     },
     {
         "id": 328,
         "nome": "Gustavo Fernandez",
         "idade": 21,
         "posicao": "Defesa",
-        "overall": 80
+        "overall": 80,
+        "potencial": 86,
+        "contrato_anos": 3
     },
     {
         "id": 329,
         "nome": "Arthur Mendes",
         "idade": 21,
         "posicao": "Defesa",
-        "overall": 82
+        "overall": 82,
+        "potencial": 89,
+        "contrato_anos": 4
     },
     {
         "id": 330,
         "nome": "Thiago Santos",
         "idade": 36,
         "posicao": "Meio-Campo",
-        "overall": 79
+        "overall": 79,
+        "potencial": 79,
+        "contrato_anos": 2
     },
     {
         "id": 331,
         "nome": "Francesco Barbosa",
         "idade": 34,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 1
     },
     {
         "id": 332,
         "nome": "Enzo Wilson",
         "idade": 29,
         "posicao": "Meio-Campo",
-        "overall": 80
+        "overall": 80,
+        "potencial": 83,
+        "contrato_anos": 5
     },
     {
         "id": 333,
         "nome": "Louis Martin",
         "idade": 32,
         "posicao": "Atacante",
-        "overall": 82
+        "overall": 82,
+        "potencial": 82,
+        "contrato_anos": 1
     },
     {
         "id": 334,
         "nome": "Diego Rocha",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 80,
+        "contrato_anos": 3
     },
     {
         "id": 335,
         "nome": "Caio Barbosa",
         "idade": 18,
         "posicao": "Atacante",
-        "overall": 81
+        "overall": 81,
+        "potencial": 96,
+        "contrato_anos": 3
     },
     {
         "id": 336,
         "nome": "Pierre Fernandez",
         "idade": 16,
         "posicao": "Goleiro",
-        "overall": 70
+        "overall": 70,
+        "potencial": 75,
+        "contrato_anos": 4
     },
     {
         "id": 337,
         "nome": "Felipe Dubois",
         "idade": 24,
         "posicao": "Defesa",
-        "overall": 78
+        "overall": 78,
+        "potencial": 85,
+        "contrato_anos": 2
     },
     {
         "id": 338,
         "nome": "Marco Garcia",
         "idade": 34,
         "posicao": "Defesa",
-        "overall": 75
+        "overall": 75,
+        "potencial": 75,
+        "contrato_anos": 1
     },
     {
         "id": 339,
         "nome": "João Rodriguez",
         "idade": 24,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 80,
+        "contrato_anos": 5
     },
     {
         "id": 340,
         "nome": "Oliver Perez",
         "idade": 25,
         "posicao": "Meio-Campo",
-        "overall": 76
+        "overall": 76,
+        "potencial": 78,
+        "contrato_anos": 2
     },
     {
         "id": 341,
         "nome": "Jack Mendes",
         "idade": 23,
         "posicao": "Atacante",
-        "overall": 72
+        "overall": 72,
+        "potencial": 76,
+        "contrato_anos": 5
     },
     {
         "id": 342,
         "nome": "Jack Walker",
         "idade": 28,
         "posicao": "Atacante",
-        "overall": 75
+        "overall": 75,
+        "potencial": 78,
+        "contrato_anos": 4
     },
     {
         "id": 343,
         "nome": "Arthur Bianchi",
         "idade": 26,
         "posicao": "Goleiro",
-        "overall": 77
+        "overall": 77,
+        "potencial": 80,
+        "contrato_anos": 3
     },
     {
         "id": 344,
         "nome": "Antoine Lima",
         "idade": 20,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 82,
+        "contrato_anos": 1
     },
     {
         "id": 345,
         "nome": "Marco Rocha",
         "idade": 28,
         "posicao": "Defesa",
-        "overall": 78
+        "overall": 78,
+        "potencial": 79,
+        "contrato_anos": 1
     },
     {
         "id": 346,
         "nome": "Gabriel Moretti",
         "idade": 19,
         "posicao": "Defesa",
-        "overall": 77
+        "overall": 77,
+        "potencial": 92,
+        "contrato_anos": 3
     },
     {
         "id": 347,
         "nome": "Luca Oliveira",
         "idade": 25,
         "posicao": "Defesa",
-        "overall": 74
+        "overall": 74,
+        "potencial": 76,
+        "contrato_anos": 1
     },
     {
         "id": 348,
         "nome": "João Martins",
         "idade": 21,
         "posicao": "Meio-Campo",
-        "overall": 72
+        "overall": 72,
+        "potencial": 80,
+        "contrato_anos": 2
     },
     {
         "id": 349,
         "nome": "Liam Smith",
         "idade": 29,
         "posicao": "Meio-Campo",
-        "overall": 82
+        "overall": 82,
+        "potencial": 85,
+        "contrato_anos": 5
     },
     {
         "id": 350,
         "nome": "Miguel Dubois",
         "idade": 19,
         "posicao": "Meio-Campo",
-        "overall": 75
+        "overall": 75,
+        "potencial": 84,
+        "contrato_anos": 5
     },
     {
         "id": 351,
         "nome": "Noah Brown",
         "idade": 36,
         "posicao": "Atacante",
-        "overall": 68
+        "overall": 68,
+        "potencial": 68,
+        "contrato_anos": 2
     },
     {
         "id": 352,
         "nome": "Harry Taylor",
         "idade": 20,
         "posicao": "Atacante",
-        "overall": 77
+        "overall": 77,
+        "potencial": 83,
+        "contrato_anos": 5
     },
     {
         "id": 353,
         "nome": "Felipe Smith",
         "idade": 20,
         "posicao": "Atacante",
-        "overall": 74
+        "overall": 74,
+        "potencial": 82,
+        "contrato_anos": 5
     },
     {
         "id": 354,
         "nome": "André Silva",
         "idade": 25,
         "posicao": "Goleiro",
-        "overall": 72
+        "overall": 72,
+        "potencial": 72,
+        "contrato_anos": 1
     },
     {
         "id": 355,
         "nome": "Antoine Rossi",
         "idade": 24,
         "posicao": "Defesa",
-        "overall": 70
+        "overall": 70,
+        "potencial": 73,
+        "contrato_anos": 3
     },
     {
         "id": 356,
         "nome": "Leonardo Ribeiro",
         "idade": 31,
         "posicao": "Defesa",
-        "overall": 73
+        "overall": 73,
+        "potencial": 73,
+        "contrato_anos": 2
     },
     {
         "id": 357,
         "nome": "Lucas Walker",
         "idade": 21,
         "posicao": "Meio-Campo",
-        "overall": 70
+        "overall": 70,
+        "potencial": 75,
+        "contrato_anos": 2
     },
     {
         "id": 358,
         "nome": "Lucas Bianchi",
         "idade": 21,
         "posicao": "Meio-Campo",
-        "overall": 71
+        "overall": 71,
+        "potencial": 77,
+        "contrato_anos": 2
     },
     {
         "id": 359,
         "nome": "Vinicius Santos",
         "idade": 24,
         "posicao": "Atacante",
-        "overall": 65
+        "overall": 65,
+        "potencial": 72,
+        "contrato_anos": 3
     },
     {
         "id": 360,
         "nome": "Pierre Lopez",
         "idade": 26,
         "posicao": "Atacante",
-        "overall": 69
+        "overall": 69,
+        "potencial": 69,
+        "contrato_anos": 5
     }
 ]
