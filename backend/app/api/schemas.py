@@ -49,6 +49,10 @@ class JogadorStats(BaseModel):
     penaltis: int = 0
     penaltis_perdidos: int = 0
     faltas: int = 0
+    potencial: int = 0
+    contrato_anos: int = 0
+    valor_mercado: int = 0
+    salario: int = 0
 
 
 class Recorde(BaseModel):
@@ -321,6 +325,10 @@ class JogadorInfo(BaseModel):
     penaltis: int = 0
     penaltis_perdidos: int = 0
     faltas: int = 0
+    potencial: int = 0
+    contrato_anos: int = 0
+    valor_mercado: int = 0
+    salario: int = 0
 
 
 class JogadorDetalhe(BaseModel):

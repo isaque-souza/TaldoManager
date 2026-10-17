@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 153 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 166 testes.
 * **Frontend** (`frontend/`) — `index.html` único, JS puro, consome a API.
 
 Já dá pra:
@@ -272,17 +272,18 @@ jogador da temporada.
 
 ---
 
-# 💰 Mercado (v0.7)
+# 💰 Mercado (v0.7) — em andamento
 
-* [ ] Valor de mercado
-* [ ] Salários
+* [x] Valor de mercado (calculado de overall, idade e potencial)
+* [x] Salários (por temporada, calculado do overall)
 * [ ] Sistema financeiro
 * [ ] Compra de jogadores
 * [ ] Venda de jogadores
 * [ ] Negociações
 * [ ] Renovação de contrato
 * [ ] Evolução por idade
-* [ ] Potencial dos jogadores
+* [x] Potencial dos jogadores (na seed; o jogador ainda não evolui)
+* [x] Duração de contrato (temporadas restantes, na seed)
 
 ---
 
@@ -339,7 +340,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 153 testes (domain, db, repositories, services, api)
+│   └── tests/              # 166 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   └── index.html          # SPA em JS puro, consome a API

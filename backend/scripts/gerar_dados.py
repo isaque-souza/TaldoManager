@@ -185,6 +185,40 @@ jogadores[13]["posicao"] = "Meio-Campo"
 jogadores[13]["overall"] = 99
 
 
+# dados de mercado (v0.7). Usam um gerador PRÓPRIO, sorteado depois de tudo:
+# se usassem o `random` global dentro do loop acima, cada sorteio a mais
+# deslocaria a sequência e mudaria nome/idade/overall de todos os jogadores.
+rng_mercado = random.Random(2026)
+
+
+def gerar_potencial(idade, overall):
+    """Teto de overall que o jogador pode alcançar. Jovens têm margem de
+    crescimento; a partir dos 30 o potencial é o próprio overall."""
+
+    if idade <= 20:
+        margem = rng_mercado.randint(5, 15)
+    elif idade <= 24:
+        margem = rng_mercado.randint(2, 8)
+    elif idade <= 29:
+        margem = rng_mercado.randint(0, 3)
+    else:
+        margem = 0
+    return min(99, overall + margem)
+
+
+def gerar_contrato(idade):
+    """Temporadas restantes de contrato. Veteranos assinam por menos tempo."""
+
+    if idade >= 32:
+        return rng_mercado.randint(1, 2)
+    return rng_mercado.randint(1, 5)
+
+
+for j in jogadores:
+    j["potencial"] = gerar_potencial(j["idade"], j["overall"])
+    j["contrato_anos"] = gerar_contrato(j["idade"])
+
+
 SEEDS_DIR.mkdir(parents=True, exist_ok=True)
 
 with open(SEEDS_DIR / "jogadores.json", "w", encoding="utf-8") as f:

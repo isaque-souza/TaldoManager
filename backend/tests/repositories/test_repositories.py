@@ -32,6 +32,8 @@ def _jogador(nome, clube):
         "melhor_em_campo": 8, "clean_sheets": 0, "hat_tricks": 1,
         "amarelos": 3, "vermelhos": 0,
         "penaltis": 2, "penaltis_perdidos": 1, "faltas": 12,
+        "potencial": 84, "contrato_anos": 3,
+        "valor_mercado": 3_000_000, "salario": 250_000,
     }
 
 
@@ -61,6 +63,8 @@ def test_ciclo_completo_de_escrita_e_leitura(conn):
     assert len(elenco) == 1
     assert elenco[0]["nome"] == "Craque"
     assert elenco[0]["clube"] == "A FC"  # veio pelo JOIN
+    assert elenco[0]["potencial"] == 84
+    assert elenco[0]["valor_mercado"] == 3_000_000
 
     jogos = partida_repo.listar_por_clube(conn, mapa["B FC"])
     assert len(jogos) == 1

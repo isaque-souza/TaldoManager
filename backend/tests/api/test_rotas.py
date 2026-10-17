@@ -163,6 +163,10 @@ def test_detalhe_de_partida_e_game_log():
     log = jogador.json()
     assert log["jogador"]["id"] == jid
     assert len(log["jogos"]) == log["jogador"]["partidas"]
+    # dados de mercado (v0.7) chegam até a API
+    assert log["jogador"]["valor_mercado"] > 0
+    assert log["jogador"]["salario"] > 0
+    assert log["jogador"]["potencial"] >= log["jogador"]["overall"]
 
     assert client.get(f"/simulacoes/{sid}/partidas/999999").status_code == 404
     assert client.get(f"/simulacoes/{sid}/jogadores/999999").status_code == 404

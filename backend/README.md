@@ -5,9 +5,14 @@ sem ORM). O roadmap do projeto fica no [README raiz](../README.md).
 
 ## Rodar
 
+Precisa de **Python 3.10+** (o Python 3.9 que vem com o Xcode não serve).
+Com o [uv](https://docs.astral.sh/uv/):
+
 ```bash
 cd backend
-pip install -r requirements.txt
+uv venv --python 3.12 .venv
+uv pip install --python .venv/bin/python -r requirements.txt
+source .venv/bin/activate
 uvicorn app.main:app --reload
 ```
 

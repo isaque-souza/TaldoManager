@@ -238,6 +238,7 @@
     <hgroup>
       <h2 id="jogador-nome"></h2>
       <p id="jogador-info"></p>
+      <p id="jogador-mercado"></p>
     </hgroup>
     <h4>Game log</h4>
     <div id="jogador-log"></div>
@@ -764,8 +765,16 @@
     const COLS_ELENCO = [
       ["nome", "Jogador"], ["posicao", "Posição"], ["overall", "OVR"],
       ["partidas", "Jogos"], ["gols", "Gols"], ["assistencias", "Assist."],
-      ["nota_media", "Nota"], ["melhor_em_campo", "MVPs"],
+      ["nota_media", "Nota"], ["melhor_em_campo", "MVPs"], ["valor", "Valor"],
     ];
+
+    // 31540000 -> "31,5 mi" · 850000 -> "850 mil"
+    function dinheiro(v) {
+      if (v >= 1_000_000) {
+        return `${(v / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+      }
+      return `${Math.round(v / 1_000)} mil`;
+    }
 
     async function abrirClube(clubeId) {
       limparAviso();
@@ -788,7 +797,10 @@
         placar: `${j.gols_pro} x ${j.gols_contra}`,
       }));
       $("clube-jogos").innerHTML = tabela(jogos, COLS_JOGOS);
-      $("clube-elenco").innerHTML = tabela(c.elenco, COLS_ELENCO);
+      $("clube-elenco").innerHTML = tabela(
+        c.elenco.map((j) => ({ ...j, valor: j.valor_mercado ? dinheiro(j.valor_mercado) : "—" })),
+        COLS_ELENCO,
+      );
       ligarLinks($("clube-jogos"));
       ligarLinks($("clube-elenco"));
     }
@@ -898,6 +910,12 @@
         `${j.partidas}J ${j.gols}G ${j.assistencias}A · nota média ${j.nota_media} · ` +
         `melhor ${j.melhor_nota} · ${j.melhor_em_campo}x melhor em campo · ` +
         `🟨 ${j.amarelos} 🟥 ${j.vermelhos} · ${j.faltas} faltas${penas}`;
+      // saves anteriores à v0.7 não têm dados de mercado (vêm zerados)
+      $("jogador-mercado").textContent = j.valor_mercado
+        ? `💰 Valor ${dinheiro(j.valor_mercado)} · salário ${dinheiro(j.salario)}/temporada · ` +
+          `potencial ${j.potencial} · contrato: ${j.contrato_anos} ` +
+          `temporada${j.contrato_anos === 1 ? "" : "s"}`
+        : "";
 
       const linhas = d.jogos.map((g) => ({
         partida_id: g.partida_id,

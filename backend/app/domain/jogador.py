@@ -8,11 +8,15 @@ class Jogador:
     # amarelos acumulados no campeonato que disparam uma suspensão automática
     AMARELOS_PARA_SUSPENSAO = 5
 
-    def __init__(self, nome, idade, posicao, overall):
+    def __init__(self, nome, idade, posicao, overall,
+                 potencial=None, contrato_anos=3):
         self.nome = nome
         self.idade = idade
         self.posicao = posicao
         self.overall = overall
+        # mercado (v0.7): potencial nunca fica abaixo do overall atual
+        self.potencial = max(overall, potencial or overall)
+        self.contrato_anos = contrato_anos   # temporadas restantes
         self.gols = 0
         self.assistencias = 0
         self.partidas = 0
@@ -167,6 +171,43 @@ class Jogador:
 
         return int(peso)
     
+    # --- mercado -----------------------------------------------------------
+    # valor e salário são CALCULADOS, não guardados: derivam de overall, idade
+    # e potencial, então nunca ficam desatualizados quando esses mudam.
+
+    @staticmethod
+    def _base_overall(overall):
+        # exponencial: cada ponto de overall vale ~22% a mais que o anterior,
+        # então um 90 vale muito mais que dois 80
+        return 5_000 * 1.22 ** (max(50, overall) - 50)
+
+    def valor_mercado(self):
+        """Valor de transferência (em dinheiro do jogo), múltiplo de 10 mil."""
+
+        valor = self._base_overall(self.overall)
+
+        if self.idade <= 21:
+            valor *= 1.3
+        elif self.idade <= 25:
+            valor *= 1.15
+        elif self.idade >= 33:
+            valor *= 0.4
+        elif self.idade >= 30:
+            valor *= 0.7
+
+        # margem de crescimento só pesa para quem ainda tem idade de evoluir
+        if self.idade <= 24:
+            valor *= 1 + 0.04 * (self.potencial - self.overall)
+
+        return max(10_000, round(valor / 10_000) * 10_000)
+
+    def salario(self):
+        """Salário por temporada, múltiplo de mil. Depende só do overall:
+        o clube paga pelo que o jogador rende hoje, não pelo que vai render."""
+
+        salario = 0.08 * self._base_overall(self.overall)
+        return max(1_000, round(salario / 1_000) * 1_000)
+
     def nota_media(self):
         if self.partidas == 0:
             return 0.0

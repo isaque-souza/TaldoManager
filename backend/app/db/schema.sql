@@ -53,7 +53,11 @@ CREATE TABLE IF NOT EXISTS jogador (
     vermelhos       INTEGER NOT NULL,
     penaltis        INTEGER NOT NULL DEFAULT 0,
     penaltis_perdidos INTEGER NOT NULL DEFAULT 0,
-    faltas          INTEGER NOT NULL DEFAULT 0
+    faltas          INTEGER NOT NULL DEFAULT 0,
+    potencial       INTEGER NOT NULL DEFAULT 0,
+    contrato_anos   INTEGER NOT NULL DEFAULT 0,
+    valor_mercado   INTEGER NOT NULL DEFAULT 0,  -- snapshot do valor no fim do save
+    salario         INTEGER NOT NULL DEFAULT 0   -- por temporada
 );
 
 CREATE TABLE IF NOT EXISTS partida (
