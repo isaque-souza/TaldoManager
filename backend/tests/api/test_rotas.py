@@ -24,6 +24,10 @@ def test_serve_os_modulos_js_do_frontend():
     assert "javascript" in resp.headers["content-type"]
 
 
+def test_frontend_pede_revalidacao_para_nao_usar_js_velho():
+    assert client.get("/js/nucleo.js").headers["cache-control"] == "no-cache"
+
+
 def test_rotas_da_api_tem_prioridade_sobre_o_frontend():
     resp = client.get("/clubes")
     assert resp.status_code == 200
@@ -56,7 +60,7 @@ def test_listar_clubes():
     clubes = resp.json()
     assert len(clubes) == 20
     assert {"nome", "pais", "forca", "ranking_forca", "meta_posicao", "meta",
-            "dinheiro", "torcedores"} == set(clubes[0])
+            "dinheiro", "torcedores", "identidade"} == set(clubes[0])
 
 
 def test_listar_clubes_ranking_segue_a_forca():

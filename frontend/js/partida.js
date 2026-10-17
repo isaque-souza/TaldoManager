@@ -2,6 +2,7 @@
 
 import { $, esconderTudo, estado, limparAviso, pedir } from "./nucleo.js";
 import { ligarLinks, tabela } from "./tabelas.js";
+import { comEscudo, escudo } from "./identidade.js";
 
 // ---------- visão partida ----------
 
@@ -52,8 +53,9 @@ export async function abrirPartida(partidaId) {
   $("partida").hidden = false;
 
   const p = d.partida;
-  $("partida-placar").textContent =
-    `${p.mandante.nome} ${p.gols_mandante} x ${p.gols_visitante} ${p.visitante.nome}`;
+  $("partida-placar").innerHTML =
+    `<span class="placar">${escudo(p.mandante.nome, 36)} ${p.mandante.nome}` +
+    ` <b>${p.gols_mandante} x ${p.gols_visitante}</b> ${p.visitante.nome} ${escudo(p.visitante.nome, 36)}</span>`;
   $("partida-info").textContent = `Rodada ${p.rodada}`;
 
   const stat = (rot, a, b) =>
@@ -71,8 +73,8 @@ export async function abrirPartida(partidaId) {
     : `<p class="vazio">Sem lances registrados.</p>`;
   ligarLinks($("partida-timeline"));
 
-  $("esc-mandante-titulo").textContent = p.mandante.nome;
-  $("esc-visitante-titulo").textContent = p.visitante.nome;
+  $("esc-mandante-titulo").innerHTML = comEscudo(p.mandante.nome, p.mandante.nome, 22);
+  $("esc-visitante-titulo").innerHTML = comEscudo(p.visitante.nome, p.visitante.nome, 22);
   $("esc-mandante").innerHTML =
     tabela(prepararEscalacao(d.escalacao_mandante), COLS_ESCALACAO);
   $("esc-visitante").innerHTML =

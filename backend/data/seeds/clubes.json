@@ -29,7 +29,14 @@
         ],
         "rivais": [
             "Taldo FC"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#C8102E",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "FCT"
+        }
     },
     {
         "id": 2,
@@ -61,7 +68,14 @@
         ],
         "rivais": [
             "Taldo City"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#F4F4F0",
+            "cor_secundaria": "#C9A227",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "RTA"
+        }
     },
     {
         "id": 3,
@@ -93,7 +107,14 @@
         ],
         "rivais": [
             "Atlético Taldo"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#7A263A",
+            "cor_secundaria": "#95BFE5",
+            "camisa": "metade",
+            "escudo": "moderno",
+            "sigla": "TUN"
+        }
     },
     {
         "id": 4,
@@ -125,7 +146,14 @@
         ],
         "rivais": [
             "Real Taldo"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#6CABDD",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "TCI"
+        }
     },
     {
         "id": 5,
@@ -157,7 +185,14 @@
         ],
         "rivais": [
             "Taldo United"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#CB3524",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "ATL"
+        }
     },
     {
         "id": 6,
@@ -189,7 +224,14 @@
         ],
         "rivais": [
             "Taldo Internacional"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#D50000",
+            "cor_secundaria": "#111111",
+            "camisa": "aros",
+            "escudo": "redondo",
+            "sigla": "SPT"
+        }
     },
     {
         "id": 7,
@@ -221,7 +263,14 @@
         ],
         "rivais": [
             "Sport Taldo"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#1F4FBF",
+            "cor_secundaria": "#111111",
+            "camisa": "listras",
+            "escudo": "redondo",
+            "sigla": "INT"
+        }
     },
     {
         "id": 8,
@@ -253,7 +302,14 @@
         ],
         "rivais": [
             "Taldo Dragons"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#1B458F",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "RAN"
+        }
     },
     {
         "id": 9,
@@ -285,7 +341,14 @@
         ],
         "rivais": [
             "Taldo Sporting"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#F26B1D",
+            "cor_secundaria": "#111111",
+            "camisa": "faixa",
+            "escudo": "moderno",
+            "sigla": "ATH"
+        }
     },
     {
         "id": 10,
@@ -317,7 +380,14 @@
         ],
         "rivais": [
             "Taldo Nacional"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#111111",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "ECT"
+        }
     },
     {
         "id": 11,
@@ -349,7 +419,14 @@
         ],
         "rivais": [
             "EC Taldo"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#0B2A5B",
+            "camisa": "faixa",
+            "escudo": "classico",
+            "sigla": "NAC"
+        }
     },
     {
         "id": 12,
@@ -381,7 +458,14 @@
         ],
         "rivais": [
             "Taldo Galaxy"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#1A1446",
+            "cor_secundaria": "#C9CED6",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "STA"
+        }
     },
     {
         "id": 13,
@@ -413,7 +497,14 @@
         ],
         "rivais": [
             "Taldo Athletic"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#00804A",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "aros",
+            "escudo": "redondo",
+            "sigla": "SPO"
+        }
     },
     {
         "id": 14,
@@ -445,7 +536,14 @@
         ],
         "rivais": [
             "Taldo Stars"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#5B2A86",
+            "cor_secundaria": "#E0B44C",
+            "camisa": "faixa",
+            "escudo": "moderno",
+            "sigla": "GAL"
+        }
     },
     {
         "id": 15,
@@ -477,7 +575,14 @@
         ],
         "rivais": [
             "Taldo Empire"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#00627A",
+            "cor_secundaria": "#D9B44A",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "ROY"
+        }
     },
     {
         "id": 16,
@@ -509,7 +614,14 @@
         ],
         "rivais": [
             "Taldo Legends"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#F5A900",
+            "cor_secundaria": "#111111",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "WAR"
+        }
     },
     {
         "id": 17,
@@ -541,7 +653,14 @@
         ],
         "rivais": [
             "Taldo Warriors"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#13294B",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "metade",
+            "escudo": "classico",
+            "sigla": "LEG"
+        }
     },
     {
         "id": 18,
@@ -573,7 +692,14 @@
         ],
         "rivais": [
             "Taldo Rangers"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#009B4D",
+            "cor_secundaria": "#D7262E",
+            "camisa": "metade",
+            "escudo": "moderno",
+            "sigla": "DRA"
+        }
     },
     {
         "id": 19,
@@ -605,7 +731,14 @@
         ],
         "rivais": [
             "Taldo Royals"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#5E1224",
+            "cor_secundaria": "#EADBC8",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "EMP"
+        }
     },
     {
         "id": 20,
@@ -637,6 +770,13 @@
         ],
         "rivais": [
             "FC Taldo"
-        ]
+        ],
+        "identidade": {
+            "cor_primaria": "#75AADB",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "TFC"
+        }
     }
 ]

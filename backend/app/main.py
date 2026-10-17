@@ -17,6 +17,17 @@ from app.core.config import FRONTEND_DIR
 from app.db.conexao import init_db
 
 
+class FrontendSempreAtual(StaticFiles):
+    """Arquivos do frontend com `Cache-Control: no-cache`: o navegador
+    guarda, mas pergunta ao servidor (ETag) se mudou antes de reusar.
+    Sem isso ele reaproveita um módulo JS velho depois de uma atualização."""
+
+    async def get_response(self, path, scope):
+        resposta = await super().get_response(path, scope)
+        resposta.headers["Cache-Control"] = "no-cache"
+        return resposta
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
@@ -36,4 +47,4 @@ app.include_router(router)
 # precisa de CORS. Montado por último, as rotas da API têm prioridade;
 # o resto ("/", "/js/...", "/style.css") cai nos arquivos de frontend/.
 if FRONTEND_DIR.is_dir():
-    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
+    app.mount("/", FrontendSempreAtual(directory=FRONTEND_DIR, html=True), name="frontend")

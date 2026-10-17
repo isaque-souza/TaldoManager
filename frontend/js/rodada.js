@@ -8,6 +8,7 @@ import { carregarLista } from "./saves.js";
 import { renderSlots, xiEscolhido } from "./escalacao.js";
 import { renderDashboard } from "./financas.js";
 import { renderMeta } from "./diretoria.js";
+import { escudo } from "./identidade.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -86,7 +87,9 @@ export function renderRodadaAntes() {
   if (info.adversario) {
     const loc = info.mando === "casa" ? "em casa" : "fora";
     $("rodada-confronto").innerHTML =
-      `🎮 <strong>${info.clube_usuario}</strong> x <strong>${info.adversario}</strong> (${loc})`;
+      `<span class="confronto">${escudo(info.clube_usuario, 28)} <strong>${info.clube_usuario}</strong>` +
+      ` <span class="x">x</span> ${escudo(info.adversario, 28)} <strong>${info.adversario}</strong>` +
+      ` <small>(${loc})</small></span>`;
   } else {
     $("rodada-confronto").textContent =
       `${info.clube_usuario} folga nesta rodada`;

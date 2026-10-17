@@ -4,6 +4,7 @@ import { navegarPara } from "./nucleo.js";
 import { abrirClube } from "./clube.js";
 import { abrirPartida } from "./partida.js";
 import { abrirJogador } from "./jogador.js";
+import { comEscudo } from "./identidade.js";
 
 // ---------- helpers de tabela ----------
 
@@ -16,7 +17,11 @@ export function celula(valor, item, coluna) {
       .join(" ")}</span>`;
   }
   if (coluna === "clube" && item && item.id != null) {
-    return `<a class="clube" data-clube="${item.id}">${valor}</a>`;
+    return comEscudo(valor, `<a class="clube" data-clube="${item.id}">${valor}</a>`);
+  }
+  // colunas que são nome de clube ganham o escudo
+  if (["clube", "mandante", "visitante"].includes(coluna) && typeof valor === "string" && valor) {
+    return comEscudo(valor);
   }
   if (coluna === "nome" && item && item.id != null) {
     return `<a class="jogador" data-jogador="${item.id}">${valor}</a>`;

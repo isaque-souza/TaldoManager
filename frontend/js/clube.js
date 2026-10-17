@@ -3,6 +3,7 @@
 import { $, esconderTudo, estado, limparAviso, pedir } from "./nucleo.js";
 import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { renderDashboard } from "./financas.js";
+import { camisa, escudo } from "./identidade.js";
 
 // ---------- visão clube ----------
 
@@ -26,7 +27,8 @@ export async function abrirClube(clubeId) {
   $("clube").hidden = false;
 
   const cl = c.clube;
-  $("clube-nome").textContent = cl.nome;
+  $("clube-nome").innerHTML =
+    `<span class="titulo-clube">${escudo(cl.nome, 44)}${camisa(cl.nome, { tamanho: 44 })}${cl.nome}</span>`;
   $("clube-info").textContent =
     `${cl.posicao_final}º lugar · ${cl.pontos} pts · ${cl.vitorias}V ${cl.empates}E ${cl.derrotas}D · ` +
     `${cl.gols_marcados}-${cl.gols_sofridos} (saldo ${cl.saldo_gols})`;

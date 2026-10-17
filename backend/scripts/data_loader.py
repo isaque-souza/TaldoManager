@@ -69,6 +69,8 @@ def carregar_clubes(jogadores):
             )
 
         clube.rivais = set(c.get("rivais", []))
+        # cores, escudo e camisa (v1.1) — só visual, o motor não usa
+        clube.identidade = c.get("identidade")
 
         clubes.append(
             clube

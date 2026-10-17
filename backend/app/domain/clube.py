@@ -36,6 +36,7 @@ class Clube:
         self.dinheiro = dinheiro
         self.torcedores = torcedores
         self.rivais = set()   # nomes dos clubes rivais (clássicos)
+        self.identidade = None   # cores/escudo/camisa (só visual, v1.1)
 
         # finanças da temporada (v0.7) — ver app.domain.financas
         self.dinheiro_inicial = dinheiro

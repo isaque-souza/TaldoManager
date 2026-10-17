@@ -348,15 +348,25 @@ class RodadaJogada(SimulacaoResponse):
     resultados: list[ResultadoRodada]
 
 
+class Identidade(BaseModel):
+    """Visual do clube (v1.1): o frontend desenha escudo e camisa em SVG."""
+    cor_primaria: str        # "#C8102E"
+    cor_secundaria: str
+    camisa: Literal["lisa", "listras", "aros", "faixa", "metade"]
+    escudo: Literal["classico", "redondo", "moderno"]
+    sigla: str               # 3 letras, vai no escudo
+
+
 class ClubeSeed(BaseModel):
     nome: str
     pais: str
-    forca: float            # média de overall dos 11 melhores
+    forca: float            # média de overall do melhor XI no 4-3-3
     ranking_forca: int      # 1 = elenco mais forte da liga
     meta_posicao: int       # a meta que a diretoria daria
     meta: str               # descrição dela ("Terminar no G-4")
     dinheiro: int
     torcedores: int
+    identidade: Identidade
 
 
 class ElencoJogador(BaseModel):
