@@ -56,7 +56,7 @@ export const ABAS = [
 ];
 
 // abas da temporada aberta: a "Virada" só existe da temporada 2 em diante
-function abasDaTemporada() {
+export function abasDaTemporada() {
   return estado.temporada.movimentos_virada?.length
     ? [...ABAS, ["virada", "Virada"]]
     : ABAS;

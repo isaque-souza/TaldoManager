@@ -97,3 +97,22 @@ def test_temporada_concluida_nao_aceita_decisao():
 
     with pytest.raises(TemporadaConcluida):
         escalacao_service.salvar_decisao(sid, tatica="ofensivo")
+
+
+def test_xi_vazio_poe_todos_no_automatico():
+    sid = temporada_service.iniciar(seed=3, clube_usuario=_um_clube())
+    escalacao_service.salvar_decisao(sid, **_decisao(sid))
+
+    salva = escalacao_service.salvar_decisao(sid, xi_preferido=[])
+
+    assert salva["xi_preferido"] is None
+    assert temporada_service.proxima_rodada(sid)["xi_preferido"] is None
+
+
+def test_jogar_com_xi_vazio_tambem_limpa():
+    sid = temporada_service.iniciar(seed=3, clube_usuario=_um_clube())
+    escalacao_service.salvar_decisao(sid, **_decisao(sid))
+
+    temporada_service.avancar(sid, xi_preferido=[])
+
+    assert temporada_service.proxima_rodada(sid)["xi_preferido"] is None

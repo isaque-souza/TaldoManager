@@ -205,13 +205,14 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
         alvo = _achar_clube(campeonato, clube_usuario)
         nova_tatica = tatica or alvo.tatica
         nova_formacao = formacao or alvo.formacao
+        # xi None = mantém o salvo; [] = todos no automático
+        simulacao_service._configurar_clube(
+            alvo, nova_tatica, nova_formacao, xi_preferido
+        )
         if xi_preferido is not None:
             xi_ef = list(dict.fromkeys(xi_preferido)) or None
         else:
             xi_ef = sorted(j.nome for j in alvo.xi_preferido) or None
-        simulacao_service._configurar_clube(
-            alvo, nova_tatica, nova_formacao, xi_ef
-        )
 
         rodada_jogada = campeonato.rodada
         with redirect_stdout(io.StringIO()):
