@@ -3,13 +3,17 @@
 import { $, esconderTudo, estado, limparAviso, pedir } from "./nucleo.js";
 import { ligarLinks, tabela } from "./tabelas.js";
 import { comEscudo, escudo } from "./identidade.js";
+import { cartao, icone } from "./icones.js";
 
 // ---------- visão partida ----------
 
 export const ICONE_EVENTO = {
-  gol: "⚽", penalti: "⚽ (P)", penalti_perdido: "❌ (P)",
-  penalti_defendido: "🧤 (P)", chute_fora: "💨",
-  cartao_amarelo: "🟨", expulsao: "🟥", substituicao: "🔄", lesao: "🚑",
+  gol: icone("gol", "gol"), penalti: `${icone("gol", "gol de pênalti")} (P)`,
+  penalti_perdido: `${icone("nao", "pênalti perdido")} (P)`,
+  penalti_defendido: `${icone("luva", "pênalti defendido")} (P)`,
+  chute_fora: icone("fora", "chute para fora"),
+  cartao_amarelo: cartao(), expulsao: cartao("vermelho"),
+  substituicao: icone("troca", "substituição"), lesao: icone("lesao", "lesão"),
 };
 
 // minuto 93 -> "90+3"

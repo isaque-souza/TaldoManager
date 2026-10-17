@@ -3,6 +3,7 @@
 import { $, estado, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { carregarMercado, postarMercado } from "./mercado.js";
+import { icone } from "./icones.js";
 
 // ---------- contratos ----------
 
@@ -13,7 +14,7 @@ export function renderContratos(elenco) {
     .sort((a, b) => a.contrato_anos - b.contrato_anos || b.overall - a.overall)
     .map((f) => ({
       ...f,
-      contrato: `${f.contrato_anos} temp.${f.contrato_anos <= 1 ? " ⚠️" : ""}`,
+      contrato: `${f.contrato_anos} temp.${f.contrato_anos <= 1 ? ` <span class="chip chip-perto">acabando</span>` : ""}`,
       sal: dinheiro(f.salario),
       ref: f.salario_referencia > f.salario
         ? `<span class="negativo" title="ganha menos que o mercado paga">${dinheiro(f.salario_referencia)}</span>`
@@ -52,7 +53,7 @@ export async function abrirContrato(jogadorId) {
   box.innerHTML = `<article>
     <header><strong>Renovar com ${c.jogador}</strong> · ${c.idade} anos · OVR ${c.overall} ·
       hoje: ${dinheiro(c.salario)}/temp., ${c.contrato_anos} temp., multa ${c.multa_rescisoria ? dinheiro(c.multa_rescisoria) : "—"}</header>
-    ${contra ? `<p>🤝 Contraproposta na mesa: ${dinheiro(contra.salario)} por ${contra.anos} temp., ${MULTA_ROTULO[contra.multa]}.</p>` : ""}
+    ${contra ? `<p>${icone("acordo")} Contraproposta na mesa: ${dinheiro(contra.salario)} por ${contra.anos} temp., ${MULTA_ROTULO[contra.multa]}.</p>` : ""}
     <div class="mercado-filtros">
       <label>Salário/temporada <input type="number" id="c-salario" min="1000" step="1000" value="${salario}"></label>
       <label>Temporadas <select id="c-anos">${anos}</select></label>
@@ -81,8 +82,8 @@ export async function renovar(jogadorId, salario, anos, multa) {
     `/simulacoes/${estado.simId}/renovacoes`, { jogador_id: jogadorId, salario, anos, multa }, "Conversando com o jogador…"
   );
   if (!r) return;
-  const icone = { aceita: "✅", contraproposta: "🤝", recusada: "❌" }[r.resposta];
-  let msg = `${icone} ${r.motivo}`;
+  const sinal = icone({ aceita: "ok", contraproposta: "acordo", recusada: "nao" }[r.resposta]);
+  let msg = `${sinal} ${r.motivo}`;
   if (r.resposta === "contraproposta") msg += ` — pede ${dinheiro(r.salario_pedido)} por temporada`;
   msg += ".";
   if (r.contrato) {

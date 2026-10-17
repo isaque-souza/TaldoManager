@@ -27,7 +27,7 @@ export async function mostrarInicio() {
   mostrarPainel(painel ?? (sims?.length ? "carregar" : "novo"));
 }
 
-// "✚ Novo jogo" de fora do menu (ex.: fim de carreira)
+// "Novo jogo" de fora do menu (ex.: fim de carreira)
 export function novoJogo() {
   painel = "novo";
   mostrarInicio();
@@ -57,7 +57,7 @@ function situacao(s) {
   if (s.fim_de_carreira) return `${temporada} · fim de carreira (demitido)`;
   return s.estado === "em_andamento"
     ? `${temporada} · rodada ${s.rodada_atual}/${s.rodadas}`
-    : `${temporada} encerrada · 🏆 ${s.campeao}`;
+    : `${temporada} encerrada · campeão: ${s.campeao}`;
 }
 
 function quando(s) {

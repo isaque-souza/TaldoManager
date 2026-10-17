@@ -4,6 +4,7 @@
 import { $, esconderTudo, estado, pedir } from "./nucleo.js";
 import { carregarLista } from "./saves.js";
 import { tabela } from "./tabelas.js";
+import { icone } from "./icones.js";
 
 // ---------- tela da carreira ----------
 
@@ -33,7 +34,7 @@ export function mostrarCarreira() {
   $("carreira").hidden = false;
 
   const meus = c.titulos.find((t) => t.clube === c.clube_usuario)?.titulos ?? 0;
-  $("carreira-titulo").textContent = `📜 Carreira — ${c.clube_usuario}`;
+  $("carreira-titulo").textContent = `Carreira — ${c.clube_usuario}`;
   $("carreira-info").textContent =
     `${c.temporadas.length} temporada${c.temporadas.length > 1 ? "s" : ""} · ` +
     `${meus} título${meus === 1 ? "" : "s"} seu${meus === 1 ? "" : "s"} · ` +
@@ -55,7 +56,7 @@ function renderTemporadas(c) {
     t: `<a class="temporada" data-sim="${t.simulacao_id}">T${t.temporada}</a>`,
     camp: t.estado === "em_andamento"
       ? `<span class="vazio">em andamento · rodada ${t.rodada_atual}</span>`
-      : `🏆 ${t.campeao}`,
+      : `${icone("trofeu")} ${t.campeao}`,
     vice: t.vice ?? "",
     art: t.estado === "em_andamento" ? "" : destaque(t.artilheiro),
     mvpd: t.estado === "em_andamento" ? "" : destaque(t.mvp),
@@ -121,12 +122,12 @@ function renderHall(c) {
 // ---------- aba "Virada" (temporada 2 em diante) ----------
 
 const TIPOS = {
-  saiu_livre: "🚪 Saiu de graça",
-  chegou_livre: "✍️ Chegou de graça",
-  renovou: "🔁 Renovou",
-  subiu_da_base: "🌱 Subiu da base",
-  aposentou: "🧓 Aposentou",
-  adiou: "⏳ Adiou a aposentadoria",
+  saiu_livre: `${icone("saiu")} Saiu de graça`,
+  chegou_livre: `${icone("assinou")} Chegou de graça`,
+  renovou: `${icone("troca")} Renovou`,
+  subiu_da_base: `${icone("base")} Subiu da base`,
+  aposentou: `${icone("aposentou")} Aposentou`,
+  adiou: `${icone("calendario")} Adiou a aposentadoria`,
 };
 
 // "potencial 85" -> 85 (o detalhe do jovem da base)

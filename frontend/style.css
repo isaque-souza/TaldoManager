@@ -15,10 +15,10 @@ tr.eu td { background: color-mix(in srgb, var(--pico-primary) 16%, transparent);
 .mercado-filtros { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin: .5rem 0; }
 .mercado-filtros label { margin: 0; }
 .mercado-filtros select { margin: 0; width: auto; }
-button.transf { width: auto; margin: 0; padding: .2rem .6rem; font-size: .8rem; }
-.bloqueio { color: var(--pico-muted-color); font-size: .8rem; }
+button.transf { width: auto; margin: 0; padding: .2rem .6rem; font-size: .82rem; }
+.bloqueio { color: var(--pico-muted-color); font-size: .82rem; }
 .proposta { display: inline-flex; flex-wrap: wrap; gap: .3rem; align-items: center; }
-.proposta input { width: 8.5rem; margin: 0; padding: .2rem .4rem; height: auto; font-size: .8rem; }
+.proposta input { width: 8.5rem; margin: 0; padding: .2rem .4rem; height: auto; font-size: .82rem; }
 .abas { display: flex; flex-wrap: wrap; gap: .25rem; border-bottom: 1px solid var(--pico-muted-border-color); margin-bottom: 1rem; }
 .abas button { width: auto; margin: 0; border-radius: 6px 6px 0 0; background: transparent; border: none; color: var(--pico-muted-color); padding: .5rem .9rem; }
 .abas button.ativa { color: var(--pico-primary); border-bottom: 2px solid var(--pico-primary); }
@@ -30,7 +30,7 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .voltar { width: auto; margin: 0 0 1rem; }
 #erro { color: var(--ao-vivo); }
 .vazio { color: var(--pico-muted-color); font-style: italic; }
-.salvo { color: var(--pico-muted-color); font-size: .85rem; }
+.salvo { color: var(--pico-muted-color); font-size: .82rem; }
 .salvo.erro { color: var(--ao-vivo); }
 .timeline { list-style: none; padding: 0; }
 .timeline li { padding: .3rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
@@ -41,13 +41,13 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .grafico { overflow-x: auto; }
 .grafico svg { display: block; width: 100%; min-width: 620px; height: auto; }
 .grafico .grade { stroke: var(--pico-muted-border-color); stroke-width: 1; }
-.grafico .eixo { fill: var(--pico-muted-color); font-size: 11px; }
+.grafico .eixo { fill: var(--pico-muted-color); font-size: .72rem; }
 .grafico polyline { transition: opacity .12s, stroke-width .12s; }
 .grafico.tem-selecao polyline:not(.sel) { opacity: .1; }
 .grafico.tem-selecao polyline.sel { stroke-width: 3; }
 .grafico-legenda { display: flex; flex-wrap: wrap; gap: .35rem .5rem; margin-top: .8rem; }
-.grafico-legenda button { width: auto; margin: 0; padding: .12rem .55rem; font-size: .78rem;
-  background: transparent; border: 1px solid var(--pico-muted-border-color); border-radius: 999px;
+.grafico-legenda button { width: auto; margin: 0; padding: .12rem .55rem; font-size: .82rem;
+  background: transparent; border: 1px solid var(--pico-muted-border-color); border-radius: 4px;
   color: var(--pico-color); display: inline-flex; align-items: center; gap: .35rem; }
 .grafico-legenda button.sel { border-color: var(--pico-primary); color: var(--pico-primary); }
 .grafico-legenda .bolinha { width: .7rem; height: .7rem; border-radius: 50%; flex: none; }
@@ -63,11 +63,11 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 #escalacao { margin: 0 0 1rem; }
 #escalacao summary { cursor: pointer; font-weight: 600; }
 .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: .5rem .75rem; }
-.slots .grupo { grid-column: 1 / -1; margin: .4rem 0 -.2rem; font-size: .8rem; color: var(--pico-muted-color); text-transform: uppercase; letter-spacing: .04em; }
+.slots .grupo { grid-column: 1 / -1; margin: .4rem 0 -.2rem; font-size: .82rem; color: var(--pico-muted-color); text-transform: uppercase; letter-spacing: .04em; }
 .slots select { margin: 0; }
 .slots select.dup { border-color: var(--ao-vivo); }
 #rodada .controles select { width: 10rem; }
-#rodada-confronto { font-size: 1.05rem; }
+#rodada-confronto { font-size: 1rem; }
 
 /* ---------- dashboard financeiro ---------- */
 /* tokens de cor do gráfico: azul = receita/caixa, vermelho = despesa
@@ -97,9 +97,9 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; margin: 1rem 0; }
 .tile { display: flex; flex-direction: column; gap: .15rem; padding: .9rem 1rem; border-radius: var(--pico-border-radius); background: var(--pico-card-background-color); box-shadow: var(--pico-card-box-shadow); }
-.tile-rotulo { font-size: .8rem; color: var(--pico-muted-color); }
+.tile-rotulo { font-size: .82rem; color: var(--pico-muted-color); }
 .tile-valor { font-size: 1.6rem; font-weight: 600; line-height: 1.2; }
-.tile-detalhe { font-size: .8rem; color: var(--pico-muted-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile-detalhe { font-size: .82rem; color: var(--pico-muted-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .dash-grade { display: grid; grid-template-columns: 3fr 2fr; gap: 1rem; }
 .dash-grade article { margin: 0; }
@@ -109,22 +109,22 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .viz svg { display: block; width: 100%; height: auto; }
 .viz .grade { stroke: var(--viz-grade); stroke-width: 1; }
 .viz .base { stroke: var(--viz-base); stroke-width: 1; }
-.viz .eixo { fill: var(--viz-eixo); font-size: 11px; font-variant-numeric: tabular-nums; }
+.viz .eixo { fill: var(--viz-eixo); font-size: .72rem; font-variant-numeric: tabular-nums; }
 .viz .linha { fill: none; stroke: var(--viz-receita); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .viz .area { fill: var(--viz-receita); opacity: .1; }
 .viz .cruz { stroke: var(--viz-eixo); stroke-width: 1; }
 .viz .ponto { fill: var(--viz-receita); stroke: var(--viz-superficie); stroke-width: 2; }
-.viz .rotulo-fim { fill: var(--pico-color); font-size: 12px; font-weight: 600; }
+.viz .rotulo-fim { fill: var(--pico-color); font-size: .72rem; font-weight: 600; }
 .viz .alvo { fill: transparent; cursor: crosshair; }
-.viz .dica { position: absolute; top: 0; transform: translateX(-50%); pointer-events: none; display: flex; flex-direction: column; padding: .3rem .55rem; border-radius: 6px; background: var(--pico-card-background-color); box-shadow: var(--pico-card-box-shadow); font-size: .8rem; white-space: nowrap; }
+.viz .dica { position: absolute; top: 0; transform: translateX(-50%); pointer-events: none; display: flex; flex-direction: column; padding: .3rem .55rem; border-radius: 6px; background: var(--pico-card-background-color); box-shadow: var(--pico-card-box-shadow); font-size: .82rem; white-space: nowrap; }
 .viz .dica span { color: var(--pico-muted-color); }
 
-.legenda-fluxo { display: flex; gap: 1rem; font-size: .8rem; color: var(--pico-muted-color); margin-bottom: .6rem; }
-.legenda-fluxo .chave { display: inline-block; width: .75rem; height: .75rem; border-radius: 3px; margin-right: .35rem; vertical-align: -1px; }
+.legenda-fluxo { display: flex; gap: 1rem; font-size: .82rem; color: var(--pico-muted-color); margin-bottom: .6rem; }
+.legenda-fluxo .chave { display: inline-block; width: .75rem; height: .75rem; border-radius: 2px; margin-right: .35rem; vertical-align: -1px; }
 .chave.receita, .barra.receita { background: var(--viz-receita); }
 .chave.despesa, .barra.despesa { background: var(--viz-despesa); }
 .barras { display: flex; flex-direction: column; gap: .55rem; }
-.barra-linha { display: grid; grid-template-columns: 7.5rem 1fr; align-items: center; gap: .5rem; font-size: .85rem; border-radius: 4px; }
+.barra-linha { display: grid; grid-template-columns: 7.5rem 1fr; align-items: center; gap: .5rem; font-size: .82rem; border-radius: 4px; }
 .barra-linha:hover .barra, .barra-linha:focus .barra { filter: brightness(1.15); }
 .barra-rotulo { color: var(--pico-muted-color); white-space: nowrap; }
 .barra-trilho { display: flex; align-items: center; gap: .4rem; min-width: 0; }
@@ -143,7 +143,7 @@ a.temporada { cursor: pointer; }
 .hall .pontos { margin-left: auto; color: var(--pico-primary); font-weight: 700; }
 .movimentos { list-style: none; padding: 0; }
 .movimentos li { list-style: none; padding: .25rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
-.movimentos .tipo { display: inline-block; min-width: 12rem; color: var(--pico-muted-color); font-size: .85rem; }
+.movimentos .tipo { display: inline-block; min-width: 12rem; color: var(--pico-muted-color); font-size: .82rem; }
 .sobe { color: var(--gramado-claro); font-weight: 700; }
 .cai { color: var(--ao-vivo); font-weight: 700; }
 
@@ -168,6 +168,10 @@ a.temporada { cursor: pointer; }
   --ao-vivo: #e63946;
   --ambar: #f0a52a;
   --cartao-amarelo: #f7d117;
+  --texto-alerta: #ff8a92;      /* vermelho legível como texto no escuro */
+  --linha-forte: #34496a;       /* borda no hover */
+  --texto-sobre-ambar: #1b1300;
+  --gramado-noite: #123323;     /* fundo do card escolhido */
   --fonte-tarja: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
   --fonte-texto: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
 
@@ -196,7 +200,7 @@ a.temporada { cursor: pointer; }
   --pico-secondary-border: var(--linha);
   --pico-secondary-hover: var(--texto);
   --pico-secondary-hover-background: #1c2a3e;
-  --pico-secondary-hover-border: #34496a;
+  --pico-secondary-hover-border: var(--linha-forte);
   --pico-secondary-inverse: var(--texto);
   --pico-card-background-color: var(--superficie);
   --pico-card-sectioning-background-color: var(--superficie-2);
@@ -232,10 +236,10 @@ h1, h2, h3, h4, .tarja, .abas button, th, button, [role="button"], .chip, summar
   font-family: var(--fonte-tarja);
 }
 h1, h2, h3 { letter-spacing: .01em; text-wrap: balance; }
-h2 { font-weight: 800; text-transform: uppercase; font-size: clamp(1.6rem, 3.2vw, 2.1rem); }
+h2 { font-weight: 800; text-transform: uppercase; font-size: clamp(1.6rem, 3.2vw, 2rem); }
 h4, h3.secao {
   font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
-  font-size: .95rem; color: var(--texto-2); margin: 2rem 0 .75rem;
+  font-size: .9rem; color: var(--texto-2); margin: 2rem 0 .75rem;
 }
 button, [role="button"] {
   font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
@@ -281,7 +285,7 @@ button, [role="button"] {
 
 /* ---------- tabelas: placar de estatística da TV ---------- */
 figure { margin-bottom: 1rem; }
-table { font-size: .92rem; }
+table { font-size: .9rem; }
 th {
   text-transform: uppercase; letter-spacing: .07em; font-weight: 700; font-size: .82rem;
   color: var(--texto-2); background: var(--superficie) !important; white-space: nowrap;
@@ -300,12 +304,12 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 /* ---------- selos de status (chips da transmissão) ---------- */
 .chip {
   display: inline-flex; align-items: center; gap: .35em;
-  font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .78rem;
+  font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .82rem;
   padding: .2rem .5rem .16rem; border-radius: 2px; line-height: 1.2; white-space: nowrap;
   color: #fff; background: var(--superficie-2);
 }
 .chip-batida { background: var(--gramado); }
-.chip-perto { background: var(--ambar); color: #1b1300; }
+.chip-perto { background: var(--ambar); color: var(--texto-sobre-ambar); }
 .chip-longe { background: var(--ao-vivo); }
 
 /* ---------- a tarja (assinatura): faixa de placar da TV ---------- */
@@ -319,9 +323,9 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   padding: .9rem 2.2rem .9rem 1.1rem; background: var(--gramado);
   clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
 }
-.tarja-clube h2 { margin: 0; color: #fff; font-size: clamp(1.35rem, 3vw, 1.9rem); }
-.tarja-info { margin: 0; padding: .6rem 1.1rem; color: var(--texto-2); font-size: .95rem; }
-.tarja > button { margin: 0 .8rem; width: auto; padding: .7rem 1.4rem; font-size: 1.05rem; }
+.tarja-clube h2 { margin: 0; color: #fff; font-size: clamp(1.3rem, 3vw, 2rem); }
+.tarja-info { margin: 0; padding: .6rem 1.1rem; color: var(--texto-2); font-size: .9rem; }
+.tarja > button { margin: 0 .8rem; width: auto; padding: .7rem 1.4rem; font-size: 1rem; }
 
 /* ---------- menu principal ---------- */
 .abertura {
@@ -335,24 +339,24 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .card-clube {
   position: relative; display: grid; grid-template-columns: 1fr; justify-items: start; gap: .25rem;
   margin: 0; padding: 1rem 1rem .9rem; text-align: left; font-family: var(--fonte-texto);
-  text-transform: none; letter-spacing: 0; font-weight: 400; font-size: .86rem;
+  text-transform: none; letter-spacing: 0; font-weight: 400; font-size: .82rem;
   color: var(--texto); background: linear-gradient(180deg, #142133, var(--superficie) 60%);
   border: 1px solid var(--linha); border-radius: 6px;
   transition: transform .18s cubic-bezier(.2, .7, .2, 1), border-color .18s, box-shadow .18s;
 }
 .card-clube:hover {
-  transform: translateY(-3px); border-color: #34496a;
+  transform: translateY(-3px); border-color: var(--linha-forte);
   box-shadow: 0 14px 28px -16px rgba(0, 0, 0, .9);
 }
 .card-clube.escolhido {
   border-color: var(--gramado-claro);
   box-shadow: 0 0 0 1px var(--gramado-claro), 0 14px 28px -16px rgba(0, 0, 0, .9);
-  background: linear-gradient(180deg, #123323, var(--superficie) 70%);
+  background: linear-gradient(180deg, var(--gramado-noite), var(--superficie) 70%);
 }
 .card-clube-visual { display: flex; align-items: flex-end; gap: .2rem; margin-bottom: .45rem; }
 .card-clube-visual .escudo { margin-left: -14px; margin-bottom: -4px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .6)); }
 .card-clube strong {
-  font-family: var(--fonte-tarja); font-size: 1.2rem; font-weight: 800; text-transform: uppercase;
+  font-family: var(--fonte-tarja); font-size: 1.15rem; font-weight: 800; text-transform: uppercase;
   letter-spacing: .02em; line-height: 1.05;
 }
 .card-clube small { color: var(--texto-2); }
@@ -366,8 +370,8 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .save strong { font-family: var(--fonte-tarja); font-size: 1.15rem; text-transform: uppercase; }
 .save small { display: block; color: var(--texto-2); }
 .save-acoes { display: flex; gap: .5rem; }
-.save-acoes button { width: auto; margin: 0; padding: .35rem .9rem; font-size: .88rem; }
-.save-acoes button.confirmar { border-color: var(--ao-vivo); color: #ff8a92; }
+.save-acoes button { width: auto; margin: 0; padding: .35rem .9rem; font-size: .9rem; }
+.save-acoes button.confirmar { border-color: var(--ao-vivo); color: var(--texto-alerta); }
 
 .dev { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--linha); }
 .dev > summary { display: inline-flex; align-items: center; gap: .4em; color: var(--texto-2); text-transform: uppercase; letter-spacing: .06em; }
@@ -382,7 +386,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   font-family: var(--fonte-tarja); text-transform: uppercase; letter-spacing: .08em;
   font-size: .82rem; font-weight: 700; color: var(--texto-2);
 }
-.meta strong { font-family: var(--fonte-tarja); font-size: 1.1rem; text-transform: uppercase; letter-spacing: .02em; }
+.meta strong { font-family: var(--fonte-tarja); font-size: 1.15rem; text-transform: uppercase; letter-spacing: .02em; }
 .meta small { color: var(--texto-2); }
 .meta-onde { color: var(--texto); margin-left: auto; }
 .meta-aviso { flex-basis: 100%; display: flex; align-items: center; gap: .5rem; color: var(--texto-2); }
@@ -394,17 +398,17 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .balanco { display: flex; flex-wrap: wrap; gap: 1rem 2.2rem; padding: 0; margin: .5rem 0 0; }
 .balanco li { list-style: none; margin: 0; display: flex; flex-direction: column; }
 .balanco b { font-family: var(--fonte-tarja); font-size: 2rem; font-weight: 800; line-height: 1; }
-.balanco span { color: var(--texto-2); font-size: .85rem; }
+.balanco span { color: var(--texto-2); font-size: .82rem; }
 
 /* ---------- celular ---------- */
 @media (max-width: 640px) {
   .grade-clubes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
-  .card-clube { padding: .8rem .75rem; font-size: .8rem; }
-  .card-clube strong { font-size: 1.05rem; }
+  .card-clube { padding: .8rem .75rem; font-size: .82rem; }
+  .card-clube strong { font-size: 1rem; }
   .tarja { grid-template-columns: 1fr; }
   .tarja-clube { clip-path: none; padding: .8rem 1rem; }
   .tarja > button { margin: 0 1rem 1rem; justify-self: stretch; }
-  .abas button { padding: .6rem .8rem; font-size: .95rem; }
+  .abas button { padding: .6rem .8rem; font-size: .9rem; }
   .meta-onde { margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -419,7 +423,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 }
 #rodada-titulo, #pj-titulo {
   margin: 0; padding: .7rem 2rem .7rem 1rem; background: var(--gramado); color: #fff;
-  font-size: clamp(1.25rem, 2.6vw, 1.6rem); white-space: nowrap;
+  font-size: clamp(1.3rem, 2.6vw, 1.6rem); white-space: nowrap;
   clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
 }
 #rodada-confronto, #pj-confronto {
@@ -427,7 +431,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   font-family: var(--fonte-tarja); font-size: 1.15rem; text-transform: uppercase; color: var(--texto);
 }
 #rodada-confronto:empty { display: none; }
-#rodada-confronto small, #pj-confronto small { font-family: var(--fonte-texto); text-transform: none; color: var(--texto-2); font-size: .85rem; }
+#rodada-confronto small, #pj-confronto small { font-family: var(--fonte-texto); text-transform: none; color: var(--texto-2); font-size: .82rem; }
 #partida-placar .placar { font-weight: 800; text-transform: uppercase; gap: .7rem; }
 #partida-placar .placar b {
   background: #fff; color: var(--noite); padding: .05em .45em; border-radius: 2px;
@@ -446,8 +450,8 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   font-family: var(--fonte-tarja); text-transform: uppercase; letter-spacing: .08em;
   font-size: .72rem; font-weight: 700; color: var(--texto-2); margin: 0;
 }
-.ficha dd { margin: 0; font-family: var(--fonte-tarja); font-size: 1.1rem; font-weight: 700; color: var(--texto); }
-.ficha dd small { font-size: .8rem; color: var(--refletor); font-weight: 700; }
+.ficha dd { margin: 0; font-family: var(--fonte-tarja); font-size: 1.15rem; font-weight: 700; color: var(--texto); }
+.ficha dd small { font-size: .82rem; color: var(--refletor); font-weight: 700; }
 .card-meta { display: flex; gap: .45rem; align-items: baseline; color: var(--texto) !important; margin-top: .15rem; }
 .barra-comecar {
   position: sticky; bottom: 0; z-index: 5; display: flex; justify-content: flex-end;
@@ -458,7 +462,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   transition: transform .25s cubic-bezier(.2, .7, .2, 1), opacity .2s;
 }
 .barra-comecar.visivel { transform: none; opacity: 1; pointer-events: auto; }
-.barra-comecar button { width: auto; margin: 0; padding: .75rem 1.6rem; font-size: 1.05rem; }
+.barra-comecar button { width: auto; margin: 0; padding: .75rem 1.6rem; font-size: 1rem; }
 @media (max-width: 640px) {
   .ficha { grid-template-columns: repeat(2, auto); }
   .card-clube-visual .camisa { width: 50px; height: 50px; }
@@ -469,7 +473,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   display: inline-block; width: .55rem; height: .55rem; border-radius: 50%;
   background: var(--gramado-claro); box-shadow: 0 0 0 3px rgba(34, 180, 106, .22);
 }
-.abas button .chip { font-size: .7rem; padding: .1rem .35rem; }
+.abas button .chip { font-size: .72rem; padding: .1rem .35rem; }
 
 /* correções da inspeção */
 .colunas > *, .dash-grade > * { min-width: 0; }   /* tabela larga não estica a coluna */
@@ -490,7 +494,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   background: #fff; color: var(--noite); font-weight: 800; padding: .05rem .4rem; border-radius: 2px;
   font-variant-numeric: tabular-nums;
 }
-.pj-tarja-tatica { color: var(--texto-2); font-weight: 700; letter-spacing: .06em; font-size: .85rem; }
+.pj-tarja-tatica { color: var(--texto-2); font-weight: 700; letter-spacing: .06em; font-size: .82rem; }
 
 .campo {
   position: relative; display: flex; aspect-ratio: 120 / 54; min-height: 400px; overflow: hidden;
@@ -517,7 +521,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .peca-nome {
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   font-family: var(--fonte-tarja); font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
-  font-size: .8rem; color: #fff; background: rgba(4, 14, 9, .62); padding: .05rem .35rem; border-radius: 2px;
+  font-size: .82rem; color: #fff; background: rgba(4, 14, 9, .62); padding: .05rem .35rem; border-radius: 2px;
 }
 .peca-ovr {
   font-family: var(--fonte-tarja); font-weight: 800; font-size: .72rem; line-height: 1;
@@ -525,7 +529,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 }
 .pj-ic {
   display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px;
-  border-radius: 50%; background: var(--noite); font-size: 11px;
+  border-radius: 50%; background: var(--noite); font-size: .72rem;
 }
 .pj-ic .icone { width: 11px; height: 11px; }
 .pj-craque { color: var(--refletor); }
@@ -534,7 +538,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   display: inline-block; width: 9px; height: 12px; border-radius: 1.5px;
   background: #f7d117; box-shadow: 0 0 0 1.5px var(--noite);
 }
-.pj-legenda { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin: .7rem 0 1.2rem; color: var(--texto-2); font-size: .85rem; }
+.pj-legenda { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin: .7rem 0 1.2rem; color: var(--texto-2); font-size: .82rem; }
 .pj-legenda > span { display: inline-flex; align-items: center; gap: .4rem; }
 .banco { list-style: none; padding: 0; margin: 0; }
 .banco li {
@@ -561,10 +565,10 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   .linha { flex-direction: row; justify-content: space-around; }
   .peca { width: 4.1rem; }
   .peca-camisa .camisa { width: 34px; height: 34px; }
-  .peca-nome { font-size: .68rem; padding: 0 .2rem; }
+  .peca-nome { font-size: .72rem; padding: 0 .2rem; }
   .peca-sinais { right: -9px; }
 }
-.aviso-fora { color: #ff8a92; }
+.aviso-fora { color: var(--texto-alerta); }
 
 /* ---------- jogo ao vivo (v1.1) ---------- */
 .placar-tv {
@@ -580,7 +584,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .pt-time b { font-size: 1.6rem; font-weight: 800; letter-spacing: .04em; }
 .pt-gols { gap: .35rem; }
 .pt-gols b {
-  min-width: 2.2rem; text-align: center; font-size: 1.9rem; font-weight: 800; line-height: 1.1;
+  min-width: 2.2rem; text-align: center; font-size: 2rem; font-weight: 800; line-height: 1.1;
   background: #fff; color: var(--noite); border-radius: 2px; font-variant-numeric: tabular-nums;
 }
 .pt-gols i { font-style: normal; color: var(--texto-2); font-weight: 700; }
@@ -604,7 +608,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9);
   transform: translateX(-105%); opacity: 0;
 }
-.faixa-gol b { font-size: clamp(2.4rem, 7vw, 4rem); font-weight: 800; letter-spacing: .06em; line-height: 1; }
+.faixa-gol b { font-size: clamp(2rem, 7vw, 4rem); font-weight: 800; letter-spacing: .06em; line-height: 1; }
 .faixa-gol span { font-size: clamp(1rem, 2.4vw, 1.3rem); font-weight: 700; }
 .faixa-gol.visivel { animation: faixa 2.4s cubic-bezier(.2, .7, .2, 1) forwards; }
 @keyframes faixa {
@@ -636,8 +640,8 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 @keyframes entra { from { opacity: 0; transform: translateY(-6px); } }
 .av-min { font-family: var(--fonte-tarja); font-weight: 800; color: var(--texto-2); text-align: right; font-variant-numeric: tabular-nums; }
 .narracao li.gol { background: color-mix(in srgb, var(--gramado) 22%, transparent); }
-.narracao li.gol b { color: #fff; font-family: var(--fonte-tarja); font-size: 1.1rem; letter-spacing: .04em; }
-.narracao li.vermelho b { color: #ff8a92; }
+.narracao li.gol b { color: #fff; font-family: var(--fonte-tarja); font-size: 1.15rem; letter-spacing: .04em; }
+.narracao li.vermelho b { color: var(--texto-alerta); }
 .narracao li.amarelo span:last-child::before {
   content: ""; display: inline-block; width: 8px; height: 11px; margin-right: .45rem; vertical-align: -1px;
   border-radius: 1.5px; background: var(--cartao-amarelo, #f7d117);
@@ -654,7 +658,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 }
 .outros .o-time { display: inline-flex; align-items: center; gap: .35rem; }
 .outros .o-fora { justify-content: flex-end; }
-.outros b { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.outros b { font-size: 1rem; font-variant-numeric: tabular-nums; }
 .outros li.mexeu { animation: mexeu 1.6s ease-out; }
 @keyframes mexeu { 0% { background: color-mix(in srgb, var(--refletor) 30%, transparent); } }
 
@@ -674,8 +678,8 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) {
   .placar-tv > * { padding: .45rem .55rem; }
   .pt-rodada { width: 100%; clip-path: none; }
-  .pt-time b { font-size: 1.25rem; }
-  .pt-gols b { font-size: 1.5rem; min-width: 1.8rem; }
+  .pt-time b { font-size: 1.3rem; }
+  .pt-gols b { font-size: 1.6rem; min-width: 1.8rem; }
   .pt-relogio { font-size: 1.3rem; }
   .av-corpo { grid-template-columns: 1fr; }
   .narracao { max-height: 20rem; }
@@ -684,3 +688,12 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   .faixa-gol { display: none; }   /* o gol já aparece no placar e na narração */
   .narracao li, .outros li.mexeu, .placar-tv.pulso .pt-gols b, .chip-ao-vivo .luz { animation: none; }
 }
+.cartao.vermelho { background: var(--ao-vivo); }
+th .cartao { vertical-align: -1px; }
+
+/* transição entre telas: a seção que aparece sobe de leve. Um único
+   movimento para o jogo todo; parte de um estado já visível (opacidade
+   .6), então nada some se a animação não rodar */
+body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .3, 1); }
+@keyframes tela-entra { from { opacity: .6; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { body > section:not([hidden]) { animation: none; } }

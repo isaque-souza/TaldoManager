@@ -178,9 +178,10 @@ Já dá pra:
 
 **v0.6 concluída** (eventos avançados, suspensões, lesões, rankings de
 disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado), v0.8
-(Modo Carreira), v0.9 (Persistência/autosave) e v1.0 (Jogável: um comando
-só, tela inicial, meta da diretoria e demissão) concluídas** — ver as
-seções abaixo.
+(Modo Carreira), v0.9 (Persistência/autosave), v1.0 (Jogável: um comando
+só, tela inicial, meta da diretoria e demissão) e v1.1 (Cara de jogo:
+escudos e camisas, tema de transmissão noturna, pré-jogo no campo e jogo ao
+vivo) concluídas** — ver as seções abaixo.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -404,7 +405,7 @@ crescer (ou encolher) com as decisões do técnico:
 
 ---
 
-# 🎨 Cara de jogo (v1.1) — em andamento
+# ✅ Cara de jogo (v1.1) — Concluída
 
 Visual de jogo de verdade, no clima "estádio noturno".
 
@@ -431,7 +432,11 @@ Visual de jogo de verdade, no clima "estádio noturno".
       gravados na partida), faixa de GOL nas cores do clube, outros jogos com
       placar ao vivo (`GET /rodadas/{n}/ao-vivo`), velocidade 1×/2×/4×
       (lembrada; ~45 s em 1×), pular para o fim e estatísticas no apito final
-* [ ] Polimento (emojis restantes nos painéis, escala de fontes, transições)
+* [x] Polimento — os emojis que restavam (mercado, contratos, elenco,
+      lances, finanças, carreira, disciplina) viraram ícones Lucide, selos e
+      cartões desenhados; escala de fontes de 8 degraus registrada no
+      `DESIGN.md`; cores reaproveitadas viraram tokens; uma transição única
+      entre telas (respeita "reduzir movimento")
 
 ---
 

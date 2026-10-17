@@ -7,7 +7,7 @@ import { ligarEvolucao, renderEvolucao } from "./grafico.js";
 import { abrirCarreira, renderVirada } from "./carreira.js";
 import { renderFimDeCarreira, renderMeta } from "./diretoria.js";
 import { comEscudo } from "./identidade.js";
-import { icone } from "./icones.js";
+import { cartao, icone } from "./icones.js";
 
 // ---------- visão temporada ----------
 
@@ -39,8 +39,8 @@ export const COLUNAS = {
     ["gols", "Gols"],
   ],
   disciplina: [
-    ["nome", "Jogador"], ["clube", "Clube"], ["vermelhos", "🟥"],
-    ["amarelos", "🟨"], ["faltas", "Faltas"], ["partidas", "Jogos"],
+    ["nome", "Jogador"], ["clube", "Clube"], ["vermelhos", cartao("vermelho")],
+    ["amarelos", cartao()], ["faltas", "Faltas"], ["partidas", "Jogos"],
   ],
   penaltis: [
     ["nome", "Jogador"], ["clube", "Clube"], ["penaltis", "Convertidos"],
@@ -168,7 +168,7 @@ export function mostrarTemporada() {
     const form = estado.temporada.formacao ? `, ${estado.temporada.formacao}` : "";
     const verbo = emAndamento ? "está em" : "terminou em";
     resumo.innerHTML =
-      `🎮 Você dirige <strong>${meu}</strong> (${estado.temporada.tatica}${form}) — ` +
+      `${icone("voce")} Você dirige <strong>${meu}</strong> (${estado.temporada.tatica}${form}) — ` +
       `${verbo} <strong>${c.posicao}º</strong> com ${c.pontos} pts, ` +
       `${c.gols_marcados} gols pró e ${c.gols_sofridos} sofridos.`;
   }
@@ -184,7 +184,7 @@ export function mostrarTemporada() {
 
 // Temporada concluída com clube dirigido: continua na próxima (ou leva até
 // ela, se já foi continuada — só a última temporada da carreira continua).
-// O botão "📜 Carreira" aparece em toda temporada de uma carreira.
+// O botão "Carreira" aparece em toda temporada de uma carreira.
 function renderCarreira(emAndamento, meu) {
   const acao = $("carreira-acao");
   const t = estado.temporada;
@@ -199,7 +199,7 @@ function renderCarreira(emAndamento, meu) {
       ? `<button id="carreira-ir" class="secondary">Ir para a temporada ${proxima} →</button>`
       : `<button id="carreira-continuar">${icone("play")} Próxima temporada (temporada ${proxima})</button>`;
   const verCarreira = t.carreira_id
-    ? `<button id="carreira-ver" class="secondary outline">📜 Carreira</button>`
+    ? `<button id="carreira-ver" class="secondary outline">${icone("carreira")} Carreira</button>`
     : "";
   const dica = podeContinuar && !t.proxima_temporada_id
     ? `<small>Elencos, contratos e caixa continuam; pontos e estatísticas começam do zero.</small>`

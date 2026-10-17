@@ -1,6 +1,7 @@
 // Gráfico de pontos por rodada (SVG puro, aba Evolução).
 
 import { estado } from "./nucleo.js";
+import { icone } from "./icones.js";
 
 // ---------- gráfico de pontos por rodada ----------
 
@@ -46,7 +47,7 @@ export function renderEvolucao() {
   const legenda = ev.series
     .map((s, i) => {
       const total = s.pontos[s.pontos.length - 1];
-      const marca = s.clube === meu ? " 🎮" : "";
+      const marca = s.clube === meu ? ` ${icone("voce", "seu clube")}` : "";
       return `<button data-clube="${s.clube}"><span class="bolinha" style="background:${corClube(i)}"></span>${s.clube}${marca} <strong>${total}</strong></button>`;
     })
     .join("");

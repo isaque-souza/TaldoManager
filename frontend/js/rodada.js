@@ -127,18 +127,18 @@ export function renderRodadaAntes() {
   const fora = [];
   info.elenco
     .filter((j) => j.suspenso)
-    .forEach((j) => fora.push(`🚫 ${j.nome} (susp. ${j.jogos_suspensao}j)`));
+    .forEach((j) => fora.push(`${icone("proibido", "suspenso")} ${j.nome} (susp. ${j.jogos_suspensao}j)`));
   info.elenco
     .filter((j) => j.lesionado)
-    .forEach((j) => fora.push(`🚑 ${j.nome} (lesão ${j.rodadas_lesao}r)`));
+    .forEach((j) => fora.push(`${icone("lesao", "lesionado")} ${j.nome} (lesão ${j.rodadas_lesao}r)`));
   $("r-suspensos").innerHTML = fora.length
     ? "Fora desta rodada: " + fora.join(", ")
     : "";
   $("r-suspensos").hidden = fora.length === 0;
 
   const situacao = (j) => {
-    if (j.lesionado) return `🚑 Lesionado (${j.rodadas_lesao}r)`;
-    if (j.suspenso) return `🚫 Suspenso (${j.jogos_suspensao}j)`;
+    if (j.lesionado) return `<span class="chip chip-longe">Lesionado ${j.rodadas_lesao}r</span>`;
+    if (j.suspenso) return `<span class="chip chip-longe">Suspenso ${j.jogos_suspensao}j</span>`;
     if (j.amarelos_ciclo === 4) return `<span class="chip chip-perto">Pendurado</span>`;
     return j.condicao;
   };
@@ -203,8 +203,8 @@ export function renderRodadaDepois() {
   );
   ligarLinks($("r-classificacao"));
 
-  $("r-proxima").textContent = res.concluida
-    ? "🏆 Ver a temporada completa"
+  $("r-proxima").innerHTML = res.concluida
+    ? `${icone("trofeu")} Ver a temporada completa`
     : `Próxima rodada (${res.rodada_atual}) →`;
 }
 
@@ -302,9 +302,9 @@ export async function salvarEscalacaoAgora() {
         body: JSON.stringify(corpo),
       });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      if (estado.simId === simId) marcarSalvo("✔ salvo");
+      if (estado.simId === simId) marcarSalvo("salvo");
     } catch {
-      if (estado.simId === simId) marcarSalvo("⚠ não salvo — será enviado ao jogar", true);
+      if (estado.simId === simId) marcarSalvo("não salvo — será enviado ao jogar", true);
     }
   });
   return emVoo;
