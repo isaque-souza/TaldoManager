@@ -13,6 +13,7 @@ import random
 from pathlib import Path
 
 from app.domain.jogador import Jogador
+from app.domain.nomes import NOMES, SOBRENOMES
 
 # reprodutível: rodar de novo gera exatamente a mesma seed
 random.seed(42)
@@ -65,22 +66,6 @@ CLUBES_ORDEM = [
 PAISES = [
     "Brasil", "Inglaterra", "Espanha", "Argentina",
     "Itália", "Alemanha", "Portugal", "França",
-]
-
-NOMES = [
-    "João", "Pedro", "Lucas", "Gabriel", "Miguel", "Arthur", "Enzo",
-    "Matheus", "Felipe", "Rafael", "Bruno", "Thiago", "Diego", "Carlos",
-    "André", "Vinicius", "Caio", "Leonardo", "Gustavo", "Rodrigo", "Juan",
-    "Pablo", "Alejandro", "Jack", "Harry", "Oliver", "Noah", "Liam",
-    "Marco", "Luca", "Giovanni", "Francesco", "Pierre", "Louis", "Antoine",
-]
-
-SOBRENOMES = [
-    "Silva", "Souza", "Santos", "Oliveira", "Ferreira", "Costa", "Almeida",
-    "Rocha", "Pereira", "Lima", "Gomes", "Barbosa", "Ribeiro", "Martins",
-    "Mendes", "Araujo", "Rodriguez", "Garcia", "Lopez", "Perez", "Fernandez",
-    "Wilson", "Smith", "Brown", "Taylor", "Johnson", "Walker", "Rossi",
-    "Bianchi", "Moretti", "Dubois", "Martin",
 ]
 
 TITULARES = (

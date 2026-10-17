@@ -68,3 +68,23 @@ def test_ciclo_snapshot_restaura_continua_a_corrente_do_rng():
         (c.nome, c.pontos, c.gols_marcados) for c in retomado.classificacao()
     ]
     assert tabela_ret == tabela_ref
+
+
+def test_snapshot_recria_jogador_fora_da_seed():
+    from app.domain.jogador import Jogador
+    from app.domain.temporada import restaurar_estado, snapshot_estado
+    from scripts.data_loader import carregar_campeonato
+
+    camp = carregar_campeonato()
+    jovem = Jogador("Jovem da Base", 17, "Goleiro", 61, potencial=83)
+    jovem.gols = 2
+    camp.clubes[3].jogadores.append(jovem)
+    blob = snapshot_estado(camp)
+
+    novo = carregar_campeonato()
+    restaurar_estado(novo, blob)
+
+    j = next(j for j in novo.clubes[3].jogadores if j.nome == "Jovem da Base")
+    assert (j.posicao, j.idade, j.overall, j.potencial, j.gols) == (
+        "Goleiro", 17, 61, 83, 2
+    )

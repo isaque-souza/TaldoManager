@@ -336,8 +336,10 @@ crescer (ou encolher) com as decisões do técnico:
 * [x] Contratos vencendo (a CPU renova sozinha; quem o técnico não renovou
       sai de graça para o clube onde seria titular, ou deixa a liga)
 * [x] Registro da virada (aposentadorias, saídas, renovações — `movimento_virada`)
-* [ ] Geração de jovens
-* [ ] Categorias de base
+* [x] Geração de jovens / categorias de base (na virada, cada clube sobe
+      jovens de 16–18 anos até completar 18 jogadores, no mínimo 1; posição
+      mais carente; overall = média do elenco − 10, potencial +8 a +22)
+* [x] CPU dispensa veteranos reservas (30+) com o elenco acima de 18
 * [ ] Hall da Fama
 
 ---

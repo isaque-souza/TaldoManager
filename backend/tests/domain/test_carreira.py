@@ -68,13 +68,19 @@ def test_contrato_e_caixa_sao_herdados():
             jogador.multa_rescisoria) == (9_999_000, 5, 77_000_000)
 
 
-def test_jogador_fora_da_seed_e_erro_claro():
+def test_jogador_fora_da_seed_e_criado():
     base = carregar_campeonato()
     clubes, jogadores = _finais(base)
-    jogadores.append({**jogadores[0], "nome": "Jovem da Base"})
+    jovem = {**jogadores[0], "nome": "Jovem da Base", "posicao": "Goleiro",
+             "idade": 17, "overall": 60, "potencial": 80,
+             "salario": 50_000, "contrato_anos": 3, "multa_rescisoria": None}
+    jogadores.append(jovem)
 
-    with pytest.raises(ValueError, match="fora da seed"):
-        preparar_nova_temporada(carregar_campeonato(), clubes, jogadores)
+    novo = preparar_nova_temporada(carregar_campeonato(), clubes, jogadores)
+    j = next(j for c in novo.clubes for j in c.jogadores if j.nome == "Jovem da Base")
+
+    assert (j.posicao, j.idade, j.overall, j.potencial) == ("Goleiro", 17, 60, 80)
+    assert (j.salario, j.contrato_anos) == (50_000, 3)
 
 
 def test_envelhecer_aplica_a_evolucao_em_todos():
@@ -271,3 +277,30 @@ def test_elenco_minimo_gera_contrato_de_emergencia():
     assert saindo in meu.jogadores
     assert saindo.contrato_anos == 1
     assert movs[0]["tipo"] == "renovou" and "emergência" in movs[0]["detalhe"]
+
+
+def test_cpu_dispensa_veterano_reserva_com_elenco_cheio():
+    camp = carregar_campeonato()
+    _todos(camp, 3)
+    cpu = camp.clubes[1]
+    reserva = min((j for j in cpu.jogadores if j.posicao == "Atacante"),
+                  key=lambda j: j.overall)
+    reserva.idade, reserva.contrato_anos = 31, 1
+    cpu.jogadores.append(camp.clubes[2].jogadores.pop())   # 19 > 18
+
+    movs = resolver_contratos(camp, camp.clubes[0].nome)
+
+    assert reserva not in cpu.jogadores
+    assert movs[0]["tipo"] == "saiu_livre" and movs[0]["clube"] == cpu.nome
+
+
+def test_cpu_renova_veterano_reserva_se_o_elenco_nao_esta_cheio():
+    camp = carregar_campeonato()
+    _todos(camp, 3)
+    cpu = camp.clubes[1]
+    reserva = min((j for j in cpu.jogadores if j.posicao == "Atacante"),
+                  key=lambda j: j.overall)
+    reserva.idade, reserva.contrato_anos = 31, 1      # elenco = 18
+
+    movs = resolver_contratos(camp, camp.clubes[0].nome)
+    assert reserva in cpu.jogadores and movs[0]["tipo"] == "renovou"

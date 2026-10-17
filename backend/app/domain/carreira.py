@@ -12,7 +12,9 @@ fonte da verdade.
 """
 
 from app.domain import contrato, mercado
+from app.domain.base import TAMANHO_ALVO
 from app.domain.evolucao import evoluir
+from app.domain.temporada import criar_jogador
 
 
 def seed_da_temporada(seed_carreira, temporada):
@@ -37,13 +39,10 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
     por_nome = {j.nome: j for c in campeonato.clubes for j in c.jogadores}
     por_clube = {c.nome: c for c in campeonato.clubes}
 
-    desconhecidos = [j["nome"] for j in jogadores_finais
-                     if j["nome"] not in por_nome]
-    if desconhecidos:
-        # só acontece quando existirem jogadores fora da seed (base,
-        # aposentadoria — passos 3 e 4); aí o snapshot vai precisar
-        # carregar o jogador inteiro
-        raise ValueError(f"Jogadores fora da seed: {desconhecidos}")
+    # quem não está na seed (jovens da base) é recriado a partir da tabela
+    for final in jogadores_finais:
+        if final["nome"] not in por_nome:
+            por_nome[final["nome"]] = criar_jogador(final["nome"], final)
 
     # elencos: começa vazio e cada jogador vai para o clube onde terminou
     for clube in campeonato.clubes:
@@ -99,6 +98,7 @@ BONUS_CONTRATO_VENCENDO = 0.20           # sem contrato, pendura as chuteiras
 ANOS_RENOVACAO_CPU = 3
 ANOS_RENOVACAO_CPU_VETERANO = 2          # 32+ (como na renovação do técnico)
 ANOS_EMERGENCIA = 1
+IDADE_DISPENSA_CPU = 30                  # veterano reserva com elenco cheio
 
 
 def chance_aposentadoria(idade, contrato_vencendo):
@@ -176,16 +176,47 @@ def _destino_livre(campeonato, jogador, origem, clube_usuario):
     return max(candidatos, key=lambda c: c.dinheiro, default=None)
 
 
+def _cpu_dispensa(clube, jogador):
+    """A CPU deixa ir o veterano reserva quando o elenco está acima do
+    tamanho-alvo — senão, com a base subindo todo ano, os elencos só
+    cresceriam."""
+    return (
+        len(clube.jogadores) > TAMANHO_ALVO
+        and jogador.idade >= IDADE_DISPENSA_CPU
+        and not mercado.seria_titular(clube, jogador)
+    )
+
+
+def _sair_livre(campeonato, clube, jogador, clube_usuario):
+    """Tira o jogador do clube e o leva, de graça, para o clube da CPU com
+    vaga onde seria titular (ou para fora da liga). Devolve os movimentos."""
+    _remover(clube, jogador)
+    destino = _destino_livre(campeonato, jogador, clube, clube_usuario)
+    if destino is None:
+        return [_movimento("saiu_livre", jogador, clube, "deixou a liga")]
+
+    destino.contratar_jogador(jogador)
+    jogador.assinar_contrato(
+        mercado.CONTRATO_PADRAO_ANOS, jogador.salario_referencia(), None
+    )
+    return [
+        _movimento("saiu_livre", jogador, clube, f"assinou com {destino.nome}"),
+        _movimento("chegou_livre", jogador, destino,
+                   f"veio de graça do {clube.nome}"),
+    ]
+
+
 def resolver_contratos(campeonato, clube_usuario):
     """Desconta uma temporada de cada contrato. Quem chega a 0:
 
     - clube da CPU: renova sozinho (salário de mercado, 3 temporadas ou 2
-      para veteranos);
-    - clube do técnico: sai de graça (não foi renovado) para o clube da CPU
-      com vaga onde seria titular, ou deixa a liga. Se a saída deixaria o
-      elenco abaixo do mínimo, assina 1 temporada de emergência.
+      para veteranos) — menos o veterano reserva com o elenco acima de 18,
+      que é dispensado;
+    - clube do técnico: sai de graça (não foi renovado).
 
-    Devolve a lista de movimentos."""
+    Quem sai vai para o clube da CPU com vaga onde seria titular, ou deixa a
+    liga. Se a saída deixaria o elenco abaixo do mínimo, o jogador assina 1
+    temporada de emergência. Devolve a lista de movimentos."""
 
     movimentos = []
     vencidos = []
@@ -198,7 +229,9 @@ def resolver_contratos(campeonato, clube_usuario):
     # as saídas vêm depois de descontar todo mundo: quem chega de graça
     # assina contrato novo e não pode ser descontado de novo
     for clube, jogador in vencidos:
-        if clube.nome != clube_usuario:
+        do_tecnico = clube.nome == clube_usuario
+
+        if not do_tecnico and not _cpu_dispensa(clube, jogador):
             anos = (ANOS_RENOVACAO_CPU_VETERANO
                     if jogador.idade >= contrato.IDADE_VETERANO
                     else ANOS_RENOVACAO_CPU)
@@ -216,23 +249,6 @@ def resolver_contratos(campeonato, clube_usuario):
             ))
             continue
 
-        _remover(clube, jogador)
-        destino = _destino_livre(campeonato, jogador, clube, clube_usuario)
-        if destino is None:
-            movimentos.append(_movimento(
-                "saiu_livre", jogador, clube, "deixou a liga"
-            ))
-            continue
-
-        destino.contratar_jogador(jogador)
-        jogador.assinar_contrato(
-            mercado.CONTRATO_PADRAO_ANOS, jogador.salario_referencia(), None
-        )
-        movimentos.append(_movimento(
-            "saiu_livre", jogador, clube, f"assinou com {destino.nome}"
-        ))
-        movimentos.append(_movimento(
-            "chegou_livre", jogador, destino, f"veio de graça do {clube.nome}"
-        ))
+        movimentos += _sair_livre(campeonato, clube, jogador, clube_usuario)
 
     return movimentos
