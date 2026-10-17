@@ -27,7 +27,7 @@ frontend/
 └── js/
     ├── main.js       ponto de entrada: liga o modo dev e abre a tela inicial
     ├── inicio.js     tela inicial: continuar, novo jogo (clubes em cards), carregar
-    ├── diretoria.js  card 🎯 da meta da diretoria (rodada e temporada)
+    ├── diretoria.js  card 🎯 da meta (e cargo ameaçado) + bloco de fim de carreira
     ├── nucleo.js     estado compartilhado, navegação (← Voltar) e rede (pedir)
     ├── tabelas.js    tabela genérica, links, formatação de dinheiro
     ├── saves.js      lista de simulações salvas (abrir / apagar)
@@ -49,8 +49,9 @@ variável importada de outro, mas pode mudar a propriedade de um objeto.
 
 ## O que dá pra fazer
 
-- **Tela inicial** — o jogo sempre abre nela. **▶ Continuar** reabre o último
-  save (e a aba em que você estava); **✚ Novo jogo** mostra os 20 clubes em
+- **Tela inicial** — o jogo sempre abre nela. **▶ Continuar** reabre o save
+  jogado por último (e a aba em que você estava; some se ele terminou em
+  demissão); **✚ Novo jogo** mostra os 20 clubes em
   cards (estrelas e posição no ranking de força, caixa, torcida) e cria a
   temporada já em rodada a rodada; **📂 Carregar** lista os saves (Apagar pede
   um segundo clique). O botão **🏠 Menu** volta para ela de qualquer tela.

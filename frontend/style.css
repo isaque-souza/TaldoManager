@@ -82,6 +82,11 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .meta-batida { border-left-color: #43a047; }
 .meta-perto { border-left-color: #fdd835; }
 .meta-longe { border-left-color: #e53935; }
+.fim-carreira { border-left: 4px solid #e53935; }
+.fim-carreira p { margin-bottom: .5rem; }
+.balanco { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; padding: 0; margin: 0; list-style: none; }
+.balanco li { list-style: none; margin: 0; }
+.fim-carreira footer button { width: auto; margin: 0; }
 .dev { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--pico-muted-border-color); }
 .dev > summary { cursor: pointer; color: var(--pico-muted-color); }
 #escalacao { margin: 0 0 1rem; }

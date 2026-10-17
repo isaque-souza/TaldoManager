@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 371 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 389 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -178,8 +178,9 @@ Já dá pra:
 
 **v0.6 concluída** (eventos avançados, suspensões, lesões, rankings de
 disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado), v0.8
-(Modo Carreira) e v0.9 (Persistência/autosave) concluídas** — ver as seções
-abaixo.
+(Modo Carreira), v0.9 (Persistência/autosave) e v1.0 (Jogável: um comando
+só, tela inicial, meta da diretoria e demissão) concluídas** — ver as
+seções abaixo.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -372,7 +373,7 @@ crescer (ou encolher) com as decisões do técnico:
 
 ---
 
-# 🌐 Web / Jogável (v1.0) — em andamento
+# ✅ Web / Jogável (v1.0) — Concluída
 
 * [x] Um comando só: a API serve o frontend em `http://localhost:8000` (sem CORS, sem campo "API" na tela)
 * [x] Tela inicial de jogador (o jogo abre nela: Continuar / Novo jogo / Carregar; clubes em cards com o ranking de força — `GET /clubes` traz `forca` e `ranking_forca`; seed e "Simular tudo" num painel "🛠 Modo dev"; botão "🏠 Menu")
@@ -382,7 +383,12 @@ crescer (ou encolher) com as decisões do técnico:
       das 2 últimas; calibrado em 60 temporadas). Fixada no início da
       temporada; card 🎯 com a situação (✅ no caminho / ⚠️ em risco, até 3
       abaixo / ❌ longe) nas telas da rodada e da temporada e nos cards de Novo jogo
-* [ ] Demissão no fim da temporada (longe da meta 2× seguidas ou muito abaixo → fim de carreira)
+* [x] Demissão no fim da temporada — ❌ longe da meta 2 temporadas seguidas,
+      ou 8+ posições abaixo dela numa só, é demissão e fim de carreira (o
+      último lugar conta sempre como longe); uma temporada longe deixa o
+      "⚠️ cargo ameaçado". Calculado das temporadas, nada guardado. Tela de
+      fim de carreira com o balanço (temporadas, títulos, metas batidas,
+      melhor posição) e "✚ Novo jogo"; a próxima temporada fica bloqueada (409)
 
 * [x] API (FastAPI, não Flask)
 * [x] Interface Web (`frontend/index.html`)
@@ -414,7 +420,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 371 testes (domain, db, repositories, services, api)
+│   └── tests/              # 389 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas
