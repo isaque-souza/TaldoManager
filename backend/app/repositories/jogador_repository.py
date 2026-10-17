@@ -76,7 +76,7 @@ _SELECT = """
 
 def listar_por_simulacao(conn, simulacao_id):
     return conn.execute(
-        _SELECT + " WHERE j.simulacao_id = ?", (simulacao_id,)
+        _SELECT + " WHERE j.simulacao_id = ? ORDER BY j.id", (simulacao_id,)
     ).fetchall()
 
 

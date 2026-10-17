@@ -3,18 +3,19 @@
 
 def criar(conn, seed, campeao, rodadas, criada_em,
           clube_usuario=None, tatica=None, formacao=None, xi_preferido=None,
-          estado="concluida", rodada_atual=None, estado_json=None):
+          estado="concluida", rodada_atual=None, estado_json=None,
+          carreira_id=None, temporada=1):
     cur = conn.execute(
         """
         INSERT INTO simulacao
             (seed, criada_em, campeao, rodadas,
              clube_usuario, tatica, formacao, xi_preferido,
-             estado, rodada_atual, estado_json)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             estado, rodada_atual, estado_json, carreira_id, temporada)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (seed, criada_em, campeao, rodadas,
          clube_usuario, tatica, formacao, xi_preferido,
-         estado, rodada_atual, estado_json),
+         estado, rodada_atual, estado_json, carreira_id, temporada),
     )
     return cur.lastrowid
 
@@ -41,7 +42,8 @@ def listar(conn):
     return conn.execute(
         """
         SELECT id, seed, criada_em, campeao, rodadas, clube_usuario,
-               tatica, formacao, xi_preferido, estado, rodada_atual
+               tatica, formacao, xi_preferido, estado, rodada_atual,
+               carreira_id, temporada
         FROM simulacao
         ORDER BY criada_em DESC, id DESC
         """
@@ -51,6 +53,28 @@ def listar(conn):
 def buscar(conn, simulacao_id):
     return conn.execute(
         "SELECT * FROM simulacao WHERE id = ?", (simulacao_id,)
+    ).fetchone()
+
+
+def vincular_carreira(conn, simulacao_id, carreira_id, temporada):
+    conn.execute(
+        "UPDATE simulacao SET carreira_id = ?, temporada = ? WHERE id = ?",
+        (carreira_id, temporada, simulacao_id),
+    )
+
+
+def sucessora(conn, simulacao_id):
+    """A temporada seguinte desta na mesma carreira (ou None)."""
+    return conn.execute(
+        """
+        SELECT prox.*
+        FROM simulacao atual
+        JOIN simulacao prox
+          ON prox.carreira_id = atual.carreira_id
+         AND prox.temporada = atual.temporada + 1
+        WHERE atual.id = ?
+        """,
+        (simulacao_id,),
     ).fetchone()
 
 

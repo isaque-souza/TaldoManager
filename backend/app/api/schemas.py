@@ -92,6 +92,10 @@ class SimulacaoResponse(BaseModel):
     campeao: str | None
     estado: str = "concluida"           # 'em_andamento' | 'concluida'
     rodada_atual: int | None = None     # próxima rodada (só em andamento)
+    # carreira (v0.8): None = save avulso
+    carreira_id: int | None = None
+    temporada: int = 1
+    proxima_temporada_id: int | None = None   # já continuada → id da seguinte
     clube_usuario: str | None = None    # clube dirigido pelo usuário
     tatica: Tatica | None = None
     formacao: str | None = None
@@ -128,10 +132,37 @@ class SimulacaoResumo(BaseModel):
     formacao: str | None = None
     estado: str = "concluida"           # 'em_andamento' | 'concluida'
     rodada_atual: int | None = None
+    carreira_id: int | None = None
+    temporada: int = 1
 
 
 class SimulacaoCriada(BaseModel):
     id: int
+
+
+# --- carreira (v0.8) ---
+
+class TemporadaCriada(BaseModel):
+    simulacao_id: int
+    carreira_id: int
+    temporada: int
+
+
+class TemporadaDaCarreira(BaseModel):
+    simulacao_id: int
+    temporada: int
+    seed: int | None
+    campeao: str | None
+    estado: str
+    rodada_atual: int | None = None
+
+
+class CarreiraDetalhe(BaseModel):
+    id: int
+    clube_usuario: str
+    seed: int | None
+    criada_em: str
+    temporadas: list[TemporadaDaCarreira]
 
 
 class NovaSimulacao(BaseModel):

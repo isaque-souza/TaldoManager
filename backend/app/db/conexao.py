@@ -49,6 +49,8 @@ _COLUNAS_NOVAS = {
         ("estado", "TEXT NOT NULL DEFAULT 'concluida'"),
         ("rodada_atual", "INTEGER"),
         ("estado_json", "TEXT"),
+        ("carreira_id", "INTEGER REFERENCES carreira(id) ON DELETE SET NULL"),
+        ("temporada", "INTEGER NOT NULL DEFAULT 1"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")

@@ -322,9 +322,11 @@ crescer (ou encolher) com as decisões do técnico:
 
 ---
 
-# 🏆 Modo Carreira (v0.8)
+# 🏆 Modo Carreira (v0.8) — em andamento
 
-* [ ] Temporadas
+* [x] Temporadas (uma carreira agrupa as temporadas; "▶ Próxima temporada"
+      herda elencos, contratos e caixa e zera pontos e estatísticas;
+      a temporada N usa `seed + N − 1`)
 * [ ] Histórico de campeões
 * [ ] Envelhecimento
 * [ ] Aposentadoria

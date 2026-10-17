@@ -320,6 +320,9 @@ def _montar_visao(cru):
         "campeao": cru["campeao"] or None,
         "estado": cru.get("estado", "concluida"),
         "rodada_atual": cru.get("rodada_atual"),
+        "carreira_id": cru.get("carreira_id"),
+        "temporada": cru.get("temporada", 1),
+        "proxima_temporada_id": cru.get("proxima_temporada_id"),
         "clube_usuario": cru.get("clube_usuario"),
         "tatica": cru.get("tatica"),
         "formacao": cru.get("formacao"),
@@ -511,9 +514,13 @@ def _cru_do_banco(conn, simulacao_id):
     ]
 
     xi = sim["xi_preferido"]
+    sucessora = simulacao_repo.sucessora(conn, simulacao_id)
 
     return {
         "seed": sim["seed"],
+        "carreira_id": sim["carreira_id"],
+        "temporada": sim["temporada"],
+        "proxima_temporada_id": sucessora["id"] if sucessora else None,
         "campeao": sim["campeao"],
         "rodadas": sim["rodadas"],
         "estado": sim["estado"],

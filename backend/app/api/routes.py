@@ -3,6 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query, Response
 
 from app.api.schemas import (
+    CarreiraDetalhe,
     ClubeComElenco,
     ContratoJogador,
     ClubeDetalhe,
@@ -25,16 +26,19 @@ from app.api.schemas import (
     SimulacaoResponse,
     SimulacaoResumo,
     Tatica,
+    TemporadaCriada,
     TransferenciaResultado,
 )
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
 from app.services import (
+    carreira_service,
     contrato_service,
     mercado_service,
     simulacao_service,
     temporada_service,
 )
+from app.services.carreira_service import CarreiraInvalida
 from app.services.temporada_service import TemporadaConcluida
 
 router = APIRouter()
@@ -287,6 +291,39 @@ def fazer_renovacao(simulacao_id: int, proposta: NovaRenovacao):
     if resposta is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
     return resposta
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/proxima-temporada",
+    response_model=TemporadaCriada,
+    status_code=201,
+    tags=["carreira"],
+)
+def continuar_carreira(simulacao_id: int):
+    """Modo carreira: cria a temporada seguinte de uma temporada concluída
+    (com clube dirigido). Elencos, contratos e caixa são herdados; o resto
+    começa do zero. Na primeira vez, a carreira é criada e esta temporada
+    vira a temporada 1."""
+    try:
+        criada = carreira_service.proxima_temporada(simulacao_id)
+    except CarreiraInvalida as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
+    if criada is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return criada
+
+
+@router.get(
+    "/carreiras/{carreira_id}",
+    response_model=CarreiraDetalhe,
+    tags=["carreira"],
+)
+def obter_carreira(carreira_id: int):
+    """A carreira e suas temporadas, com o campeão de cada."""
+    carreira = carreira_service.detalhe_carreira(carreira_id)
+    if carreira is None:
+        raise HTTPException(status_code=404, detail="Carreira não encontrada")
+    return carreira
 
 
 @router.get(

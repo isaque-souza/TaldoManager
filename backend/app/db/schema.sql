@@ -2,6 +2,15 @@
 -- Cada simulação é um "save" independente: os clubes e jogadores são um
 -- snapshot daquela temporada, não referências ao catálogo da seed.
 
+-- Modo carreira (v0.8): agrupa as temporadas (simulações) de um mesmo save.
+-- Nasce sob demanda, quando uma temporada concluída é continuada.
+CREATE TABLE IF NOT EXISTS carreira (
+    id             INTEGER PRIMARY KEY,
+    clube_usuario  TEXT NOT NULL,
+    seed           INTEGER,           -- seed da temporada 1 (NULL = aleatória)
+    criada_em      TEXT NOT NULL      -- ISO 8601 (UTC)
+);
+
 CREATE TABLE IF NOT EXISTS simulacao (
     id             INTEGER PRIMARY KEY,
     seed           INTEGER,           -- NULL quando a temporada foi aleatória
@@ -14,7 +23,10 @@ CREATE TABLE IF NOT EXISTS simulacao (
     xi_preferido   TEXT,              -- JSON com os nomes do XI titular (ou NULL)
     estado         TEXT NOT NULL DEFAULT 'concluida',  -- 'em_andamento' | 'concluida'
     rodada_atual   INTEGER,           -- próxima rodada a jogar (só em andamento)
-    estado_json    TEXT               -- snapshot do estado vivo (só em andamento)
+    estado_json    TEXT,              -- snapshot do estado vivo (só em andamento)
+    -- carreira (v0.8): NULL = save avulso; temporada = 1, 2, 3...
+    carreira_id    INTEGER REFERENCES carreira(id) ON DELETE SET NULL,
+    temporada      INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS clube (
