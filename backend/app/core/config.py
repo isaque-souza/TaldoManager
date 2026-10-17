@@ -6,7 +6,10 @@ from pathlib import Path
 # .../backend/app/core/config.py -> .../backend
 BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
 
-_DB_PADRAO = BACKEND_DIR / "data" / "database" / "taldo_manager.db"
+# .../TaldoManager/frontend (servido pela API em "/")
+FRONTEND_DIR = BACKEND_DIR.parent / "frontend"
+
+_DB_PADRAO =BACKEND_DIR / "data" / "database" / "taldo_manager.db"
 
 
 def caminho_banco():

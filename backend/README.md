@@ -16,7 +16,7 @@ source .venv/bin/activate
 uvicorn app.main:app --reload
 ```
 
-- API: `http://localhost:8000`
+- Jogo (o frontend é servido pela API): `http://localhost:8000`
 - Docs interativas: `http://localhost:8000/docs`
 - O banco local é criado em `data/database/taldo_manager.db` no primeiro
   start (gitignorado; o schema versionado é `app/db/schema.sql`). Dá pra

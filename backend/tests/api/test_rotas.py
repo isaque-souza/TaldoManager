@@ -11,6 +11,25 @@ def test_health():
     assert resp.json() == {"status": "ok"}
 
 
+def test_raiz_serve_o_frontend():
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert "text/html" in resp.headers["content-type"]
+    assert "Taldo Manager" in resp.text
+
+
+def test_serve_os_modulos_js_do_frontend():
+    resp = client.get("/js/nucleo.js")
+    assert resp.status_code == 200
+    assert "javascript" in resp.headers["content-type"]
+
+
+def test_rotas_da_api_tem_prioridade_sobre_o_frontend():
+    resp = client.get("/clubes")
+    assert resp.status_code == 200
+    assert isinstance(resp.json(), list)
+
+
 def test_simulacao_responde_no_formato_do_schema():
     resp = client.get("/simulacao?seed=5")
     assert resp.status_code == 200
