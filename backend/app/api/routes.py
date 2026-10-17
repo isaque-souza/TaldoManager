@@ -11,7 +11,10 @@ from app.api.schemas import (
     Mercado,
     NovaSimulacao,
     PartidaDetalhe,
-    PedidoTransferencia,
+    NovaProposta,
+    NovaVenda,
+    OfertasJogador,
+    RespostaProposta,
     ProximaRodada,
     RodadaDecisao,
     RodadaJogada,
@@ -185,21 +188,58 @@ def obter_mercado(
     return dados
 
 
+def _erro_de_mercado(e):
+    if isinstance(e, TemporadaConcluida):
+        return HTTPException(status_code=409, detail=str(e))
+    return _erro_de_valor(e)
+
+
 @router.post(
-    "/simulacoes/{simulacao_id}/transferencias",
+    "/simulacoes/{simulacao_id}/propostas",
+    response_model=RespostaProposta,
+    tags=["mercado"],
+)
+def fazer_proposta(simulacao_id: int, proposta: NovaProposta):
+    """Proposta de compra por um jogador de outro clube. O clube aceita,
+    contrapropõe ou recusa; cobrindo a multa rescisória, não pode recusar."""
+    try:
+        resposta = mercado_service.propor(
+            simulacao_id, proposta.jogador_id, proposta.valor
+        )
+    except (TemporadaConcluida, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if resposta is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return resposta
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/jogadores/{jogador_id}/ofertas",
+    response_model=OfertasJogador,
+    tags=["mercado"],
+)
+def obter_ofertas(simulacao_id: int, jogador_id: int):
+    """O que cada clube paga por um jogador do seu elenco."""
+    try:
+        dados = mercado_service.ofertas(simulacao_id, jogador_id)
+    except (TemporadaConcluida, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/vendas",
     response_model=TransferenciaResultado,
     tags=["mercado"],
 )
-def fazer_transferencia(simulacao_id: int, pedido: PedidoTransferencia):
-    """Compra ou vende um jogador pelo valor de mercado (janela aberta)."""
+def fazer_venda(simulacao_id: int, venda: NovaVenda):
+    """Aceita a oferta de um clube por um jogador do seu elenco."""
     try:
-        feita = mercado_service.transferir(
-            simulacao_id, pedido.jogador_id, pedido.tipo
-        )
-    except TemporadaConcluida as e:
-        raise HTTPException(status_code=409, detail=str(e)) from e
-    except TransferenciaInvalida as e:
-        raise _erro_de_valor(e) from e
+        feita = mercado_service.vender(simulacao_id, venda.jogador_id, venda.clube)
+    except (TemporadaConcluida, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
     if feita is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
     return feita

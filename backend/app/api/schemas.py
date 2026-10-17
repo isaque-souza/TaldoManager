@@ -53,6 +53,7 @@ class JogadorStats(BaseModel):
     contrato_anos: int = 0
     valor_mercado: int = 0
     salario: int = 0
+    multa_rescisoria: int | None = None
 
 
 class Recorde(BaseModel):
@@ -338,6 +339,7 @@ class JogadorInfo(BaseModel):
     contrato_anos: int = 0
     valor_mercado: int = 0
     salario: int = 0
+    multa_rescisoria: int | None = None
 
 
 class JogadorDetalhe(BaseModel):
@@ -358,7 +360,14 @@ class FichaMercado(BaseModel):
     valor_mercado: int
     salario: int
     contrato_anos: int
-    bloqueio: str | None = None   # por que não dá pra negociar (None = dá)
+    multa_rescisoria: int | None = None
+    bloqueio: str | None = None          # por que não dá pra negociar (None = dá)
+    # só nos jogadores de outros clubes
+    rival: bool = False
+    propostas_restantes: int | None = None
+    contraproposta: int | None = None    # valor pedido na última contraproposta
+    # só no próprio elenco
+    ofertas: int | None = None
 
 
 class TransferenciaFeita(BaseModel):
@@ -376,21 +385,17 @@ class Mercado(BaseModel):
     janela_aberta: bool
     janelas: list[int]
     clube_usuario: str
+    rivais: list[str]
     caixa: int
     elenco_min: int
     elenco_max: int
+    max_propostas: int
     elenco: list[FichaMercado]
     disponiveis: list[FichaMercado]
     transferencias: list[TransferenciaFeita]
 
 
-class PedidoTransferencia(BaseModel):
-    jogador_id: int
-    tipo: Literal["compra", "venda"]
-
-
 class TransferenciaResultado(BaseModel):
-    tipo: str
     rodada: int
     jogador_id: int
     jogador: str
@@ -398,3 +403,36 @@ class TransferenciaResultado(BaseModel):
     para_clube: str
     valor: int
     caixa: int
+
+
+class NovaProposta(BaseModel):
+    jogador_id: int
+    valor: int
+
+
+class RespostaProposta(BaseModel):
+    resposta: Literal["aceita", "multa", "contraproposta", "recusada"]
+    motivo: str
+    valor_pedido: int | None = None      # só na contraproposta
+    propostas_restantes: int
+    transferencia: TransferenciaResultado | None = None
+
+
+class OfertaClube(BaseModel):
+    clube: str
+    valor: int
+    seria_titular: bool
+    rival: bool
+
+
+class OfertasJogador(BaseModel):
+    jogador_id: int
+    jogador: str
+    valor_mercado: int
+    bloqueio: str | None = None
+    ofertas: list[OfertaClube]
+
+
+class NovaVenda(BaseModel):
+    jogador_id: int
+    clube: str                           # o clube cuja oferta foi aceita

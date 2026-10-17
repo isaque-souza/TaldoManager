@@ -86,4 +86,8 @@ rodada por vez.
 | `GET` | `/simulacoes/{id}/partidas/{partida_id}` | placar, stats, timeline, escalações |
 | `GET` | `/simulacoes/{id}/jogadores/{jogador_id}` | ficha + game log |
 | `GET` | `/simulacoes/{id}/mercado?posicao=&valor_max=` | janela, caixa, seu elenco e os jogadores dos outros clubes (só saves em andamento) |
-| `POST` | `/simulacoes/{id}/transferencias` (corpo JSON) | `{jogador_id, tipo: "compra" \| "venda"}` pelo valor de mercado; 400 com o motivo se alguma regra impedir |
+| `POST` | `/simulacoes/{id}/propostas` (corpo JSON) | compra: `{jogador_id, valor}` → aceita / multa / contraproposta / recusada |
+| `GET` | `/simulacoes/{id}/jogadores/{jogador_id}/ofertas` | venda: o que cada clube paga (seria titular? é rival?) |
+| `POST` | `/simulacoes/{id}/vendas` (corpo JSON) | venda: `{jogador_id, clube}` aceita a oferta daquele clube (recalculada no servidor) |
+
+Regras de negócio quebradas (caixa, elenco, janela fechada...) voltam `400` com o motivo em `detail`; temporada concluída, `409`.

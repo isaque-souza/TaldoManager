@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 198 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 211 testes.
 * **Frontend** (`frontend/`) — `index.html` único, JS puro, consome a API.
 
 Já dá pra:
@@ -278,9 +278,11 @@ jogador da temporada.
 * [x] Salários (por temporada, calculado do overall)
 * [x] Sistema financeiro (cota de TV, bilheteria, salários e premiação; card na página do clube)
 * [x] Compra de jogadores (pelo valor de mercado, no modo rodada a rodada)
-* [x] Venda de jogadores (para o clube mais rico que puder pagar)
+* [x] Venda de jogadores (os clubes fazem ofertas; você escolhe qual aceitar)
 * [x] Janela de transferências (pré-temporada e virada do turno) + limites de elenco (16–25, 2+ goleiros)
-* [ ] Negociações
+* [x] Negociações (preço pedido pela importância do jogador; aceita / contraproposta / recusa; até 3 propostas por janela)
+* [x] Multa rescisória (nem todo jogador tem; pagando, o clube não pode recusar)
+* [x] Rivais (clássicos na seed; negociar com o rival custa 1,5×)
 * [ ] Disputa pela contratação, como no futebol real: qual clube paga mais,
       qual é mais famoso, onde o jogador seria titular (ou banco, se já há
       jogadores melhores na posição), se é o "time do sonho" dele...
@@ -314,6 +316,7 @@ crescer (ou encolher) com as decisões do técnico:
 * [ ] Campanhas de marketing (gastar dinheiro para atrair torcedores)
 * [ ] Fama dos jogadores (cada jogador tem sua fama; craques famosos atraem torcida)
 * [ ] Contratar ídolos que a torcida ama (impacto na torcida e na bilheteria)
+* [ ] Vender um jogador para o rival irrita a torcida (hoje a oferta só vem marcada com ⚔️)
 
 ---
 
@@ -370,7 +373,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 198 testes (domain, db, repositories, services, api)
+│   └── tests/              # 211 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   └── index.html          # SPA em JS puro, consome a API

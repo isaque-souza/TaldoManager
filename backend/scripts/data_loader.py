@@ -28,6 +28,7 @@ def carregar_jogadores():
             j["overall"],
             potencial=j.get("potencial"),
             contrato_anos=j.get("contrato_anos", 3),
+            multa_rescisoria=j.get("multa_rescisoria"),
         )
 
     return jogadores
@@ -66,6 +67,8 @@ def carregar_clubes(jogadores):
             clube.contratar_reserva(
                 jogadores[id_jogador]
             )
+
+        clube.rivais = set(c.get("rivais", []))
 
         clubes.append(
             clube

@@ -12,6 +12,8 @@ import json
 import random
 from pathlib import Path
 
+from app.domain.jogador import Jogador
+
 # reprodutível: rodar de novo gera exatamente a mesma seed
 random.seed(42)
 
@@ -217,6 +219,50 @@ def gerar_contrato(idade):
 for j in jogadores:
     j["potencial"] = gerar_potencial(j["idade"], j["overall"])
     j["contrato_anos"] = gerar_contrato(j["idade"])
+
+
+# multa rescisória: valor FIXO de contrato (não acompanha a valorização do
+# jogador). Nem todo jogador tem: sem multa, o clube só vende se quiser.
+rng_multa = random.Random(2027)
+CHANCE_MULTA = 0.55
+
+
+def gerar_multa(j):
+    if rng_multa.random() >= CHANCE_MULTA:
+        return None
+    valor = Jogador(
+        j["nome"], j["idade"], j["posicao"], j["overall"],
+        potencial=j["potencial"],
+    ).valor_mercado()
+    multa = valor * rng_multa.uniform(1.8, 4.0)
+    # arredonda para 100 mil (contrato não tem centavos)
+    return max(500_000, round(multa / 100_000) * 100_000)
+
+
+for j in jogadores:
+    j["multa_rescisoria"] = gerar_multa(j)
+
+
+# clássicos: cada clube tem um rival (lista, para no futuro poder ter mais)
+CLASSICOS = [
+    ("Real Taldo", "Taldo City"),
+    ("Sport Taldo", "Taldo Internacional"),
+    ("FC Taldo", "Taldo FC"),
+    ("Taldo Galaxy", "Taldo Stars"),
+    ("Taldo Empire", "Taldo Royals"),
+    ("Taldo United", "Atlético Taldo"),
+    ("EC Taldo", "Taldo Nacional"),
+    ("Taldo Sporting", "Taldo Athletic"),
+    ("Taldo Warriors", "Taldo Legends"),
+    ("Taldo Dragons", "Taldo Rangers"),
+]
+
+for clube in clubes:
+    clube["rivais"] = sorted(
+        b if a == clube["nome"] else a
+        for a, b in CLASSICOS
+        if clube["nome"] in (a, b)
+    )
 
 
 SEEDS_DIR.mkdir(parents=True, exist_ok=True)

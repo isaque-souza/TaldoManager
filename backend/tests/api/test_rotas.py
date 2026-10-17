@@ -237,35 +237,38 @@ def test_proxima_rodada_de_simulacao_inexistente_404():
 
 
 def test_fluxo_do_mercado():
-    clube = client.get("/clubes").json()[0]["nome"]
     sid = client.post(
-        "/simulacoes", json={"seed": 4, "clube": clube, "modo": "rodada_a_rodada"}
+        "/simulacoes", json={"seed": 4, "clube": "Real Taldo", "modo": "rodada_a_rodada"}
     ).json()["id"]
 
     m = client.get(f"/simulacoes/{sid}/mercado", params={"posicao": "Atacante"})
     assert m.status_code == 200
     corpo = m.json()
-    assert corpo["janela_aberta"] is True
+    assert corpo["janela_aberta"] is True and corpo["rivais"] == ["Taldo City"]
     assert all(f["posicao"] == "Atacante" for f in corpo["disponiveis"])
 
-    alvo = next(f for f in corpo["disponiveis"] if f["bloqueio"] is None)
-    feita = client.post(
-        f"/simulacoes/{sid}/transferencias",
-        json={"jogador_id": alvo["jogador_id"], "tipo": "compra"},
-    )
-    assert feita.status_code == 200
-    assert feita.json()["para_clube"] == clube
+    # compra: proposta generosa fecha
+    alvo = next(f for f in corpo["disponiveis"]
+                if f["bloqueio"] is None and not f["rival"]
+                and f["valor_mercado"] * 3 < corpo["caixa"])
+    r = client.post(f"/simulacoes/{sid}/propostas",
+                    json={"jogador_id": alvo["jogador_id"], "valor": alvo["valor_mercado"] * 3})
+    assert r.status_code == 200
+    assert r.json()["resposta"] in ("aceita", "multa")
+    assert r.json()["transferencia"]["para_clube"] == "Real Taldo"
 
-    # regra de negócio quebrada -> 400; tipo fora do enum -> 422
-    de_novo = client.post(
-        f"/simulacoes/{sid}/transferencias",
-        json={"jogador_id": alvo["jogador_id"], "tipo": "compra"},
-    )
-    assert de_novo.status_code == 400
-    assert client.post(
-        f"/simulacoes/{sid}/transferencias",
-        json={"jogador_id": alvo["jogador_id"], "tipo": "emprestimo"},
-    ).status_code == 422
+    # o mesmo jogador de novo: agora é do seu elenco -> 400
+    assert client.post(f"/simulacoes/{sid}/propostas",
+                       json={"jogador_id": alvo["jogador_id"], "valor": 1}).status_code == 400
+
+    # venda: lista de ofertas e aceite
+    meu = next(f for f in corpo["elenco"] if f["bloqueio"] is None)
+    ofertas = client.get(f"/simulacoes/{sid}/jogadores/{meu['jogador_id']}/ofertas")
+    assert ofertas.status_code == 200
+    clube = ofertas.json()["ofertas"][0]["clube"]
+    venda = client.post(f"/simulacoes/{sid}/vendas",
+                        json={"jogador_id": meu["jogador_id"], "clube": clube})
+    assert venda.status_code == 200 and venda.json()["para_clube"] == clube
 
     assert client.get("/simulacoes/999999/mercado").status_code == 404
 

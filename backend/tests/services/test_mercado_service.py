@@ -1,33 +1,59 @@
-"""Mercado de transferências de ponta a ponta: serviço + banco + snapshot."""
+"""Mercado de ponta a ponta: negociação + banco + snapshot."""
 
 import json
 
 import pytest
 
 from app.db.conexao import conectar
-from app.repositories import simulacao_repository as simulacao_repo
-
+from app.domain import mercado
 from app.domain.mercado import TransferenciaInvalida
+from app.repositories import simulacao_repository as simulacao_repo
 from app.services import mercado_service, simulacao_service, temporada_service
 from app.services.temporada_service import TemporadaConcluida
 
 
-def _iniciar(seed=11):
-    clube = simulacao_service.listar_clubes()[0]["nome"]
+def _iniciar(seed=11, clube="Real Taldo"):
+    # Real Taldo: caixa grande, dá para comprar quase qualquer um
     return temporada_service.iniciar(seed=seed, clube_usuario=clube), clube
 
 
-def _compravel(m):
-    return next(f for f in m["disponiveis"] if f["bloqueio"] is None)
+def _alvo(m, com_multa=None, rival=False):
+    """Um jogador negociável de outro clube."""
+    return next(
+        f for f in m["disponiveis"]
+        if f["bloqueio"] is None
+        and f["rival"] == rival
+        and (com_multa is None or (f["multa_rescisoria"] is not None) == com_multa)
+        and f["valor_mercado"] < m["caixa"] / 4
+    )
 
 
-def test_mercado_abre_antes_da_rodada_1():
+def _preco_pedido(sid, jogador_id):
+    conn = conectar()
+    try:
+        ctx = mercado_service._carregar(conn, sid)
+        jogador, vendedor = ctx.jogador(jogador_id)
+        return mercado.preco_pedido(jogador, vendedor, ctx.alvo)
+    finally:
+        conn.close()
+
+
+def _rng(sid):
+    conn = conectar()
+    try:
+        return json.loads(simulacao_repo.buscar(conn, sid)["estado_json"])["rng"]
+    finally:
+        conn.close()
+
+
+def test_mercado_abre_antes_da_rodada_1_e_mostra_os_rivais():
     sid, clube = _iniciar()
     m = mercado_service.ver_mercado(sid)
     assert m["janela_aberta"] and m["rodada"] == 1
-    assert m["clube_usuario"] == clube
+    assert m["rivais"] == ["Taldo City"]
     assert len(m["elenco"]) == 18
     assert all(f["clube"] != clube for f in m["disponiveis"])
+    assert all(f["rival"] == (f["clube"] == "Taldo City") for f in m["disponiveis"])
 
 
 def test_filtros_de_posicao_e_valor():
@@ -38,35 +64,98 @@ def test_filtros_de_posicao_e_valor():
     assert all(f["valor_mercado"] <= 2_000_000 for f in m["disponiveis"])
 
 
-def test_compra_tira_do_caixa_e_o_jogador_continua_no_clube_novo():
+def test_proposta_baixa_e_recusada_sem_revelar_o_preco():
+    sid, _ = _iniciar()
+    alvo = _alvo(mercado_service.ver_mercado(sid), com_multa=False)
+    r = mercado_service.propor(sid, alvo["jogador_id"], 10_000)
+    assert r["resposta"] == "recusada"
+    assert r["valor_pedido"] is None
+    assert r["propostas_restantes"] == mercado.MAX_PROPOSTAS - 1
+
+
+def test_contraproposta_pode_ser_aceita_e_o_jogador_vem():
     sid, clube = _iniciar()
-    antes = mercado_service.ver_mercado(sid)
-    alvo = _compravel(antes)
+    m = mercado_service.ver_mercado(sid)
+    alvo = _alvo(m, com_multa=False)
 
-    feita = mercado_service.transferir(sid, alvo["jogador_id"], "compra")
-    assert feita["para_clube"] == clube and feita["de_clube"] == alvo["clube"]
-    assert feita["caixa"] == antes["caixa"] - alvo["valor_mercado"]
+    # 90% do preço pedido (calculado pelo próprio domínio) = contraproposta
+    pedido = _preco_pedido(sid, alvo["jogador_id"])
+    r = mercado_service.propor(sid, alvo["jogador_id"], int(pedido * 0.9))
+    assert r["resposta"] == "contraproposta"
+    assert r["valor_pedido"] == pedido
 
-    # o elenco novo sobrevive ao snapshot, e o jogador entra em campo
+    # aceitar a contraproposta funciona mesmo que as tentativas acabem
+    aceita = mercado_service.propor(sid, alvo["jogador_id"], r["valor_pedido"])
+    assert aceita["resposta"] == "aceita"
+    assert aceita["transferencia"]["para_clube"] == clube
+    assert aceita["transferencia"]["caixa"] == m["caixa"] - r["valor_pedido"]
+
+    # o reforço sobrevive ao snapshot e entra em campo pelo clube novo
     temporada_service.avancar(sid)
-    depois = mercado_service.ver_mercado(sid)
-    assert alvo["nome"] in [f["nome"] for f in depois["elenco"]]
-    assert len(depois["elenco"]) == 19
-
     detalhe = simulacao_service.game_log_jogador(sid, alvo["jogador_id"])
     assert detalhe["jogador"]["clube"] == clube
-    assert depois["transferencias"][0]["jogador"] == alvo["nome"]
 
 
-def test_venda_vai_para_o_clube_mais_rico_e_entra_no_caixa():
+def test_limite_de_propostas_por_janela():
+    sid, _ = _iniciar()
+    alvo = _alvo(mercado_service.ver_mercado(sid), com_multa=False)
+    for _ in range(mercado.MAX_PROPOSTAS):
+        mercado_service.propor(sid, alvo["jogador_id"], 10_000)
+    with pytest.raises(TransferenciaInvalida, match="encerrou"):
+        mercado_service.propor(sid, alvo["jogador_id"], 10_000)
+    m = mercado_service.ver_mercado(sid)
+    ficha = next(f for f in m["disponiveis"] if f["jogador_id"] == alvo["jogador_id"])
+    assert ficha["propostas_restantes"] == 0
+
+
+def test_pagar_a_multa_do_rival_traz_o_jogador():
+    # o "caso Figo": rival não negocia barato, mas multa paga é multa paga
     sid, clube = _iniciar()
-    antes = mercado_service.ver_mercado(sid)
-    vendido = next(f for f in antes["elenco"] if f["bloqueio"] is None)
+    m = mercado_service.ver_mercado(sid)
+    alvo = next(
+        f for f in m["disponiveis"]
+        if f["rival"] and f["multa_rescisoria"] and f["bloqueio"] is None
+        and f["multa_rescisoria"] <= m["caixa"]
+    )
+    r = mercado_service.propor(sid, alvo["jogador_id"], alvo["multa_rescisoria"])
+    assert r["resposta"] == "multa"
+    assert r["transferencia"]["valor"] == alvo["multa_rescisoria"]
+    assert r["transferencia"]["de_clube"] == "Taldo City"
 
-    feita = mercado_service.transferir(sid, vendido["jogador_id"], "venda")
-    assert feita["de_clube"] == clube and feita["para_clube"] != clube
-    assert feita["caixa"] == antes["caixa"] + vendido["valor_mercado"]
-    assert len(mercado_service.ver_mercado(sid)["elenco"]) == 17
+
+def test_proposta_acima_do_caixa_nao_gasta_tentativa():
+    sid, _ = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    alvo = _alvo(m)
+    with pytest.raises(TransferenciaInvalida, match="caixa"):
+        mercado_service.propor(sid, alvo["jogador_id"], m["caixa"] + 1)
+    m2 = mercado_service.ver_mercado(sid)
+    ficha = next(f for f in m2["disponiveis"] if f["jogador_id"] == alvo["jogador_id"])
+    assert ficha["propostas_restantes"] == mercado.MAX_PROPOSTAS
+
+
+def test_venda_aceita_a_oferta_escolhida():
+    sid, clube = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    vendido = next(f for f in m["elenco"] if f["bloqueio"] is None)
+
+    lista = mercado_service.ofertas(sid, vendido["jogador_id"])
+    assert lista["ofertas"]
+    valores = [o["valor"] for o in lista["ofertas"]]
+    assert valores == sorted(valores, reverse=True)
+
+    escolhida = lista["ofertas"][-1]   # não precisa ser a maior
+    feita = mercado_service.vender(sid, vendido["jogador_id"], escolhida["clube"])
+    assert feita["para_clube"] == escolhida["clube"]
+    assert feita["valor"] == escolhida["valor"]
+    assert feita["caixa"] == m["caixa"] + escolhida["valor"]
+
+
+def test_venda_para_clube_sem_oferta_e_recusada():
+    sid, _ = _iniciar()
+    vendido = mercado_service.ver_mercado(sid)["elenco"][0]
+    with pytest.raises(TransferenciaInvalida, match="não tem oferta"):
+        mercado_service.vender(sid, vendido["jogador_id"], "Clube Inventado")
 
 
 def test_janela_fecha_depois_da_rodada_1():
@@ -76,33 +165,26 @@ def test_janela_fecha_depois_da_rodada_1():
     assert not m["janela_aberta"]
     assert all(f["bloqueio"] for f in m["disponiveis"])
     with pytest.raises(TransferenciaInvalida, match="fechada"):
-        mercado_service.transferir(sid, m["disponiveis"][0]["jogador_id"], "compra")
+        mercado_service.propor(sid, m["disponiveis"][0]["jogador_id"], 1_000_000)
 
 
-def test_nao_compra_jogador_do_proprio_elenco():
+def test_nao_negocia_jogador_do_proprio_elenco():
     sid, _ = _iniciar()
     meu = mercado_service.ver_mercado(sid)["elenco"][0]
     with pytest.raises(TransferenciaInvalida):
-        mercado_service.transferir(sid, meu["jogador_id"], "compra")
+        mercado_service.propor(sid, meu["jogador_id"], 1_000_000)
 
 
-def test_transferencia_nao_mexe_na_sorte_da_temporada():
-    # comprar não pode consumir números aleatórios: a corrente de RNG gravada
-    # no snapshot tem que ser a mesma de um save idêntico sem transferência
+def test_negociacao_nao_mexe_na_sorte_da_temporada():
+    # negociar não pode consumir números aleatórios: a corrente de RNG
+    # gravada tem que ser a mesma de um save idêntico sem negociação
     sem, _ = _iniciar(seed=21)
     com, _ = _iniciar(seed=21)
-    mercado_service.transferir(
-        com, _compravel(mercado_service.ver_mercado(com))["jogador_id"], "compra"
-    )
+    m = mercado_service.ver_mercado(com)
+    alvo = _alvo(m)
+    mercado_service.propor(com, alvo["jogador_id"], 10_000)
+    mercado_service.propor(com, alvo["jogador_id"], alvo["valor_mercado"] * 3)
     assert _rng(sem) == _rng(com)
-
-
-def _rng(sid):
-    conn = conectar()
-    try:
-        return json.loads(simulacao_repo.buscar(conn, sid)["estado_json"])["rng"]
-    finally:
-        conn.close()
 
 
 def test_sem_mercado_em_temporada_concluida():
@@ -114,4 +196,5 @@ def test_sem_mercado_em_temporada_concluida():
 def test_simulacao_ou_jogador_inexistente():
     assert mercado_service.ver_mercado(999_999) is None
     sid, _ = _iniciar()
-    assert mercado_service.transferir(sid, 999_999, "compra") is None
+    assert mercado_service.propor(sid, 999_999, 1_000) is None
+    assert mercado_service.ofertas(sid, 999_999) is None
