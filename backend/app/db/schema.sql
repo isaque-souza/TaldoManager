@@ -87,7 +87,8 @@ CREATE TABLE IF NOT EXISTS jogador (
     contrato_anos   INTEGER NOT NULL DEFAULT 0,
     valor_mercado   INTEGER NOT NULL DEFAULT 0,  -- snapshot do valor no fim do save
     salario         INTEGER NOT NULL DEFAULT 0,  -- por temporada
-    multa_rescisoria INTEGER                     -- NULL = sem multa
+    multa_rescisoria INTEGER,                    -- NULL = sem multa
+    numero          INTEGER                      -- camisa (v1.1); NULL em saves antigos
 );
 
 CREATE TABLE IF NOT EXISTS partida (

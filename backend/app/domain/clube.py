@@ -1,3 +1,6 @@
+from app.domain import numeros
+
+
 class Clube:
 
     # postura tática escolhida pelo técnico (afeta os pesos da engine)
@@ -124,12 +127,14 @@ class Clube:
         
     def contratar_jogador(self, jogador):
 
+        numeros.garantir_numero(self, jogador)
         self.jogadores.append(
             jogador
         )
     
     def contratar_reserva(self, jogador):
 
+        numeros.garantir_numero(self, jogador)
         self.jogadores.append(jogador)
         self.reservas.append(jogador)
     

@@ -17,6 +17,7 @@ por nome de clube.
 
 import random
 
+from app.domain import numeros
 from app.domain.jogador import Jogador
 
 # campos acumulados de Jogador (os *_partida são zerados a cada jogo)
@@ -31,6 +32,8 @@ _JOGADOR_CAMPOS = (
     # carreira (v0.8): mudam na virada de temporada (envelhecimento e
     # evolução); sem eles, cada rodada voltaria aos valores da seed
     "idade", "overall", "potencial",
+    # camisa (v1.1): vai com o jogador quando ele muda de clube
+    "numero",
 )
 
 # campos acumulados de Clube (penalidade_expulsao é zerada a cada jogo)
@@ -117,6 +120,11 @@ def restaurar_estado(campeonato, blob):
             for c in _JOGADOR_CAMPOS:
                 # .get: snapshots antigos não têm os campos mais novos
                 setattr(jogador, c, campos.get(c, getattr(jogador, c)))
+
+    # snapshots antigos não têm número: quem foi transferido traz o da seed
+    # do clube antigo e pode repetir o de alguém
+    for clube in campeonato.clubes:
+        numeros.revisar(clube)
 
 
 def criar_jogador(nome, campos):

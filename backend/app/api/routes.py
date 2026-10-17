@@ -20,6 +20,7 @@ from app.api.schemas import (
     OfertasJogador,
     RespostaProposta,
     RespostaRenovacao,
+    PreJogo,
     ProximaRodada,
     RodadaDecisao,
     RodadaJogada,
@@ -148,6 +149,23 @@ def criar_simulacao(cfg: NovaSimulacao | None = None):
 def obter_proxima_rodada(simulacao_id: int):
     """Confrontos da próxima rodada e a situação do elenco dirigido."""
     dados = temporada_service.proxima_rodada(simulacao_id)
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/pre-jogo",
+    response_model=PreJogo,
+    tags=["simulacoes"],
+)
+def obter_pre_jogo(simulacao_id: int):
+    """As duas escalações da partida do técnico na próxima rodada, como o
+    motor vai escalar no apito (com a decisão salva). Não grava nada."""
+    try:
+        dados = temporada_service.pre_jogo(simulacao_id)
+    except TemporadaConcluida as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
     return dados

@@ -461,3 +461,14 @@ def test_proxima_temporada_de_tecnico_demitido_da_409():
     assert visao["cargo"]["estado"] == "demitido"
     assert visao["fim_de_carreira"]["temporadas"] == 1
     assert client.post(f"/simulacoes/{sid}/proxima-temporada").status_code == 409
+
+
+def test_pre_jogo_pela_api():
+    clube = client.get("/clubes").json()[0]["nome"]
+    sid = client.post("/simulacoes", json={"clube": clube, "modo": "rodada_a_rodada", "seed": 2}).json()["id"]
+
+    pj = client.get(f"/simulacoes/{sid}/pre-jogo").json()
+    assert pj["clube_usuario"] == clube
+    assert len(pj["mandante"]["titulares"]) == 11
+    assert {"numero", "linha", "craque", "pendurado"} <= set(pj["mandante"]["titulares"][0])
+    assert client.get("/simulacoes/999999/pre-jogo").status_code == 404

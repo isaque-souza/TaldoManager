@@ -72,6 +72,7 @@ _COLUNAS_NOVAS = {
         ("valor_mercado", "INTEGER NOT NULL DEFAULT 0"),
         ("salario", "INTEGER NOT NULL DEFAULT 0"),
         ("multa_rescisoria", "INTEGER"),
+        ("numero", "INTEGER"),
     ),
     "partida": (
         ("finalizacoes_gol_mandante", "INTEGER NOT NULL DEFAULT 0"),

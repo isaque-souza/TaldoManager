@@ -11,7 +11,7 @@ não do `estado_json` (que é apagado quando a temporada termina): o banco é a
 fonte da verdade.
 """
 
-from app.domain import contrato, mercado
+from app.domain import contrato, mercado, numeros
 from app.domain.base import TAMANHO_ALVO
 from app.domain.evolucao import evoluir
 from app.domain.temporada import criar_jogador
@@ -59,7 +59,12 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
         jogador.salario = final["salario"]
         jogador.contrato_anos = final["contrato_anos"]
         jogador.multa_rescisoria = final["multa_rescisoria"]
+        jogador.numero = final.get("numero")
         por_clube[final["clube"]].jogadores.append(jogador)
+
+    # temporadas de antes da v1.1 não guardam número
+    for clube in campeonato.clubes:
+        numeros.revisar(clube)
 
     # caixa: o final da temporada anterior é o inicial desta
     for final in clubes_finais:
