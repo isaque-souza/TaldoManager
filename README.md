@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 341 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 371 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -376,7 +376,12 @@ crescer (ou encolher) com as decisões do técnico:
 
 * [x] Um comando só: a API serve o frontend em `http://localhost:8000` (sem CORS, sem campo "API" na tela)
 * [x] Tela inicial de jogador (o jogo abre nela: Continuar / Novo jogo / Carregar; clubes em cards com o ranking de força — `GET /clubes` traz `forca` e `ranking_forca`; seed e "Simular tudo" num painel "🛠 Modo dev"; botão "🏠 Menu")
-* [ ] Meta da diretoria por temporada (pela força do clube: título, G-4, meio da tabela, não cair)
+* [x] Meta da diretoria por temporada — força = média do melhor XI no 4-3-3;
+      o ranking de força define a posição mínima (1º → campeão, 2º–4º → G-4,
+      5º–8º → top 8, 9º–14º → até 12º, 15º–18º → fora do Z-4, 19º–20º → fugir
+      das 2 últimas; calibrado em 60 temporadas). Fixada no início da
+      temporada; card 🎯 com a situação (✅ no caminho / ⚠️ em risco, até 3
+      abaixo / ❌ longe) nas telas da rodada e da temporada e nos cards de Novo jogo
 * [ ] Demissão no fim da temporada (longe da meta 2× seguidas ou muito abaixo → fim de carreira)
 
 * [x] API (FastAPI, não Flask)
@@ -409,7 +414,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 341 testes (domain, db, repositories, services, api)
+│   └── tests/              # 371 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

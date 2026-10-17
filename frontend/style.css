@@ -76,6 +76,12 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .save-acoes button { width: auto; margin: 0; padding: .3rem .8rem; font-size: .85rem; }
 .save-acoes button.confirmar { border-color: #e53935; color: #e53935; }
 #inicio-abas { justify-content: flex-start; }   /* o <nav> do Pico espalha os itens */
+.meta { padding: .6rem .9rem; border-left: 4px solid var(--pico-muted-border-color);
+  background: var(--pico-card-background-color); border-radius: 0 6px 6px 0; }
+.meta small { color: var(--pico-muted-color); }
+.meta-batida { border-left-color: #43a047; }
+.meta-perto { border-left-color: #fdd835; }
+.meta-longe { border-left-color: #e53935; }
 .dev { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--pico-muted-border-color); }
 .dev > summary { cursor: pointer; color: var(--pico-muted-color); }
 #escalacao { margin: 0 0 1rem; }

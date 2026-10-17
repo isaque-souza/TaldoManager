@@ -92,6 +92,7 @@ function renderClubes() {
         <small>${c.pais}</small>
         <span class="estrelas" title="${c.ranking_forca}º elenco mais forte">${estrelas(c.ranking_forca)}</span>
         <span>💪 ${c.forca.toLocaleString("pt-BR")} · ${c.ranking_forca}º em força</span>
+        <span>🎯 ${c.meta}</span>
         <span>💰 ${dinheiro(c.dinheiro)} · 👥 ${dinheiro(c.torcedores)}</span>
       </button>`)
     .join("");

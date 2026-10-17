@@ -7,6 +7,7 @@ import { carregarMercado } from "./mercado.js";
 import { carregarLista } from "./saves.js";
 import { renderSlots, xiEscolhido } from "./escalacao.js";
 import { renderDashboard } from "./financas.js";
+import { renderMeta } from "./diretoria.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -66,6 +67,7 @@ export async function carregarFinancasRodada() {
 export function mostrarRodadaTela() {
   esconderTudo();
   $("rodada").hidden = false;
+  renderMeta("r-meta", estado.temporada);
   if (estado.faseRodada === "depois") renderRodadaDepois();
   else renderRodadaAntes();
 }

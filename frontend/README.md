@@ -27,6 +27,7 @@ frontend/
 └── js/
     ├── main.js       ponto de entrada: liga o modo dev e abre a tela inicial
     ├── inicio.js     tela inicial: continuar, novo jogo (clubes em cards), carregar
+    ├── diretoria.js  card 🎯 da meta da diretoria (rodada e temporada)
     ├── nucleo.js     estado compartilhado, navegação (← Voltar) e rede (pedir)
     ├── tabelas.js    tabela genérica, links, formatação de dinheiro
     ├── saves.js      lista de simulações salvas (abrir / apagar)
