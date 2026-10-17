@@ -276,3 +276,23 @@ def test_fluxo_do_mercado():
 def test_mercado_de_temporada_concluida_da_409():
     sid = client.post("/simulacoes", json={"seed": 2}).json()["id"]
     assert client.get(f"/simulacoes/{sid}/mercado").status_code == 409
+
+
+def test_fluxo_de_renovacao():
+    sid = client.post(
+        "/simulacoes", json={"seed": 5, "clube": "Real Taldo", "modo": "rodada_a_rodada"}
+    ).json()["id"]
+    meu = client.get(f"/simulacoes/{sid}/mercado").json()["elenco"][0]
+
+    c = client.get(f"/simulacoes/{sid}/jogadores/{meu['jogador_id']}/contrato")
+    assert c.status_code == 200
+    ref = c.json()["salario_referencia"]
+
+    # salário generoso fecha; multa fora do enum -> 422; duração inválida -> 400
+    r = client.post(f"/simulacoes/{sid}/renovacoes",
+                    json={"jogador_id": meu["jogador_id"], "salario": ref * 3, "anos": 2, "multa": "5x"})
+    assert r.status_code == 200 and r.json()["resposta"] == "aceita"
+    assert client.post(f"/simulacoes/{sid}/renovacoes",
+                       json={"jogador_id": meu["jogador_id"], "salario": ref, "anos": 2, "multa": "9x"}).status_code == 422
+    assert client.post(f"/simulacoes/{sid}/renovacoes",
+                       json={"jogador_id": meu["jogador_id"], "salario": ref, "anos": 9, "multa": "3x"}).status_code == 400

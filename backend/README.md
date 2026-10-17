@@ -90,4 +90,7 @@ rodada por vez.
 | `GET` | `/simulacoes/{id}/jogadores/{jogador_id}/ofertas` | venda: o que cada clube paga (seria titular? é rival?) |
 | `POST` | `/simulacoes/{id}/vendas` (corpo JSON) | venda: `{jogador_id, clube}` aceita a oferta daquele clube (recalculada no servidor) |
 
-Regras de negócio quebradas (caixa, elenco, janela fechada...) voltam `400` com o motivo em `detail`; temporada concluída, `409`.
+| `GET` | `/simulacoes/{id}/jogadores/{jogador_id}/contrato` | contrato atual, salário de mercado e opções de multa |
+| `POST` | `/simulacoes/{id}/renovacoes` (corpo JSON) | `{jogador_id, salario, anos, multa: "sem" \| "2x" \| "3x" \| "5x"}` → aceita / contraproposta / recusada |
+
+Regras de negócio quebradas (caixa, elenco, janela fechada, duração...) voltam `400` com o motivo em `detail`; temporada concluída, `409`.

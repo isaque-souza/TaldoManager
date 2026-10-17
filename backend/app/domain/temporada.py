@@ -24,6 +24,8 @@ _JOGADOR_CAMPOS = (
     "penaltis", "penaltis_perdidos", "faltas", "amarelos", "vermelhos",
     "energia", "condicao",
     "jogos_suspensao", "amarelos_ciclo", "rodadas_lesao",
+    # contrato (v0.7): muda com renovações e transferências
+    "salario", "contrato_anos", "multa_rescisoria",
 )
 
 # campos acumulados de Clube (penalidade_expulsao é zerada a cada jogo)
@@ -97,4 +99,5 @@ def restaurar_estado(campeonato, blob):
         for nome, campos in dados["jogadores"].items():
             jogador = por_nome[nome]
             for c in _JOGADOR_CAMPOS:
-                setattr(jogador, c, campos[c])
+                # .get: snapshots antigos não têm os campos mais novos
+                setattr(jogador, c, campos.get(c, getattr(jogador, c)))

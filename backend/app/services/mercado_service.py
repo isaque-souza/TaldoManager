@@ -61,10 +61,9 @@ class _Contexto:
                     return j, clube
         return None, None
 
-    def efetivar(self, jogador_id, jogador, vendedor, comprador, preco):
-        """Faz a transferência e regrava tudo o que mudou."""
-
-        mercado.transferir(jogador, vendedor, comprador, preco)
+    def gravar(self):
+        """Regrava o estado vivo depois de uma mudança fora das partidas
+        (transferência, renovação). Devolve o mapa {clube: id}."""
 
         alvo = self.alvo
         xi = sorted(j.nome for j in alvo.xi_preferido) or None
@@ -80,10 +79,6 @@ class _Contexto:
         conn = self.conn
         mapa = clube_repo.atualizar(conn, self.sim["id"], cru["clubes"])
         jogador_repo.atualizar(conn, self.sim["id"], mapa, cru["jogadores"])
-        transferencia_repo.inserir(
-            conn, self.sim["id"], self.rodada, jogador_id,
-            mapa[vendedor.nome], mapa[comprador.nome], preco,
-        )
         simulacao_repo.atualizar_estado(
             conn, self.sim["id"],
             estado="em_andamento",
@@ -94,6 +89,17 @@ class _Contexto:
             formacao=alvo.formacao,
             xi_preferido=json.dumps(xi, ensure_ascii=False) if xi else None,
         )
+        return mapa
+
+    def efetivar(self, jogador_id, jogador, vendedor, comprador, preco):
+        """Faz a transferência e regrava tudo o que mudou."""
+
+        mercado.transferir(jogador, vendedor, comprador, preco)
+        mapa = self.gravar()
+        transferencia_repo.inserir(
+            self.conn, self.sim["id"], self.rodada, jogador_id,
+            mapa[vendedor.nome], mapa[comprador.nome], preco,
+        )
 
         return {
             "rodada": self.rodada,
@@ -102,7 +108,7 @@ class _Contexto:
             "de_clube": vendedor.nome,
             "para_clube": comprador.nome,
             "valor": preco,
-            "caixa": alvo.dinheiro,
+            "caixa": self.alvo.dinheiro,
         }
 
 
@@ -141,7 +147,8 @@ def _ficha(jogador, jogador_id, clube):
         "overall": jogador.overall,
         "potencial": jogador.potencial,
         "valor_mercado": jogador.valor_mercado(),
-        "salario": jogador.salario(),
+        "salario": jogador.salario,
+        "salario_referencia": jogador.salario_referencia(),
         "contrato_anos": jogador.contrato_anos,
         "multa_rescisoria": jogador.multa_rescisoria,
     }
