@@ -8,7 +8,8 @@ import { abrirJogador } from "./jogador.js";
 import { mostrarCarreira } from "./carreira.js";
 
 export function $(id) { return document.getElementById(id); }
-export function api() { return $("api").value.replace(/\/$/, ""); }
+// a API serve o próprio frontend: caminhos relativos ao mesmo endereço
+export function api() { return ""; }
 
 // estado compartilhado entre as telas (um objeto: módulos não
 // podem reatribuir variáveis importadas de outro módulo)

@@ -5,7 +5,7 @@ Interface web do jogo. **Sem build, sem npm**: HTML + CSS + JavaScript puro
 
 ## Como rodar
 
-### 1. Suba a API (terminal 1)
+O frontend é servido pela própria API — um comando só:
 
 ```bash
 cd backend
@@ -13,20 +13,10 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-A API sobe em `http://localhost:8000`. Docs interativas: `http://localhost:8000/docs`.
+Abra `http://localhost:8000` no navegador. Docs da API: `http://localhost:8000/docs`.
 
-### 2. Sirva o frontend (terminal 2)
-
-```bash
-cd frontend
-python -m http.server 5500
-```
-
-Abra `http://localhost:5500` no navegador e clique em **Nova temporada**.
-
-> **Precisa** ser servido via `http.server`: o JavaScript usa módulos ES
-> (`<script type="module">`), que o navegador não carrega de `file://` — abrir
-> o `index.html` com dois cliques deixa a página sem funcionar.
+> Abrir o `index.html` com dois cliques (`file://`) não funciona: o JavaScript
+> usa módulos ES e chama a API por caminhos relativos ao mesmo endereço.
 
 ## Organização
 

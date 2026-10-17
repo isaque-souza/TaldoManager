@@ -3,15 +3,17 @@
 Uso (a partir da pasta backend/):
     uvicorn app.main:app --reload
 
+Jogo:              http://localhost:8000
 Docs interativas:  http://localhost:8000/docs
 """
 
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
+from app.core.config import FRONTEND_DIR
 from app.db.conexao import init_db
 
 
@@ -24,21 +26,14 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Taldo Manager API",
     description="API para simular temporadas e navegar nos resultados.",
-    version="0.2.0",
+    version="1.0.0",
     lifespan=lifespan,
-)
-
-# Libera o frontend (index.html aberto localmente ou servido em outra porta).
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
 )
 
 app.include_router(router)
 
-
-@app.get("/", tags=["infra"])
-def raiz():
-    return {"api": "Taldo Manager", "docs": "/docs"}
+# O frontend é servido pela própria API: mesmo endereço, então não
+# precisa de CORS. Montado por último, as rotas da API têm prioridade;
+# o resto ("/", "/js/...", "/style.css") cai nos arquivos de frontend/.
+if FRONTEND_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
