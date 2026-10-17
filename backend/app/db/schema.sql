@@ -66,7 +66,8 @@ CREATE TABLE IF NOT EXISTS jogador (
     potencial       INTEGER NOT NULL DEFAULT 0,
     contrato_anos   INTEGER NOT NULL DEFAULT 0,
     valor_mercado   INTEGER NOT NULL DEFAULT 0,  -- snapshot do valor no fim do save
-    salario         INTEGER NOT NULL DEFAULT 0   -- por temporada
+    salario         INTEGER NOT NULL DEFAULT 0,  -- por temporada
+    multa_rescisoria INTEGER                     -- NULL = sem multa
 );
 
 CREATE TABLE IF NOT EXISTS partida (
@@ -95,6 +96,18 @@ CREATE TABLE IF NOT EXISTS transferencia (
     de_clube_id   INTEGER NOT NULL REFERENCES clube(id) ON DELETE CASCADE,
     para_clube_id INTEGER NOT NULL REFERENCES clube(id) ON DELETE CASCADE,
     valor         INTEGER NOT NULL
+);
+
+-- Propostas de compra feitas pelo técnico (v0.7): contam o limite por
+-- janela e guardam o histórico da negociação.
+CREATE TABLE IF NOT EXISTS proposta (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    rodada        INTEGER NOT NULL,
+    jogador_id    INTEGER NOT NULL REFERENCES jogador(id) ON DELETE CASCADE,
+    valor         INTEGER NOT NULL,
+    resposta      TEXT NOT NULL,    -- aceita | multa | contraproposta | recusada
+    valor_pedido  INTEGER           -- só nas contrapropostas
 );
 
 -- Timeline da partida: um registro por evento (gol, cartão, substituição, ...).

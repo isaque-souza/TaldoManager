@@ -38,6 +38,7 @@ def _jogador(nome, clube):
         "penaltis": 2, "penaltis_perdidos": 1, "faltas": 12,
         "potencial": 84, "contrato_anos": 3,
         "valor_mercado": 3_000_000, "salario": 250_000,
+        "multa_rescisoria": 9_000_000,
     }
 
 

@@ -112,6 +112,7 @@ def _serializar_jogador(jogador, clube_nome):
         "contrato_anos": jogador.contrato_anos,
         "valor_mercado": jogador.valor_mercado(),
         "salario": jogador.salario(),
+        "multa_rescisoria": jogador.multa_rescisoria,
     }
 
 
@@ -670,6 +671,7 @@ def game_log_jogador(simulacao_id, jogador_id):
             "contrato_anos": j["contrato_anos"],
             "valor_mercado": j["valor_mercado"],
             "salario": j["salario"],
+            "multa_rescisoria": j["multa_rescisoria"],
         }
 
         return {"jogador": jogador, "jogos": jogos}

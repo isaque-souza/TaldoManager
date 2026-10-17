@@ -9,7 +9,7 @@ class Jogador:
     AMARELOS_PARA_SUSPENSAO = 5
 
     def __init__(self, nome, idade, posicao, overall,
-                 potencial=None, contrato_anos=3):
+                 potencial=None, contrato_anos=3, multa_rescisoria=None):
         self.nome = nome
         self.idade = idade
         self.posicao = posicao
@@ -17,6 +17,8 @@ class Jogador:
         # mercado (v0.7): potencial nunca fica abaixo do overall atual
         self.potencial = max(overall, potencial or overall)
         self.contrato_anos = contrato_anos   # temporadas restantes
+        # valor fixo de contrato; None = sem multa (o clube só vende se quiser)
+        self.multa_rescisoria = multa_rescisoria
         self.gols = 0
         self.assistencias = 0
         self.partidas = 0

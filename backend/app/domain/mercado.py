@@ -4,10 +4,19 @@ Regras puras, sem banco: quando a janela está aberta, quem pode vender e
 comprar, e a transferência em si (troca o jogador de elenco e lança o
 dinheiro nos dois caixas).
 
-Por enquanto o preço é sempre o valor de mercado e o vendedor aceita se a
-venda não desmontar o elenco dele. Negociação (propostas, recusas, disputa
-entre clubes) vem num passo seguinte.
+Negociação (v0.7, passo 4):
+
+- COMPRA: o clube vendedor calcula um preço pedido (valor de mercado ajustado
+  pela importância do jogador para ele, contrato, caixa e rivalidade) e
+  responde à proposta: aceita, contrapropõe ou recusa. Se o jogador tem multa
+  rescisória e a proposta a cobre, o clube não pode recusar.
+- VENDA: cada clube que pode pagar faz uma oferta, mais alta se o jogador
+  seria titular lá; o técnico escolhe qual aceitar.
+
+Tudo determinístico (sem `random`): não mexe na sorte da temporada.
 """
+
+from dataclasses import dataclass
 
 # rodadas ANTES das quais a janela está aberta: pré-temporada e virada do turno
 JANELAS = (1, 20)
@@ -76,14 +85,140 @@ def transferir(jogador, vendedor, comprador, preco):
     vendedor.lancar("receita_vendas", preco)
 
 
-def melhor_comprador(jogador, clubes, preco, excluir=()):
-    """O clube mais rico (fora `excluir`) que pode pagar `preco`. None se
-    ninguém pode."""
+# --- negociação -------------------------------------------------------------
 
-    candidatos = [
-        c for c in clubes
-        if c not in excluir
-        and jogador not in c.jogadores
-        and motivo_entrada_bloqueada(c, preco) is None
-    ]
-    return max(candidatos, key=lambda c: c.dinheiro, default=None)
+FATOR_TITULAR = 1.3            # titular do vendedor custa mais
+FATOR_CRAQUE = 1.6             # o melhor do elenco custa ainda mais
+FATOR_RIVAL = 1.5              # vender para o rival? só caro
+FATOR_CONTRATO_LONGO = 1.2     # 4+ temporadas de contrato
+FATOR_CONTRATO_ACABANDO = 0.7  # última temporada: vender ou perder de graça
+FATOR_ENDIVIDADO = 0.85        # caixa negativo: o clube precisa vender
+FAIXA_CONTRAPROPOSTA = 0.85    # proposta >= 85% do pedido vira contraproposta
+MAX_PROPOSTAS = 3              # por jogador, por janela
+
+OFERTA_TITULAR = 1.15          # comprador paga mais por quem seria titular
+OFERTA_BANCO = 0.85
+
+
+def _arredondar(valor):
+    return max(10_000, round(valor / 10_000) * 10_000)
+
+
+def sao_rivais(a, b):
+    return b.nome in a.rivais or a.nome in b.rivais
+
+
+def vagas(clube, posicao):
+    """Quantos titulares a formação do clube usa nesta posição."""
+    if posicao == "Goleiro":
+        return 1
+    n_def, n_mei, n_ata = clube.FORMACOES.get(clube.formacao, (4, 3, 3))
+    return {"Defesa": n_def, "Meio-Campo": n_mei, "Atacante": n_ata}[posicao]
+
+
+def seria_titular(clube, jogador):
+    """O jogador estaria no XI do `clube` (por overall)? Serve tanto para quem
+    já está no elenco quanto para um reforço em potencial."""
+    melhores = sum(
+        1 for j in clube.jogadores
+        if j is not jogador
+        and j.posicao == jogador.posicao
+        and j.overall > jogador.overall
+    )
+    return melhores < vagas(clube, jogador.posicao)
+
+
+def eh_craque(clube, jogador):
+    return jogador.overall >= max(j.overall for j in clube.jogadores)
+
+
+def preco_pedido(jogador, vendedor, comprador):
+    """Quanto o `vendedor` quer para liberar o jogador para o `comprador`.
+    Nunca passa da multa rescisória: pagando a multa, o jogador sai."""
+
+    preco = jogador.valor_mercado()
+
+    if eh_craque(vendedor, jogador):
+        preco *= FATOR_CRAQUE
+    elif seria_titular(vendedor, jogador):
+        preco *= FATOR_TITULAR
+
+    if jogador.contrato_anos >= 4:
+        preco *= FATOR_CONTRATO_LONGO
+    elif jogador.contrato_anos <= 1:
+        preco *= FATOR_CONTRATO_ACABANDO
+
+    if vendedor.dinheiro < 0:
+        preco *= FATOR_ENDIVIDADO
+
+    if sao_rivais(vendedor, comprador):
+        preco *= FATOR_RIVAL
+
+    preco = _arredondar(preco)
+    if jogador.multa_rescisoria is not None:
+        preco = min(preco, jogador.multa_rescisoria)
+    return preco
+
+
+@dataclass
+class Resposta:
+    tipo: str            # "aceita" | "multa" | "contraproposta" | "recusada"
+    valor: int           # quanto custa fechar (pedido, multa ou a proposta)
+    motivo: str
+
+    @property
+    def fechou(self):
+        return self.tipo in ("aceita", "multa")
+
+
+def avaliar_proposta(jogador, vendedor, comprador, valor):
+    """Resposta do `vendedor` a uma proposta de `valor` pelo jogador."""
+
+    multa = jogador.multa_rescisoria
+    if multa is not None and valor >= multa:
+        return Resposta(
+            "multa", multa,
+            f"Multa rescisória paga: o {vendedor.nome} não pode recusar",
+        )
+
+    pedido = preco_pedido(jogador, vendedor, comprador)
+    rival = " — e para o rival sai mais caro" if sao_rivais(vendedor, comprador) else ""
+
+    if valor >= pedido:
+        return Resposta("aceita", valor, f"O {vendedor.nome} aceitou a proposta")
+    if valor >= FAIXA_CONTRAPROPOSTA * pedido:
+        return Resposta(
+            "contraproposta", pedido,
+            f"O {vendedor.nome} topa negociar, mas quer mais{rival}",
+        )
+    return Resposta(
+        "recusada", pedido,
+        f"O {vendedor.nome} achou a proposta baixa demais{rival}",
+    )
+
+
+@dataclass
+class Oferta:
+    clube: object
+    valor: int
+    titular: bool
+    rival: bool
+
+
+def ofertas(jogador, vendedor, clubes):
+    """Ofertas dos outros clubes pelo jogador, da maior para a menor. Cada
+    clube paga mais se o jogador seria titular lá; só oferta quem pode pagar
+    e tem vaga no elenco."""
+
+    lista = []
+    for clube in clubes:
+        if clube is vendedor:
+            continue
+        titular = seria_titular(clube, jogador)
+        valor = _arredondar(
+            jogador.valor_mercado() * (OFERTA_TITULAR if titular else OFERTA_BANCO)
+        )
+        if motivo_entrada_bloqueada(clube, valor) is None:
+            lista.append(Oferta(clube, valor, titular, sao_rivais(vendedor, clube)))
+    lista.sort(key=lambda o: (-o.valor, o.clube.nome))
+    return lista
