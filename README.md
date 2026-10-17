@@ -138,7 +138,7 @@ O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
   (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 231 testes.
-* **Frontend** (`frontend/`) — `index.html` único, JS puro, consome a API.
+* **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
 
@@ -378,7 +378,9 @@ TaldoManager/
 │   └── tests/              # 231 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
-│   └── index.html          # SPA em JS puro, consome a API
+│   ├── index.html          # marcação das telas
+│   ├── style.css
+│   └── js/                 # módulos ES (sem build): núcleo, mercado, contratos...
 │
 └── README.md
 ```
