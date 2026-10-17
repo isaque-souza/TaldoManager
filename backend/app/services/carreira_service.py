@@ -10,6 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
+from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
     envelhecer,
@@ -24,12 +25,24 @@ from app.repositories import jogador_repository as jogador_repo
 from app.repositories import movimento_repository as movimento_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import simulacao_service
-from scripts.data_loader import carregar_campeonato
+from scripts.data_loader import carregar_campeonato, carregar_jogadores
 
 
 class CarreiraInvalida(Exception):
     """A temporada não pode ser continuada (em andamento, sem clube dirigido
     ou já continuada)."""
+
+
+def _nomes_usados(conn, carreira_id):
+    """Seed + todos que já jogaram em alguma temporada da carreira."""
+    seed = {j.nome for j in carregar_jogadores().values()}
+    rows = conn.execute(
+        "SELECT DISTINCT j.nome FROM jogador j"
+        " JOIN simulacao s ON s.id = j.simulacao_id"
+        " WHERE s.carreira_id = ?",
+        (carreira_id,),
+    )
+    return seed | {r["nome"] for r in rows}
 
 
 def proxima_temporada(simulacao_id):
@@ -91,6 +104,10 @@ def proxima_temporada(simulacao_id):
             # aposentadoria antes dos contratos: quem vai parar não renova
             movimentos = aposentar(campeonato, random)
             movimentos += resolver_contratos(campeonato, clube_usuario)
+            # a base repõe quem saiu; nomes não se repetem na carreira
+            movimentos += subir_jovens(
+                campeonato, _nomes_usados(conn, carreira_id), random
+            )
 
             # o técnico mantém tática, formação e XI — menos quem saiu do clube
             alvo = next(c for c in campeonato.clubes if c.nome == clube_usuario)

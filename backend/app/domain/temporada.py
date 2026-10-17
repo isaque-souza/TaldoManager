@@ -17,6 +17,8 @@ por nome de clube.
 
 import random
 
+from app.domain.jogador import Jogador
+
 # campos acumulados de Jogador (os *_partida são zerados a cada jogo)
 _JOGADOR_CAMPOS = (
     "gols", "assistencias", "partidas", "soma_nota", "melhor_nota",
@@ -57,8 +59,12 @@ def snapshot_estado(campeonato):
         # o elenco entra no snapshot porque transferências mudam quem joga
         # onde; sem isso, cada jogador voltaria para o clube da seed
         dados["elenco"] = [j.nome for j in clube.jogadores]
+        # `posicao` vai junto para recriar quem não está na seed (base, v0.8)
         dados["jogadores"] = {
-            j.nome: {c: getattr(j, c) for c in _JOGADOR_CAMPOS}
+            j.nome: {
+                **{c: getattr(j, c) for c in _JOGADOR_CAMPOS},
+                "posicao": j.posicao,
+            }
             for j in clube.jogadores
         }
         clubes[clube.nome] = dados
@@ -80,6 +86,12 @@ def restaurar_estado(campeonato, blob):
 
     # todos os jogadores da liga, por nome (os nomes são únicos na seed)
     por_nome = {j.nome: j for c in campeonato.clubes for j in c.jogadores}
+
+    # quem não está na seed (jovens da base, v0.8) é recriado do snapshot
+    for dados in blob["clubes"].values():
+        for nome, campos in dados["jogadores"].items():
+            if nome not in por_nome:
+                por_nome[nome] = criar_jogador(nome, campos)
 
     for clube in campeonato.clubes:
         dados = blob["clubes"][clube.nome]
@@ -105,3 +117,13 @@ def restaurar_estado(campeonato, blob):
             for c in _JOGADOR_CAMPOS:
                 # .get: snapshots antigos não têm os campos mais novos
                 setattr(jogador, c, campos.get(c, getattr(jogador, c)))
+
+
+def criar_jogador(nome, campos):
+    """Jogador que não existe na seed, a partir de um dict com `posicao`,
+    `idade`, `overall` e `potencial` (do snapshot ou da tabela `jogador`).
+    O resto (contrato, stats) é aplicado depois por quem chamou."""
+    return Jogador(
+        nome, campos["idade"], campos["posicao"], campos["overall"],
+        potencial=campos["potencial"],
+    )

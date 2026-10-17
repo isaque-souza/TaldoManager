@@ -266,3 +266,78 @@ def test_elencos_continuam_validos_depois_de_varias_viradas():
             assert e["goleiros"] >= 2, e["nome"]
         while not temporada_service.avancar(sid)["concluida"]:
             pass
+
+
+# --- jovens da base (passo 4) ---
+
+from app.domain import contrato  # noqa: E402
+from app.services import contrato_service, mercado_service  # noqa: E402
+
+
+def _jovens_da_base(sid):
+    return [m for m in simulacao_service.carregar_temporada(sid)["movimentos_virada"]
+            if m["tipo"] == "subiu_da_base"]
+
+
+def test_virada_sobe_jovens_em_todos_os_clubes():
+    _, nova = _virada()
+    jovens = _jovens_da_base(nova)
+
+    assert {m["clube"] for m in jovens} == {
+        c["clube"] for c in simulacao_service.carregar_temporada(nova)["classificacao"]
+    }
+    t2 = _jogadores(nova)
+    for m in jovens:
+        assert m["jogador"] in t2
+        assert 16 <= t2[m["jogador"]]["idade"] <= 18
+
+
+def test_jovem_da_base_sobrevive_as_rodadas_e_a_proxima_virada():
+    _, nova = _virada()
+    jovem = _jovens_da_base(nova)[0]["jogador"]
+
+    while not temporada_service.avancar(nova)["concluida"]:
+        pass
+    assert jovem in _jogadores(nova)
+
+    t3 = carreira_service.proxima_temporada(nova)["simulacao_id"]
+    assert _jogadores(t3)[jovem]["idade"] == _jogadores(nova)[jovem]["idade"] + 1
+
+
+def test_jovem_da_base_pode_ser_renovado_e_vendido():
+    _, nova = _virada()
+    clube = simulacao_service.carregar_temporada(nova)["clube_usuario"]
+    meu_jovem = next(m["jogador"] for m in _jovens_da_base(nova) if m["clube"] == clube)
+
+    elenco = mercado_service.ver_mercado(nova)["elenco"]
+    ficha = next(f for f in elenco if f["nome"] == meu_jovem)
+
+    conn = conectar()
+    try:
+        ctx = mercado_service._carregar(conn, nova)
+        jogador, _ = ctx.jogador(ficha["jogador_id"])
+        pedido = contrato.salario_pedido(jogador, ctx.alvo, "3x")
+    finally:
+        conn.close()
+    r = contrato_service.renovar(nova, ficha["jogador_id"], pedido, 5, "3x")
+    assert r["resposta"] == "aceita"
+
+    ofertas = mercado_service.ofertas(nova, ficha["jogador_id"])["ofertas"]
+    if ofertas:   # um jovem fraco pode não ter comprador
+        feita = mercado_service.vender(nova, ficha["jogador_id"], ofertas[0]["clube"])
+        assert feita["para_clube"] == ofertas[0]["clube"]
+
+    temporada_service.avancar(nova)
+    assert meu_jovem in _jogadores(nova)
+
+
+def test_nomes_nao_se_repetem_na_carreira():
+    sid = _temporada_concluida(seed=5)
+    vistos = set(_jogadores(sid))
+    for _ in range(2):
+        sid = carreira_service.proxima_temporada(sid)["simulacao_id"]
+        novos = {m["jogador"] for m in _jovens_da_base(sid)}
+        assert not novos & vistos
+        vistos |= set(_jogadores(sid))
+        while not temporada_service.avancar(sid)["concluida"]:
+            pass
