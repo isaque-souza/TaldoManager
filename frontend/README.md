@@ -25,7 +25,8 @@ frontend/
 ├── index.html        só a marcação (seções de cada tela)
 ├── style.css         estilos (sobre o Pico.css)
 └── js/
-    ├── main.js       ponto de entrada: liga os botões do topo e carrega os dados
+    ├── main.js       ponto de entrada: liga o modo dev e abre a tela inicial
+    ├── inicio.js     tela inicial: continuar, novo jogo (clubes em cards), carregar
     ├── nucleo.js     estado compartilhado, navegação (← Voltar) e rede (pedir)
     ├── tabelas.js    tabela genérica, links, formatação de dinheiro
     ├── saves.js      lista de simulações salvas (abrir / apagar)
@@ -47,10 +48,14 @@ variável importada de outro, mas pode mudar a propriedade de um objeto.
 
 ## O que dá pra fazer
 
-- **Nova temporada** — roda e **salva** a simulação (SQLite). O campo *Seed*
-  deixa reproduzível: mesmo seed → mesmo resultado.
-- **Lista de simulações salvas** — troca entre temporadas já rodadas; **Apagar**
-  remove a selecionada.
+- **Tela inicial** — o jogo sempre abre nela. **▶ Continuar** reabre o último
+  save (e a aba em que você estava); **✚ Novo jogo** mostra os 20 clubes em
+  cards (estrelas e posição no ranking de força, caixa, torcida) e cria a
+  temporada já em rodada a rodada; **📂 Carregar** lista os saves (Apagar pede
+  um segundo clique). O botão **🏠 Menu** volta para ela de qualquer tela.
+- **🛠 Modo dev** (recolhido na tela inicial) — os controles antigos:
+  **Nova temporada** com *Seed* (mesmo seed → mesmo resultado), modo
+  "Simular tudo", escalação de pré-temporada e a lista crua de saves.
 - **Visão da temporada** — campeão, MVP, classificação (com forma), artilharia,
   assistências, notas, clean sheets, hat-tricks, histórico, recordes.
 - **Página do clube** — clique no nome de um clube: dashboard financeiro
@@ -63,7 +68,7 @@ variável importada de outro, mas pode mudar a propriedade de um objeto.
   (nota, gols e assistências partida a partida).
 - **Aba Evolução** — gráfico (SVG puro) dos pontos acumulados por rodada dos
   20 clubes; clique num clube na legenda para destacá-lo.
-- **Seu clube + tática** — antes de "Nova temporada", escolha um clube e uma
+- **Seu clube + tática** (modo dev) — antes de "Nova temporada", escolha um clube e uma
   postura (ofensivo/equilibrado/defensivo). Só esse clube usa a tática; ele
   fica destacado na classificação e no gráfico, com um resumo do desempenho.
 - **Escalação** — com um clube escolhido, o painel "Escalação" deixa montar a

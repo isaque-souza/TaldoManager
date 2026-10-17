@@ -29,10 +29,11 @@ export const estado = {
 };
 export const pilhaVoltar = [];   // thunks para o botão "← Voltar"
 
-export const SECOES = ["temporada", "rodada", "clube", "partida", "jogador", "carreira"];
+export const SECOES = ["inicio", "temporada", "rodada", "clube", "partida", "jogador", "carreira"];
 
 export function esconderTudo() {
   SECOES.forEach((id) => ($(id).hidden = true));
+  $("menu").hidden = false;   // a tela inicial esconde de novo
 }
 
 export function secaoVisivel() {

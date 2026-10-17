@@ -51,6 +51,33 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
   color: var(--pico-color); display: inline-flex; align-items: center; gap: .35rem; }
 .grafico-legenda button.sel { border-color: var(--pico-primary); color: var(--pico-primary); }
 .grafico-legenda .bolinha { width: .7rem; height: .7rem; border-radius: 50%; flex: none; }
+/* ---------- tela inicial (v1.0) ---------- */
+.topo { display: flex; justify-content: space-between; align-items: start; gap: 1rem; }
+.topo button { width: auto; margin: 0; }
+.continuar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  border-left: 4px solid var(--pico-primary); }
+.continuar h3, .continuar p { margin: 0; }
+.continuar small { color: var(--pico-muted-color); text-transform: uppercase; letter-spacing: .04em; }
+.continuar button { width: auto; margin: 0; }
+.grade-clubes { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: .75rem; }
+.card-clube { display: flex; flex-direction: column; align-items: flex-start; gap: .2rem; text-align: left;
+  margin: 0; padding: .8rem 1rem; background: var(--pico-card-background-color);
+  border: 1px solid var(--pico-muted-border-color); color: var(--pico-color); font-size: .85rem; }
+.card-clube:hover { border-color: var(--pico-primary); }
+.card-clube.escolhido { border: 2px solid var(--pico-primary);
+  background: color-mix(in srgb, var(--pico-primary) 12%, var(--pico-card-background-color)); }
+.card-clube strong { font-size: 1rem; }
+.card-clube small { color: var(--pico-muted-color); }
+.card-clube .estrelas { color: #fdd835; letter-spacing: .1em; }
+.save { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  margin: 0 0 .5rem; padding: .7rem 1rem; }
+.save small { display: block; color: var(--pico-muted-color); }
+.save-acoes { display: flex; gap: .5rem; }
+.save-acoes button { width: auto; margin: 0; padding: .3rem .8rem; font-size: .85rem; }
+.save-acoes button.confirmar { border-color: #e53935; color: #e53935; }
+#inicio-abas { justify-content: flex-start; }   /* o <nav> do Pico espalha os itens */
+.dev { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--pico-muted-border-color); }
+.dev > summary { cursor: pointer; color: var(--pico-muted-color); }
 #escalacao { margin: 0 0 1rem; }
 #escalacao summary { cursor: pointer; font-weight: 600; }
 .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: .5rem .75rem; }

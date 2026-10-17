@@ -1,17 +1,19 @@
 // Simulações salvas: lista, abrir e apagar.
 
-import { $, esconderTudo, estado, limparAviso, pedir, pilhaVoltar } from "./nucleo.js";
+import { $, estado, limparAviso, pedir, pilhaVoltar } from "./nucleo.js";
 import { abasDaTemporada, mostrarTemporada } from "./temporada.js";
 import { carregarProximaRodada } from "./rodada.js";
+import { mostrarInicio } from "./inicio.js";
 
 // ---------- continuar de onde parou (autosave, v0.9) ----------
 // O progresso mora no servidor; aqui fica só "qual save e qual aba eu
-// estava vendo". Se o navegador apagar isso, nada se perde: abre o save
-// jogado por último, que é o primeiro da lista.
+// estava vendo". O jogo abre sempre na tela inicial, e o "Continuar" de lá
+// usa isto; se o navegador apagar, nada se perde: vale o save jogado por
+// último, que é o primeiro da lista.
 
 const CHAVE_SESSAO = "taldo:sessao";
 
-function lerSessao() {
+export function lerSessao() {
   try {
     return JSON.parse(localStorage.getItem(CHAVE_SESSAO)) || {};
   } catch {
@@ -33,11 +35,6 @@ export function lembrarSessao() {
 }
 
 window.addEventListener("pagehide", lembrarSessao);
-
-export async function continuarDeOndeParou() {
-  const sessao = lerSessao();
-  await carregarLista(sessao.simId, sessao);
-}
 
 // ---------- simulações salvas ----------
 
@@ -61,14 +58,18 @@ export async function carregarClubes() {
   );
 }
 
-export async function carregarLista(selecionar, abas) {
-  const sims = await pedir("/simulacoes");
-  if (!sims) return;
-
+// a lista crua de saves do modo dev
+export function preencherLista(sims) {
   $("lista").innerHTML = sims.length
     ? sims.map((s) => `<option value="${s.id}">${rotuloSim(s)}</option>`).join("")
     : `<option value="">— nenhuma simulação salva —</option>`;
   $("apagar").disabled = sims.length === 0;
+}
+
+export async function carregarLista(selecionar, abas) {
+  const sims = await pedir("/simulacoes");
+  if (!sims) return;
+  preencherLista(sims);
 
   if (sims.length) {
     // o pedido pode ter sido apagado (ou ser de outro banco): cai no
@@ -78,7 +79,7 @@ export async function carregarLista(selecionar, abas) {
     $("lista").value = alvo;
     await abrirSimulacao(alvo, existe ? abas : undefined);
   } else {
-    esconderTudo();
+    await mostrarInicio();
   }
 }
 
