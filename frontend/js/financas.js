@@ -2,6 +2,7 @@
 // rodada, receitas × despesas e a folha por jogador.
 
 import { dinheiro, tabela } from "./tabelas.js";
+import { icone } from "./icones.js";
 
 // ---------- helpers ----------
 
@@ -152,21 +153,21 @@ function ligarGraficoCaixa(box) {
 // ---------- receitas × despesas (barras horizontais) ----------
 
 function barrasFluxo(clube) {
-  // [rótulo, valor, tipo, aparece mesmo zerado?]
+  // [rótulo, valor, tipo, aparece mesmo zerado?, ícone]
   const itens = [
-    ["📺 Cota de TV", clube.receita_tv, "receita", true],
-    ["🎟️ Bilheteria", clube.receita_bilheteria, "receita", true],
-    ["🏆 Premiação", clube.receita_premiacao, "receita", false],
-    ["🔁 Vendas", clube.receita_vendas, "receita", false],
-    ["💸 Salários", clube.despesa_salarios, "despesa", true],
-    ["🔁 Compras", clube.despesa_compras, "despesa", false],
+    ["Cota de TV", clube.receita_tv, "receita", true, "tv"],
+    ["Bilheteria", clube.receita_bilheteria, "receita", true, "ingresso"],
+    ["Premiação", clube.receita_premiacao, "receita", false, "trofeu"],
+    ["Vendas", clube.receita_vendas, "receita", false, "troca"],
+    ["Salários", clube.despesa_salarios, "despesa", true, "dinheiro"],
+    ["Compras", clube.despesa_compras, "despesa", false, "troca"],
   ].filter(([, v, , sempre]) => sempre || v > 0);
 
   const max = Math.max(...itens.map(([, v]) => v), 1);
-  const linhas = itens.map(([rot, v, tipo]) => {
+  const linhas = itens.map(([rot, v, tipo, , ic]) => {
     const pct = (v / max) * 100;
     return `<div class="barra-linha" tabindex="0" title="${rot}: ${dinheiro(v)}">
-      <span class="barra-rotulo">${rot}</span>
+      <span class="barra-rotulo">${icone(ic)} ${rot}</span>
       <span class="barra-trilho"><span class="barra ${tipo}" style="width:calc(${pct.toFixed(1)}% * 0.72)"></span>
         <span class="barra-valor">${dinheiro(tipo === "despesa" ? -v : v)}</span></span>
     </div>`;

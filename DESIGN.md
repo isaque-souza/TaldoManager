@@ -19,6 +19,10 @@ colors:
   gramado-listra-b: "#1b7543"
   campo-borda: "#0d3d24"
   cartao-amarelo: "#f7d117"
+  texto-alerta: "#ff8a92"
+  linha-forte: "#34496a"
+  texto-sobre-ambar: "#1b1300"
+  gramado-noite: "#123323"
 typography:
   tarja:
     fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
@@ -29,10 +33,38 @@ typography:
     fontSize: "clamp(2rem, 5vw, 3.4rem)"
     fontWeight: 800
     lineHeight: 0.98
+  gol:
+    fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
+    fontSize: "clamp(2rem, 7vw, 4rem)"
+    fontWeight: 800
   titulo-tela:
     fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
-    fontSize: "clamp(1.6rem, 3.2vw, 2.1rem)"
+    fontSize: "clamp(1.6rem, 3.2vw, 2rem)"
     fontWeight: 800
+  placar-grande:
+    fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
+    fontSize: "2rem"
+    fontWeight: 800
+  placar:
+    fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
+    fontSize: "1.6rem"
+    fontWeight: 800
+  grande:
+    fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
+    fontSize: "1.3rem"
+    fontWeight: 800
+  destaque:
+    fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
+    fontSize: "1.15rem"
+    fontWeight: 700
+  pequeno:
+    fontFamily: "Barlow, system-ui, -apple-system, Segoe UI, sans-serif"
+    fontSize: "0.9rem"
+    fontWeight: 400
+  micro:
+    fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
+    fontSize: "0.72rem"
+    fontWeight: 700
   rotulo:
     fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
     fontSize: "0.82rem"
@@ -107,7 +139,11 @@ em SVG em `frontend/js/identidade.js`; ícones em `frontend/js/icones.js`.
   posição no ranking) e o anel de foco. Nunca decoração.
 - **Ao vivo** (`ao-vivo`, vermelho): só para estado ruim/urgente — derrota,
   "longe da meta", demissão, ao vivo.
-- **Âmbar**: alerta intermediário (em risco, pendurado, contrato acabando).
+- **Âmbar**: alerta intermediário (em risco, pendurado, contrato acabando);
+  texto sobre ele em `texto-sobre-ambar`.
+- **Apoio:** `texto-alerta` é o vermelho para TEXTO (o `ao-vivo` puro não
+  passa de contraste como letra no escuro); `linha-forte` é a borda no hover;
+  `gramado-noite` é o fundo do card de clube escolhido.
 - **Campo** (`gramado-listra-a/b`, `campo-borda`): o gramado listrado do
   pré-jogo, com linhas brancas a 50%; `cartao-amarelo` só no sinal de
   pendurado. `branco` é o texto sobre as tarjas e a caixa do placar.
@@ -121,9 +157,13 @@ em SVG em `frontend/js/identidade.js`; ícones em `frontend/js/icones.js`.
   aberto nos rótulos (`0.06–0.08em`).
 - **Barlow** é o texto corrido e os dados das células.
 - Números sempre tabulares (`font-variant-numeric: tabular-nums` no `body`).
-- Escala: display `clamp(2rem, 5vw, 3.4rem)` (só a abertura do menu), título
-  de tela `clamp(1.6rem, 3.2vw, 2.1rem)`, título de seção `0.95rem` em caixa
-  alta cinza (`h3.secao`), rótulo `0.72–0.82rem`.
+- **Escala fixa de 8 degraus:** `0.72` (micro: selos pequenos, overall da
+  peça) · `0.82` (rótulo) · `0.9` (texto secundário, título de seção) · `1`
+  (corpo) · `1.15` (destaque: nomes em tarja) · `1.3` (grande) · `1.6`
+  (placar, relógio) · `2rem` (placar grande). Nada fora dela.
+- **Fluidos, só para momentos:** abertura do menu `clamp(2rem, 5vw, 3.4rem)`,
+  faixa de GOL `clamp(2rem, 7vw, 4rem)`, título de tela
+  `clamp(1.6rem, 3.2vw, 2rem)`; pontas sempre na escala.
 
 ## Layout
 

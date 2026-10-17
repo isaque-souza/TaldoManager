@@ -3,6 +3,7 @@
 import { $, esconderTudo, estado, limparAviso, pedir, voltarUm } from "./nucleo.js";
 import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { minutoFmt } from "./partida.js";
+import { cartao } from "./icones.js";
 
 // ---------- visão jogador ----------
 
@@ -26,14 +27,14 @@ export async function abrirJogador(jogadorId) {
   const penas = j.penaltis + j.penaltis_perdidos
     ? ` · pênaltis ${j.penaltis}/${j.penaltis + j.penaltis_perdidos}`
     : "";
-  $("jogador-info").textContent =
+  $("jogador-info").innerHTML =
     `${j.clube} · ${j.posicao} · OVR ${j.overall} · ${j.idade} anos · ` +
     `${j.partidas}J ${j.gols}G ${j.assistencias}A · nota média ${j.nota_media} · ` +
     `melhor ${j.melhor_nota} · ${j.melhor_em_campo}x melhor em campo · ` +
-    `🟨 ${j.amarelos} 🟥 ${j.vermelhos} · ${j.faltas} faltas${penas}`;
+    `${cartao()} ${j.amarelos} ${cartao("vermelho")} ${j.vermelhos} · ${j.faltas} faltas${penas}`;
   // saves anteriores à v0.7 não têm dados de mercado (vêm zerados)
   $("jogador-mercado").textContent = j.valor_mercado
-    ? `💰 Valor ${dinheiro(j.valor_mercado)} · salário ${dinheiro(j.salario)}/temporada · ` +
+    ? `Valor ${dinheiro(j.valor_mercado)} · salário ${dinheiro(j.salario)}/temporada · ` +
       `potencial ${j.potencial} · contrato: ${j.contrato_anos} ` +
       `temporada${j.contrato_anos === 1 ? "" : "s"}`
     : "";

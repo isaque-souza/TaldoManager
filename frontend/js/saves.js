@@ -40,12 +40,12 @@ window.addEventListener("pagehide", lembrarSessao);
 
 export function rotuloSim(s) {
   const data = new Date(s.criada_em).toLocaleString("pt-BR");
-  const eu = s.clube_usuario ? ` · 🎮 ${s.clube_usuario} (${s.tatica})` : "";
+  const eu = s.clube_usuario ? ` · ${s.clube_usuario} (${s.tatica})` : "";
   const cabeca =
     s.estado === "em_andamento"
-      ? `⏳ rodada ${s.rodada_atual}/${s.rodadas}`
-      : `🏆 ${s.campeao}`;
-  const temporada = s.carreira_id ? ` · 📅 temporada ${s.temporada}` : "";
+      ? `rodada ${s.rodada_atual}/${s.rodadas}`
+      : `campeão: ${s.campeao}`;
+  const temporada = s.carreira_id ? ` · temporada ${s.temporada}` : "";
   return `#${s.id}${temporada} · ${cabeca} · seed ${s.seed ?? "aleatório"}${eu} · ${data}`;
 }
 

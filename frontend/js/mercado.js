@@ -20,7 +20,7 @@ export async function carregarMercado() {
 }
 
 export const bloqueado = (motivo) =>
-  `<span class="bloqueio" title="${motivo}">🔒 ${motivo}</span>`;
+  `<span class="bloqueio" title="${motivo}">${icone("cadeado")} ${motivo}</span>`;
 
 // compra: campo de proposta (+ aceitar a contraproposta, se houver)
 export function acaoCompra(f) {
@@ -48,7 +48,7 @@ export function acaoVenda(f) {
 export function linhaMercado(f) {
   return {
     ...f,
-    clube_fmt: f.rival ? `⚔️ ${f.clube}` : f.clube,
+    clube_fmt: f.rival ? `${icone("rival", "rival")} ${f.clube}` : f.clube,
     valor: dinheiro(f.valor_mercado),
     sal: dinheiro(f.salario),
     multa: f.multa_rescisoria ? dinheiro(f.multa_rescisoria) : "—",
@@ -59,9 +59,9 @@ export function linhaMercado(f) {
 export function renderMercado(m) {
   const prox = m.janelas.find((r) => r > m.rodada);
   const status = m.janela_aberta
-    ? "🟢 Janela aberta"
-    : `🔒 Janela fechada — ${prox ? `reabre antes da rodada ${prox}` : "só na próxima temporada"}`;
-  const rivais = m.rivais.length ? ` · ⚔️ rival: ${m.rivais.join(", ")}` : "";
+    ? `<span class="luz-aberta"></span> Janela aberta`
+    : `${icone("cadeado")} Janela fechada — ${prox ? `reabre antes da rodada ${prox}` : "só na próxima temporada"}`;
+  const rivais = m.rivais.length ? ` · ${icone("rival")} rival: ${m.rivais.join(", ")}` : "";
   let html =
     `<p>${status} · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${dinheiro(m.caixa)}</strong> · ` +
     `elenco ${m.elenco.length} (mín. ${m.elenco_min}, máx. ${m.elenco_max})${rivais}</p>`;
@@ -72,7 +72,7 @@ export function renderMercado(m) {
                    ["10000000", "até 10 mi"], ["20000000", "até 20 mi"]];
     html += `<p class="vazio">Faça uma proposta: o clube aceita, pede mais (contraproposta) ou recusa.
       Até ${m.max_propostas} propostas por jogador em cada janela. Cobrindo a <strong>multa rescisória</strong>,
-      o clube não pode recusar. Do rival ⚔️, tudo sai mais caro.</p>`;
+      o clube não pode recusar. Do rival (${icone("rival")}), tudo sai mais caro.</p>`;
     html += `<div class="mercado-filtros">
       <label>Posição <select id="m-posicao">${pos.map((p) =>
         `<option value="${p}"${p === mercadoFiltro.posicao ? " selected" : ""}>${p || "todas"}</option>`).join("")}</select></label>
@@ -182,8 +182,8 @@ export async function propor(jogadorId, valor) {
   );
   if (!r) return carregarMercado();
   const t = r.transferencia;
-  const icone = { aceita: "✅", multa: "💥", contraproposta: "🤝", recusada: "❌" }[r.resposta];
-  let msg = `${icone} ${r.motivo}`;
+  const sinal = icone({ aceita: "ok", multa: "multa", contraproposta: "acordo", recusada: "nao" }[r.resposta]);
+  let msg = `${sinal} ${r.motivo}`;
   if (r.resposta === "contraproposta") msg += ` — pede ${dinheiro(r.valor_pedido)}`;
   msg += ".";
   if (t) msg += ` ${t.jogador} chegou do ${t.de_clube} por ${dinheiro(t.valor)}.`;
@@ -196,7 +196,7 @@ export async function mostrarOfertas(jogadorId) {
   const d = await pedir(`/simulacoes/${estado.simId}/jogadores/${jogadorId}/ofertas`);
   if (!d) return;
   const linhas = d.ofertas.map((o) => ({
-    clube_fmt: o.rival ? `⚔️ ${o.clube} (rival — a torcida não vai gostar)` : o.clube,
+    clube_fmt: o.rival ? `${icone("rival", "rival")} ${o.clube} (rival — a torcida não vai gostar)` : o.clube,
     valor_fmt: dinheiro(o.valor),
     papel: o.seria_titular ? "seria titular" : "seria banco",
     acao: `<button class="transf" data-acao="vender" data-id="${jogadorId}" data-clube="${o.clube}">Aceitar</button>`,
@@ -216,6 +216,6 @@ export async function vender(jogadorId, clube) {
   );
   if (!t) return carregarMercado();
   $("r-mercado-msg").textContent =
-    `✅ ${t.jogador} vendido ao ${t.para_clube} por ${dinheiro(t.valor)}.`;
+    `${icone("ok")} ${t.jogador} vendido ao ${t.para_clube} por ${dinheiro(t.valor)}.`;
   await carregarProximaRodada();   // elenco e escalação mudaram
 }
