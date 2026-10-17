@@ -1,0 +1,61 @@
+body { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+.controles { display: flex; gap: .75rem; align-items: end; flex-wrap: wrap; }
+.controles label { margin: 0; }
+.controles input { width: 8rem; }
+.controles select { margin: 0; }
+tr.eu td { background: color-mix(in srgb, var(--pico-primary) 16%, transparent); font-weight: 600; }
+.grafico polyline.eu { stroke-width: 3.2; }
+.grafico.tem-selecao polyline.eu:not(.sel) { opacity: .1; }
+.saves { display: flex; gap: .5rem; align-items: center; margin: 1rem 0; flex-wrap: wrap; }
+.saves select { margin: 0; min-width: 22rem; }
+.saves button { width: auto; margin: 0; }
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+.cards article { margin: 0; }
+.financas table { margin: 0; }
+.financas tfoot td { font-weight: 700; }
+.negativo { color: #d9534f; }
+.mercado-filtros { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin: .5rem 0; }
+.mercado-filtros label { margin: 0; }
+.mercado-filtros select { margin: 0; width: auto; }
+button.transf { width: auto; margin: 0; padding: .2rem .6rem; font-size: .8rem; }
+.bloqueio { color: var(--pico-muted-color); font-size: .8rem; }
+.proposta { display: inline-flex; flex-wrap: wrap; gap: .3rem; align-items: center; }
+.proposta input { width: 8.5rem; margin: 0; padding: .2rem .4rem; height: auto; font-size: .8rem; }
+.abas { display: flex; flex-wrap: wrap; gap: .25rem; border-bottom: 1px solid var(--pico-muted-border-color); margin-bottom: 1rem; }
+.abas button { width: auto; margin: 0; border-radius: 6px 6px 0 0; background: transparent; border: none; color: var(--pico-muted-color); padding: .5rem .9rem; }
+.abas button.ativa { color: var(--pico-primary); border-bottom: 2px solid var(--pico-primary); }
+table { font-size: .9rem; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.forma span { font-weight: 700; }
+.V { color: #43a047; } .D { color: #e53935; } .E { color: #fdd835; }
+a.clube, a.jogador, a.partida { cursor: pointer; }
+.voltar { width: auto; margin: 0 0 1rem; }
+#erro { color: #e53935; }
+.vazio { color: var(--pico-muted-color); font-style: italic; }
+.timeline { list-style: none; padding: 0; }
+.timeline li { padding: .3rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
+.timeline li strong { display: inline-block; width: 3.4rem; text-align: right; margin-right: .5rem; white-space: nowrap; }
+.colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 700px) { .colunas { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .cards { grid-template-columns: 1fr; } .saves select { min-width: 0; flex: 1; } }
+.grafico { overflow-x: auto; }
+.grafico svg { display: block; width: 100%; min-width: 620px; height: auto; }
+.grafico .grade { stroke: var(--pico-muted-border-color); stroke-width: 1; }
+.grafico .eixo { fill: var(--pico-muted-color); font-size: 11px; }
+.grafico polyline { transition: opacity .12s, stroke-width .12s; }
+.grafico.tem-selecao polyline:not(.sel) { opacity: .1; }
+.grafico.tem-selecao polyline.sel { stroke-width: 3; }
+.grafico-legenda { display: flex; flex-wrap: wrap; gap: .35rem .5rem; margin-top: .8rem; }
+.grafico-legenda button { width: auto; margin: 0; padding: .12rem .55rem; font-size: .78rem;
+  background: transparent; border: 1px solid var(--pico-muted-border-color); border-radius: 999px;
+  color: var(--pico-color); display: inline-flex; align-items: center; gap: .35rem; }
+.grafico-legenda button.sel { border-color: var(--pico-primary); color: var(--pico-primary); }
+.grafico-legenda .bolinha { width: .7rem; height: .7rem; border-radius: 50%; flex: none; }
+#escalacao { margin: 0 0 1rem; }
+#escalacao summary { cursor: pointer; font-weight: 600; }
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: .5rem .75rem; }
+.slots .grupo { grid-column: 1 / -1; margin: .4rem 0 -.2rem; font-size: .8rem; color: var(--pico-muted-color); text-transform: uppercase; letter-spacing: .04em; }
+.slots select { margin: 0; }
+.slots select.dup { border-color: #e53935; }
+#rodada .controles select { width: 10rem; }
+#rodada-confronto { font-size: 1.05rem; }
