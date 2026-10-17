@@ -27,6 +27,7 @@ frontend/
 └── js/
     ├── main.js       ponto de entrada: liga o modo dev e abre a tela inicial
     ├── inicio.js     tela inicial: continuar, novo jogo (clubes em cards), carregar
+    ├── prejogo.js    pré-jogo: as duas escalações no campo antes do apito
     ├── icones.js     ícones (traços do Lucide) e <span data-icone> no HTML
     ├── identidade.js escudo e camisa dos clubes em SVG (cores e formatos de GET /clubes)
     ├── diretoria.js  card 🎯 da meta (e cargo ameaçado) + bloco de fim de carreira

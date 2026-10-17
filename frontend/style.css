@@ -11,7 +11,7 @@ tr.eu td { background: color-mix(in srgb, var(--pico-primary) 16%, transparent);
 .saves button { width: auto; margin: 0; }
 .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
 .cards article { margin: 0; }
-.negativo { color: #d9534f; }
+.negativo { color: var(--ao-vivo); }
 .mercado-filtros { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin: .5rem 0; }
 .mercado-filtros label { margin: 0; }
 .mercado-filtros select { margin: 0; width: auto; }
@@ -25,13 +25,13 @@ button.transf { width: auto; margin: 0; padding: .2rem .6rem; font-size: .8rem; 
 table { font-size: .9rem; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .forma span { font-weight: 700; }
-.V { color: #43a047; } .D { color: #e53935; } .E { color: #fdd835; }
+.V { color: var(--gramado-claro); } .D { color: var(--ao-vivo); } .E { color: var(--refletor); }
 a.clube, a.jogador, a.partida { cursor: pointer; }
 .voltar { width: auto; margin: 0 0 1rem; }
-#erro { color: #e53935; }
+#erro { color: var(--ao-vivo); }
 .vazio { color: var(--pico-muted-color); font-style: italic; }
 .salvo { color: var(--pico-muted-color); font-size: .85rem; }
-.salvo.erro { color: #e53935; }
+.salvo.erro { color: var(--ao-vivo); }
 .timeline { list-style: none; padding: 0; }
 .timeline li { padding: .3rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
 .timeline li strong { display: inline-block; width: 3.4rem; text-align: right; margin-right: .5rem; white-space: nowrap; }
@@ -65,7 +65,7 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: .5rem .75rem; }
 .slots .grupo { grid-column: 1 / -1; margin: .4rem 0 -.2rem; font-size: .8rem; color: var(--pico-muted-color); text-transform: uppercase; letter-spacing: .04em; }
 .slots select { margin: 0; }
-.slots select.dup { border-color: #e53935; }
+.slots select.dup { border-color: var(--ao-vivo); }
 #rodada .controles select { width: 10rem; }
 #rodada-confronto { font-size: 1.05rem; }
 
@@ -144,8 +144,8 @@ a.temporada { cursor: pointer; }
 .movimentos { list-style: none; padding: 0; }
 .movimentos li { list-style: none; padding: .25rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
 .movimentos .tipo { display: inline-block; min-width: 12rem; color: var(--pico-muted-color); font-size: .85rem; }
-.sobe { color: #43a047; font-weight: 700; }
-.cai { color: #e53935; font-weight: 700; }
+.sobe { color: var(--gramado-claro); font-weight: 700; }
+.cai { color: var(--ao-vivo); font-weight: 700; }
 
 /* =====================================================================
    Tema "transmissão noturna" (v1.1)
@@ -412,28 +412,28 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 }
 
 /* a tarja nos cabeçalhos de jogo: rodada e partida */
-#rodada > hgroup {
+#rodada > hgroup, #prejogo > hgroup {
   display: flex; flex-wrap: wrap; align-items: stretch; margin-bottom: 1rem; overflow: hidden;
   border: 1px solid var(--linha); border-radius: 4px; background: linear-gradient(180deg, #132033, #0d1724);
 }
-#rodada-titulo {
+#rodada-titulo, #pj-titulo {
   margin: 0; padding: .7rem 2rem .7rem 1rem; background: var(--gramado); color: #fff;
   font-size: clamp(1.25rem, 2.6vw, 1.6rem); white-space: nowrap;
   clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
 }
-#rodada-confronto {
+#rodada-confronto, #pj-confronto {
   margin: 0; padding: .55rem 1rem; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
   font-family: var(--fonte-tarja); font-size: 1.15rem; text-transform: uppercase; color: var(--texto);
 }
 #rodada-confronto:empty { display: none; }
-#rodada-confronto small { font-family: var(--fonte-texto); text-transform: none; color: var(--texto-2); font-size: .85rem; }
+#rodada-confronto small, #pj-confronto small { font-family: var(--fonte-texto); text-transform: none; color: var(--texto-2); font-size: .85rem; }
 #partida-placar .placar { font-weight: 800; text-transform: uppercase; gap: .7rem; }
 #partida-placar .placar b {
   background: #fff; color: var(--noite); padding: .05em .45em; border-radius: 2px;
   font-variant-numeric: tabular-nums; letter-spacing: .04em;
 }
 @media (max-width: 640px) {
-  #rodada-titulo { clip-path: none; width: 100%; }
+  #rodada-titulo, #pj-titulo { clip-path: none; width: 100%; }
 }
 
 /* ficha do clube no card e barra de começar */
@@ -475,3 +475,92 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .timeline li { list-style: none; }
 .acoes-rodada { display: flex; flex-wrap: wrap; gap: .5rem; }
 .acoes-rodada button { width: auto; margin: 0 !important; }
+
+/* ---------- pré-jogo: as escalações no campo (v1.1) ---------- */
+.pj-times { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-bottom: .6rem; }
+.pj-tarja {
+  display: flex; align-items: center; gap: .6rem; padding: .55rem .8rem;
+  background: var(--superficie); border: 1px solid var(--linha); border-radius: 4px;
+  font-family: var(--fonte-tarja); text-transform: uppercase;
+}
+.pj-tarja-rival { flex-direction: row-reverse; text-align: right; }
+.pj-tarja-nome { font-weight: 800; font-size: 1.15rem; }
+.pj-tarja-esquema {
+  background: #fff; color: var(--noite); font-weight: 800; padding: .05rem .4rem; border-radius: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.pj-tarja-tatica { color: var(--texto-2); font-weight: 700; letter-spacing: .06em; font-size: .85rem; }
+
+.campo {
+  position: relative; display: flex; aspect-ratio: 120 / 54; min-height: 400px; overflow: hidden;
+  border-radius: 6px; border: 1px solid #0d3d24;
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgba(255, 255, 255, .12), transparent 60%),
+    repeating-linear-gradient(90deg, #17683b 0 8.333%, #1b7543 8.333% 16.666%);
+  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, .9);
+}
+.marcas {
+  position: absolute; inset: 3%; width: 94%; height: 94%;
+  fill: none; stroke: rgba(255, 255, 255, .5); stroke-width: 1.5; vector-effect: non-scaling-stroke;
+}
+.marcas * { vector-effect: non-scaling-stroke; }
+.marcas-v { display: none; }
+.metade { position: relative; z-index: 1; flex: 1; display: flex; padding: 2.5% 1.5%; }
+.metade-eu { flex-direction: row; }
+.metade-rival { flex-direction: row-reverse; }
+.linha { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; }
+
+.peca { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 5.6rem; text-align: center; }
+.peca-camisa { position: relative; display: block; line-height: 0; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .55)); }
+.peca-sinais { position: absolute; top: -4px; right: -12px; display: flex; flex-direction: column; gap: 2px; align-items: center; }
+.peca-nome {
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--fonte-tarja); font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+  font-size: .8rem; color: #fff; background: rgba(4, 14, 9, .62); padding: .05rem .35rem; border-radius: 2px;
+}
+.peca-ovr {
+  font-family: var(--fonte-tarja); font-weight: 800; font-size: .72rem; line-height: 1;
+  color: var(--noite); background: rgba(255, 255, 255, .88); padding: .1rem .3rem; border-radius: 2px;
+}
+.pj-ic {
+  display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px;
+  border-radius: 50%; background: var(--noite); font-size: 11px;
+}
+.pj-ic .icone { width: 11px; height: 11px; }
+.pj-craque { color: var(--refletor); }
+.pj-cansado { color: var(--ambar); }
+.cartao {
+  display: inline-block; width: 9px; height: 12px; border-radius: 1.5px;
+  background: #f7d117; box-shadow: 0 0 0 1.5px var(--noite);
+}
+.pj-legenda { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin: .7rem 0 1.2rem; color: var(--texto-2); font-size: .85rem; }
+.pj-legenda > span { display: inline-flex; align-items: center; gap: .4rem; }
+.banco { list-style: none; padding: 0; margin: 0; }
+.banco li {
+  list-style: none; display: flex; align-items: center; gap: .55rem; flex-wrap: wrap;
+  padding: .4rem 0; border-bottom: 1px solid var(--linha);
+}
+.banco b {
+  min-width: 1.9rem; text-align: center; font-family: var(--fonte-tarja); font-weight: 800;
+  background: var(--superficie-2); border-radius: 2px; padding: .05rem .3rem;
+}
+.banco small { color: var(--texto-2); }
+
+@media (max-width: 640px) {
+  .pj-times { grid-template-columns: 1fr; }
+  .pj-tarja-rival { flex-direction: row; text-align: left; }
+  /* campo em pé: o rival em cima, você embaixo */
+  .campo { flex-direction: column-reverse; aspect-ratio: 70 / 118; min-height: 0; }
+  .marcas-h { display: none; }
+  .marcas-v { display: block; }
+  .metade { padding: 2% 2% 3.5%; }
+  .metade-rival { padding: 3.5% 2% 2%; }
+  .metade-eu { flex-direction: column-reverse; }
+  .metade-rival { flex-direction: column; }
+  .linha { flex-direction: row; justify-content: space-around; }
+  .peca { width: 4.1rem; }
+  .peca-camisa .camisa { width: 34px; height: 34px; }
+  .peca-nome { font-size: .68rem; padding: 0 .2rem; }
+  .peca-sinais { right: -9px; }
+}
+.aviso-fora { color: #ff8a92; }

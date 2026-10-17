@@ -14,6 +14,11 @@ colors:
   refletor: "#f4c430"
   ao-vivo: "#e63946"
   ambar: "#f0a52a"
+  branco: "#ffffff"
+  gramado-listra-a: "#17683b"
+  gramado-listra-b: "#1b7543"
+  campo-borda: "#0d3d24"
+  cartao-amarelo: "#f7d117"
 typography:
   tarja:
     fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
@@ -103,6 +108,9 @@ em SVG em `frontend/js/identidade.js`; ícones em `frontend/js/icones.js`.
 - **Ao vivo** (`ao-vivo`, vermelho): só para estado ruim/urgente — derrota,
   "longe da meta", demissão, ao vivo.
 - **Âmbar**: alerta intermediário (em risco, pendurado, contrato acabando).
+- **Campo** (`gramado-listra-a/b`, `campo-borda`): o gramado listrado do
+  pré-jogo, com linhas brancas a 50%; `cartao-amarelo` só no sinal de
+  pendurado. `branco` é o texto sobre as tarjas e a caixa do placar.
 - Cores dos clubes vêm da seed (`identidade`) e só aparecem nos escudos e
   camisas, nunca no cromo da interface.
 
@@ -159,6 +167,11 @@ em SVG em `frontend/js/identidade.js`; ícones em `frontend/js/icones.js`.
 - **Meta da diretoria**: tarja inferior em `superficie` com ícone de alvo
   dourado, rótulo, meta e o selo de situação à direita.
 - **Ícones**: Lucide em traço de 2px, cor herdada; nada de emoji como ícone.
+- **Campo do pré-jogo (`.campo`)**: gramado listrado com o brilho do
+  refletor, marcações em SVG (deitado no computador, em pé no celular), seu
+  time à esquerda/embaixo. Cada jogador é uma **peça**: camisa do clube com o
+  número, sobrenome numa tarja escura, overall numa caixinha branca e sinais
+  no canto (estrela dourada = craque, raio âmbar = cansado, cartão = pendurado).
 
 ## Do's and Don'ts
 
