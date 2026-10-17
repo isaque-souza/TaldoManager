@@ -163,10 +163,12 @@ def test_virada_envelhece_e_evolui_os_jogadores():
     nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
 
     t1, t2 = _jogadores(sid), _jogadores(nova)
-    assert all(t2[n]["idade"] == t1[n]["idade"] + 1 for n in t1)
+    # quem se aposentou (ou deixou a liga) não está na temporada 2
+    ficaram = [n for n in t1 if n in t2]
+    assert all(t2[n]["idade"] == t1[n]["idade"] + 1 for n in ficaram)
 
-    jovens = [n for n in t1 if t1[n]["potencial"] - t1[n]["overall"] >= 5]
-    velhos = [n for n in t1 if t1[n]["idade"] >= 32]
+    jovens = [n for n in ficaram if t1[n]["potencial"] - t1[n]["overall"] >= 5]
+    velhos = [n for n in ficaram if t1[n]["idade"] >= 32]
     assert any(t2[n]["overall"] > t1[n]["overall"] for n in jovens)
     assert all(t2[n]["overall"] < t1[n]["overall"] for n in velhos)
 
@@ -188,3 +190,79 @@ def test_mesma_seed_evolui_igual():
     a = carreira_service.proxima_temporada(_temporada_concluida(seed=3))
     b = carreira_service.proxima_temporada(_temporada_concluida(seed=3))
     assert _jogadores(a["simulacao_id"]) == _jogadores(b["simulacao_id"])
+
+
+# --- aposentadoria e contratos (passo 3) ---
+
+def _virada(seed=3):
+    sid = _temporada_concluida(seed=seed)
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+    return sid, nova
+
+
+def test_movimentos_da_virada_ficam_na_visao():
+    _, nova = _virada()
+    movs = simulacao_service.carregar_temporada(nova)["movimentos_virada"]
+
+    tipos = {m["tipo"] for m in movs}
+    assert "renovou" in tipos          # a CPU renovou quem venceu
+    assert "aposentou" in tipos        # seed tem 40 jogadores com 34+
+    assert all(m["idade"] >= 34 for m in movs if m["tipo"] == "aposentou")
+
+
+def test_aposentados_somem_da_temporada_seguinte():
+    sid, nova = _virada()
+    movs = simulacao_service.carregar_temporada(nova)["movimentos_virada"]
+    t2 = _jogadores(nova)
+    for m in movs:
+        if m["tipo"] == "aposentou" or m["detalhe"] == "deixou a liga":
+            assert m["jogador"] not in t2
+
+
+def test_contrato_vencido_do_tecnico_sai_ou_fica_por_emergencia():
+    sid, nova = _virada()
+    clube = simulacao_service.carregar_temporada(sid)["clube_usuario"]
+
+    conn = conectar()
+    try:
+        vencendo = [r["nome"] for r in conn.execute(
+            "SELECT j.nome FROM jogador j JOIN clube c ON c.id = j.clube_id"
+            " WHERE j.simulacao_id = ? AND c.nome = ? AND j.contrato_anos = 1",
+            (sid, clube),
+        )]
+    finally:
+        conn.close()
+    assert vencendo, "a seed deveria ter contratos de 1 temporada"
+
+    movs = {
+        m["jogador"]: m for m in
+        simulacao_service.carregar_temporada(nova)["movimentos_virada"]
+        if m["clube"] == clube
+    }
+    for nome in vencendo:
+        m = movs[nome]
+        assert m["tipo"] in ("saiu_livre", "aposentou") or (
+            m["tipo"] == "renovou" and "emergência" in m["detalhe"]
+        )
+
+
+def test_elencos_continuam_validos_depois_de_varias_viradas():
+    sid = _temporada_concluida(seed=5)
+    for _ in range(3):
+        sid = carreira_service.proxima_temporada(sid)["simulacao_id"]
+        conn = conectar()
+        try:
+            elencos = conn.execute(
+                "SELECT c.nome, COUNT(*) AS n,"
+                " SUM(j.posicao = 'Goleiro') AS goleiros"
+                " FROM jogador j JOIN clube c ON c.id = j.clube_id"
+                " WHERE j.simulacao_id = ? GROUP BY c.nome", (sid,),
+            ).fetchall()
+        finally:
+            conn.close()
+        assert len(elencos) == 20
+        for e in elencos:
+            assert 16 <= e["n"] <= 25, e["nome"]
+            assert e["goleiros"] >= 2, e["nome"]
+        while not temporada_service.avancar(sid)["concluida"]:
+            pass

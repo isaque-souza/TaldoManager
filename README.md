@@ -331,7 +331,11 @@ crescer (ou encolher) com as decisões do técnico:
 * [x] Envelhecimento e evolução (na virada: jovens crescem rumo ao potencial,
       mais rápido se jogam; a partir dos 30 o overall cai; o potencial é
       revisado a cada temporada, então nem todo jovem chega ao teto)
-* [ ] Aposentadoria
+* [x] Aposentadoria (chance cresce a partir dos 34; +20% sem contrato;
+      adia se o elenco ficaria abaixo do mínimo)
+* [x] Contratos vencendo (a CPU renova sozinha; quem o técnico não renovou
+      sai de graça para o clube onde seria titular, ou deixa a liga)
+* [x] Registro da virada (aposentadorias, saídas, renovações — `movimento_virada`)
 * [ ] Geração de jovens
 * [ ] Categorias de base
 * [ ] Hall da Fama

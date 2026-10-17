@@ -97,3 +97,177 @@ def test_envelhecer_aplica_a_evolucao_em_todos():
                 assert j.overall <= a["overall"]
             else:
                 assert j.overall >= a["overall"]
+
+
+# --- aposentadoria e contratos (passo 3) ---
+
+from app.domain import mercado  # noqa: E402
+from app.domain.carreira import (  # noqa: E402
+    aposentar,
+    chance_aposentadoria,
+    resolver_contratos,
+)
+
+
+class Sorte:
+    """rng de teste: `random()` sempre devolve o mesmo valor."""
+
+    def __init__(self, valor):
+        self.valor = valor
+
+    def random(self):
+        return self.valor
+
+
+SEMPRE = Sorte(0.0)     # toda chance acontece
+NUNCA = Sorte(0.999)    # nenhuma chance acontece
+
+
+def test_chance_de_aposentadoria_por_idade():
+    assert chance_aposentadoria(33, False) == 0.0
+    assert chance_aposentadoria(34, False) == 0.15
+    assert chance_aposentadoria(37, False) == 0.60
+    assert chance_aposentadoria(40, False) == 0.85
+    # sem contrato, pendura as chuteiras mais fácil
+    assert chance_aposentadoria(35, True) == pytest.approx(0.45)
+    assert chance_aposentadoria(40, True) == 1.0
+    assert chance_aposentadoria(20, True) == 0.0
+
+
+def _clube_com_veterano(campeonato, idade=36):
+    clube = campeonato.clubes[0]
+    veterano = next(j for j in clube.jogadores if j.posicao != "Goleiro")
+    veterano.idade = idade
+    for j in clube.jogadores:
+        if j is not veterano:
+            j.idade = 25
+    return clube, veterano
+
+
+def test_veterano_se_aposenta_e_sai_do_elenco():
+    camp = carregar_campeonato()
+    for c in camp.clubes[1:]:
+        for j in c.jogadores:
+            j.idade = 25
+    clube, veterano = _clube_com_veterano(camp)
+
+    movs = aposentar(camp, SEMPRE)
+
+    assert veterano not in clube.jogadores
+    assert [(m["tipo"], m["jogador"]) for m in movs] == [("aposentou", veterano.nome)]
+    assert movs[0]["idade"] == 36 and movs[0]["overall"] == veterano.overall
+
+
+def test_sem_sorte_ninguem_se_aposenta():
+    camp = carregar_campeonato()
+    _clube_com_veterano(camp)
+    aposentar(camp, NUNCA)
+    assert all(len(c.jogadores) == 18 for c in camp.clubes)
+
+
+def test_elenco_minimo_faz_o_veterano_adiar():
+    camp = carregar_campeonato()
+    clube, veterano = _clube_com_veterano(camp)
+    while len(clube.jogadores) > mercado.ELENCO_MIN:
+        clube.jogadores.remove(next(j for j in clube.jogadores
+                                    if j is not veterano and j.posicao != "Goleiro"))
+
+    movs = [m for m in aposentar(camp, SEMPRE) if m["clube"] == clube.nome]
+
+    assert veterano in clube.jogadores
+    assert [m["tipo"] for m in movs] == ["adiou"]
+
+
+def _todos(camp, anos):
+    for c in camp.clubes:
+        for j in c.jogadores:
+            j.contrato_anos = anos
+
+
+def test_contratos_descontam_uma_temporada():
+    camp = carregar_campeonato()
+    _todos(camp, 3)
+    assert resolver_contratos(camp, camp.clubes[0].nome) == []
+    assert all(j.contrato_anos == 2 for c in camp.clubes for j in c.jogadores)
+
+
+def test_cpu_renova_sozinha():
+    camp = carregar_campeonato()
+    _todos(camp, 3)
+    cpu = camp.clubes[1]
+    jovem, veterano = cpu.jogadores[0], cpu.jogadores[1]
+    jovem.idade, veterano.idade = 22, 33
+    jovem.contrato_anos = veterano.contrato_anos = 1
+    jovem.salario = 1_000
+
+    movs = resolver_contratos(camp, camp.clubes[0].nome)
+
+    assert {m["jogador"]: m["tipo"] for m in movs} == {
+        jovem.nome: "renovou", veterano.nome: "renovou",
+    }
+    assert jovem in cpu.jogadores and veterano in cpu.jogadores
+    assert (jovem.contrato_anos, veterano.contrato_anos) == (3, 2)
+    assert jovem.salario == jovem.salario_referencia()
+
+
+def test_jogador_do_tecnico_nao_renovado_sai_de_graca():
+    camp = carregar_campeonato()
+    _todos(camp, 3)
+    meu = camp.clubes[0]
+    craque = max(meu.jogadores, key=lambda j: j.overall)
+    craque.contrato_anos = 1
+
+    movs = resolver_contratos(camp, meu.nome)
+
+    assert craque not in meu.jogadores
+    destino = next(c for c in camp.clubes if craque in c.jogadores)
+    assert destino is not meu
+    assert [m["tipo"] for m in movs] == ["saiu_livre", "chegou_livre"]
+    assert movs[0]["detalhe"] == f"assinou com {destino.nome}"
+    # contrato novo no destino, sem ser descontado de novo
+    assert (craque.contrato_anos, craque.multa_rescisoria) == (3, None)
+
+
+def test_destino_e_o_clube_mais_rico_onde_seria_titular():
+    camp = carregar_campeonato()
+    _todos(camp, 3)
+    meu = camp.clubes[0]
+    craque = max(meu.jogadores, key=lambda j: j.overall)
+    craque.contrato_anos = 1
+    rico = camp.clubes[5]
+    rico.dinheiro = 10**12
+
+    resolver_contratos(camp, meu.nome)
+    assert craque in rico.jogadores
+
+
+def test_sem_destino_o_jogador_deixa_a_liga():
+    camp = carregar_campeonato()
+    _todos(camp, 3)
+    meu = camp.clubes[0]
+    # de linha: um goleiro cairia na trava dos 2 goleiros (emergência)
+    fraco = min((j for j in meu.jogadores if j.posicao != "Goleiro"),
+                key=lambda j: j.overall)
+    fraco.overall = 1      # não seria titular em lugar nenhum
+    fraco.contrato_anos = 1
+
+    movs = resolver_contratos(camp, meu.nome)
+
+    assert all(fraco not in c.jogadores for c in camp.clubes)
+    assert [(m["tipo"], m["detalhe"]) for m in movs] == [("saiu_livre", "deixou a liga")]
+
+
+def test_elenco_minimo_gera_contrato_de_emergencia():
+    camp = carregar_campeonato()
+    _todos(camp, 3)
+    meu = camp.clubes[0]
+    while len(meu.jogadores) > mercado.ELENCO_MIN:
+        meu.jogadores.pop()
+    saindo = next(j for j in meu.jogadores if j.posicao != "Goleiro")
+    saindo.contrato_anos = 1
+
+    movs = resolver_contratos(camp, meu.nome)
+
+    assert saindo in meu.jogadores
+    assert saindo.contrato_anos == 1
+    assert movs[0]["tipo"] == "renovou" and "emergência" in movs[0]["detalhe"]

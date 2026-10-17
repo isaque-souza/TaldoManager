@@ -172,3 +172,18 @@ CREATE INDEX IF NOT EXISTS ix_partida_visitante ON partida(visitante_id);
 CREATE INDEX IF NOT EXISTS ix_lance_partida     ON lance(partida_id);
 CREATE INDEX IF NOT EXISTS ix_atuacao_partida   ON atuacao(partida_id);
 CREATE INDEX IF NOT EXISTS ix_atuacao_jogador   ON atuacao(jogador_id);
+
+-- O que aconteceu na virada que abriu esta temporada (v0.8): aposentadorias,
+-- saídas de graça, renovações automáticas... Guarda nomes, e não ids, porque
+-- quem se aposentou não existe mais na tabela `jogador` da temporada nova.
+CREATE TABLE IF NOT EXISTS movimento_virada (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    tipo          TEXT NOT NULL,   -- aposentou | adiou | saiu_livre | chegou_livre | renovou
+    jogador       TEXT NOT NULL,
+    clube         TEXT NOT NULL,
+    posicao       TEXT NOT NULL,
+    idade         INTEGER NOT NULL,
+    overall       INTEGER NOT NULL,
+    detalhe       TEXT NOT NULL DEFAULT ''
+);

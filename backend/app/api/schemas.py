@@ -85,6 +85,16 @@ class FinancaClube(BaseModel):
     folha: int                           # salários do elenco, por temporada
 
 
+class MovimentoVirada(BaseModel):
+    tipo: str        # aposentou | adiou | saiu_livre | chegou_livre | renovou
+    jogador: str
+    clube: str
+    posicao: str
+    idade: int
+    overall: int
+    detalhe: str = ""
+
+
 class SimulacaoResponse(BaseModel):
     campeonato: str
     seed: int | None
@@ -96,6 +106,7 @@ class SimulacaoResponse(BaseModel):
     carreira_id: int | None = None
     temporada: int = 1
     proxima_temporada_id: int | None = None   # já continuada → id da seguinte
+    movimentos_virada: list[MovimentoVirada] = []   # o que a virada mudou
     clube_usuario: str | None = None    # clube dirigido pelo usuário
     tatica: Tatica | None = None
     formacao: str | None = None
