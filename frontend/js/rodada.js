@@ -209,6 +209,12 @@ export function renderRodadaDepois() {
 }
 
 export async function jogarRodada() {
+  if (await enviarRodada()) mostrarRodadaTela();
+}
+
+// joga a rodada no servidor e guarda o resultado, sem mostrar — o jogo ao
+// vivo (v1.1) mostra a partida antes da tela de resultados
+export async function enviarRodada() {
   limparAviso();
   const corpo = decisaoAtual();
   $("r-jogar").disabled = true;
@@ -228,13 +234,13 @@ export async function jogarRodada() {
   ocupado(false);
   if (!res) {
     $("r-jogar").disabled = false;
-    return;
+    return null;
   }
   estado.temporada = res;
   estado.rodadaResultado = res;
   estado.faseRodada = "depois";
   pilhaVoltar.length = 0;
-  mostrarRodadaTela();
+  return res;
 }
 
 export async function avancarAposResultado() {

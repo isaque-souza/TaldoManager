@@ -173,6 +173,20 @@ em SVG em `frontend/js/identidade.js`; ícones em `frontend/js/icones.js`.
   número, sobrenome numa tarja escura, overall numa caixinha branca e sinais
   no canto (estrela dourada = craque, raio âmbar = cansado, cartão = pendurado).
 
+- **Placar de TV (`.placar-tv`, jogo ao vivo)**: bloco verde da rodada com
+  corte diagonal, siglas dos clubes com escudo, gols em caixas brancas,
+  relógio dourado à direita e o selo de fase (AO VIVO vermelho com luz
+  piscando, INTERVALO neutro, FIM DE JOGO verde). No gol, as caixas pulsam
+  em dourado.
+- **Faixa de GOL (`.faixa-gol`)**: atravessa a tela na **cor principal do
+  clube que marcou** (texto pela regra de contraste da identidade), com
+  escudo, "GOL!" e o autor; dura 2,4 s em 1× e encurta com a velocidade.
+  Some com "reduzir movimento".
+- **Narração (`.narracao`)**: o lance mais novo em cima, minuto à esquerda
+  em condensado; gol com fundo verde, apitos e placa em itálico.
+- **Outros jogos (`.outros`)**: siglas + escudos e placar; a linha que
+  mudou pisca em dourado.
+
 ## Do's and Don'ts
 
 - Faça a cor trabalhar: verde = emissora/ação, dourado = você, vermelho = ruim.

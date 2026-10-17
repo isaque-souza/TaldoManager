@@ -268,6 +268,38 @@
     </div>
   </section>
 
+  <!-- jogo ao vivo (v1.1): replay da partida com relógio e narração -->
+  <section id="aovivo" hidden>
+    <div id="av-placar" class="placar-tv" aria-live="polite"></div>
+    <div id="av-faixa" class="faixa-gol" aria-hidden="true"></div>
+
+    <div class="av-controles">
+      <div class="av-velocidades" role="group" aria-label="Velocidade">
+        <button data-vel="1" class="secondary outline">1×</button>
+        <button data-vel="2" class="secondary outline">2×</button>
+        <button data-vel="4" class="secondary outline">4×</button>
+      </div>
+      <div class="av-progresso" aria-hidden="true"><span id="av-barra"></span></div>
+      <button id="av-pular" class="secondary outline"><span data-icone="avancar"></span> Pular para o fim</button>
+    </div>
+
+    <div id="av-fim" class="av-fim" hidden>
+      <div id="av-stats" class="av-stats"></div>
+      <button id="av-resultados"><span data-icone="play"></span> Ver resultados da rodada</button>
+    </div>
+
+    <div class="av-corpo">
+      <div>
+        <h3 class="secao">Lance a lance</h3>
+        <ol id="av-narracao" class="narracao"></ol>
+      </div>
+      <aside>
+        <h3 class="secao">Outros jogos</h3>
+        <ul id="av-outros" class="outros"></ul>
+      </aside>
+    </div>
+  </section>
+
   <!-- visão clube -->
   <section id="clube" hidden>
     <button class="voltar secondary" data-voltar>← Voltar</button>
