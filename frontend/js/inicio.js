@@ -4,6 +4,7 @@ import { $, esconderTudo, limparAviso, pedir, pilhaVoltar } from "./nucleo.js";
 import { carregarLista, lerSessao, preencherLista } from "./saves.js";
 import { dinheiro } from "./tabelas.js";
 import { camisa, escudo } from "./identidade.js";
+import { icone } from "./icones.js";
 
 let clubes = null;      // cache de GET /clubes (a seed não muda)
 let escolhido = null;   // nome do clube marcado em "Novo jogo"
@@ -53,7 +54,7 @@ async function abrir(id, abas) {
 
 function situacao(s) {
   const temporada = `temporada ${s.temporada}`;
-  if (s.fim_de_carreira) return `${temporada} · ❌ fim de carreira (demitido)`;
+  if (s.fim_de_carreira) return `${temporada} · fim de carreira (demitido)`;
   return s.estado === "em_andamento"
     ? `${temporada} · rodada ${s.rodada_atual}/${s.rodadas}`
     : `${temporada} encerrada · 🏆 ${s.campeao}`;
@@ -84,7 +85,7 @@ function renderContinuar(sims) {
   if (!alvo) return;
 
   $("inicio-continuar-titulo").innerHTML =
-    `<span class="com-escudo">${escudoSave(alvo, 30)}${tituloSave(alvo)}</span>`;
+    `<span class="com-escudo">${escudoSave(alvo, 40)}${tituloSave(alvo)}</span>`;
   $("inicio-continuar-info").textContent = `${situacao(alvo)} · jogado em ${quando(alvo)}`;
   $("continuar").onclick = () =>
     abrir(alvo.id, alvo.id === Number(sessao.simId) ? sessao : undefined);
@@ -104,13 +105,15 @@ function renderClubes() {
     .sort((a, b) => a.ranking_forca - b.ranking_forca)
     .map((c) => `
       <button class="card-clube${c.nome === escolhido ? " escolhido" : ""}" data-clube="${c.nome}">
-        <span class="card-clube-visual">${escudo(c.nome, 40)}${camisa(c.nome, { tamanho: 48 })}</span>
+        <span class="card-clube-visual">${camisa(c.nome, { tamanho: 64 })}${escudo(c.nome, 34)}</span>
         <strong>${c.nome}</strong>
-        <small>${c.pais}</small>
-        <span class="estrelas" title="${c.ranking_forca}º elenco mais forte">${estrelas(c.ranking_forca)}</span>
-        <span>💪 ${c.forca.toLocaleString("pt-BR")} · ${c.ranking_forca}º em força</span>
-        <span>🎯 ${c.meta}</span>
-        <span>💰 ${dinheiro(c.dinheiro)} · 👥 ${dinheiro(c.torcedores)}</span>
+        <small>${c.pais} · <span class="estrelas" title="${c.ranking_forca}º elenco mais forte">${estrelas(c.ranking_forca)}</span></small>
+        <dl class="ficha">
+          <div><dt>Força</dt><dd>${c.forca.toLocaleString("pt-BR")} <small>${c.ranking_forca}º</small></dd></div>
+          <div><dt>Caixa</dt><dd>${dinheiro(c.dinheiro)}</dd></div>
+          <div><dt>Torcida</dt><dd>${dinheiro(c.torcedores)}</dd></div>
+        </dl>
+        <span class="card-meta"><span class="meta-rotulo">Meta</span> ${c.meta}</span>
       </button>`)
     .join("");
   $("inicio-clubes").querySelectorAll("[data-clube]").forEach((b) =>
@@ -128,8 +131,11 @@ function escolher(nome) {
 }
 
 function atualizarComecar() {
+  $("barra-comecar").classList.toggle("visivel", !!escolhido);
   $("comecar").disabled = !escolhido;
-  $("comecar").textContent = escolhido ? `▶ Começar com ${escolhido}` : "Escolha um clube";
+  $("comecar").innerHTML = escolhido
+    ? `${icone("play")} Começar com ${escolhido}`
+    : "Escolha um clube";
 }
 
 async function comecar() {

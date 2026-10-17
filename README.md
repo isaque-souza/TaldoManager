@@ -413,7 +413,11 @@ Visual de jogo de verdade, no clima "estádio noturno".
       a mesma cor); o front desenha escudo e camisa em SVG
       (`frontend/js/identidade.js`) no menu, tabelas, confrontos, placar e
       página do clube
-* [ ] Tema visual + menu principal de jogo
+* [x] Tema "transmissão noturna" + menu principal — fundo de estádio à noite,
+      tarjas de TV em verde-gramado (a faixa de placar é a assinatura: menu,
+      rodada, partida), Barlow/Barlow Condensed, ícones Lucide no lugar dos
+      emojis da moldura, cards de clube com camisa + escudo + ficha, barra
+      "Começar" fixa; celular e desktop. Sistema registrado em `DESIGN.md`
 * [ ] Pré-jogo: as duas escalações no campo, com número e ícones por jogador
 * [ ] Jogo ao vivo minuto a minuto (replay dos lances com relógio e placar)
 * [ ] Polimento (transições, animação de gol)

@@ -1,0 +1,23 @@
+{
+  "northStar": "O jogo como a transmissão de um jogo de futebol à noite.",
+  "shadows": {
+    "card": "0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px -12px rgba(0,0,0,.7)",
+    "lift": "0 14px 28px -16px rgba(0,0,0,.9)",
+    "selecionado": "0 0 0 1px #22b46a, 0 14px 28px -16px rgba(0,0,0,.9)"
+  },
+  "motion": {
+    "ease": "cubic-bezier(.2, .7, .2, 1)",
+    "card-hover": "transform .18s",
+    "barra-comecar": "transform .25s",
+    "reducedMotion": "sem transição nem deslocamento"
+  },
+  "focus": { "outline": "2px solid #f4c430", "offset": "2px" },
+  "breakpoints": { "celular": "640px", "duas-colunas": "700px", "dashboard": "800px" },
+  "background": "radial-gradient(120% 50% at 50% -12%, rgba(200,228,255,.13), transparent 62%), radial-gradient(80% 40% at 50% 115%, rgba(20,131,75,.14), transparent 70%), #070b10",
+  "rules": [
+    "verde = emissora/ação; dourado = você; vermelho = estado ruim",
+    "estado vai em selo (.chip), nunca em borda lateral grossa",
+    "ícones Lucide de traço 2px; nada de emoji na moldura",
+    "cores dos clubes só em escudos e camisas"
+  ]
+}

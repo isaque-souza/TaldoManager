@@ -7,6 +7,7 @@ import { ligarEvolucao, renderEvolucao } from "./grafico.js";
 import { abrirCarreira, renderVirada } from "./carreira.js";
 import { renderFimDeCarreira, renderMeta } from "./diretoria.js";
 import { comEscudo } from "./identidade.js";
+import { icone } from "./icones.js";
 
 // ---------- visão temporada ----------
 
@@ -196,7 +197,7 @@ function renderCarreira(emAndamento, meu) {
   const continuar = !podeContinuar ? ""
     : t.proxima_temporada_id
       ? `<button id="carreira-ir" class="secondary">Ir para a temporada ${proxima} →</button>`
-      : `<button id="carreira-continuar">▶ Próxima temporada (temporada ${proxima})</button>`;
+      : `<button id="carreira-continuar">${icone("play")} Próxima temporada (temporada ${proxima})</button>`;
   const verCarreira = t.carreira_id
     ? `<button id="carreira-ver" class="secondary outline">📜 Carreira</button>`
     : "";

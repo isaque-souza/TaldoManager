@@ -8,15 +8,21 @@
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css"
   />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap"
+  />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="topo">
-    <hgroup>
-      <h1>⚽ Taldo Manager</h1>
-      <p>Assuma um clube e faça história.</p>
-    </hgroup>
-    <button id="menu" class="secondary outline" hidden>🏠 Menu</button>
+    <div class="marca">
+      <span class="marca-bug">TALDO</span>
+      <span class="marca-nome">Manager</span>
+    </div>
+    <button id="menu" class="secondary outline" hidden><span data-icone="casa"></span> Menu</button>
   </header>
 
   <p id="status" aria-busy="false"></p>
@@ -24,27 +30,28 @@
 
   <!-- tela inicial (v1.0): continuar / novo jogo / carregar -->
   <section id="inicio" hidden>
-    <article id="inicio-continuar" class="continuar" hidden>
-      <div>
-        <small>Continuar</small>
-        <h3 id="inicio-continuar-titulo"></h3>
-        <p id="inicio-continuar-info"></p>
+    <h1 class="abertura">Assuma um clube e faça história na Liga Taldo.</h1>
+
+    <article id="inicio-continuar" class="continuar tarja" hidden>
+      <div class="tarja-clube">
+        <h2 id="inicio-continuar-titulo"></h2>
       </div>
-      <button id="continuar">▶ Continuar</button>
+      <p id="inicio-continuar-info" class="tarja-info"></p>
+      <button id="continuar"><span data-icone="play"></span> Continuar</button>
     </article>
 
     <nav class="abas" id="inicio-abas">
-      <button data-inicio="novo">✚ Novo jogo</button>
-      <button data-inicio="carregar">📂 Carregar</button>
+      <button data-inicio="novo"><span data-icone="mais"></span> Novo jogo</button>
+      <button data-inicio="carregar"><span data-icone="pasta"></span> Carregar</button>
     </nav>
 
     <div data-inicio-painel="novo" hidden>
-      <p class="vazio">Escolha o clube que você vai dirigir. Clubes fortes
+      <p class="instrucao">Escolha o clube que você vai dirigir. Clubes fortes
         brigam pelo título; os fracos, para não cair.</p>
       <div id="inicio-clubes" class="grade-clubes"></div>
-      <p class="acoes-rodada">
-        <button id="comecar" disabled style="width: auto">Escolha um clube</button>
-      </p>
+      <div id="barra-comecar" class="barra-comecar">
+        <button id="comecar" disabled>Escolha um clube</button>
+      </div>
     </div>
 
     <div data-inicio-painel="carregar" hidden>
@@ -53,7 +60,7 @@
 
     <!-- ferramentas de desenvolvimento: seed, simular tudo, saves crus -->
     <details id="dev" class="dev">
-      <summary>🛠 Modo dev</summary>
+      <summary><span data-icone="chave"></span> Modo dev</summary>
 
       <div class="controles">
         <label>
@@ -138,14 +145,14 @@
       <h2 id="carreira-titulo"></h2>
       <p id="carreira-info"></p>
     </hgroup>
-    <h4>Temporadas</h4>
+    <h3 class="secao">Temporadas</h3>
     <div id="carreira-temporadas"></div>
-    <h4>Títulos</h4>
+    <h3 class="secao">Títulos</h3>
     <div id="carreira-titulos"></div>
-    <h4>Líderes históricos</h4>
+    <h3 class="secao">Líderes históricos</h3>
     <nav class="abas" id="carreira-lideres-abas"></nav>
     <div id="carreira-lideres"></div>
-    <h4>🏛️ Hall da Fama</h4>
+    <h3 class="secao">🏛️ Hall da Fama</h3>
     <p class="vazio">Aposentados com 5+ pontos de lenda: título 2 (com 10+
       jogos na temporada), artilharia ou MVP 3, 1 a cada 25 gols, pico de
       overall 90+ vale 2.</p>
@@ -163,8 +170,8 @@
     <!-- antes de jogar: abas (o botão de jogar fica fora delas) -->
     <div id="rodada-antes">
       <p class="acoes-rodada">
-        <button id="r-jogar" style="width: auto; margin: 0"></button>
-        <button id="r-ver-tabela" class="secondary outline" style="width: auto; margin: 0 0 0 .5rem">
+        <button id="r-jogar"></button>
+        <button id="r-ver-tabela" class="secondary outline">
           Ver tabela completa
         </button>
       </p>
@@ -173,7 +180,7 @@
       <div data-painel="partida">
         <div class="colunas">
           <div>
-            <h4>Sua escalação</h4>
+            <h3 class="secao">Sua escalação</h3>
             <div class="controles" style="margin: .5rem 0">
               <label>Formação <select id="r-formacao"></select></label>
               <label>Tática
@@ -194,11 +201,11 @@
             </p>
           </div>
           <div>
-            <h4>Elenco</h4>
+            <h3 class="secao">Elenco</h3>
             <div id="r-elenco"></div>
           </div>
         </div>
-        <h4 style="margin-top: 1.5rem">Outros jogos da rodada</h4>
+        <h3 class="secao" style="margin-top: 1.5rem">Outros jogos da rodada</h3>
         <div id="r-confrontos"></div>
       </div>
 
@@ -220,9 +227,9 @@
 
     <!-- depois de jogar: resultados -->
     <div id="rodada-depois" hidden>
-      <h4 id="r-res-titulo"></h4>
+      <h3 class="secao" id="r-res-titulo"></h3>
       <div id="r-resultados"></div>
-      <h4 style="margin-top: 1.5rem">Classificação</h4>
+      <h3 class="secao" style="margin-top: 1.5rem">Classificação</h3>
       <div id="r-classificacao"></div>
       <p style="margin-top: 1rem">
         <button id="r-proxima" style="width: auto; margin: 0"></button>
@@ -238,9 +245,9 @@
       <p id="clube-info"></p>
     </hgroup>
     <div id="clube-financas"></div>
-    <h4>Jogos</h4>
+    <h3 class="secao">Jogos</h3>
     <div id="clube-jogos"></div>
-    <h4>Elenco</h4>
+    <h3 class="secao">Elenco</h3>
     <div id="clube-elenco"></div>
   </section>
 
@@ -252,11 +259,11 @@
       <p id="partida-info"></p>
     </hgroup>
     <div class="cards" id="partida-stats"></div>
-    <h4>Lances</h4>
+    <h3 class="secao">Lances</h3>
     <div id="partida-timeline"></div>
     <div class="colunas">
-      <div><h4 id="esc-mandante-titulo"></h4><div id="esc-mandante"></div></div>
-      <div><h4 id="esc-visitante-titulo"></h4><div id="esc-visitante"></div></div>
+      <div><h3 class="secao" id="esc-mandante-titulo"></h3><div id="esc-mandante"></div></div>
+      <div><h3 class="secao" id="esc-visitante-titulo"></h3><div id="esc-visitante"></div></div>
     </div>
   </section>
 
@@ -268,7 +275,7 @@
       <p id="jogador-info"></p>
       <p id="jogador-mercado"></p>
     </hgroup>
-    <h4>Game log</h4>
+    <h3 class="secao">Game log</h3>
     <div id="jogador-log"></div>
   </section>
 
