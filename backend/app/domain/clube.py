@@ -42,6 +42,8 @@ class Clube:
         self.receita_bilheteria = 0
         self.receita_premiacao = 0
         self.despesa_salarios = 0
+        self.receita_vendas = 0
+        self.despesa_compras = 0
 
         self.jogadores = []
         self.titulares = []
@@ -184,6 +186,18 @@ class Clube:
             + melhores("Meio-Campo", n_mei)
             + melhores("Atacante", n_ata)
         )
+
+        # faltou gente numa posição (venda, lesão, suspensão)? Improvisa os
+        # melhores jogadores de linha que sobraram, em vez de jogar com 10.
+        # Com o elenco completo isto não faz nada. (Roadmap: quando houver
+        # overall por posição, improvisar quem SABE jogar ali.)
+        if len(self.titulares) < 11:
+            sobra = [
+                j for j in disponiveis
+                if j not in self.titulares and j.posicao != "Goleiro"
+            ]
+            sobra.sort(key=lambda j: j.score_escalacao(), reverse=True)
+            self.titulares += sobra[: 11 - len(self.titulares)]
 
         self.reservas = [
             j for j in disponiveis

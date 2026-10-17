@@ -85,3 +85,5 @@ rodada por vez.
 | `GET` | `/simulacoes/{id}/clubes/{clube_id}` | elenco + 38 jogos |
 | `GET` | `/simulacoes/{id}/partidas/{partida_id}` | placar, stats, timeline, escalações |
 | `GET` | `/simulacoes/{id}/jogadores/{jogador_id}` | ficha + game log |
+| `GET` | `/simulacoes/{id}/mercado?posicao=&valor_max=` | janela, caixa, seu elenco e os jogadores dos outros clubes (só saves em andamento) |
+| `POST` | `/simulacoes/{id}/transferencias` (corpo JSON) | `{jogador_id, tipo: "compra" \| "venda"}` pelo valor de mercado; 400 com o motivo se alguma regra impedir |

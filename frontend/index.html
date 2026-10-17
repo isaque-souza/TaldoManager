@@ -25,6 +25,11 @@
     .financas table { margin: 0; }
     .financas tfoot td { font-weight: 700; }
     .negativo { color: #d9534f; }
+    .mercado-filtros { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin: .5rem 0; }
+    .mercado-filtros label { margin: 0; }
+    .mercado-filtros select { margin: 0; width: auto; }
+    button.transf { width: auto; margin: 0; padding: .2rem .6rem; font-size: .8rem; }
+    .bloqueio { color: var(--pico-muted-color); font-size: .8rem; }
     .abas { display: flex; flex-wrap: wrap; gap: .25rem; border-bottom: 1px solid var(--pico-muted-border-color); margin-bottom: 1rem; }
     .abas button { width: auto; margin: 0; border-radius: 6px 6px 0 0; background: transparent; border: none; color: var(--pico-muted-color); padding: .5rem .9rem; }
     .abas button.ativa { color: var(--pico-primary); border-bottom: 2px solid var(--pico-primary); }
@@ -190,6 +195,9 @@
           Ver tabela completa
         </button>
       </p>
+      <h4 style="margin-top: 1.5rem">🔁 Mercado de transferências</h4>
+      <p id="r-mercado-msg"></p>
+      <div id="r-mercado"></div>
       <h4 style="margin-top: 1.5rem">Outros jogos da rodada</h4>
       <div id="r-confrontos"></div>
     </div>
@@ -670,6 +678,133 @@
         ? `▶ Jogar a rodada ${info.rodada}`
         : `▶ Avançar a rodada ${info.rodada}`;
       $("r-jogar").disabled = false;
+
+      carregarMercado();
+    }
+
+    // ---------- mercado de transferências ----------
+
+    const mercadoFiltro = { posicao: "", valor_max: "" };
+    const MERCADO_LIMITE = 40;   // linhas da lista de compra
+
+    async function carregarMercado() {
+      const q = new URLSearchParams();
+      if (mercadoFiltro.posicao) q.set("posicao", mercadoFiltro.posicao);
+      if (mercadoFiltro.valor_max) q.set("valor_max", mercadoFiltro.valor_max);
+      const m = await pedir(`/simulacoes/${simId}/mercado?${q}`);
+      if (m) renderMercado(m);
+    }
+
+    // botão de compra/venda, ou o motivo de não dar
+    function acaoMercado(f, tipo) {
+      if (f.bloqueio) return `<span class="bloqueio" title="${f.bloqueio}">🔒 ${f.bloqueio}</span>`;
+      const rot = tipo === "compra" ? "Comprar" : "Vender";
+      return `<button class="transf${tipo === "venda" ? " secondary" : ""}" ` +
+        `data-id="${f.jogador_id}" data-tipo="${tipo}">${rot}</button>`;
+    }
+
+    function linhaMercado(f, tipo) {
+      return {
+        ...f,
+        valor: dinheiro(f.valor_mercado),
+        sal: dinheiro(f.salario),
+        pot: f.potencial > f.overall ? `${f.potencial} ↑` : f.potencial,
+        acao: acaoMercado(f, tipo),
+      };
+    }
+
+    function renderMercado(m) {
+      const prox = m.janelas.find((r) => r > m.rodada);
+      const status = m.janela_aberta
+        ? "🟢 Janela aberta"
+        : `🔒 Janela fechada — ${prox ? `reabre antes da rodada ${prox}` : "só na próxima temporada"}`;
+      let html =
+        `<p>${status} · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${dinheiro(m.caixa)}</strong> · ` +
+        `elenco ${m.elenco.length} (mín. ${m.elenco_min}, máx. ${m.elenco_max})</p>`;
+
+      if (m.janela_aberta) {
+        const pos = ["", "Goleiro", "Defesa", "Meio-Campo", "Atacante"];
+        const tetos = [["", "qualquer"], ["1000000", "até 1 mi"], ["5000000", "até 5 mi"],
+                       ["10000000", "até 10 mi"], ["20000000", "até 20 mi"]];
+        html += `<div class="mercado-filtros">
+          <label>Posição <select id="m-posicao">${pos.map((p) =>
+            `<option value="${p}"${p === mercadoFiltro.posicao ? " selected" : ""}>${p || "todas"}</option>`).join("")}</select></label>
+          <label>Valor <select id="m-valor">${tetos.map(([v, r]) =>
+            `<option value="${v}"${v === mercadoFiltro.valor_max ? " selected" : ""}>${r}</option>`).join("")}</select></label>
+        </div>`;
+
+        const lista = m.disponiveis.slice(0, MERCADO_LIMITE).map((f) => linhaMercado(f, "compra"));
+        html += tabela(lista, [
+          ["nome", "Jogador"], ["clube", "Clube"], ["posicao", "Pos."], ["idade", "Idade"],
+          ["overall", "OVR"], ["pot", "Pot."], ["valor", "Valor"], ["sal", "Salário"], ["acao", ""],
+        ]);
+        if (m.disponiveis.length > MERCADO_LIMITE) {
+          html += `<p class="vazio">Mostrando os ${MERCADO_LIMITE} melhores de ${m.disponiveis.length} — use os filtros.</p>`;
+        }
+
+        html += `<h5>Vender do seu elenco</h5>`;
+        html += tabela(m.elenco.map((f) => linhaMercado(f, "venda")), [
+          ["nome", "Jogador"], ["posicao", "Pos."], ["idade", "Idade"], ["overall", "OVR"],
+          ["valor", "Valor"], ["sal", "Salário"], ["acao", ""],
+        ]);
+      }
+
+      if (m.transferencias.length) {
+        html += `<h5>Transferências desta temporada</h5>`;
+        html += tabela(m.transferencias.map((t) => ({
+          ...t, valor_fmt: dinheiro(t.valor),
+          rodada_fmt: t.rodada === 1 ? "pré-temporada" : `antes da R${t.rodada}`,
+        })), [
+          ["rodada_fmt", "Quando"], ["jogador", "Jogador"], ["posicao", "Pos."],
+          ["de_clube", "De"], ["para_clube", "Para"], ["valor_fmt", "Valor"],
+        ]);
+      }
+
+      const box = $("r-mercado");
+      box.innerHTML = html;
+      if (!m.janela_aberta) return;
+      $("m-posicao").addEventListener("change", (e) => { mercadoFiltro.posicao = e.target.value; carregarMercado(); });
+      $("m-valor").addEventListener("change", (e) => { mercadoFiltro.valor_max = e.target.value; carregarMercado(); });
+      box.querySelectorAll("button.transf").forEach((b) =>
+        b.addEventListener("click", () => cliqueTransferencia(b))
+      );
+    }
+
+    // dois cliques: o primeiro pede confirmação (sem alert/confirm, que travam a página)
+    function cliqueTransferencia(botao) {
+      if (botao.dataset.confirmar !== "1") {
+        botao.dataset.confirmar = "1";
+        botao.textContent = "Confirmar?";
+        return;
+      }
+      transferir(Number(botao.dataset.id), botao.dataset.tipo);
+    }
+
+    async function transferir(jogadorId, tipo) {
+      limparAviso();
+      ocupado(true, tipo === "compra" ? "Fechando a compra…" : "Fechando a venda…");
+      let resp, corpo;
+      try {
+        resp = await fetch(api() + `/simulacoes/${simId}/transferencias`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jogador_id: jogadorId, tipo }),
+        });
+        corpo = await resp.json().catch(() => ({}));
+      } catch (e) {
+        ocupado(false);
+        $("erro").textContent = `Falha na transferência — ${e.message}`;
+        return;
+      }
+      ocupado(false);
+      if (!resp.ok) {   // regra do mercado (400) vem com o motivo em `detail`
+        $("erro").textContent = `Transferência recusada: ${corpo.detail || `HTTP ${resp.status}`}`;
+        return;
+      }
+      $("r-mercado-msg").textContent = tipo === "compra"
+        ? `✅ ${corpo.jogador} contratado do ${corpo.de_clube} por ${dinheiro(corpo.valor)}.`
+        : `✅ ${corpo.jogador} vendido ao ${corpo.para_clube} por ${dinheiro(corpo.valor)}.`;
+      await carregarProximaRodada();   // elenco e escalação mudaram
     }
 
     function renderRodadaDepois() {
@@ -721,6 +856,7 @@
         xi: [...new Set(xiEscolhido($("r-slots")))],
       };
       $("r-jogar").disabled = true;
+      $("r-mercado-msg").textContent = "";
       ocupado(true, `Jogando a rodada ${rodadaInfo.rodada}…`);
       const res = await pedir(`/simulacoes/${simId}/rodadas`, {
         method: "POST",
@@ -798,6 +934,8 @@
               ${linha("🎟️ Bilheteria", cl.receita_bilheteria)}
               ${linha("🏆 Premiação", cl.receita_premiacao)}
               ${linha("💸 Salários", -cl.despesa_salarios)}
+              ${cl.receita_vendas ? linha("🔁 Vendas", cl.receita_vendas) : ""}
+              ${cl.despesa_compras ? linha("🔁 Compras", -cl.despesa_compras) : ""}
             </tbody>
             <tfoot>
               ${linha("Caixa atual", cl.dinheiro)}
