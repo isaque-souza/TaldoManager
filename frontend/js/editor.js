@@ -112,6 +112,7 @@ function desenhar() {
     </span></li>`).join("");
 
   ligar();
+  acenderAlvos();   // mesma regra do arrasto: banco só é alvo de um titular
 }
 
 function ligar() {
@@ -121,7 +122,12 @@ function ligar() {
       ed.sel = { lado: el.dataset.lado, nome: el.dataset.nome };
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", el.dataset.nome);
-      requestAnimationFrame(desenhar);   // acende os alvos
+      arrastarComoBoneco(e, el.dataset.lado, el.dataset.nome);
+      // só classes: redesenhar trocaria o elemento de origem no meio do arrasto
+      acenderAlvos();
+    });
+    el.addEventListener("dragend", () => {
+      if (ed.sel) { ed.sel = null; acenderAlvos(); }   // soltou fora de um alvo
     });
     el.addEventListener("dragover", (e) => {
       if (el.classList.contains("alvo")) e.preventDefault();
@@ -130,6 +136,35 @@ function ligar() {
       e.preventDefault();
       tocar(el.dataset.lado, el.dataset.nome);
     });
+  });
+}
+
+// o "fantasma" do arrasto é o jogador escalado (camisa, nome e overall),
+// não a linha do banco nem o botão de onde ele saiu
+function arrastarComoBoneco(e, lado, nome) {
+  const j = (lado === "campo" ? ed.titulares : ed.banco).find((x) => x.nome === nome);
+  if (!j || !e.dataTransfer.setDragImage) return;
+  const boneco = document.createElement("div");
+  boneco.className = "ed-boneco";
+  boneco.innerHTML =
+    `${camisa(estado.rodadaInfo.clube_usuario, { numero: j.numero, tamanho: 52 })}` +
+    `<span class="ed-nome">${sobrenome(j.nome)}</span><b>${j.overall}</b>`;
+  document.body.appendChild(boneco);   // precisa estar na página para virar imagem
+  e.dataTransfer.setDragImage(boneco, boneco.offsetWidth / 2, 26);
+  setTimeout(() => boneco.remove(), 0);
+}
+
+function acenderAlvos() {
+  const pos = posicaoDa(ed.sel);
+  document.querySelectorAll("#ed-campo [data-nome], #ed-banco [data-nome]").forEach((el) => {
+    const { lado, nome } = el.dataset;
+    const sel = !!ed.sel && ed.sel.lado === lado && ed.sel.nome === nome;
+    const daPosicao = lado === "campo"
+      ? LINHA_POS[ed.titulares.find((j) => j.nome === nome).linha]
+      : ed.banco.find((j) => j.nome === nome).posicao;
+    const podeTrocar = lado === "campo" || (ed.sel && ed.sel.lado === "campo");
+    el.classList.toggle("sel", sel);
+    el.classList.toggle("alvo", !!pos && !sel && podeTrocar && daPosicao === pos);
   });
 }
 

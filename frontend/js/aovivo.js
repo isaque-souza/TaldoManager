@@ -619,8 +619,10 @@ function trocarNoCampo(e) {
   const sai = (e.detalhe || "").replace(/^sai /, "");
   const peca = acharPeca(sai);
   if (!peca) return;
+  // procura no time inteiro do apito (titulares e banco), não só no banco:
+  // a camisa nunca fica sem número, seja quem for que entre
   const time = [jogo.mandante, jogo.visitante].find((t) => t.clube === e.clube);
-  const entra = time && time.banco.find((j) => j.nome === e.jogador);
+  const entra = time && [...time.titulares, ...time.banco].find((j) => j.nome === e.jogador);
   peca.dataset.nome = e.jogador;
   peca.title = `${e.jogador}${entra ? ` · ${entra.posicao}` : ""}`;
   peca.querySelector("span").textContent = entra?.numero ?? "";
