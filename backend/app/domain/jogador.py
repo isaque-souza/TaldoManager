@@ -250,8 +250,8 @@ class Jogador:
         elif self.condicao == "Exausto":
             score -= 15
 
-        # o XI escolhido pelo técnico é a preferência: o bônus segura um
-        # titular "Cansado", mas não um "Exausto" com reserva à altura. Fixar
+        # o XI do técnico entra na frente de todos (Clube.escalar_time), menos
+        # quem está "Exausto"; o bônus só desempata entre os que sobram. Fixar
         # os 11 e nunca rodar acumula fadiga e custa alguns pontos na tabela.
         if preferido:
             score += 12
