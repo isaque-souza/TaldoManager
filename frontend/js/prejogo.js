@@ -60,12 +60,11 @@ function tarjaTime(t) {
     `<span class="pj-tarja-tatica">${TATICA[t.tatica] || t.tatica}</span>`;
 }
 
-// uma metade do campo: as linhas da formação, do gol para o meio-campo
+// uma metade do campo: cada titular no seu lugar do desenho da formação
+// (v1.3). O CSS transforma --x (largura) e --y (profundidade) na posição, no
+// campo deitado do computador e no em pé do celular
 function metade(t, lado) {
-  const linhas = [0, 1, 2, 3].map((n) => t.titulares.filter((j) => j.linha === n));
-  return `<div class="metade metade-${lado}">` +
-    linhas.map((js) => `<div class="linha">${js.map((j) => peca(t.clube, j)).join("")}</div>`).join("") +
-    `</div>`;
+  return `<div class="metade metade-${lado}">${t.titulares.map((j) => peca(t.clube, j)).join("")}</div>`;
 }
 
 function sobrenome(nome) {
@@ -84,7 +83,8 @@ function sinais(j) {
 }
 
 function peca(clube, j) {
-  return `<div class="peca" title="${j.nome} · ${j.vaga || j.funcao || j.posicao} · overall ${j.overall} · energia ${j.energia}">
+  const lugar = j.x != null ? ` style="--x:${j.x};--y:${j.y}"` : "";
+  return `<div class="peca"${lugar} title="${j.nome} · ${j.rotulo || j.vaga || j.funcao || j.posicao} · overall ${j.overall} · energia ${j.energia}">
     <span class="peca-camisa">${camisa(clube, { numero: j.numero, tamanho: 44 })}
       <span class="peca-sinais">${sinais(j)}</span></span>
     <span class="peca-nome">${sobrenome(j.nome)}</span>

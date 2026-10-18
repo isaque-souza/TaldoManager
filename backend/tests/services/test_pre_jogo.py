@@ -44,9 +44,12 @@ def test_linhas_seguem_a_formacao():
     pj = temporada_service.pre_jogo(sid)
     meu = pj["mandante"] if pj["mandante"]["clube"] == pj["clube_usuario"] else pj["visitante"]
 
-    linhas = [j["linha"] for j in meu["titulares"]]
+    rotulos = sorted(j["rotulo"] for j in meu["titulares"])
     assert meu["formacao"] == "3-5-2"
-    assert (linhas.count(1), linhas.count(2), linhas.count(3)) == (3, 5, 2)
+    # 3 zagueiros, 2 alas, volante, 2 meias centrais e 2 centroavantes, cada
+    # um no seu lugar do desenho (v1.3)
+    assert rotulos == sorted(["GOL", "ZAG", "ZAG", "ZAG", "ALA", "ALA", "VOL", "MC", "MC", "CA", "CA"])
+    assert all(j["x"] is not None and j["y"] is not None for j in meu["titulares"])
 
 
 def test_pre_jogo_mostra_exatamente_quem_entra_em_campo():

@@ -16,10 +16,7 @@ TAMANHO_ALVO = 18             # tamanho dos elencos da seed
 MINIMO_POR_TEMPORADA = 1      # todo clube revela pelo menos um jovem
 # o mínimo da seed (scripts/gerar_funcoes.py): o que a formação mais
 # exigente pede de cada posição, mais um goleiro reserva
-COMPOSICAO_IDEAL = {
-    "Goleiro": 2, "Zagueiro": 3, "Lateral": 2, "Volante": 2, "Meia": 3,
-    "Ponta": 2, "Centroavante": 2,
-}
+COMPOSICAO_IDEAL = {**posicoes.MINIMO_POR_POSICAO, "Goleiro": 2}
 
 IDADE_MIN, IDADE_MAX = 16, 18
 # jovem ≈ média do elenco − 10. Com −15 a liga entrava numa espiral (o jovem

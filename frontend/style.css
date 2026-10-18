@@ -529,8 +529,10 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .travado { opacity: .5; }
 .editor { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; }
 .ed-campo {
-  position: relative; display: flex; flex-direction: column; justify-content: space-around;
-  aspect-ratio: 100 / 82; max-height: 640px; padding: 2.5% 2%; overflow: hidden; border-radius: 6px; border: 1px solid #0d3d24;
+  /* em pé, como o campo visto de cima: cada boneco no lugar do desenho da
+     formação (v1.3), posicionado pelo centro */
+  position: relative;
+  aspect-ratio: 100 / 112; max-height: 760px; padding: 2.5% 2%; overflow: hidden; border-radius: 6px; border: 1px solid #0d3d24;
   background:
     radial-gradient(90% 60% at 50% 0%, rgba(255, 255, 255, .1), transparent 60%),
     repeating-linear-gradient(0deg, #17683b 0 10%, #1b7543 10% 20%);
@@ -541,12 +543,12 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 1.5; pointer-events: none;
 }
 .ed-marcas * { vector-effect: non-scaling-stroke; }
-.ed-linha { position: relative; z-index: 1; display: flex; justify-content: space-evenly; align-items: center; }
 .ed-jog {
+  position: absolute; z-index: 1; transform: translate(-50%, -50%);
   display: flex; flex-direction: column; align-items: center; gap: 2px; width: 5.4rem; margin: 0; padding: .25rem .1rem;
   font-family: var(--fonte-texto); text-transform: none; letter-spacing: 0; font-weight: 400;
   background: transparent; border: 1px solid transparent; border-radius: 6px; color: #fff; cursor: pointer;
-  transition: transform .15s, background .15s, border-color .15s;
+  transition: left .3s, top .3s, background .15s, border-color .15s;
 }
 .ed-jog:hover, .ed-jog:focus-visible { background: rgba(7, 11, 16, .25); border-color: rgba(255, 255, 255, .25); color: #fff; }
 .ed-jog.sel { background: rgba(7, 11, 16, .45); border-color: var(--refletor); box-shadow: 0 0 0 1px var(--refletor); }
@@ -602,10 +604,14 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .ed-elenco summary { font-family: var(--fonte-tarja); text-transform: uppercase; letter-spacing: .08em; color: var(--texto-2); }
 @media (max-width: 760px) {
   .editor { grid-template-columns: 1fr; }
-  /* estreito, a proporção fixa espremia as 4 linhas: o campo cresce com elas */
-  .ed-campo { aspect-ratio: auto; max-height: none; gap: .9rem; padding: 1.2rem .3rem; }
-  .ed-jog { width: 4.2rem; }
-  .ed-nome { font-size: .72rem; }
+  /* estreito: o campo fica mais comprido e o boneco, menor (camisa menor,
+     sem a barra de energia — ela segue no banco e no elenco) */
+  .ed-campo { aspect-ratio: 100 / 150; max-height: none; }
+  .ed-jog { width: 4rem; padding: .1rem 0; }
+  .ed-jog .camisa { width: 30px; height: 30px; }
+  .ed-jog .ed-energia { display: none; }
+  .ed-nome { font-size: .68rem; }
+  .ed-imp { font-size: .52rem; }
   .pl-acoes { margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -728,12 +734,15 @@ button.hub-card:hover, button.hub-card:focus-visible {
 }
 .marcas * { vector-effect: non-scaling-stroke; }
 .marcas-v { display: none; }
-.metade { position: relative; z-index: 1; flex: 1; display: flex; padding: 2.5% 1.5%; }
-.metade-eu { flex-direction: row; }
-.metade-rival { flex-direction: row-reverse; }
-.linha { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; }
+.metade { position: relative; z-index: 1; flex: 1; }
+/* cada peça no lugar do desenho da formação (v1.3): --x é a largura do campo
+   (0 = esquerda do time), --y a profundidade (0 = a própria meta). Deitado,
+   você ataca para a direita e o rival, espelhado, para a esquerda */
+.metade .peca { position: absolute; transform: translate(-50%, -50%); }
+.metade-eu .peca { left: calc(8% + var(--y) * .86%); top: calc(7% + var(--x) * .86%); }
+.metade-rival .peca { left: calc(92% - var(--y) * .86%); top: calc(93% - var(--x) * .86%); }
 
-.peca { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 5.6rem; text-align: center; }
+.peca { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 4.8rem; text-align: center; }
 .peca-camisa { position: relative; display: block; line-height: 0; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .55)); }
 .peca-sinais { position: absolute; top: -4px; right: -12px; display: flex; flex-direction: column; gap: 2px; align-items: center; }
 .peca-nome {
@@ -776,11 +785,9 @@ button.hub-card:hover, button.hub-card:focus-visible {
   .campo { flex-direction: column-reverse; aspect-ratio: 70 / 118; min-height: 0; }
   .marcas-h { display: none; }
   .marcas-v { display: block; }
-  .metade { padding: 2% 2% 3.5%; }
-  .metade-rival { padding: 3.5% 2% 2%; }
-  .metade-eu { flex-direction: column-reverse; }
-  .metade-rival { flex-direction: column; }
-  .linha { flex-direction: row; justify-content: space-around; }
+  /* em pé: você embaixo atacando para cima, o rival em cima para baixo */
+  .metade-eu .peca { top: calc(93% - var(--y) * .86%); left: calc(7% + var(--x) * .86%); }
+  .metade-rival .peca { top: calc(7% + var(--y) * .86%); left: calc(93% - var(--x) * .86%); }
   .peca { width: 4.1rem; }
   .peca-camisa .camisa { width: 34px; height: 34px; }
   .peca-nome { font-size: .72rem; padding: 0 .2rem; }

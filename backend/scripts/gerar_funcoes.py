@@ -4,11 +4,11 @@ posições secundárias. Lê e regrava data/seeds/jogadores.json.
 Separado do gerar_dados.py porque a seed já foi editada depois de gerada
 (identidade dos clubes): rodar o gerador inteiro de novo desfaria isso.
 
-Os titulares da seed viram 2 ZAG, 2 LAT, 1 VOL, 2 MEI, 2 PON e 1 CA (o
+Os titulares da seed viram 2 ZAG, 2 LAT, 1 VOL, 2 MC, 2 PON e 1 CA (o
 4-3-3, formação padrão de todo clube). Os reservas completam primeiro o
-MINIMO de cada posição — o que a formação mais exigente pede, então todo
-elenco cabe em qualquer formação (posicoes.VAGAS) sem improvisar — e depois
-seguem o molde.
+mínimo de cada posição (posicoes.MINIMO_POR_POSICAO: o que a formação mais
+exigente pede), então todo elenco cabe em qualquer formação sem improvisar,
+e depois seguem o molde.
 
 Uso (a partir da pasta backend/):
     python -m scripts.gerar_funcoes
@@ -17,6 +17,8 @@ Uso (a partir da pasta backend/):
 import json
 import random
 from pathlib import Path
+
+from app.domain import posicoes
 
 SEEDS_DIR = Path(__file__).resolve().parent.parent / "data" / "seeds"
 
@@ -28,31 +30,27 @@ MOLDE = {
     "titulares": {
         "Goleiro": ["Goleiro"],
         "Defesa": ["Zagueiro", "Zagueiro", "Lateral", "Lateral"],
-        "Meio-Campo": ["Volante", "Meia", "Meia"],
+        "Meio-Campo": ["Volante", "Meia central", "Meia central"],
         "Atacante": ["Ponta", "Ponta", "Centroavante"],
     },
     "reservas": {
         "Goleiro": ["Goleiro"],
         "Defesa": ["Zagueiro", "Lateral"],
-        "Meio-Campo": ["Volante", "Meia"],
-        "Atacante": ["Ponta", "Centroavante"],
+        "Meio-Campo": ["Volante", "Meia-atacante"],
+        "Atacante": ["Segundo atacante", "Centroavante"],
     },
-}
-
-# o máximo que alguma formação pede de cada posição
-MINIMO = {
-    "Goleiro": 1, "Zagueiro": 3, "Lateral": 2, "Volante": 2, "Meia": 3,
-    "Ponta": 2, "Centroavante": 2,
 }
 
 # secundárias possíveis: as vizinhas em campo
 VIZINHAS = {
     "Zagueiro": ["Lateral", "Volante"],
-    "Lateral": ["Zagueiro", "Ponta", "Meia"],
-    "Volante": ["Zagueiro", "Meia"],
-    "Meia": ["Volante", "Ponta", "Centroavante"],
-    "Ponta": ["Meia", "Centroavante", "Lateral"],
-    "Centroavante": ["Ponta", "Meia"],
+    "Lateral": ["Zagueiro", "Ponta", "Meia central"],
+    "Volante": ["Zagueiro", "Meia central"],
+    "Meia central": ["Volante", "Meia-atacante", "Ponta"],
+    "Meia-atacante": ["Meia central", "Segundo atacante", "Ponta"],
+    "Ponta": ["Meia-atacante", "Lateral", "Centroavante"],
+    "Segundo atacante": ["Meia-atacante", "Centroavante"],
+    "Centroavante": ["Segundo atacante", "Ponta"],
 }
 CHANCE_UMA = 0.30
 CHANCE_DUAS = 0.08
@@ -64,6 +62,10 @@ def secundarias(funcao):
     sorte = rng.random()
     quantas = 2 if sorte < CHANCE_DUAS else 1 if sorte < CHANCE_UMA + CHANCE_DUAS else 0
     return sorted(rng.sample(VIZINHAS[funcao], quantas))
+
+
+def _do_setor(setor):
+    return ("Goleiro",) if setor == "Goleiro" else posicoes.do_setor(setor)
 
 
 def main():
@@ -83,8 +85,8 @@ def main():
                 # o que falta para o mínimo vem antes do molde (só nos
                 # reservas: entre os titulares, o molde já é o 4-3-3)
                 falta = [
-                    f for f in dict.fromkeys(funcoes)
-                    for _ in range(MINIMO[f] - ja_tem.get(f, 0))
+                    f for f in _do_setor(setor)
+                    for _ in range(posicoes.MINIMO_POR_POSICAO[f] - ja_tem.get(f, 0))
                 ] if grupo == "reservas" else []
                 rng.shuffle(falta)
                 resto = funcoes[:]
@@ -100,7 +102,6 @@ def main():
 
     with open(SEEDS_DIR / "jogadores.json", "w", encoding="utf-8") as f:
         json.dump(jogadores, f, ensure_ascii=False, indent=4)
-        f.write("\n")
 
 
 if __name__ == "__main__":

@@ -300,11 +300,12 @@ def test_formacao_muda_a_contagem_de_titulares():
     clube.formacao = "4-4-2"
     clube.escalar_time()
 
+    # pelo setor de cada vaga: os meias abertos (ME/MD) do 4-4-2 são pontas
     por_pos = lambda p: sum(1 for j in clube.titulares if j.posicao == p)
     assert por_pos("Goleiro") == 1
-    assert por_pos("Defesa") == 4
-    assert por_pos("Meio-Campo") == 4
-    assert por_pos("Atacante") == 2
+    assert (por_pos("Defesa"), por_pos("Meio-Campo"), por_pos("Atacante")) == (
+        Clube.FORMACOES["4-4-2"]
+    )
     assert len(clube.titulares) == 11
 
 

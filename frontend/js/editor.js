@@ -14,7 +14,7 @@ import { $, estado, pedir } from "./nucleo.js";
 import { camisa } from "./identidade.js";
 import { icone } from "./icones.js";
 import { carregarProximaRodada, salvarEscalacaoAgora, salvarJa } from "./rodada.js";
-import { podemTrocar, posicaoDe, sigla } from "./posicoes.js";
+import { naTela, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
 
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
 
@@ -77,25 +77,26 @@ function desenhar() {
     const dica = fora
       ? `${j.nome} · ${posicaoDe(j)} improvisado de ${vaga} · rende ${ovr} aqui (overall ${j.overall}) · energia ${j.energia}`
       : `${j.nome} · ${vaga} · overall ${ovr} · energia ${j.energia}`;
+    // cada um no seu lugar do desenho da formação (laterais um pouco à
+    // frente da zaga, volante atrás do meia, pontas abertos...)
+    const { left, top } = naTela(j);
     return `<button class="ed-jog ${sel ? "sel" : ""} ${j.condicao === "Exausto" ? "exausto" : ""} ${fora ? "improvisado" : ""}"
-        data-lado="campo" data-nome="${j.nome}" draggable="true" title="${dica}">
+        data-lado="campo" data-nome="${j.nome}" draggable="true" title="${dica}"
+        style="left:${left}%;top:${top}%">
       <span class="peca-camisa">${camisa(clube, { numero: j.numero, tamanho: 40 })}<span class="peca-sinais">${sinais}</span></span>
       <span class="ed-nome">${sobrenome(j.nome)}</span>
-      <span class="ed-info"><small class="ed-vaga">${sigla(vaga)}</small><b class="${fora ? "perde" : ""}">${ovr}</b>${energia(j.energia)}</span>
+      <span class="ed-info"><small class="ed-vaga">${j.rotulo || sigla(vaga)}</small><b class="${fora ? "perde" : ""}">${ovr}</b>${energia(j.energia)}</span>
       ${fora ? `<small class="ed-imp">${sigla(posicaoDe(j))} improvisado</small>` : ""}
     </button>`;
   };
 
-  const linhas = [3, 2, 1, 0].map((n) =>
-    `<div class="ed-linha">${ed.titulares.filter((j) => j.linha === n).map(peca).join("")}</div>`
-  ).join("");
   $("ed-campo").innerHTML = `
     <svg class="ed-marcas" viewBox="0 0 68 100" preserveAspectRatio="none" aria-hidden="true">
       <rect x="1" y="1" width="66" height="98"/><line x1="1" y1="50" x2="67" y2="50"/>
       <circle cx="34" cy="50" r="8"/><rect x="16" y="1" width="36" height="15"/>
       <rect x="16" y="84" width="36" height="15"/><rect x="26" y="1" width="16" height="5"/>
       <rect x="26" y="94" width="16" height="5"/>
-    </svg>${linhas}`;
+    </svg>${ed.titulares.map(peca).join("")}`;
 
   const fora = estado.rodadaInfo.elenco.filter((j) => j.suspenso || j.lesionado);
   const reserva = (j) => {
@@ -189,26 +190,17 @@ function tocar(lado, nome) {
 }
 
 // titular com reserva: qualquer um de linha com qualquer um de linha, goleiro
-// com goleiro. Titular com titular só reordena a mesma linha (em que vaga
-// cada um joga, o motor decide pelo rendimento)
+// com goleiro. Entre titulares não há troca: em que vaga cada um joga, o
+// motor decide pelo rendimento
 function compativel(sel, lado, nome) {
   const a = doLado(sel.lado, sel.nome);
   const b = doLado(lado, nome);
-  if (!a || !b) return false;
-  if (sel.lado === "campo" && lado === "campo") return a.linha === b.linha;
-  if (sel.lado === lado) return false;
+  if (!a || !b || sel.lado === lado) return false;
   return podemTrocar(a, b);
 }
 
 async function trocar(a, b) {
   const ia = (x) => (x.lado === "campo" ? ed.titulares : ed.banco).findIndex((j) => j.nome === x.nome);
-  if (a.lado === "campo" && b.lado === "campo") {   // só a ordem na linha
-    const [i, k] = [ia(a), ia(b)];
-    [ed.titulares[i], ed.titulares[k]] = [{ ...ed.titulares[k], linha: ed.titulares[i].linha }, { ...ed.titulares[i], linha: ed.titulares[k].linha }];
-    ed.sel = null;
-    desenhar();
-    return;
-  }
   const campo = a.lado === "campo" ? a : b;
   const banco = a.lado === "campo" ? b : a;
   const i = ia(campo);
@@ -216,7 +208,8 @@ async function trocar(a, b) {
   const sai = ed.titulares[i];
   const entra = ed.banco[k];
   // até o servidor responder, quem entra fica na vaga de quem saiu
-  ed.titulares[i] = { ...entra, linha: sai.linha, vaga: sai.vaga, overall_vaga: overallNa(entra, sai.vaga) };
+  const { linha, vaga, x, y, rotulo } = sai;
+  ed.titulares[i] = { ...entra, linha, vaga, x, y, rotulo, overall_vaga: overallNa(entra, vaga) };
   ed.banco[k] = { ...sai };
   ed.sel = null;
   desenhar();

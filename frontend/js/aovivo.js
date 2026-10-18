@@ -10,13 +10,15 @@ import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.j
 import { decisaoParaEnviar, enviarRodada, mostrarRodadaTela } from "./rodada.js";
 import { corDoTexto, escudo, identidade } from "./identidade.js";
 import { icone } from "./icones.js";
-import { podemTrocar, posicaoDe, sigla } from "./posicoes.js";
+import { SETOR, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
 
 const MS_POR_MINUTO = 500;          // 1×: ~45 s por jogo (escolha do usuário)
 const CHAVE_VELOCIDADE = "taldo:velocidade";
 const TATICAS = [["ofensivo", "Ofensivo"], ["equilibrado", "Equilibrado"], ["defensivo", "Defensivo"]];
 // formações, da mais ofensiva à mais fechada (a postura pesa no motor, v1.2)
-const FORMACOES = ["3-4-3", "4-2-4", "3-5-2", "4-3-3", "4-4-2", "4-5-1", "5-3-2", "5-4-1"];
+const FORMACOES = [
+  "3-4-3", "4-2-4", "3-5-2", "4-1-2-1-2", "4-3-3", "4-2-3-1", "4-4-2", "4-4-1-1", "4-5-1", "5-3-2", "5-4-1",
+];
 
 let jogo = null;   // estado da transmissão em curso
 
@@ -117,6 +119,7 @@ function iniciar(t) {
     eventos: t.eventos,
     decisoes: t.decisoes,
     outros: t.outros,
+    desenhos: t.desenhos || {},   // v1.3: para redesenhar ao mudar a formação
     minuto: 0,
     placar: [0, 0],
     velocidade: lerVelocidade(),
@@ -551,20 +554,25 @@ function coresDosTimes() {
   return [a, fora];
 }
 
-// x (% da largura) de cada linha da formação, atacando para a direita
-const X_LINHA = [5, 19, 33, 44];
+// lugar do desenho da formação (x largura, y profundidade, v1.3) → % da
+// tela deitada: o mandante ataca para a direita (o lado esquerdo dele fica em
+// cima), o visitante para a esquerda (espelhado)
+function naTelaDeitada(lado, { x, y }) {
+  const left = 3 + y * 0.46;
+  const top = 6 + x * 0.88;
+  return lado === 0 ? { left, top } : { left: 100 - left, top: 100 - top };
+}
 
 function montarCampo() {
-  const pecas = [jogo.mandante, jogo.visitante].map((time, lado) => {
-    const porLinha = [0, 1, 2, 3].map((n) => time.titulares.filter((j) => j.linha === n));
-    return porLinha.flatMap((js, n) => js.map((j, i) => {
-      const x = lado === 0 ? X_LINHA[n] : 100 - X_LINHA[n];
-      const y = ((i + 1) / (js.length + 1)) * 100;
-      return `<div class="sim-jog sim-lado-${lado}" data-nome="${j.nome}" data-x="${x}" data-linha="${n}" data-y="${y}"
-          style="left:${x}%;top:${y}%;--cor:${jogo.cores[lado]};--cor-texto:${corDoTexto(jogo.cores[lado])}"
-          title="${j.nome} · ${j.vaga || j.funcao || j.posicao}"><span>${j.numero ?? ""}</span></div>`;
-    }));
-  }).flat().join("");
+  const pecas = [jogo.mandante, jogo.visitante].map((time, lado) =>
+    time.titulares.map((j) => {
+      const { left, top } = naTelaDeitada(lado, j);
+      return `<div class="sim-jog sim-lado-${lado}" data-nome="${j.nome}" data-x="${left}"
+          data-funcao="${posicaoDe(j)}" data-vaga="${j.vaga || posicaoDe(j)}" ${j.posicao === "Goleiro" ? "data-goleiro" : ""}
+          style="left:${left}%;top:${top}%;--cor:${jogo.cores[lado]};--cor-texto:${corDoTexto(jogo.cores[lado])}"
+          title="${j.nome} · ${j.rotulo || sigla(j.vaga || posicaoDe(j))}"><span>${j.numero ?? ""}</span></div>`;
+    })
+  ).flat().join("");
 
   $("av-campo").setAttribute("aria-label",
     `Partida vista de cima: ${jogo.mandante.clube} ataca para a direita, ${jogo.visitante.clube} para a esquerda`);
@@ -621,7 +629,7 @@ function moverBola() {
   const desloca = (x - 50) * 0.32;
   $("av-campo").querySelectorAll(".sim-jog").forEach((p) => {
     const base = Number(p.dataset.x);
-    const goleiro = base === X_LINHA[0] || base === 100 - X_LINHA[0];
+    const goleiro = "goleiro" in p.dataset;
     p.style.transitionDuration = `${dur}s`;
     p.style.left = `${Math.max(2, Math.min(98, base + (goleiro ? desloca * 0.15 : desloca)))}%`;
   });
@@ -640,40 +648,36 @@ function acharPeca(nome) {
   return [...$("av-campo").querySelectorAll(".sim-jog")].find((p) => p.dataset.nome === nome);
 }
 
-// formação mudada no meio do jogo: os bonecos do time vão para as linhas do
-// novo desenho por setor (goleiro, defesa, meio, ataque); dentro do setor,
-// quem estava mais atrás continua mais atrás. Quem joga só muda por
-// substituição, então um setor com gente a mais empurra o excedente para a
-// linha seguinte.
-const SETORES = ["Goleiro", "Defesa", "Meio-Campo", "Atacante"];
-
+// formação mudada no meio do jogo: cada boneco do time vai para uma vaga do
+// desenho novo (v1.3) — primeiro quem já joga naquela posição, depois quem
+// é dela, depois alguém do mesmo setor e, por fim, quem sobrar. Quem joga
+// só muda por substituição; aqui muda só onde cada um fica.
 function redesenharTime(clube, formacao) {
   const lado = [jogo.mandante, jogo.visitante].findIndex((t) => t.clube === clube);
-  if (lado < 0) return;
-  const time = [jogo.mandante, jogo.visitante][lado];
-  const elenco = [...time.titulares, ...time.banco];
-  const setor = (p) => {
-    const j = elenco.find((x) => x.nome === p.dataset.nome);
-    const i = SETORES.indexOf(j && j.posicao);
-    return i < 0 ? Number(p.dataset.linha) : i;
-  };
-  const pecas = [...$("av-campo").querySelectorAll(`.sim-jog.sim-lado-${lado}`)].sort((a, b) =>
-    setor(a) - setor(b) || a.dataset.linha - b.dataset.linha || a.dataset.y - b.dataset.y
-  );
-  const tamanhos = [1, ...formacao.split("-").map(Number)];
-  let k = 0;
-  tamanhos.forEach((quantos, n) => {
-    // a última linha leva quem sobrar (time que ainda não fechou as contas)
-    const linha = pecas.slice(k, n === tamanhos.length - 1 ? pecas.length : k + quantos);
-    k += linha.length;
-    linha.forEach((p, i) => {
-      const x = lado === 0 ? X_LINHA[n] : 100 - X_LINHA[n];
-      const y = ((i + 1) / (linha.length + 1)) * 100;
-      Object.assign(p.dataset, { x, linha: n, y });
-      p.style.left = `${x}%`;
-      p.style.top = `${y}%`;
-    });
-  });
+  const vagas = jogo.desenhos[formacao];
+  if (lado < 0 || !vagas) return;
+  const livres = [...$("av-campo").querySelectorAll(`.sim-jog.sim-lado-${lado}`)];
+  const lugar = new Map();
+  const criterios = [
+    (p, v) => p.dataset.vaga === v.funcao,
+    (p, v) => p.dataset.funcao === v.funcao,
+    (p, v) => SETOR[p.dataset.funcao] === SETOR[v.funcao],
+    (p, v) => ("goleiro" in p.dataset) === (v.funcao === "Goleiro"),
+  ];
+  for (const combina of criterios) {
+    for (const v of vagas) {
+      if ([...lugar.values()].includes(v)) continue;
+      const i = livres.findIndex((p) => combina(p, v));
+      if (i >= 0) lugar.set(livres.splice(i, 1)[0], v);
+    }
+  }
+  for (const [p, v] of lugar) {
+    const { left, top } = naTelaDeitada(lado, v);
+    p.dataset.x = left;
+    p.dataset.vaga = v.funcao;
+    p.style.left = `${left}%`;
+    p.style.top = `${top}%`;
+  }
 }
 
 function trocarNoCampo(e) {
@@ -685,7 +689,8 @@ function trocarNoCampo(e) {
   const time = [jogo.mandante, jogo.visitante].find((t) => t.clube === e.clube);
   const entra = time && [...time.titulares, ...time.banco].find((j) => j.nome === e.jogador);
   peca.dataset.nome = e.jogador;
-  peca.title = `${e.jogador}${entra ? ` · ${entra.posicao}` : ""}`;
+  if (entra) peca.dataset.funcao = posicaoDe(entra);   // a vaga é a de quem saiu
+  peca.title = `${e.jogador}${entra ? ` · ${posicaoDe(entra)}` : ""}`;
   peca.querySelector("span").textContent = entra?.numero ?? "";
   peca.classList.remove("entrou");
   void peca.offsetWidth;

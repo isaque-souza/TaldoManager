@@ -362,6 +362,10 @@ class JogadorPreJogo(BaseModel):
     vaga: str | None = None
     overall_vaga: int | None = None
     overall_por_posicao: dict[str, int] = {}
+    # titular: lugar no desenho da formação (x largura, y profundidade, 0–100)
+    x: float | None = None
+    y: float | None = None
+    rotulo: str | None = None          # LE, ZAG, VOL, MC, PD...
 
 
 class EscalacaoPreJogo(BaseModel):
@@ -781,6 +785,9 @@ class Transmissao(BaseModel):
     eventos: list[LanceOut]
     decisoes: list[DecisaoAoVivo]
     outros: list[OutroJogo]
+    # v1.3: o desenho de cada formação, para redesenhar o time quando ela
+    # muda no meio do jogo — {formação: [{funcao, x, y, rotulo}]}
+    desenhos: dict[str, list[dict]] = {}
 
 
 class DecisaoNova(BaseModel):

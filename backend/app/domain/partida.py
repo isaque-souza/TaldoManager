@@ -821,6 +821,7 @@ class Partida:
         clube.titulares.append(entrando)
         # quem entra fica na vaga de quem saiu (v1.3)
         entrando.vaga, saindo.vaga = saindo.vaga, None
+        entrando.slot, saindo.slot = saindo.slot, None
 
         clube.reservas.remove(entrando)
         clube.reservas.append(saindo)

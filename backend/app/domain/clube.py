@@ -22,24 +22,20 @@ class Clube:
         "3-4-3": (1.12, 0.90),
         "4-2-4": (1.12, 0.90),
         "3-5-2": (1.05, 0.96),
+        "4-1-2-1-2": (1.04, 0.97),
         "4-3-3": (1.00, 1.00),
+        "4-2-3-1": (1.00, 1.02),
         "4-4-2": (0.97, 1.04),
+        "4-4-1-1": (0.95, 1.05),
         "4-5-1": (0.92, 1.07),
         "5-3-2": (0.92, 1.08),
         "5-4-1": (0.88, 1.12),
     }
 
-    # {formação: (defensores, meias, atacantes)} — o goleiro é sempre 1
-    FORMACOES = {
-        "4-4-2": (4, 4, 2),
-        "4-3-3": (4, 3, 3),
-        "4-5-1": (4, 5, 1),
-        "4-2-4": (4, 2, 4),
-        "3-5-2": (3, 5, 2),
-        "3-4-3": (3, 4, 3),
-        "5-3-2": (5, 3, 2),
-        "5-4-1": (5, 4, 1),
-    }
+    # {formação: (defensores, meias, atacantes)} pelo setor de cada vaga do
+    # desenho (posicoes.DESENHO) — o goleiro é sempre 1. Um meia aberto (ME/
+    # MD) é ponta, então o 4-4-2 conta 2 atacantes a mais que o nome
+    FORMACOES = posicoes.SETORES_DA_FORMACAO
 
     def __init__(
         self,
@@ -260,11 +256,12 @@ class Clube:
         )
 
         for jogador in self.jogadores:
-            jogador.vaga = None
+            jogador.vaga = jogador.slot = None
         self.titulares = []
-        for vaga, jogador in zip(vagas, ocupante):
+        for slot, (vaga, jogador) in enumerate(zip(vagas, ocupante)):
             if jogador is not None:
-                jogador.vaga = vaga
+                # slot: a vaga no desenho da formação (onde fica no campo)
+                jogador.vaga, jogador.slot = vaga, slot
                 self.titulares.append(jogador)
 
         self.reservas = [
