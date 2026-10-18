@@ -221,15 +221,21 @@ def estado(simulacao_id, minuto):
         conn.close()
 
 
-def decidir(simulacao_id, minuto, tatica=None, sai=None, entra=None):
-    """Mudança do técnico valendo a partir de `minuto`: nova tática, ou uma
-    substituição (`sai` por `entra`). Devolve a transmissão refeita."""
+def decidir(simulacao_id, minuto, tatica=None, sai=None, entra=None, formacao=None):
+    """Mudança do técnico valendo a partir de `minuto`: nova tática, nova
+    formação ou uma substituição (`sai` por `entra`) — uma por vez.
+    Devolve a transmissão refeita."""
 
-    if (tatica is None) == (sai is None and entra is None):
-        raise TransmissaoInvalida("Mande a tática nova ou uma substituição (sai e entra)")
+    troca = sai is not None or entra is not None
+    if [tatica is not None, formacao is not None, troca].count(True) != 1:
+        raise TransmissaoInvalida(
+            "Mande uma mudança por vez: tática, formação ou substituição (sai e entra)"
+        )
     if tatica is not None and tatica not in Clube.TATICAS:
         raise TransmissaoInvalida(f"Tática desconhecida: {tatica!r}")
-    if tatica is None and not (sai and entra):
+    if formacao is not None and formacao not in Clube.FORMACOES:
+        raise TransmissaoInvalida(f"Formação desconhecida: {formacao!r}")
+    if troca and not (sai and entra):
         raise TransmissaoInvalida("A substituição precisa de quem sai e de quem entra")
 
     conn = conectar()
@@ -253,6 +259,8 @@ def decidir(simulacao_id, minuto, tatica=None, sai=None, entra=None):
         clube = sim["clube_usuario"]
         if tatica is not None:
             nova = {"minuto": minuto, "clube": clube, "tatica": tatica}
+        elif formacao is not None:
+            nova = {"minuto": minuto, "clube": clube, "formacao": formacao}
         else:
             nova = {"minuto": minuto, "clube": clube, "sai": sai, "entra": entra}
             motivo = _motivo_troca(p, minuto - 1, decisoes, clube, sai, entra)

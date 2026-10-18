@@ -957,6 +957,9 @@ button.hub-card:hover, button.hub-card:focus-visible {
 .av-tatica button:last-child { border-radius: 0 4px 4px 0; }
 .av-tatica button + button { margin-left: -1px; }
 .av-tatica button.ativa { background: var(--gramado); border-color: var(--gramado); color: #fff; }
+.av-formacao { display: inline-flex; align-items: center; gap: .6rem; margin: 0 0 0 auto; }
+.av-formacao select { width: auto; margin: 0; padding-top: .35rem; padding-bottom: .35rem; }
+@media (max-width: 640px) { .av-formacao { margin-left: 0; } }
 .av-trocas { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .av-trocas ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .25rem; }
 .av-trocas li { list-style: none; margin: 0; }

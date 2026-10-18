@@ -32,7 +32,8 @@ class Partida:
         self.acrescimos = 0
         # simulação interativa (v1.2): decisões do técnico durante o jogo,
         # cada uma aplicada no começo do seu minuto —
-        # {"minuto", "clube", "tatica"} ou {"minuto", "clube", "sai", "entra"}
+        # {"minuto", "clube", "tatica"}, {"minuto", "clube", "formacao"} ou
+        # {"minuto", "clube", "sai", "entra"}
         self.decisoes = []
         # um lance por minuto (quem atacou e como acabou), para a transmissão
         self.linha_do_tempo = []
@@ -140,8 +141,9 @@ class Partida:
         for jogador in self.clube1.jogadores + self.clube2.jogadores:
             jogador.expulso = False
 
-        # tática mudada no meio do jogo (interativa) vale só para esta partida
-        taticas = {c: c.tatica for c in (self.clube1, self.clube2)}
+        # tática e formação mudadas no meio do jogo (interativa) valem só
+        # para esta partida
+        posturas = {c: (c.tatica, c.formacao) for c in (self.clube1, self.clube2)}
 
         self.clube1.escalar_time()
         self.clube2.escalar_time()
@@ -226,8 +228,8 @@ class Partida:
 
         self.sortear_lesoes()
 
-        for clube, tatica in taticas.items():
-            clube.tatica = tatica
+        for clube, (tatica, formacao) in posturas.items():
+            clube.tatica, clube.formacao = tatica, formacao
 
     #Engine
     
@@ -866,6 +868,11 @@ class Partida:
             if "tatica" in decisao:
                 clube.tatica = decisao["tatica"]
                 continue
+            if "formacao" in decisao:
+                # muda a postura (mod_ataque/mod_defesa); os jogadores em
+                # campo são os mesmos — quem joga muda por substituição
+                clube.formacao = decisao["formacao"]
+                continue
             if self.motivo_substituicao_invalida(
                 clube, decisao["sai"], decisao["entra"]
             ):
@@ -947,6 +954,7 @@ class Partida:
             clubes.append({
                 "clube": clube.nome,
                 "tatica": clube.tatica,
+                "formacao": clube.formacao,
                 "substituicoes_restantes": (
                     self.max_substituicoes - self.substituicoes_feitas(clube)
                 ),

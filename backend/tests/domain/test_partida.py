@@ -691,3 +691,38 @@ def test_quem_sai_nao_volta_a_campo():
         for troca in partida.substituicoes_log:
             assert troca["entra"] not in jogaram, (seed, troca["entra"].nome)
             jogaram.add(troca["entra"])
+
+
+def _placar_com_formacao(seed, formacao):
+    random.seed(seed)
+    casa = _clube_completo("Casa", overall=80)
+    fora = _clube_completo("Fora", overall=80)
+    casa.formacao = formacao
+
+    gp = gc = 0
+    for i in range(38):
+        mandante, visitante = (casa, fora) if i % 2 == 0 else (fora, casa)
+        p = Partida(mandante, visitante)
+        p.simular_partida()
+        gp += p.gols_c1 if mandante is casa else p.gols_c2
+        gc += p.gols_c1 if visitante is casa else p.gols_c2
+    return gp, gc
+
+
+def test_formacao_ofensiva_faz_e_sofre_mais_que_a_retranca():
+    seeds = range(6)
+    ataque = [_placar_com_formacao(s, "3-4-3") for s in seeds]
+    retranca = [_placar_com_formacao(s, "5-4-1") for s in seeds]
+    assert sum(g[0] for g in ataque) > sum(g[0] for g in retranca)
+    assert sum(g[1] for g in ataque) > sum(g[1] for g in retranca)
+
+
+def test_formacao_mudada_no_jogo_vale_so_naquela_partida():
+    random.seed(3)
+    casa, fora = _clube_completo("Casa"), _clube_completo("Fora")
+    p = Partida(casa, fora)
+    p.decisoes = [{"minuto": 46, "clube": "Casa", "formacao": "3-4-3"}]
+    p.capturar_em = 50
+    p.simular_partida()
+    assert p.estado_capturado["clubes"][0]["formacao"] == "3-4-3"
+    assert casa.formacao == "4-3-3"   # volta ao fim do jogo

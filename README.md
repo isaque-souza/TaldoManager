@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 438 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 444 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -470,6 +470,11 @@ Partida Interativa.
       "Titular" com a escalação que já tinham.
       API: `GET/POST /simulacoes/{id}/planos`, `PATCH/DELETE .../planos/{id}`,
       `POST .../planos/{id}/usar`
+* [x] Formação com efeito e no meio do jogo — a formação pesa na postura como
+      a tática, na metade da escala (3-4-3/4-2-4 criam mais e sofrem mais;
+      5-4-1/5-3-2 o contrário; 4-3-3 neutra). Na prancheta da pausa (e no
+      intervalo) dá para mudar a formação, valendo do minuto seguinte e só
+      naquele jogo; quem joga muda por substituição
 * [x] Escalação no campo — os titulares aparecem no gramado como o motor vai
       escalar (`escalacao` em `GET /rodadas/proxima`); toque (ou arraste) um
       titular e um reserva da mesma posição para trocar. Grava na hora e
@@ -493,7 +498,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 438 testes (domain, db, repositories, services, api)
+│   └── tests/              # 444 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

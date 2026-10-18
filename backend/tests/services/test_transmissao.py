@@ -186,3 +186,24 @@ def test_sem_transmissao_atual_e_none_e_estado_recusa():
     with pytest.raises(TransmissaoInvalida):
         transmissao_service.estado(sid, 10)
     assert transmissao_service.iniciar(999_999) is None
+
+
+def test_formacao_mudada_no_intervalo():
+    sid, t = _iniciada()
+    lado = 0 if t["mandante"]["clube"] == t["clube_usuario"] else 1
+    original = _meu_time(t)["formacao"]
+    nova = "3-4-3" if original != "3-4-3" else "5-4-1"
+
+    depois = transmissao_service.decidir(sid, 46, formacao=nova)
+    assert depois["minutos"][:45] == t["minutos"][:45]
+    assert depois["decisoes"][-1] == {"minuto": 46, "clube": t["clube_usuario"], "formacao": nova}
+    assert transmissao_service.estado(sid, 46)["clubes"][lado]["formacao"] == nova
+    assert transmissao_service.estado(sid, 45)["clubes"][lado]["formacao"] == original
+
+    with pytest.raises(TransmissaoInvalida):
+        transmissao_service.decidir(sid, 47, formacao="2-2-6")
+    with pytest.raises(TransmissaoInvalida):   # uma mudança por vez
+        transmissao_service.decidir(sid, 47, formacao="4-4-2", tatica="ofensivo")
+
+    temporada_service.avancar(sid)
+    assert temporada_service.proxima_rodada(sid)["formacao"] == original

@@ -749,6 +749,7 @@ class DecisaoAoVivo(BaseModel):
     minuto: int
     clube: str
     tatica: Tatica | None = None
+    formacao: str | None = None
     sai: str | None = None
     entra: str | None = None
 
@@ -775,10 +776,11 @@ class Transmissao(BaseModel):
 
 
 class DecisaoNova(BaseModel):
-    """Corpo do POST /simulacoes/{id}/transmissao/decisoes: a tática nova OU
-    uma substituição, valendo a partir de `minuto`."""
+    """Corpo do POST /simulacoes/{id}/transmissao/decisoes: a tática nova, a
+    formação nova OU uma substituição, valendo a partir de `minuto`."""
     minuto: int = Field(ge=1)
     tatica: Tatica | None = None
+    formacao: str | None = None
     sai: str | None = None
     entra: str | None = None
 
@@ -807,6 +809,7 @@ class JogadorNoBanco(BaseModel):
 class TimeNoMomento(BaseModel):
     clube: str
     tatica: Tatica
+    formacao: str
     substituicoes_restantes: int
     em_campo: list[JogadorEmCampo]
     banco: list[JogadorNoBanco]
