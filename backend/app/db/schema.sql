@@ -61,7 +61,8 @@ CREATE TABLE IF NOT EXISTS clube (
     historico_caixa    TEXT NOT NULL DEFAULT '[]',  -- JSON: caixa após cada rodada
     -- torcida (v1.4): atual / final e no início da temporada
     torcedores         INTEGER NOT NULL DEFAULT 0,
-    torcedores_inicial INTEGER NOT NULL DEFAULT 0
+    torcedores_inicial INTEGER NOT NULL DEFAULT 0,
+    despesa_marketing  INTEGER NOT NULL DEFAULT 0   -- campanhas (v1.4)
 );
 
 CREATE TABLE IF NOT EXISTS jogador (
@@ -135,6 +136,17 @@ CREATE TABLE IF NOT EXISTS proposta (
     valor         INTEGER NOT NULL,
     resposta      TEXT NOT NULL,    -- aceita | multa | contraproposta | recusada
     valor_pedido  INTEGER           -- só nas contrapropostas
+);
+
+-- Campanhas de marketing do técnico (v1.4): uma por turno.
+CREATE TABLE IF NOT EXISTS campanha (
+    id                 INTEGER PRIMARY KEY,
+    simulacao_id       INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    rodada             INTEGER NOT NULL,   -- próxima rodada a jogar quando foi feita
+    tipo               TEXT NOT NULL,      -- redes | cidade | nacional
+    custo              INTEGER NOT NULL,
+    torcedores_antes   INTEGER NOT NULL,
+    torcedores_depois  INTEGER NOT NULL
 );
 
 -- Propostas de renovação de contrato do técnico (v0.7).

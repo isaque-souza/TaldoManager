@@ -61,6 +61,7 @@ class Clube:
         self.despesa_salarios = 0
         self.receita_vendas = 0
         self.despesa_compras = 0
+        self.despesa_marketing = 0   # campanhas da torcida (v1.4)
         # caixa ao fim de cada rodada (para o gráfico). Guardado, não
         # reconstruído: transferências e renovações mexem no caixa e na folha
         # ENTRE as rodadas, então as partidas sozinhas não contam a história

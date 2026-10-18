@@ -488,6 +488,7 @@ class ClubeInfo(BaseModel):
     # torcida (v1.4); saves antigos vêm zerados
     torcedores: int = 0
     torcedores_inicial: int = 0
+    despesa_marketing: int = 0
 
 
 class JogoResumo(BaseModel):
@@ -925,3 +926,39 @@ class CaixaDeEntrada(BaseModel):
 
 
 ProximaRodada.model_rebuild()   # `escalacao` aponta para um schema definido depois
+
+
+# ---------------------------------------------------------------------------
+# marketing (v1.4)
+# ---------------------------------------------------------------------------
+
+class CampanhaOpcao(BaseModel):
+    tipo: str
+    nome: str
+    descricao: str
+    ganho_pct: float
+    torcedores_novos: int
+    custo: int
+    bloqueio: str | None = None
+
+
+class CampanhaFeita(BaseModel):
+    rodada: int
+    nome: str
+    custo: int
+    torcedores_novos: int
+
+
+class Marketing(BaseModel):
+    torcedores: int
+    torcedores_inicial: int
+    mando_de_campo: float        # pontos de força em casa, pela torcida
+    caixa: int
+    turno: int
+    disponivel: bool             # ainda dá para fazer uma campanha neste turno
+    campanhas: list[CampanhaOpcao]
+    feitas: list[CampanhaFeita]
+
+
+class NovaCampanha(BaseModel):
+    tipo: str

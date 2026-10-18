@@ -6,11 +6,11 @@ CAMPOS = (
     "dinheiro_inicial", "dinheiro", "receita_tv", "receita_bilheteria",
     "receita_premiacao", "despesa_salarios",
     "receita_vendas", "despesa_compras", "historico_caixa",
-    "torcedores", "torcedores_inicial",
+    "torcedores", "torcedores_inicial", "despesa_marketing",
 )
 
 # campos mais novos que quem monta os dicts pode não mandar
-_PADRAO = {"torcedores": 0, "torcedores_inicial": 0}
+_PADRAO = {"torcedores": 0, "torcedores_inicial": 0, "despesa_marketing": 0}
 
 
 def _valor(clube, campo):

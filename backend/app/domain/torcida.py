@@ -45,6 +45,62 @@ VENDA_RIVAL_TITULAR = -0.03
 VENDA_RIVAL_CRAQUE = -0.05
 RIVAL_COMEMORA = 0.01
 
+# campanhas de marketing (v1.4): o técnico gasta caixa para atrair gente.
+# O custo é por torcedor novo e sobe com o tamanho da campanha (retorno
+# decrescente). Cada torcedor rende ~0,38 por temporada de bilheteria
+# (BILHETERIA_POR_TORCEDOR × 19 jogos em casa): a campanha se paga em 2 a 3
+# temporadas, fora o empurrão no mando de campo
+CAMPANHAS = {
+    "redes": {
+        "nome": "Ação nas redes sociais",
+        "descricao": "Vídeos dos bastidores e promoções online.",
+        "ganho": 0.01, "custo_por_torcedor": 0.8,
+    },
+    "cidade": {
+        "nome": "Campanha na cidade",
+        "descricao": "Outdoors, escolinhas e ingresso popular.",
+        "ganho": 0.03, "custo_por_torcedor": 1.0,
+    },
+    "nacional": {
+        "nome": "Campanha nacional",
+        "descricao": "Comercial na TV e excursão pelo país.",
+        "ganho": 0.06, "custo_por_torcedor": 1.3,
+    },
+}
+CAMPANHA_CUSTO_MINIMO = 5_000     # só para não sair de graça
+CAMPANHAS_POR_TURNO = 1
+
+
+def custo_da_campanha(tipo, torcedores):
+    c = CAMPANHAS[tipo]
+    novos = torcedores * c["ganho"]
+    return max(CAMPANHA_CUSTO_MINIMO, int(round(novos * c["custo_por_torcedor"], -3)))
+
+
+def turno(rodada, total_rodadas):
+    """1 no primeiro turno, 2 no segundo (rodada = a próxima a jogar)."""
+    return 1 if rodada <= total_rodadas // 2 else 2
+
+
+def motivo_campanha_bloqueada(clube, tipo, feitas_no_turno):
+    if tipo not in CAMPANHAS:
+        return "Campanha desconhecida"
+    if feitas_no_turno >= CAMPANHAS_POR_TURNO:
+        return "Já houve uma campanha neste turno"
+    if clube.dinheiro < custo_da_campanha(tipo, clube.torcedores):
+        return "Não há caixa para essa campanha"
+    return None
+
+
+def lancar_campanha(clube, tipo):
+    """Cobra e aplica a campanha. Devolve (custo, antes, depois)."""
+    custo = custo_da_campanha(tipo, clube.torcedores)
+    antes = clube.torcedores
+    clube.lancar("despesa_marketing", custo)
+    _aplicar(clube, CAMPANHAS[tipo]["ganho"])
+    return custo, antes, clube.torcedores
+
+
 # mando de campo (v1.4): jogar em casa sempre conforta, e estádio cheio
 # empurra mais. Em pontos de "overall" somados à força do mandante; a
 # referência é o meio da liga (média geométrica das torcidas da seed), então
