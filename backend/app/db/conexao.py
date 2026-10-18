@@ -77,6 +77,9 @@ _COLUNAS_NOVAS = {
         ("salario", "INTEGER NOT NULL DEFAULT 0"),
         ("multa_rescisoria", "INTEGER"),
         ("numero", "INTEGER"),
+        # posição específica (v1.3); secundarias é uma lista JSON
+        ("funcao", "TEXT"),
+        ("secundarias", "TEXT"),
     ),
     "partida": (
         ("finalizacoes_gol_mandante", "INTEGER NOT NULL DEFAULT 0"),

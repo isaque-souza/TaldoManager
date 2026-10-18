@@ -569,6 +569,14 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .ed-nome small { color: var(--refletor); font-size: .7rem; }
 .ed-info { display: flex; align-items: center; gap: .3rem; font-family: var(--fonte-tarja); font-size: .8rem; }
 .ed-info .ed-energia { width: 1.8rem; }
+/* posição da vaga e quem joga fora da dele (v1.3) */
+.ed-vaga { color: var(--texto-2); font-size: .65rem; letter-spacing: .06em; }
+.perde { color: var(--ambar); }
+.ed-imp {
+  font-family: var(--fonte-tarja); font-size: .6rem; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--ambar); line-height: 1;
+}
+.ed-ovr small { color: var(--texto-2); font-size: .65rem; }
 .ed-energia { display: inline-block; height: 4px; background: rgba(255, 255, 255, .2); border-radius: 2px; overflow: hidden; }
 .ed-energia i { display: block; height: 100%; background: var(--gramado-claro); }
 .ed-energia.media i { background: var(--ambar); }

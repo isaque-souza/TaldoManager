@@ -15,6 +15,7 @@ os recalcula a partir das tabelas `partida`/`lance`/`atuacao`. O calendário
 por nome de clube.
 """
 
+import json
 import random
 
 from app.domain import numeros
@@ -62,11 +63,14 @@ def snapshot_estado(campeonato):
         # o elenco entra no snapshot porque transferências mudam quem joga
         # onde; sem isso, cada jogador voltaria para o clube da seed
         dados["elenco"] = [j.nome for j in clube.jogadores]
-        # `posicao` vai junto para recriar quem não está na seed (base, v0.8)
+        # `posicao` (e a específica, v1.3) vai junto para recriar quem não
+        # está na seed (base, v0.8)
         dados["jogadores"] = {
             j.nome: {
                 **{c: getattr(j, c) for c in _JOGADOR_CAMPOS},
                 "posicao": j.posicao,
+                "funcao": j.funcao,
+                "secundarias": list(j.secundarias),
             }
             for j in clube.jogadores
         }
@@ -130,8 +134,14 @@ def restaurar_estado(campeonato, blob):
 def criar_jogador(nome, campos):
     """Jogador que não existe na seed, a partir de um dict com `posicao`,
     `idade`, `overall` e `potencial` (do snapshot ou da tabela `jogador`).
-    O resto (contrato, stats) é aplicado depois por quem chamou."""
+    O resto (contrato, stats) é aplicado depois por quem chamou. Snapshots
+    de antes da v1.3 não têm `funcao`: o Jogador cai na padrão do setor."""
+    secundarias = campos.get("secundarias")
+    if isinstance(secundarias, str):   # na tabela `jogador`, é JSON
+        secundarias = json.loads(secundarias)
     return Jogador(
         nome, campos["idade"], campos["posicao"], campos["overall"],
         potencial=campos["potencial"],
+        funcao=campos.get("funcao"),
+        secundarias=secundarias,
     )

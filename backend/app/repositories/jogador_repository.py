@@ -6,8 +6,15 @@ CAMPOS = (
     "clean_sheets", "hat_tricks", "amarelos", "vermelhos",
     "penaltis", "penaltis_perdidos", "faltas",
     "potencial", "contrato_anos", "valor_mercado", "salario",
-    "multa_rescisoria", "numero",
+    "multa_rescisoria", "numero", "funcao", "secundarias",
 )
+
+# campos que dados de antes da v1.3 não trazem (ficam NULL)
+_OPCIONAIS = ("funcao", "secundarias")
+
+
+def _valor(j, campo):
+    return j.get(campo) if campo in _OPCIONAIS else j[campo]
 
 
 def inserir(conn, simulacao_id, mapa_clubes, jogadores):
@@ -22,7 +29,7 @@ def inserir(conn, simulacao_id, mapa_clubes, jogadores):
             INSERT INTO jogador (simulacao_id, clube_id, {", ".join(CAMPOS)})
             VALUES (?, ?, {", ".join("?" * len(CAMPOS))})
             """,
-            (simulacao_id, mapa_clubes[j["clube"]], *(j[c] for c in CAMPOS)),
+            (simulacao_id, mapa_clubes[j["clube"]], *(_valor(j, c) for c in CAMPOS)),
         )
         mapa[(j["clube"], j["nome"])] = cur.lastrowid
 
@@ -47,7 +54,7 @@ def atualizar(conn, simulacao_id, mapa_clubes, jogadores):
             """,
             (
                 mapa_clubes[j["clube"]],
-                *(j[c] for c in CAMPOS if c != "nome"),
+                *(_valor(j, c) for c in CAMPOS if c != "nome"),
                 simulacao_id,
                 j["nome"],
             ),

@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 446 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 467 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -182,7 +182,8 @@ disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado), v0.8
 só, tela inicial, meta da diretoria e demissão) e v1.1 (Cara de jogo:
 escudos e camisas, tema de transmissão noturna, pré-jogo no campo e jogo ao
 vivo) e v1.2 (Modo técnico: hub do clube, simulação interativa, planos de
-jogo e formação no meio do jogo) concluídas** — ver as seções abaixo.
+jogo e formação no meio do jogo) concluídas**; **v1.3 (Atributos e
+posições)** em andamento — ver as seções abaixo.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -300,17 +301,26 @@ jogador da temporada.
 
 ---
 
-# 🧬 Atributos e posições (ideia futura — a desenvolver)
+# 🧬 Atributos e posições (v1.3) — Em andamento
 
-Hoje cada jogador tem uma posição e um overall só. A ideia é ele ter
-qualidades próprias e um mapa de rendimento por posição:
+Cada jogador tem uma posição de verdade e rende menos fora dela:
 
+* [x] Posições mais específicas — goleiro, zagueiro, lateral, volante, meia,
+      ponta e centroavante (`Jogador.funcao`), e às vezes posições
+      secundárias. O motor segue pensando por setor (`posicao`). Cada
+      formação tem as suas vagas (o 4-3-3 é 2 ZAG, 2 LAT, 1 VOL, 2 MEI, 2 PON
+      e 1 CA) e todo elenco da seed cabe em qualquer uma sem improvisar
+* [x] Overall por posição — fora da posição o jogador perde overall, pouco
+      nas vizinhas e muito do outro lado do campo (um volante 80 rende 74 de
+      zagueiro; numa secundária, 78). A força do time usa o overall na vaga.
+      Escalação no campo: qualquer jogador de linha troca com qualquer um de
+      linha, e o banco mostra quanto cada reserva renderia na vaga escolhida;
+      goleiro só troca com goleiro (vale também nas substituições). O motor
+      distribui o XI nas vagas com a menor perda somada (algoritmo húngaro)
+* [x] Improvisação inteligente — faltando gente numa posição, entra quem
+      rende mais na vaga (um lateral ou volante na zaga, não um meia), e quem
+      sai de campo deixa a vaga para quem entra
 * [ ] Atributos do jogador (ex.: passe, finalização, marcação, velocidade...)
-* [ ] Overall por posição (ex.: um volante que rende 80 de volante e 74 de zagueiro)
-* [ ] Posições mais específicas (zagueiro, lateral, volante, meia, ponta, centroavante)
-* [ ] Improvisação inteligente: sem zagueiros disponíveis, o volante que sabe
-      jogar de zagueiro recua e outro volante entra no lugar dele (hoje a
-      escalação só pega o melhor jogador de linha que sobrou)
 
 ---
 
@@ -498,7 +508,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 446 testes (domain, db, repositories, services, api)
+│   └── tests/              # 467 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

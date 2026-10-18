@@ -26,6 +26,7 @@ from contextlib import redirect_stdout
 
 from app.db.conexao import conectar
 from app.domain.clube import Clube
+from app.domain.partida import motivo_goleiro
 from app.domain.temporada import restaurar_estado
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import escalacao_service
@@ -304,4 +305,4 @@ def _motivo_troca(partida, minuto_foto, decisoes, clube, sai, entra):
         return f"{entra} não está no banco"
     if not banco[entra]["disponivel"]:
         return f"{entra} já saiu e não pode voltar"
-    return None
+    return motivo_goleiro(em_campo[sai]["posicao"], banco[entra]["posicao"])

@@ -159,7 +159,7 @@ def test_nao_da_para_trocar_de_plano_com_a_partida_rolando():
     assert plano_service.atualizar(sid, titular["id"], nome="Durante")["planos"][0]["nome"] == "Durante"
 
 
-def test_planos_seguem_para_a_proxima_temporada_e_ela_comeca_no_padrao():
+def test_planos_seguem_para_a_proxima_temporada_e_ela_comeca_no_padrao(cargo_garantido):
     sim = simulacao_service.salvar_temporada(seed=3, clube_usuario=_clube())
     sid = sim["id"] if isinstance(sim, dict) else sim
     conn = conectar()

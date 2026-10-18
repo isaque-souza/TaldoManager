@@ -4,17 +4,18 @@
 // mexer só naquele jogo; "Salvar no plano" guarda a mudança no molde.
 //
 // O campo mostra o time como o motor vai escalar (GET /rodadas/proxima →
-// `escalacao`): trocar um titular por um reserva da mesma posição grava na
-// hora e o campo é refeito pelo servidor. Quem está exausto pode ser
-// poupado mesmo escolhido, e o aviso diz quem entrou no lugar.
+// `escalacao`): trocar um titular por um reserva grava na hora e o campo é
+// refeito pelo servidor. Qualquer jogador de linha joga em qualquer vaga
+// (v1.3), rendendo menos fora da posição dele; goleiro só troca com
+// goleiro. O motor põe cada escolhido na vaga onde ele rende mais. Quem
+// está exausto pode ser poupado mesmo escolhido, e o aviso diz isso.
 
 import { $, estado, pedir } from "./nucleo.js";
 import { camisa } from "./identidade.js";
 import { icone } from "./icones.js";
 import { carregarProximaRodada, salvarEscalacaoAgora, salvarJa } from "./rodada.js";
+import { podemTrocar, posicaoDe, sigla } from "./posicoes.js";
 
-const LINHA_POS = ["Goleiro", "Defesa", "Meio-Campo", "Atacante"];
-const SIGLA = { Goleiro: "GOL", Defesa: "DEF", "Meio-Campo": "MEI", Atacante: "ATA" };
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
 
 // o que está no campo e no banco agora, e o que está selecionado
@@ -48,33 +49,40 @@ function energia(v) {
   return `<span class="ed-energia ${v <= 30 ? "baixa" : v <= 60 ? "media" : ""}" title="Energia ${v}"><i style="width:${v}%"></i></span>`;
 }
 
-// quem combina com a seleção atual (mesma posição da vaga)
-function posicaoDa(sel) {
-  if (!sel) return null;
-  if (sel.lado === "campo") return LINHA_POS[ed.titulares.find((j) => j.nome === sel.nome).linha];
-  return ed.banco.find((j) => j.nome === sel.nome).posicao;
+const doLado = (lado, nome) => (lado === "campo" ? ed.titulares : ed.banco).find((j) => j.nome === nome);
+
+// o titular escolhido agora (para o banco mostrar quanto cada um renderia
+// na vaga dele), ou null
+function titularSelecionado() {
+  return ed.sel && ed.sel.lado === "campo" ? doLado("campo", ed.sel.nome) : null;
 }
+
+// overall de um reserva numa vaga (o natural, sem a vaga)
+const overallNa = (j, vaga) => (vaga && j.overall_por_posicao && j.overall_por_posicao[vaga]) || j.overall;
 
 function desenhar() {
   const clube = estado.rodadaInfo.clube_usuario;
-  const pos = posicaoDa(ed.sel);
+  const titular = titularSelecionado();
 
   const peca = (j) => {
-    const vaga = LINHA_POS[j.linha];
     const sel = ed.sel && ed.sel.lado === "campo" && ed.sel.nome === j.nome;
-    const alvo = pos && !sel && vaga === pos;
+    const vaga = j.vaga || posicaoDe(j);
+    const ovr = j.overall_vaga ?? j.overall;
+    const fora = vaga !== posicaoDe(j);
     const sinais = [
       j.craque ? `<span class="pj-ic pj-craque" title="Craque">${icone("estrela", "craque")}</span>` : "",
       j.condicao !== "Normal" ? `<span class="pj-ic pj-cansado" title="${j.condicao} (energia ${j.energia})">${icone("raio", j.condicao)}</span>` : "",
       j.pendurado ? `<span class="cartao" title="Pendurado" role="img" aria-label="pendurado"></span>` : "",
     ].join("");
-    const improvisado = j.posicao !== vaga ? ` <small title="Improvisado: é ${j.posicao}">imp.</small>` : "";
-    return `<button class="ed-jog ${sel ? "sel" : ""} ${alvo ? "alvo" : ""} ${j.condicao === "Exausto" ? "exausto" : ""}"
-        data-lado="campo" data-nome="${j.nome}" draggable="true"
-        title="${j.nome} · ${j.posicao} · overall ${j.overall} · energia ${j.energia}">
+    const dica = fora
+      ? `${j.nome} · ${posicaoDe(j)} improvisado de ${vaga} · rende ${ovr} aqui (overall ${j.overall}) · energia ${j.energia}`
+      : `${j.nome} · ${vaga} · overall ${ovr} · energia ${j.energia}`;
+    return `<button class="ed-jog ${sel ? "sel" : ""} ${j.condicao === "Exausto" ? "exausto" : ""} ${fora ? "improvisado" : ""}"
+        data-lado="campo" data-nome="${j.nome}" draggable="true" title="${dica}">
       <span class="peca-camisa">${camisa(clube, { numero: j.numero, tamanho: 40 })}<span class="peca-sinais">${sinais}</span></span>
-      <span class="ed-nome">${sobrenome(j.nome)}${improvisado}</span>
-      <span class="ed-info"><b>${j.overall}</b>${energia(j.energia)}</span>
+      <span class="ed-nome">${sobrenome(j.nome)}</span>
+      <span class="ed-info"><small class="ed-vaga">${sigla(vaga)}</small><b class="${fora ? "perde" : ""}">${ovr}</b>${energia(j.energia)}</span>
+      ${fora ? `<small class="ed-imp">${sigla(posicaoDe(j))} improvisado</small>` : ""}
     </button>`;
   };
 
@@ -92,13 +100,18 @@ function desenhar() {
   const fora = estado.rodadaInfo.elenco.filter((j) => j.suspenso || j.lesionado);
   const reserva = (j) => {
     const sel = ed.sel && ed.sel.lado === "banco" && ed.sel.nome === j.nome;
-    const alvo = pos && !sel && j.posicao === pos;
-    return `<li><button class="ed-reserva ${sel ? "sel" : ""} ${alvo ? "alvo" : ""}"
-        data-lado="banco" data-nome="${j.nome}" draggable="true">
+    // com um titular escolhido: quanto este reserva renderia na vaga dele
+    const vaga = titular && podemTrocar(titular, j) ? titular.vaga || posicaoDe(titular) : null;
+    const ovr = overallNa(j, vaga);
+    const perde = ovr < j.overall;
+    const tambem = j.secundarias && j.secundarias.length ? ` (também ${j.secundarias.join(", ")})` : "";
+    return `<li><button class="ed-reserva ${sel ? "sel" : ""}"
+        data-lado="banco" data-nome="${j.nome}" draggable="true"
+        title="${j.nome} · ${posicaoDe(j)}${tambem} · overall ${j.overall}${vaga ? ` · rende ${ovr} de ${vaga}` : ""}">
       <b class="ed-num">${j.numero ?? "–"}</b>
       <span class="ed-reserva-nome">${j.nome}</span>
-      <small class="ed-pos">${SIGLA[j.posicao]}</small>
-      <b class="ed-ovr">${j.overall}</b>
+      <small class="ed-pos">${sigla(posicaoDe(j))}</small>
+      <b class="ed-ovr ${perde ? "perde" : ""}">${ovr}${vaga && vaga !== posicaoDe(j) ? `<small> ${sigla(vaga)}</small>` : ""}</b>
       ${energia(j.energia)}
     </button></li>`;
   };
@@ -107,7 +120,7 @@ function desenhar() {
     fora.map((j) => `<li><span class="ed-reserva fora">
       <b class="ed-num">${icone(j.lesionado ? "lesao" : "proibido")}</b>
       <span class="ed-reserva-nome">${j.nome}</span>
-      <small class="ed-pos">${SIGLA[j.posicao]}</small>
+      <small class="ed-pos">${sigla(posicaoDe(j))}</small>
       <small>${j.lesionado ? `lesão ${j.rodadas_lesao}r` : `susp. ${j.jogos_suspensao}j`}</small>
     </span></li>`).join("");
 
@@ -155,24 +168,19 @@ function arrastarComoBoneco(e, lado, nome) {
 }
 
 function acenderAlvos() {
-  const pos = posicaoDa(ed.sel);
   document.querySelectorAll("#ed-campo [data-nome], #ed-banco [data-nome]").forEach((el) => {
     const { lado, nome } = el.dataset;
     const sel = !!ed.sel && ed.sel.lado === lado && ed.sel.nome === nome;
-    const daPosicao = lado === "campo"
-      ? LINHA_POS[ed.titulares.find((j) => j.nome === nome).linha]
-      : ed.banco.find((j) => j.nome === nome).posicao;
-    const podeTrocar = lado === "campo" || (ed.sel && ed.sel.lado === "campo");
     el.classList.toggle("sel", sel);
-    el.classList.toggle("alvo", !!pos && !sel && podeTrocar && daPosicao === pos);
+    el.classList.toggle("alvo", !!ed.sel && !sel && compativel(ed.sel, lado, nome));
   });
 }
 
-// toque: seleciona; segundo toque num alvo da mesma posição troca
+// toque: seleciona; segundo toque num alvo troca
 function tocar(lado, nome) {
   const sel = ed.sel;
   if (sel && sel.lado === lado && sel.nome === nome) { ed.sel = null; desenhar(); return; }
-  if (sel && posicaoCompativel(sel, lado, nome)) {
+  if (sel && compativel(sel, lado, nome)) {
     trocar(sel, { lado, nome });
     return;
   }
@@ -180,10 +188,16 @@ function tocar(lado, nome) {
   desenhar();
 }
 
-function posicaoCompativel(sel, lado, nome) {
-  const pos = posicaoDa(sel);
-  if (lado === "campo") return LINHA_POS[ed.titulares.find((j) => j.nome === nome).linha] === pos;
-  return sel.lado === "campo" && ed.banco.find((j) => j.nome === nome).posicao === pos;
+// titular com reserva: qualquer um de linha com qualquer um de linha, goleiro
+// com goleiro. Titular com titular só reordena a mesma linha (em que vaga
+// cada um joga, o motor decide pelo rendimento)
+function compativel(sel, lado, nome) {
+  const a = doLado(sel.lado, sel.nome);
+  const b = doLado(lado, nome);
+  if (!a || !b) return false;
+  if (sel.lado === "campo" && lado === "campo") return a.linha === b.linha;
+  if (sel.lado === lado) return false;
+  return podemTrocar(a, b);
 }
 
 async function trocar(a, b) {
@@ -201,7 +215,8 @@ async function trocar(a, b) {
   const k = ia(banco);
   const sai = ed.titulares[i];
   const entra = ed.banco[k];
-  ed.titulares[i] = { ...entra, linha: sai.linha };
+  // até o servidor responder, quem entra fica na vaga de quem saiu
+  ed.titulares[i] = { ...entra, linha: sai.linha, vaga: sai.vaga, overall_vaga: overallNa(entra, sai.vaga) };
   ed.banco[k] = { ...sai };
   ed.sel = null;
   desenhar();
@@ -220,7 +235,7 @@ export async function gravarEConferir(escolhidos = []) {
   renderEditor();
   const poupados = escolhidos.filter((n) => !ed.titulares.some((j) => j.nome === n));
   avisar(poupados.length
-    ? `${poupados.join(", ")} está exausto e o motor vai poupá-lo: entra o melhor reserva da posição.`
+    ? `${poupados.join(", ")} está exausto e o motor vai poupá-lo: entra quem renderia mais na vaga.`
     : "");
   await carregarPlanos();
 }

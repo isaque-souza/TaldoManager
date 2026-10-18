@@ -10,13 +10,13 @@ import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.j
 import { decisaoParaEnviar, enviarRodada, mostrarRodadaTela } from "./rodada.js";
 import { corDoTexto, escudo, identidade } from "./identidade.js";
 import { icone } from "./icones.js";
+import { podemTrocar, posicaoDe, sigla } from "./posicoes.js";
 
 const MS_POR_MINUTO = 500;          // 1×: ~45 s por jogo (escolha do usuário)
 const CHAVE_VELOCIDADE = "taldo:velocidade";
 const TATICAS = [["ofensivo", "Ofensivo"], ["equilibrado", "Equilibrado"], ["defensivo", "Defensivo"]];
 // formações, da mais ofensiva à mais fechada (a postura pesa no motor, v1.2)
 const FORMACOES = ["3-4-3", "4-2-4", "3-5-2", "4-3-3", "4-4-2", "4-5-1", "5-3-2", "5-4-1"];
-const SIGLA_POS = { Goleiro: "GOL", Defesa: "DEF", "Meio-Campo": "MEI", Atacante: "ATA" };
 
 let jogo = null;   // estado da transmissão em curso
 
@@ -267,7 +267,9 @@ function meuTimeAgora() {
 function renderPainel() {
   const t = meuTimeAgora();
   const sel = jogo.selecao;
-  const posSai = sel.sai && t.em_campo.find((j) => j.nome === sel.sai)?.posicao;
+  // quem sai: o banco mostra quanto cada um renderia na vaga dele (v1.3)
+  const sai = sel.sai && t.em_campo.find((j) => j.nome === sel.sai);
+  const vagaSai = sai && (sai.vaga || posicaoDe(sai));
   const prox = relogio(jogo.minuto + 1);
 
   const energia = (v) =>
@@ -283,21 +285,25 @@ function renderPainel() {
         data-sai="${j.nome}" ${bloqueado ? "disabled" : ""}>
       <b class="av-num">${j.numero ?? "–"}</b>
       <span class="av-nome">${j.nome}${j.saindo ? " <small>sai no " + prox + "</small>" : ""}</span>
-      <small class="av-pos">${SIGLA_POS[j.posicao] || j.posicao}</small>
+      <small class="av-pos ${j.vaga && j.vaga !== posicaoDe(j) ? "perde" : ""}"
+        title="${j.vaga && j.vaga !== posicaoDe(j) ? `${posicaoDe(j)} improvisado: rende ${j.overall_vaga}` : posicaoDe(j)}">${sigla(j.vaga || posicaoDe(j))}</small>
       ${cartoes(j)}
       ${energia(j.energia)}
       <span class="av-nota ${j.nota >= 7 ? "boa" : j.nota < 6 ? "ruim" : ""}">${j.nota.toFixed(1)}</span>
     </button></li>`;
   };
   const linhaBanco = (j) => {
-    const bloqueado = !j.disponivel || j.entrando || t.restantes <= 0;
-    const combina = posSai && j.posicao === posSai;
+    // goleiro só troca com goleiro
+    const bloqueado = !j.disponivel || j.entrando || t.restantes <= 0 || (sai && !podemTrocar(sai, j));
+    const combina = vagaSai && posicaoDe(j) === vagaSai;
+    const naVaga = vagaSai && !bloqueado && j.overall_por_posicao ? j.overall_por_posicao[vagaSai] : null;
     return `<li><button class="av-jog ${sel.entra === j.nome ? "escolhido" : ""} ${combina ? "combina" : ""} ${j.entrando ? "entrando" : ""}"
         data-entra="${j.nome}" ${bloqueado ? "disabled" : ""}>
       <b class="av-num">${j.numero ?? "–"}</b>
       <span class="av-nome">${j.nome}${j.entrando ? " <small>entra no " + prox + "</small>" : !j.disponivel ? " <small>já saiu</small>" : ""}</span>
-      <small class="av-pos">${SIGLA_POS[j.posicao] || j.posicao}</small>
-      <span class="av-ovr">${j.overall}</span>
+      <small class="av-pos">${sigla(posicaoDe(j))}</small>
+      <span class="av-ovr ${naVaga != null && naVaga < j.overall ? "perde" : ""}"
+        title="${naVaga != null ? `rende ${naVaga} de ${vagaSai} (overall ${j.overall})` : `overall ${j.overall}`}">${naVaga ?? j.overall}</span>
       ${energia(j.energia)}
     </button></li>`;
   };
@@ -556,7 +562,7 @@ function montarCampo() {
       const y = ((i + 1) / (js.length + 1)) * 100;
       return `<div class="sim-jog sim-lado-${lado}" data-nome="${j.nome}" data-x="${x}" data-linha="${n}" data-y="${y}"
           style="left:${x}%;top:${y}%;--cor:${jogo.cores[lado]};--cor-texto:${corDoTexto(jogo.cores[lado])}"
-          title="${j.nome} · ${j.posicao}"><span>${j.numero ?? ""}</span></div>`;
+          title="${j.nome} · ${j.vaga || j.funcao || j.posicao}"><span>${j.numero ?? ""}</span></div>`;
     }));
   }).flat().join("");
 

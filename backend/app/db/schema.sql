@@ -88,7 +88,9 @@ CREATE TABLE IF NOT EXISTS jogador (
     valor_mercado   INTEGER NOT NULL DEFAULT 0,  -- snapshot do valor no fim do save
     salario         INTEGER NOT NULL DEFAULT 0,  -- por temporada
     multa_rescisoria INTEGER,                    -- NULL = sem multa
-    numero          INTEGER                      -- camisa (v1.1); NULL em saves antigos
+    numero          INTEGER,                     -- camisa (v1.1); NULL em saves antigos
+    funcao          TEXT,                        -- posição específica (v1.3); NULL em saves antigos
+    secundarias     TEXT                         -- JSON: posições secundárias (v1.3)
 );
 
 CREATE TABLE IF NOT EXISTS partida (

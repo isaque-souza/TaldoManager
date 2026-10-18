@@ -5,6 +5,11 @@ from app.services import carreira_service, simulacao_service, temporada_service
 from app.services.carreira_service import CarreiraInvalida
 
 
+@pytest.fixture(autouse=True)
+def _sem_demissao(cargo_garantido):
+    """Nenhum teste daqui é sobre a diretoria (ver test_meta_diretoria)."""
+
+
 def _um_clube():
     return simulacao_service.listar_clubes()[0]["nome"]
 
@@ -308,18 +313,7 @@ def test_contrato_vencido_do_tecnico_sai_ou_fica_por_emergencia():
         )
 
 
-def _cargo_garantido(monkeypatch):
-    """Para testes de várias viradas que não são sobre a diretoria: com a
-    seed fixa, o técnico pode acabar demitido no meio (e a virada é
-    recusada) a cada ajuste do motor que mexe nos resultados."""
-    monkeypatch.setattr(
-        simulacao_service, "cargo_da_temporada",
-        lambda conn, sim: {"estado": "mantido", "motivo": None},
-    )
-
-
 def test_elencos_continuam_validos_depois_de_varias_viradas(monkeypatch):
-    _cargo_garantido(monkeypatch)
     sid = _temporada_concluida(seed=5)
     for _ in range(3):
         sid = carreira_service.proxima_temporada(sid)["simulacao_id"]
@@ -405,7 +399,6 @@ def test_jovem_da_base_pode_ser_renovado_e_vendido():
 
 
 def test_nomes_nao_se_repetem_na_carreira(monkeypatch):
-    _cargo_garantido(monkeypatch)
     sid = _temporada_concluida(seed=5)
     vistos = set(_jogadores(sid))
     for _ in range(2):

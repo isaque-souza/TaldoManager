@@ -84,7 +84,7 @@ function sinais(j) {
 }
 
 function peca(clube, j) {
-  return `<div class="peca" title="${j.nome} · ${j.posicao} · overall ${j.overall} · energia ${j.energia}">
+  return `<div class="peca" title="${j.nome} · ${j.vaga || j.funcao || j.posicao} · overall ${j.overall} · energia ${j.energia}">
     <span class="peca-camisa">${camisa(clube, { numero: j.numero, tamanho: 44 })}
       <span class="peca-sinais">${sinais(j)}</span></span>
     <span class="peca-nome">${sobrenome(j.nome)}</span>
@@ -95,7 +95,7 @@ function peca(clube, j) {
 function banco(t) {
   if (!t.banco.length) return `<li class="vazio">Sem reservas disponíveis.</li>`;
   return t.banco.map((j) =>
-    `<li><b>${j.numero ?? "–"}</b> <span>${j.nome}</span> <small>${j.posicao} · ${j.overall}</small> ${sinais(j)}</li>`
+    `<li><b>${j.numero ?? "–"}</b> <span>${j.nome}</span> <small>${j.funcao || j.posicao} · ${j.overall}</small> ${sinais(j)}</li>`
   ).join("");
 }
 

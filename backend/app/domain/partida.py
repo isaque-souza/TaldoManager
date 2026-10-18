@@ -742,12 +742,15 @@ class Partida:
     ):
 
         # quem já jogou e saiu volta para `reservas`, mas não pode voltar a
-        # campo (está em `estatisticas`); só entra quem ainda não jogou
+        # campo (está em `estatisticas`); só entra quem ainda não jogou.
+        # Da mesma posição da vaga, se houver (v1.3); senão, do mesmo setor
         reservas = [
             j for j in clube.reservas
             if j.posicao == titular.posicao
             and j not in self.estatisticas
         ]
+        da_vaga = [j for j in reservas if j.funcao == titular.vaga]
+        reservas = da_vaga or reservas
 
         if not reservas:
             return None
@@ -816,6 +819,8 @@ class Partida:
         # nunca em clube.jogadores, que e o elenco fixo da temporada
         clube.titulares.remove(saindo)
         clube.titulares.append(entrando)
+        # quem entra fica na vaga de quem saiu (v1.3)
+        entrando.vaga, saindo.vaga = saindo.vaga, None
 
         clube.reservas.remove(entrando)
         clube.reservas.append(saindo)
@@ -896,7 +901,7 @@ class Partida:
             return f"{nome_entra} não está no banco"
         if entrando in self.estatisticas:   # já jogou e saiu
             return f"{nome_entra} já saiu e não pode voltar"
-        return None
+        return motivo_goleiro(saindo.posicao, entrando.posicao)
 
     def _registro_do_minuto(self, minuto):
         return {
@@ -930,6 +935,9 @@ class Partida:
                 "nome": j.nome,
                 "numero": j.numero,
                 "posicao": j.posicao,
+                "funcao": j.funcao,
+                "vaga": j.vaga,
+                "overall_vaga": j.overall_em_campo(),
                 "overall": j.overall,
                 "energia": round(j.energia),
                 "amarelos": j.amarelos_partida,
@@ -943,6 +951,8 @@ class Partida:
                 "nome": j.nome,
                 "numero": j.numero,
                 "posicao": j.posicao,
+                "funcao": j.funcao,
+                "overall_por_posicao": j.overall_por_posicao(),
                 "overall": j.overall,
                 "energia": round(j.energia),
                 "disponivel": j not in self.estatisticas,
@@ -1637,3 +1647,10 @@ class Partida:
         self.posse_c1 = round(peso1 / (peso1 + peso2) * 100)
         self.posse_c2 = 100 - self.posse_c1
 
+
+def motivo_goleiro(setor_sai, setor_entra):
+    """Goleiro só troca com goleiro (v1.3): nem vai para a linha, nem um
+    jogador de linha vai para o gol. None se a troca pode."""
+    if (setor_sai == "Goleiro") != (setor_entra == "Goleiro"):
+        return "Goleiro só pode ser trocado por outro goleiro"
+    return None

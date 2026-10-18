@@ -17,6 +17,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
+from app.domain import posicoes
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import atuacao_repository as atuacao_repo
 from app.repositories import clube_repository as clube_repo
@@ -198,6 +199,8 @@ def proxima_rodada(simulacao_id):
                 {
                     "nome": j.nome,
                     "posicao": j.posicao,
+                    "funcao": j.funcao,
+                    "secundarias": list(j.secundarias),
                     "overall": j.overall,
                     "energia": j.energia,
                     "condicao": j.condicao,
@@ -221,12 +224,17 @@ def proxima_rodada(simulacao_id):
 # overall a partir do qual o jogador ganha a estrela de craque no pré-jogo
 CRAQUE = 88
 
+_LINHA = {"Goleiro": 0, "Defesa": 1, "Meio-Campo": 2, "Atacante": 3}
+
 
 def _jogador_pre_jogo(j, linha=None):
     dados = {
         "nome": j.nome,
         "numero": j.numero,
         "posicao": j.posicao,
+        "funcao": j.funcao,
+        "secundarias": list(j.secundarias),
+        "overall_por_posicao": j.overall_por_posicao(),
         "overall": j.overall,
         "energia": round(j.energia),
         "condicao": j.condicao,
@@ -235,24 +243,24 @@ def _jogador_pre_jogo(j, linha=None):
     }
     if linha is not None:
         dados["linha"] = linha
+        dados["vaga"] = j.vaga
+        dados["overall_vaga"] = j.overall_em_campo()
     return dados
 
 
 def _escalacao(clube):
     """XI e banco exatamente como o motor escala no apito
-    (Clube.escalar_time é determinístico). Cada titular vem com a `linha`
-    do campo onde a formação o coloca: 0 goleiro, 1 defesa, 2 meio,
-    3 ataque — um improvisado fica na linha da vaga, não na posição dele."""
+    (Clube.escalar_time é determinístico). Cada titular vem com a vaga
+    (v1.3), o overall nela e a `linha` do campo: 0 goleiro, 1 defesa,
+    2 meio, 3 ataque — um improvisado fica na linha da vaga, não na dele."""
     clube.escalar_time()
-    n_def, n_mei, n_ata = clube.FORMACOES.get(clube.formacao, (4, 3, 3))
-    linhas = [0] + [1] * n_def + [2] * n_mei + [3] * n_ata
     return {
         "clube": clube.nome,
         "formacao": clube.formacao,
         "tatica": clube.tatica,
         "titulares": [
-            _jogador_pre_jogo(j, linha)
-            for j, linha in zip(clube.titulares, linhas)
+            _jogador_pre_jogo(j, _LINHA[posicoes.SETOR[j.vaga]])
+            for j in clube.titulares
         ],
         "banco": [_jogador_pre_jogo(j) for j in clube.reservas],
     }
