@@ -154,6 +154,15 @@ export function renderRodadaAntes() {
   renderEditor();
   carregarPlanos().then(resumoEscalacao);   // o card do hub diz o plano
 
+  // com a partida rolando o servidor recusa mudanças na escalação (409):
+  // a tela trava junto, em vez de deixar mexer e desfazer calada
+  const travado = !!info.transmissao_ativa;
+  $("ed-travado").hidden = !travado;
+  document.querySelectorAll("#pl-planos, .ed-controles, .editor").forEach((el) => {
+    el.inert = travado;
+    el.classList.toggle("travado", travado);
+  });
+
   const situacao = (j) => {
     if (j.lesionado) return `<span class="chip chip-longe">Lesionado ${j.rodadas_lesao}r</span>`;
     if (j.suspenso) return `<span class="chip chip-longe">Suspenso ${j.jogos_suspensao}j</span>`;
@@ -375,4 +384,5 @@ document.querySelectorAll("#r-hub [data-abrir]").forEach((b) =>
   })
 );
 $("r-hub-voltar").addEventListener("click", () => abrirSecaoRodada("hub"));
+$("ed-voltar-jogo").addEventListener("click", () => jogarAoVivo());
 $("r-formacao").addEventListener("change", () => gravarEConferir());
