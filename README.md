@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 502 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 519 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -533,10 +533,24 @@ Cada jogador tem uma posição de verdade e rende menos fora dela:
 
 # 📣 Torcida (v1.4 — próxima)
 
-Hoje `torcedores` é fixo e só alimenta a bilheteria. A ideia é a torcida
-crescer (ou encolher) com as decisões do técnico:
+A torcida cresce (ou encolhe) com a campanha e com as decisões do técnico,
+e o tamanho dela é o que enche a bilheteria:
 
-* [ ] Crescimento da torcida (campanha boa, títulos, sequência de vitórias)
+* [x] Crescimento da torcida — cada jogo mexe nela: vitória +0,3%, derrota
+      −0,3%, goleada (3+ gols) ±0,2% a mais, 3+ vitórias seguidas +0,1%, e
+      o clássico vale o dobro. No fim da temporada pesa a posição: campeão
+      +5%, G-4 +2%, até o 8º +1%, Z-4 −2% (mínimo de 50 mil). Em média o
+      campeão termina com ~16% a mais e o lanterna com ~10% a menos.
+      Determinístico (não sorteia nada: o mesmo seed dá o mesmo
+      campeonato); vai para a temporada seguinte da carreira. Aparece no tile "Torcida"
+      das finanças do clube, numa coluna da aba Finanças da liga e no
+      "Balanço da torcida", mensagem do **marketing** no fim da temporada
+* [x] Torcida no mando de campo — jogar em casa sempre conforta, e estádio
+      cheio empurra mais: o mando (antes +2,5 fixo na força do mandante)
+      vai de ~1,6 com 200 mil torcedores a ~3,0 com 12 milhões (escala
+      logarítmica, entre 1,5 e 3,5). A referência é o meio da liga
+      (3 milhões), então na média nada muda: 2,8 gols por jogo, ~47% de
+      vitórias do mandante. A torcida que cresce com a campanha vira mando
 * [ ] Campanhas de marketing (gastar dinheiro para atrair torcedores)
 * [ ] Fama dos jogadores (cada jogador tem sua fama; craques famosos atraem torcida)
 * [ ] Contratar ídolos que a torcida ama (impacto na torcida e na bilheteria)
@@ -560,7 +574,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 502 testes (domain, db, repositories, services, api)
+│   └── tests/              # 519 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

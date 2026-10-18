@@ -476,3 +476,14 @@ def test_numero_de_camisa_atravessa_a_virada_e_a_base_ganha_o_seu():
     for (clube, _), numero in depois.items():
         por_clube.setdefault(clube, []).append(numero)
     assert all(len(set(n)) == len(n) for n in por_clube.values())
+
+
+def test_temporada_2_herda_a_torcida():
+    """Torcida (v1.4): a final de uma temporada é a inicial da seguinte."""
+    sid = _temporada_concluida(seed=3)
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+
+    final = {f["clube"]: f for f in simulacao_service.carregar_temporada(sid)["financas"]}
+    assert any(f["torcedores"] != f["torcedores_inicial"] for f in final.values())
+    for f in simulacao_service.carregar_temporada(nova)["financas"]:
+        assert f["torcedores_inicial"] == f["torcedores"] == final[f["clube"]]["torcedores"]

@@ -1,6 +1,6 @@
 import random
 
-from . import financas
+from . import financas, torcida
 from .partida import Partida
 
 
@@ -64,6 +64,8 @@ class Campeonato:
                 partida
             )
 
+            torcida.processar_jogo(clube1, clube2, partida.gols_c1, partida.gols_c2)
+
             self.atualizar_recordes(partida)
 
         financas.processar_rodada(rodada_atual, len(self.calendario))
@@ -72,6 +74,7 @@ class Campeonato:
 
         if self.rodada > len(self.calendario):
             financas.pagar_premiacao(self.classificacao())
+            torcida.fim_de_temporada(self.classificacao())
 
         for clube in self.clubes:
             clube.historico_caixa.append(clube.dinheiro)

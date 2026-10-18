@@ -394,6 +394,9 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
                 next(i for i, c in enumerate(tabela, start=1) if c.nome == clube_usuario),
                 sim["meta_posicao"], tabela[0].nome, clube_usuario,
             ))
+            mensagens.append(caixa.balanco_da_torcida(
+                alvo.torcedores_inicial, alvo.torcedores,
+            ))
         xi_json = (
             json.dumps(xi_ef, ensure_ascii=False) if xi_ef else None
         )

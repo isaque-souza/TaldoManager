@@ -6,7 +6,15 @@ CAMPOS = (
     "dinheiro_inicial", "dinheiro", "receita_tv", "receita_bilheteria",
     "receita_premiacao", "despesa_salarios",
     "receita_vendas", "despesa_compras", "historico_caixa",
+    "torcedores", "torcedores_inicial",
 )
+
+# campos mais novos que quem monta os dicts pode não mandar
+_PADRAO = {"torcedores": 0, "torcedores_inicial": 0}
+
+
+def _valor(clube, campo):
+    return clube[campo] if campo in clube or campo not in _PADRAO else _PADRAO[campo]
 
 
 def inserir(conn, simulacao_id, clubes):
@@ -20,7 +28,7 @@ def inserir(conn, simulacao_id, clubes):
             INSERT INTO clube (simulacao_id, {", ".join(CAMPOS)})
             VALUES (?, {", ".join("?" * len(CAMPOS))})
             """,
-            (simulacao_id, *(clube[c] for c in CAMPOS)),
+            (simulacao_id, *(_valor(clube, c) for c in CAMPOS)),
         )
         mapa[clube["nome"]] = cur.lastrowid
 
@@ -40,7 +48,7 @@ def atualizar(conn, simulacao_id, clubes):
              WHERE simulacao_id = ? AND nome = ?
             """,
             (
-                *(clube[c] for c in CAMPOS if c != "nome"),
+                *(_valor(clube, c) for c in CAMPOS if c != "nome"),
                 simulacao_id,
                 clube["nome"],
             ),

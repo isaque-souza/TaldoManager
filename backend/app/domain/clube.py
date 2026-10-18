@@ -48,6 +48,8 @@ class Clube:
         self.pais = pais
         self.dinheiro = dinheiro
         self.torcedores = torcedores
+        # torcida no início da temporada (v1.4), para medir quanto mudou
+        self.torcedores_inicial = torcedores
         self.rivais = set()   # nomes dos clubes rivais (clássicos)
         self.identidade = None   # cores/escudo/camisa (só visual, v1.1)
 

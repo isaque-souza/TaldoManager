@@ -200,6 +200,8 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
             "receita_vendas": clube.receita_vendas,
             "despesa_compras": clube.despesa_compras,
             "historico_caixa": json.dumps(clube.historico_caixa),
+            "torcedores": clube.torcedores,
+            "torcedores_inicial": clube.torcedores_inicial,
         })
 
         for jogador in clube.jogadores:
@@ -312,6 +314,8 @@ def _financas_da_liga(clubes, jogadores):
             "receitas": receitas,
             "despesas": despesas,
             "folha": folha.get(c["nome"], 0),
+            "torcedores": c.get("torcedores", 0),
+            "torcedores_inicial": c.get("torcedores_inicial", 0),
         })
     return linhas
 

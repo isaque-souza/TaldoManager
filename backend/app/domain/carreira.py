@@ -29,7 +29,8 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
     """Aplica num campeonato recém-carregado o estado final da temporada
     anterior.
 
-    `clubes_finais`: dicts com `nome` e `dinheiro` (caixa final).
+    `clubes_finais`: dicts com `nome`, `dinheiro` (caixa final) e
+    `torcedores` (torcida final).
     `jogadores_finais`: dicts com `nome`, `clube`, `idade`, `overall`,
     `potencial`, `salario`, `contrato_anos` e `multa_rescisoria`, na ordem
     do elenco.
@@ -71,6 +72,11 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
         clube = por_clube[final["nome"]]
         clube.dinheiro = final["dinheiro"]
         clube.dinheiro_inicial = final["dinheiro"]
+        # a torcida também (v1.4); temporadas anteriores não guardam (0) e
+        # ficam com a da seed
+        if final.get("torcedores"):
+            clube.torcedores = final["torcedores"]
+        clube.torcedores_inicial = clube.torcedores
 
     return campeonato
 
