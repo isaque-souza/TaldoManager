@@ -37,6 +37,8 @@ from app.api.schemas import (
     TemporadaCriada,
     TransferenciaResultado,
     MomentoPartida,
+    Marketing,
+    NovaCampanha,
     Transmissao,
 )
 from app.domain.contrato import ContratoInvalido
@@ -45,6 +47,7 @@ from app.services import (
     carreira_service,
     contrato_service,
     escalacao_service,
+    marketing_service,
     mensagem_service,
     mercado_service,
     plano_service,
@@ -53,6 +56,7 @@ from app.services import (
     transmissao_service,
 )
 from app.services.carreira_service import CarreiraInvalida
+from app.services.marketing_service import CampanhaInvalida
 from app.services.plano_service import PlanoInvalido
 from app.services.temporada_service import PartidaEmAndamento, TemporadaConcluida
 from app.services.transmissao_service import TransmissaoInvalida
@@ -364,6 +368,38 @@ def fazer_renovacao(simulacao_id: int, proposta: NovaRenovacao):
     if resposta is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
     return resposta
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/marketing",
+    response_model=Marketing,
+    tags=["torcida"],
+)
+def ver_marketing(simulacao_id: int):
+    """Torcida do clube dirigido e as campanhas de marketing possíveis."""
+    try:
+        dados = marketing_service.ver(simulacao_id)
+    except TemporadaConcluida as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/marketing",
+    response_model=Marketing,
+    tags=["torcida"],
+)
+def fazer_campanha(simulacao_id: int, campanha: NovaCampanha):
+    """Faz uma campanha de marketing (uma por turno, com caixa para pagar)."""
+    try:
+        dados = marketing_service.lancar(simulacao_id, campanha.tipo)
+    except (TemporadaConcluida, PartidaEmAndamento, CampanhaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
 
 
 @router.post(

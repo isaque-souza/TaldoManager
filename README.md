@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 523 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 533 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -551,7 +551,14 @@ e o tamanho dela é o que enche a bilheteria:
       logarítmica, entre 1,5 e 3,5). A referência é o meio da liga
       (3 milhões), então na média nada muda: 2,8 gols por jogo, ~47% de
       vitórias do mandante. A torcida que cresce com a campanha vira mando
-* [ ] Campanhas de marketing (gastar dinheiro para atrair torcedores)
+* [x] Campanhas de marketing — card **Marketing** no menu do clube: a
+      torcida, a força em casa que ela dá e três campanhas (redes sociais
+      +1%, cidade +3%, nacional +6%). O custo é por torcedor novo e sobe
+      com o tamanho da campanha (R$ 0,80 → 1,30; cada torcedor rende ~0,38
+      por temporada de bilheteria, então se paga em 2–3 temporadas, fora o
+      mando). Uma por turno, com caixa para pagar; entra como despesa
+      "Marketing" nas finanças e o setor manda a mensagem.
+      API: `GET/POST /simulacoes/{id}/marketing`
 * [ ] Fama dos jogadores (cada jogador tem sua fama; craques famosos atraem torcida)
 * [ ] Contratar ídolos que a torcida ama (impacto na torcida e na bilheteria)
 * [x] Vender um jogador para o rival irrita a torcida — some 2% dela (3% se
@@ -577,7 +584,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 523 testes (domain, db, repositories, services, api)
+│   └── tests/              # 533 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

@@ -280,6 +280,17 @@ def revolta_da_torcida(jogador, rival, antes, depois):
     )
 
 
+def campanha(nome, custo, antes, depois):
+    """Campanha de marketing feita (v1.4)."""
+    return _mensagem(
+        "Marketing", f"{nome}: no ar",
+        f"A {nome.lower()} saiu por {_dinheiro(custo)} e trouxe "
+        f"{_torcedores(depois - antes)} torcedores novos: agora somos "
+        f"{_torcedores(depois)}. Mais gente no estádio é mais bilheteria e "
+        f"mais pressão no mando de campo.",
+    )
+
+
 def virada(clube, movimentos, contratos_acabando):
     """Mensagens da virada de temporada para o clube do técnico: quem subiu
     da base, quem saiu, quem renovou e os contratos que acabam no fim desta.

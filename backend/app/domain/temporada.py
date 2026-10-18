@@ -44,6 +44,7 @@ _CLUBE_CAMPOS = (
     "dinheiro", "dinheiro_inicial", "receita_tv", "receita_bilheteria",
     "receita_premiacao", "despesa_salarios",
     "receita_vendas", "despesa_compras", "historico_caixa",
+    "despesa_marketing",
     # torcida (v1.4): cresce e encolhe com a campanha
     "torcedores", "torcedores_inicial",
 )

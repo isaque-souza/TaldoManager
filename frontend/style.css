@@ -623,7 +623,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .hub {
   display: grid; gap: .8rem; margin-bottom: 1.5rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-areas: "jogo jogo escalacao" "jogo jogo tabela" "mercado contratos financas";
+  grid-template-areas: "jogo jogo escalacao" "jogo jogo tabela" "mercado contratos financas" "caixa caixa marketing";
 }
 .hub[hidden] { display: none; }
 .hub-jogo { grid-area: jogo; }
@@ -632,6 +632,8 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .hub [data-abrir="mercado"] { grid-area: mercado; }
 .hub [data-abrir="contratos"] { grid-area: contratos; }
 .hub [data-abrir="financas"] { grid-area: financas; }
+.hub [data-abrir="caixa"] { grid-area: caixa; }
+.hub [data-abrir="marketing"] { grid-area: marketing; }
 
 .hub-card {
   display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: .3rem;
@@ -744,7 +746,7 @@ button.hub-card:hover, button.hub-card:focus-visible {
 @media (max-width: 760px) {
   .hub {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas: "jogo jogo" "escalacao tabela" "mercado contratos" "financas financas";
+    grid-template-areas: "jogo jogo" "escalacao tabela" "mercado contratos" "financas marketing" "caixa caixa";
   }
   .hub-jogo { min-height: 14rem; gap: 1rem; }
   .hub-card strong { font-size: 1.35rem; }
@@ -1105,3 +1107,19 @@ th .cartao { vertical-align: -1px; }
 body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .3, 1); }
 @keyframes tela-entra { from { opacity: .6; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { body > section:not([hidden]) { animation: none; } }
+
+/* ---------- marketing (v1.4) ---------- */
+.mk-intro { color: var(--texto-2); max-width: 46rem; }
+.mk-msg:empty { display: none; }
+.mk-msg.ruim { color: var(--texto-alerta); }
+.mk-campanhas { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; margin: 1rem 0 1.5rem; }
+.mk-campanha { display: flex; flex-direction: column; gap: .5rem; margin: 0; }
+.mk-campanha header { margin-bottom: 0; }
+.mk-campanha p { margin: 0; color: var(--texto-2); font-size: .9rem; }
+.mk-ficha { display: flex; gap: 1.5rem; margin: .2rem 0 0; }
+.mk-ficha div { display: flex; flex-direction: column; }
+.mk-ficha dt { font-size: .78rem; color: var(--texto-2); text-transform: uppercase; letter-spacing: .06em; }
+.mk-ficha dd { margin: 0; font-family: var(--fonte-tarja); font-size: 1.15rem; font-weight: 700; }
+.mk-ficha dd small { font-family: var(--fonte-texto); font-weight: 400; font-size: .8rem; color: var(--texto-2); }
+.mk-bloqueio { color: var(--texto-2); font-size: .82rem; }
+.mk-campanha .mk-fazer { margin: auto 0 0; }
