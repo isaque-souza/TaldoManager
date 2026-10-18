@@ -7,7 +7,8 @@ dinheiro nos dois caixas).
 Negociação (v0.7, passo 4):
 
 - COMPRA: o clube vendedor calcula um preço pedido (valor de mercado ajustado
-  pela importância do jogador para ele, contrato, caixa e rivalidade) e
+  pela importância do jogador para ele, se é ídolo, contrato, caixa e
+  rivalidade) e
   responde à proposta: aceita, contrapropõe ou recusa. Se o jogador tem multa
   rescisória e a proposta a cobre, o clube não pode recusar.
 - VENDA: cada clube que pode pagar faz uma oferta, mais alta se o jogador
@@ -17,6 +18,8 @@ Tudo determinístico (sem `random`): não mexe na sorte da temporada.
 """
 
 from dataclasses import dataclass
+
+from app.domain import fama
 
 # rodadas ANTES das quais a janela está aberta: pré-temporada e virada do turno
 JANELAS = (1, 20)
@@ -83,6 +86,8 @@ def transferir(jogador, vendedor, comprador, preco):
             lista.remove(jogador)
     vendedor.xi_preferido.discard(jogador)
     comprador.contratar_jogador(jogador)
+    # a fama vem junto; a história no clube, não (v1.4)
+    jogador.temporadas_no_clube = 0
     # chega com contrato novo: o do clube antigo não vale no novo
     jogador.assinar_contrato(
         anos=CONTRATO_PADRAO_ANOS,
@@ -151,6 +156,10 @@ def preco_pedido(jogador, vendedor, comprador):
         preco *= FATOR_CRAQUE
     elif seria_titular(vendedor, jogador):
         preco *= FATOR_TITULAR
+
+    # tirar um ídolo da torcida custa mais (v1.4)
+    if fama.idolo(jogador):
+        preco *= fama.FATOR_IDOLO
 
     if jogador.contrato_anos >= 4:
         preco *= FATOR_CONTRATO_LONGO

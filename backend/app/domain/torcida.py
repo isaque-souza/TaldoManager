@@ -15,7 +15,7 @@ As constantes ficam juntas para facilitar o balanceamento.
 
 import math
 
-from app.domain import mercado
+from app.domain import fama, mercado
 
 # por jogo, em fração da torcida atual
 VITORIA = 0.003
@@ -44,6 +44,8 @@ VENDA_RIVAL = -0.02
 VENDA_RIVAL_TITULAR = -0.03
 VENDA_RIVAL_CRAQUE = -0.05
 RIVAL_COMEMORA = 0.01
+# vender um ídolo, para qualquer clube, também dói; para o rival, soma
+VENDA_IDOLO = -0.03
 
 # campanhas de marketing (v1.4): o técnico gasta caixa para atrair gente.
 # O custo é por torcedor novo e sobe com o tamanho da campanha (retorno
@@ -164,8 +166,10 @@ def variacao_da_posicao(posicao):
 
 
 def fim_de_temporada(classificacao):
+    """Pela posição final e pelos ídolos do elenco (v1.4). Chamar depois de
+    `fama.fim_de_temporada`."""
     for posicao, clube in enumerate(classificacao, start=1):
-        _aplicar(clube, variacao_da_posicao(posicao))
+        _aplicar(clube, variacao_da_posicao(posicao) + fama.bonus_torcida(clube))
 
 
 def mando_de_campo(torcedores):
@@ -179,28 +183,32 @@ def mando_de_campo(torcedores):
     return min(MANDO_MAX, max(MANDO_MIN, mando))
 
 
-def revolta_venda_rival(vendedor, comprador, jogador):
+def revolta_da_venda(vendedor, comprador, jogador):
     """Fração que a torcida do `vendedor` perde se o jogador for para o
-    `comprador` (0 se não são rivais). Chamar antes da transferência: o
-    peso do jogador é medido no elenco de onde ele sai."""
-    if not mercado.sao_rivais(vendedor, comprador):
-        return 0.0
-    if mercado.eh_craque(vendedor, jogador):
-        return VENDA_RIVAL_CRAQUE
-    if mercado.seria_titular(vendedor, jogador):
-        return VENDA_RIVAL_TITULAR
-    return VENDA_RIVAL
+    `comprador` (0 se ele não é ídolo e os clubes não são rivais). Chamar
+    antes da transferência: o peso do jogador é medido no elenco de onde
+    ele sai."""
+    fracao = VENDA_IDOLO if fama.idolo(jogador) else 0.0
+    if mercado.sao_rivais(vendedor, comprador):
+        if mercado.eh_craque(vendedor, jogador):
+            fracao += VENDA_RIVAL_CRAQUE
+        elif mercado.seria_titular(vendedor, jogador):
+            fracao += VENDA_RIVAL_TITULAR
+        else:
+            fracao += VENDA_RIVAL
+    return fracao
 
 
-def vender_ao_rival(vendedor, comprador, jogador):
-    """Aplica a revolta (e a festa do rival). Devolve (antes, depois) da
-    torcida do vendedor, ou None se não são rivais."""
-    fracao = revolta_venda_rival(vendedor, comprador, jogador)
+def reagir_a_venda(vendedor, comprador, jogador):
+    """Aplica a revolta (e, se for o rival, a festa dele). Devolve (antes,
+    depois) da torcida do vendedor, ou None se a torcida não ligou."""
+    fracao = revolta_da_venda(vendedor, comprador, jogador)
     if not fracao:
         return None
     antes = vendedor.torcedores
     _aplicar(vendedor, fracao)
-    _aplicar(comprador, RIVAL_COMEMORA)
+    if mercado.sao_rivais(vendedor, comprador):
+        _aplicar(comprador, RIVAL_COMEMORA)
     return antes, vendedor.torcedores
 
 

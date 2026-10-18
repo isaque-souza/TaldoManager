@@ -32,8 +32,8 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
     `clubes_finais`: dicts com `nome`, `dinheiro` (caixa final) e
     `torcedores` (torcida final).
     `jogadores_finais`: dicts com `nome`, `clube`, `idade`, `overall`,
-    `potencial`, `salario`, `contrato_anos` e `multa_rescisoria`, na ordem
-    do elenco.
+    `potencial`, `salario`, `contrato_anos`, `multa_rescisoria`, `fama` e
+    `temporadas_no_clube`, na ordem do elenco.
     """
 
     # todos os jogadores da liga, por nome (os nomes são únicos na seed)
@@ -61,6 +61,11 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
         jogador.contrato_anos = final["contrato_anos"]
         jogador.multa_rescisoria = final["multa_rescisoria"]
         jogador.numero = final.get("numero")
+        # fama (v1.4); temporadas anteriores não guardam (None) e ficam com
+        # a da seed
+        if final.get("fama") is not None:
+            jogador.fama = final["fama"]
+            jogador.temporadas_no_clube = final["temporadas_no_clube"]
         por_clube[final["clube"]].jogadores.append(jogador)
 
     # temporadas de antes da v1.1 não guardam número
@@ -207,6 +212,7 @@ def _sair_livre(campeonato, clube, jogador, clube_usuario):
         return [_movimento("saiu_livre", jogador, clube, "deixou a liga")]
 
     destino.contratar_jogador(jogador)
+    jogador.temporadas_no_clube = 0
     jogador.assinar_contrato(
         mercado.CONTRATO_PADRAO_ANOS, jogador.salario_referencia(), None
     )

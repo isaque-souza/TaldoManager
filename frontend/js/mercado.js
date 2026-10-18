@@ -4,7 +4,7 @@ import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { abrirSecaoRodada, carregarProximaRodada, marcarHubMercado } from "./rodada.js";
 import { renderContratos } from "./contratos.js";
-import { icone } from "./icones.js";
+import { icone, seloIdolo } from "./icones.js";
 import { carregarCaixa } from "./caixa.js";
 import { destaques, linhaAtributos } from "./atributos.js";
 import { posicaoDe, sigla } from "./posicoes.js";
@@ -60,6 +60,7 @@ export function acaoVenda(f) {
 export function linhaMercado(f) {
   return {
     ...f,
+    nome: f.idolo ? `${f.nome} ${seloIdolo()}` : f.nome,
     posicao: sigla(posicaoDe(f)),
     // os dois melhores atributos; todos na dica (v1.3)
     atributos_fmt: `<span title="${linhaAtributos(f.atributos)}">${destaques(f.atributos)}</span>`,
@@ -208,10 +209,12 @@ export async function propor(jogadorId, valor) {
 export async function mostrarOfertas(jogadorId) {
   const d = await pedir(`/simulacoes/${estado.simId}/jogadores/${jogadorId}/ofertas`);
   if (!d) return;
+  // a torcida encolhe se for para o rival ou se ele for ídolo (v1.4)
+  const encolhe = (o) => `a torcida vai encolher ${Math.abs(o.revolta_torcida).toLocaleString("pt-BR")}%`;
   const linhas = d.ofertas.map((o) => ({
     clube_fmt: o.rival
-      ? `${icone("rival", "rival")} ${o.clube} (rival — a torcida vai encolher ${Math.abs(o.revolta_torcida ?? 2).toLocaleString("pt-BR")}%)`
-      : o.clube,
+      ? `${icone("rival", "rival")} ${o.clube} (rival — ${encolhe(o)})`
+      : o.revolta_torcida ? `${o.clube} (ídolo — ${encolhe(o)})` : o.clube,
     valor_fmt: dinheiro(o.valor),
     papel: o.seria_titular ? "seria titular" : "seria banco",
     acao: `<button class="transf" data-acao="vender" data-id="${jogadorId}" data-clube="${o.clube}">Aceitar</button>`,

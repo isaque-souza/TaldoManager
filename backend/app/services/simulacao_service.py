@@ -16,7 +16,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import atributos, diretoria, posicoes
+from app.domain import atributos, diretoria, fama, posicoes
 from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
@@ -167,6 +167,8 @@ def _serializar_jogador(jogador, clube_nome):
         "salario": jogador.salario,
         "multa_rescisoria": jogador.multa_rescisoria,
         "numero": jogador.numero,
+        "fama": jogador.fama,
+        "temporadas_no_clube": jogador.temporadas_no_clube,
     }
 
 
@@ -677,6 +679,12 @@ def _evolucao_virada(conn, sim, jogadores):
     )
 
 
+def _idolo(r):
+    """O jogador (linha do banco) é ídolo do clube? Saves de antes da v1.4
+    não guardam a fama (NULL): ninguém é."""
+    return fama.eh_idolo(r["fama"] or 0, r["temporadas_no_clube"] or 0)
+
+
 def _cru_do_banco(conn, simulacao_id):
     sim = simulacao_repo.buscar(conn, simulacao_id)
     if sim is None:
@@ -689,7 +697,10 @@ def _cru_do_banco(conn, simulacao_id):
     ]
 
     jogadores = [
-        {k: r[k] for k in r.keys() if k not in ("simulacao_id", "clube_id")}
+        {
+            **{k: r[k] for k in r.keys() if k not in ("simulacao_id", "clube_id")},
+            "idolo": _idolo(r),
+        }
         for r in jogador_repo.listar_por_simulacao(conn, simulacao_id)
     ]
 
@@ -764,6 +775,7 @@ def detalhe_clube(simulacao_id, clube_id):
             {
                 **{k: r[k] for k in r.keys() if k not in ("simulacao_id", "clube_id")},
                 "salario_referencia": Jogador.salario_de_mercado(r["overall"]),
+                "idolo": _idolo(r),
             }
             for r in jogador_repo.listar_por_clube(conn, clube_id)
         ]
@@ -954,6 +966,9 @@ def game_log_jogador(simulacao_id, jogador_id):
             "melhor_nota": j["melhor_nota"],
             "pior_nota": j["pior_nota"],
             "melhor_em_campo": j["melhor_em_campo"],
+            "fama": j["fama"],
+            "temporadas_no_clube": j["temporadas_no_clube"],
+            "idolo": _idolo(j),
             "amarelos": j["amarelos"],
             "vermelhos": j["vermelhos"],
             "penaltis": j["penaltis"],

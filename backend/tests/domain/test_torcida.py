@@ -181,13 +181,13 @@ def test_venda_ao_rival_pesa_pela_importancia_do_jogador():
     for j in (craque, titular, *outros, *reservas):
         casa.contratar_jogador(j)
 
-    assert torcida.revolta_venda_rival(casa, neutro, craque) == 0
-    assert torcida.revolta_venda_rival(casa, rival, craque) == torcida.VENDA_RIVAL_CRAQUE
-    assert torcida.revolta_venda_rival(casa, rival, titular) == torcida.VENDA_RIVAL_TITULAR
-    assert torcida.revolta_venda_rival(casa, rival, reservas[-1]) == torcida.VENDA_RIVAL
+    assert torcida.revolta_da_venda(casa, neutro, craque) == 0
+    assert torcida.revolta_da_venda(casa, rival, craque) == torcida.VENDA_RIVAL_CRAQUE
+    assert torcida.revolta_da_venda(casa, rival, titular) == torcida.VENDA_RIVAL_TITULAR
+    assert torcida.revolta_da_venda(casa, rival, reservas[-1]) == torcida.VENDA_RIVAL
 
-    assert torcida.vender_ao_rival(casa, neutro, titular) is None
-    antes, depois = torcida.vender_ao_rival(casa, rival, craque)
+    assert torcida.reagir_a_venda(casa, neutro, titular) is None
+    antes, depois = torcida.reagir_a_venda(casa, rival, craque)
     assert (antes, depois) == (1_000_000, round(1_000_000 * (1 + torcida.VENDA_RIVAL_CRAQUE)))
     assert casa.torcedores == depois
     assert rival.torcedores == round(1_000_000 * (1 + torcida.RIVAL_COMEMORA))

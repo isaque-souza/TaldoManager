@@ -17,7 +17,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, posicoes
+from app.domain import caixa, fama, posicoes
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import atuacao_repository as atuacao_repo
 from app.repositories import clube_repository as clube_repo
@@ -370,6 +370,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
         rodada_jogada = campeonato.rodada
         # para a caixa de entrada: o elenco antes da rodada (v1.3)
         antes = caixa.foto_do_elenco(alvo)
+        idolos_antes = {j.nome for j in fama.idolos(alvo)}
         adversario, _ = _confronto_do_clube(
             campeonato.calendario[rodada_jogada - 1], alvo.nome
         )
@@ -396,6 +397,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             ))
             mensagens.append(caixa.balanco_da_torcida(
                 alvo.torcedores_inicial, alvo.torcedores,
+            ))
+            mensagens.append(caixa.novos_idolos(
+                [j.nome for j in fama.idolos(alvo) if j.nome not in idolos_antes],
+                clube_usuario,
             ))
         xi_json = (
             json.dumps(xi_ef, ensure_ascii=False) if xi_ef else None

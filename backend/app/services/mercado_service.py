@@ -13,7 +13,7 @@ import json
 import random
 
 from app.db.conexao import conectar
-from app.domain import caixa, mercado, torcida
+from app.domain import caixa, fama, mercado, torcida
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import clube_repository as clube_repo
@@ -158,6 +158,8 @@ def _ficha(jogador, jogador_id, clube):
         "salario_referencia": jogador.salario_referencia(),
         "contrato_anos": jogador.contrato_anos,
         "multa_rescisoria": jogador.multa_rescisoria,
+        "fama": jogador.fama,
+        "idolo": fama.idolo(jogador),
     }
 
 
@@ -283,6 +285,7 @@ def ofertas(simulacao_id, jogador_id):
             "jogador_id": jogador_id,
             "jogador": jogador.nome,
             "valor_mercado": jogador.valor_mercado(),
+            "idolo": fama.idolo(jogador),
             "bloqueio": mercado.motivo_saida_bloqueada(ctx.alvo, jogador),
             "ofertas": [
                 {
@@ -290,10 +293,11 @@ def ofertas(simulacao_id, jogador_id):
                     "valor": o.valor,
                     "seria_titular": o.titular,
                     "rival": o.rival,
-                    # quanto da torcida vai embora (%, negativo), v1.4
-                    "revolta_torcida": round(100 * torcida.revolta_venda_rival(
+                    # quanto da torcida vai embora (%, negativo): venda ao
+                    # rival ou de um ídolo (v1.4)
+                    "revolta_torcida": round(100 * torcida.revolta_da_venda(
                         ctx.alvo, o.clube, jogador,
-                    ), 1) if o.rival else None,
+                    ), 1) or None,
                 }
                 for o in mercado.ofertas(jogador, ctx.alvo, ctx.campeonato.clubes)
             ],
@@ -375,6 +379,15 @@ def propor(simulacao_id, jogador_id, valor):
             )
             transferencia = None
             if resposta.fechou:
+                # a torcida de lá também sente perder um ídolo, ou ver o
+                # jogador ir para o rival (v1.4); a nossa comemora
+                antes = comprador.torcedores
+                if torcida.reagir_a_venda(vendedor, comprador, jogador) and                         comprador.torcedores != antes:
+                    mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                        caixa.tirado_do_rival(
+                            jogador, vendedor, antes, comprador.torcedores,
+                        )
+                    ])
                 transferencia = ctx.efetivar(
                     jogador_id, jogador, vendedor, comprador, resposta.valor
                 )
@@ -425,11 +438,15 @@ def vender(simulacao_id, jogador_id, clube):
 
         # a torcida reage antes da transferência: o peso do jogador é medido
         # no elenco de onde ele sai (v1.4)
-        revolta = torcida.vender_ao_rival(ctx.alvo, oferta.clube, jogador)
+        idolo = fama.idolo(jogador)
+        revolta = torcida.reagir_a_venda(ctx.alvo, oferta.clube, jogador)
         with conn:
             mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
                 caixa.venda(jogador, oferta.clube, oferta.valor),
-                revolta and caixa.revolta_da_torcida(jogador, oferta.clube, *revolta),
+                revolta and caixa.revolta_da_torcida(
+                    jogador, oferta.clube, *revolta,
+                    rival=oferta.rival, idolo=idolo,
+                ),
             ])
             return ctx.efetivar(
                 jogador_id, jogador, ctx.alvo, oferta.clube, oferta.valor

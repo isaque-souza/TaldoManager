@@ -5,6 +5,7 @@ import { abrirClube } from "./clube.js";
 import { abrirPartida } from "./partida.js";
 import { abrirJogador } from "./jogador.js";
 import { comEscudo } from "./identidade.js";
+import { seloIdolo } from "./icones.js";
 
 // ---------- helpers de tabela ----------
 
@@ -24,7 +25,7 @@ export function celula(valor, item, coluna) {
     return comEscudo(valor);
   }
   if (coluna === "nome" && item && item.id != null) {
-    return `<a class="jogador" data-jogador="${item.id}">${valor}</a>`;
+    return `<a class="jogador" data-jogador="${item.id}">${valor}</a>${item.idolo ? ` ${seloIdolo()}` : ""}`;
   }
   if (coluna === "placar" && item && item.partida_id != null) {
     return `<a class="partida" data-partida="${item.partida_id}">${valor}</a>`;

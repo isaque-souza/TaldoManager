@@ -5,7 +5,7 @@ import json
 import pytest
 
 from app.db.conexao import conectar
-from app.domain import mercado
+from app.domain import mercado, torcida
 from app.domain.mercado import TransferenciaInvalida
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import mercado_service, simulacao_service, temporada_service
@@ -259,10 +259,29 @@ def test_vender_para_outro_clube_nao_mexe_na_torcida():
     sid, clube = _iniciar()
     m = mercado_service.ver_mercado(sid)
     antes = _torcidas(sid)
-    vendido = next(f for f in m["elenco"] if f["bloqueio"] is None)
-    oferta = next(
-        o for o in mercado_service.ofertas(sid, vendido["jogador_id"])["ofertas"]
+    # ídolo é outra história (v1.4): ver o teste abaixo
+    vendido, oferta = next(
+        (f, o)
+        for f in m["elenco"] if f["bloqueio"] is None and not f["idolo"]
+        for o in mercado_service.ofertas(sid, f["jogador_id"])["ofertas"]
         if not o["rival"]
     )
     mercado_service.vender(sid, vendido["jogador_id"], oferta["clube"])
     assert _torcidas(sid)[clube] == antes[clube]
+
+
+def test_vender_idolo_revolta_a_torcida_e_avisa():
+    sid, clube = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    antes = _torcidas(sid)
+    idolo = next(
+        (f for f in m["elenco"] if f["bloqueio"] is None and f["idolo"]), None
+    )
+    assert idolo is not None, "o clube da seed precisa ter um ídolo vendável"
+    oferta = next(
+        o for o in mercado_service.ofertas(sid, idolo["jogador_id"])["ofertas"]
+        if not o["rival"]
+    )
+    assert oferta["revolta_torcida"] == round(100 * torcida.VENDA_IDOLO, 1)
+    mercado_service.vender(sid, idolo["jogador_id"], oferta["clube"])
+    assert _torcidas(sid)[clube] == round(antes[clube] * (1 + torcida.VENDA_IDOLO))

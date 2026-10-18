@@ -4,6 +4,7 @@ import { $, esconderTudo, estado, limparAviso, pedir } from "./nucleo.js";
 import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { renderDashboard } from "./financas.js";
 import { camisa, escudo } from "./identidade.js";
+import { seloIdolo } from "./icones.js";
 
 // ---------- visão clube ----------
 
@@ -32,6 +33,13 @@ export async function abrirClube(clubeId) {
   $("clube-info").textContent =
     `${cl.posicao_final}º lugar · ${cl.pontos} pts · ${cl.vitorias}V ${cl.empates}E ${cl.derrotas}D · ` +
     `${cl.gols_marcados}-${cl.gols_sofridos} (saldo ${cl.saldo_gols})`;
+  // ídolos da torcida (v1.4)
+  const idolos = c.elenco.filter((j) => j.idolo);
+  $("clube-idolos").innerHTML = idolos.length
+    ? `${seloIdolo()} Ídolos da torcida: ` +
+      idolos.map((j) => `<a class="jogador" data-jogador="${j.id}">${j.nome}</a>`).join(", ")
+    : "";
+  ligarLinks($("clube-idolos"));
   renderDashboard($("clube-financas"), cl, c.elenco);
 
   const jogos = c.jogos.map((j) => ({

@@ -7,10 +7,12 @@ CAMPOS = (
     "penaltis", "penaltis_perdidos", "faltas",
     "potencial", "contrato_anos", "valor_mercado", "salario",
     "multa_rescisoria", "numero", "funcao", "secundarias",
+    "fama", "temporadas_no_clube",
 )
 
-# campos que dados de antes da v1.3 não trazem (ficam NULL)
-_OPCIONAIS = ("funcao", "secundarias")
+# campos que dados de antes da v1.3 (posição) e da v1.4 (fama) não trazem
+# (ficam NULL)
+_OPCIONAIS = ("funcao", "secundarias", "fama", "temporadas_no_clube")
 
 
 def _valor(j, campo):

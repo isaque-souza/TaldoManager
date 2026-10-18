@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from app.domain import fama
 from app.domain.jogador import Jogador
 from app.domain.clube import Clube
 from app.domain.campeonato import Campeonato
@@ -21,6 +22,8 @@ def carregar_jogadores():
 
     for j in dados:
 
+        # quem já está na liga começa com fama e tempo de casa (v1.4)
+        fama_inicial, temporadas = fama.inicial(j["nome"], j["idade"], j["overall"])
         jogadores[j["id"]] = Jogador(
             j["nome"],
             j["idade"],
@@ -31,6 +34,8 @@ def carregar_jogadores():
             multa_rescisoria=j.get("multa_rescisoria"),
             funcao=j.get("funcao"),
             secundarias=j.get("secundarias"),
+            fama=fama_inicial,
+            temporadas_no_clube=temporadas,
         )
 
     return jogadores

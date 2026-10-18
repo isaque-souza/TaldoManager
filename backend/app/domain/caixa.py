@@ -268,15 +268,59 @@ def balanco_da_torcida(inicial, final):
     )
 
 
-def revolta_da_torcida(jogador, rival, antes, depois):
-    """Venda para o rival (v1.4): o marketing conta o estrago."""
+def revolta_da_torcida(jogador, comprador, antes, depois, rival=True, idolo=False):
+    """Venda que a torcida não engoliu (v1.4): para o rival, de um ídolo,
+    ou as duas coisas. O marketing conta o estrago."""
     pct = f"{abs(depois / antes - 1) * 100:.0f}".replace(".", ",")
+    if rival and idolo:
+        motivo = (f"Vender {jogador.nome}, um ídolo da casa, justo para o "
+                  f"{comprador.nome} caiu como uma traição")
+    elif idolo:
+        motivo = (f"Vender {jogador.nome}, um ídolo da casa, para o "
+                  f"{comprador.nome} deixou a torcida de luto")
+    else:
+        motivo = f"Vender {jogador.nome} para o {comprador.nome} caiu muito mal"
+    festa = (f" Do outro lado, a torcida do {comprador.nome} está em festa."
+             if rival else "")
     return _mensagem(
         "Marketing", "A torcida não perdoou",
-        f"Vender {jogador.nome} para o {rival.nome} caiu muito mal: perdemos "
-        f"{pct}% da torcida, de {_torcedores(antes)} para "
-        f"{_torcedores(depois)} torcedores. Do outro lado, a torcida do "
-        f"{rival.nome} está em festa.",
+        f"{motivo}: perdemos {pct}% da torcida, de {_torcedores(antes)} para "
+        f"{_torcedores(depois)} torcedores.{festa}",
+    )
+
+
+def tirado_do_rival(jogador, rival, antes, depois):
+    """Contratação do rival (v1.4): a nossa torcida comemora."""
+    return _mensagem(
+        "Marketing", "A torcida está em festa",
+        f"Tirar {jogador.nome} do {rival.nome} animou a arquibancada: "
+        f"ganhamos {_torcedores(depois - antes)} torcedores, agora somos "
+        f"{_torcedores(depois)}.",
+    )
+
+
+def novos_idolos(nomes, clube):
+    """Fim de temporada (v1.4): quem virou ídolo da torcida."""
+    if not nomes:
+        return None
+    if len(nomes) == 1:
+        abre = f"{nomes[0]} virou ídolo da torcida do {clube}"
+    else:
+        abre = (f"{', '.join(nomes[:-1])} e {nomes[-1]} viraram ídolos da "
+                f"torcida do {clube}")
+    return _mensagem(
+        "Marketing", "Nasce um ídolo" if len(nomes) == 1 else "Nascem ídolos",
+        f"{abre}. Ídolo vende camisa e atrai torcedores a cada temporada, "
+        "mas vendê-lo vai doer na arquibancada.",
+    )
+
+
+def homenagem(nome, clube):
+    """Um ídolo do clube pendurou as chuteiras (v1.4)."""
+    return _mensagem(
+        "Marketing", f"Adeus, {nome}",
+        f"{nome} se aposentou como ídolo do {clube}. A torcida lotou o "
+        "estádio para a despedida, e o nome dele fica na história do clube.",
     )
 
 
@@ -291,12 +335,16 @@ def campanha(nome, custo, antes, depois):
     )
 
 
-def virada(clube, movimentos, contratos_acabando):
+def virada(clube, movimentos, contratos_acabando, idolos=()):
     """Mensagens da virada de temporada para o clube do técnico: quem subiu
     da base, quem saiu, quem renovou e os contratos que acabam no fim desta.
-    `contratos_acabando`: [(nome, funcao)]."""
+    `contratos_acabando`: [(nome, funcao)]; `idolos`: nomes dos ídolos do
+    clube antes da virada (os que se aposentam ganham homenagem, v1.4)."""
     do_clube = [m for m in movimentos if m["clube"] == clube]
-    mensagens = []
+    mensagens = [
+        homenagem(m["jogador"], clube) for m in do_clube
+        if m["tipo"] == "aposentou" and m["jogador"] in idolos
+    ]
 
     base = [m for m in do_clube if m["tipo"] == "subiu_da_base"]
     if base:
