@@ -181,8 +181,8 @@ disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado), v0.8
 (Modo Carreira), v0.9 (Persistência/autosave), v1.0 (Jogável: um comando
 só, tela inicial, meta da diretoria e demissão) e v1.1 (Cara de jogo:
 escudos e camisas, tema de transmissão noturna, pré-jogo no campo e jogo ao
-vivo) concluídas**; **v1.2 (Modo técnico: hub do clube e simulação
-interativa)** em andamento — ver as seções abaixo.
+vivo) e v1.2 (Modo técnico: hub do clube, simulação interativa, planos de
+jogo e formação no meio do jogo) concluídas** — ver as seções abaixo.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -441,7 +441,7 @@ Visual de jogo de verdade, no clima "estádio noturno".
 
 ---
 
-# 🎮 Modo técnico (v1.2) — Em andamento
+# ✅ Modo técnico (v1.2) — Concluída
 
 Inspirado no Modo Carreira do FIFA: um menu do clube e a Simulação de
 Partida Interativa.
