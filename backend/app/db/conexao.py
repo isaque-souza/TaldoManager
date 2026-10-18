@@ -66,7 +66,12 @@ _COLUNAS_NOVAS = {
             "receita_bilheteria", "receita_premiacao", "despesa_salarios",
             "receita_vendas", "despesa_compras",
         )
-    ) + (("historico_caixa", "TEXT NOT NULL DEFAULT '[]'"),),
+    ) + (
+        ("historico_caixa", "TEXT NOT NULL DEFAULT '[]'"),
+        # torcida (v1.4); saves antigos ficam com 0 = "sem registro"
+        ("torcedores", "INTEGER NOT NULL DEFAULT 0"),
+        ("torcedores_inicial", "INTEGER NOT NULL DEFAULT 0"),
+    ),
     "jogador": (
         ("penaltis", "INTEGER NOT NULL DEFAULT 0"),
         ("penaltis_perdidos", "INTEGER NOT NULL DEFAULT 0"),

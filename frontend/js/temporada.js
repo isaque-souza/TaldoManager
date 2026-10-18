@@ -103,6 +103,15 @@ export function renderPainel() {
   ligarLinks(painel);
 }
 
+// torcida (v1.4): tamanho e quanto mudou na temporada
+function torcidaFmt(f) {
+  if (!f.torcedores) return "—";
+  const pct = f.torcedores_inicial ? (f.torcedores / f.torcedores_inicial - 1) * 100 : 0;
+  if (Math.abs(pct) < 0.05) return dinheiro(f.torcedores);
+  const fmt = pct.toLocaleString("pt-BR", { maximumFractionDigits: 1, signDisplay: "always" });
+  return `${dinheiro(f.torcedores)} <small class="${pct < 0 ? "negativo" : ""}">${fmt}%</small>`;
+}
+
 // caixa, folha e saldo dos 20 clubes (na ordem da classificação)
 export function tabelaFinancasLiga(financas, marcarEu) {
   if (!financas.some((f) => f.caixa_inicial)) {
@@ -116,10 +125,12 @@ export function tabelaFinancasLiga(financas, marcarEu) {
     sld: `<span class="${f.saldo < 0 ? "negativo" : ""}">${f.saldo > 0 ? "+" : ""}${dinheiro(f.saldo)}</span>`,
     cx: `<span class="${f.caixa < 0 ? "negativo" : ""}">${dinheiro(f.caixa)}</span>`,
     fol: dinheiro(f.folha),
+    torc: torcidaFmt(f),
   }));
   return tabela(linhas, [
     ["posicao", "#"], ["clube", "Clube"], ["ini", "Caixa inicial"], ["rec", "Receitas"],
     ["desp", "Despesas"], ["sld", "Saldo"], ["cx", "Caixa atual"], ["fol", "Folha/temp."],
+    ...(financas.some((f) => f.torcedores) ? [["torc", "Torcida"]] : []),
   ], marcarEu);
 }
 

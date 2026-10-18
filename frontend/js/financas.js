@@ -45,6 +45,19 @@ function tile(rotulo, valor, detalhe = "", negativo = false) {
   </div>`;
 }
 
+// torcida (v1.4): cresce com vitórias, clássicos e boa campanha; saves
+// antigos não guardam (0) e ficam sem o tile
+function tileTorcida(clube) {
+  if (!clube.torcedores) return "";
+  const ini = clube.torcedores_inicial || clube.torcedores;
+  const pct = (clube.torcedores / ini - 1) * 100;
+  const fmt = Math.abs(pct).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+  const detalhe = Math.abs(pct) < 0.05
+    ? "igual ao início da temporada"
+    : `${pct > 0 ? "▲ +" : "▼ −"}${fmt}% na temporada`;
+  return tile("Torcida", dinheiro(clube.torcedores), detalhe);
+}
+
 function tiles(clube, elenco) {
   const saldo = clube.dinheiro - clube.dinheiro_inicial;
   const folha = elenco.reduce((s, j) => s + (j.salario || 0), 0);
@@ -55,6 +68,7 @@ function tiles(clube, elenco) {
     ${tile("Saldo da temporada", sinal + dinheiro(saldo), saldo >= 0 ? "▲ no azul" : "▼ no vermelho", saldo < 0)}
     ${tile("Folha salarial", dinheiro(folha), "por temporada")}
     ${maior ? tile("Maior salário", dinheiro(maior.salario), esc(maior.nome)) : ""}
+    ${tileTorcida(clube)}
   </div>`;
 }
 

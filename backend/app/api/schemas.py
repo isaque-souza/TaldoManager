@@ -83,6 +83,8 @@ class FinancaClube(BaseModel):
     receitas: int
     despesas: int
     folha: int                           # salários do elenco, por temporada
+    torcedores: int = 0                  # torcida (v1.4); 0 em saves antigos
+    torcedores_inicial: int = 0
 
 
 class MovimentoVirada(BaseModel):
@@ -483,6 +485,9 @@ class ClubeInfo(BaseModel):
     receita_vendas: int = 0
     despesa_compras: int = 0
     historico_caixa: list[int] = []      # caixa após cada rodada
+    # torcida (v1.4); saves antigos vêm zerados
+    torcedores: int = 0
+    torcedores_inicial: int = 0
 
 
 class JogoResumo(BaseModel):

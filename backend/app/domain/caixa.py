@@ -20,6 +20,7 @@ SETORES = (
     "Auxiliar técnico",
     "Diretoria",
     "Categorias de base",
+    "Marketing",
 )
 
 
@@ -235,6 +236,36 @@ def fim_de_temporada(posicao, meta, campeao, clube):
         "longe": f"A meta era o {meta}º e ficamos longe: a cobrança vai aumentar.",
     }[s]
     return _mensagem("Diretoria", "Balanço da temporada", f"{abre} {fecha}")
+
+
+def _torcedores(n):
+    """1.234.567 → "1,2 milhão"; abaixo de 1 milhão, "850 mil"."""
+    if n >= 1_000_000:
+        mi = f"{n / 1_000_000:.1f}".replace(".", ",")
+        return f"{mi} {'milhão' if n < 2_000_000 else 'milhões'}"
+    return f"{round(n / 1_000)} mil"
+
+
+def balanco_da_torcida(inicial, final):
+    """Fim de temporada (v1.4): o marketing conta quanto a torcida mudou."""
+    if not inicial:
+        return None
+    pct = (final / inicial - 1) * 100
+    numero = f"{abs(pct):.1f}".replace(".", ",")
+    if pct >= 0.05:
+        abre = f"A torcida cresceu {numero}% na temporada"
+        fecha = "Mais gente no estádio é mais bilheteria."
+    elif pct <= -0.05:
+        abre = f"A torcida encolheu {numero}% na temporada"
+        fecha = "Vitórias (e clássicos) trazem o torcedor de volta."
+    else:
+        abre = "A torcida ficou do mesmo tamanho na temporada"
+        fecha = "Uma boa campanha faz ela crescer."
+    return _mensagem(
+        "Marketing", "Balanço da torcida",
+        f"{abre}: de {_torcedores(inicial)} para {_torcedores(final)} "
+        f"torcedores. {fecha}",
+    )
 
 
 def virada(clube, movimentos, contratos_acabando):

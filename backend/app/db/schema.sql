@@ -58,7 +58,10 @@ CREATE TABLE IF NOT EXISTS clube (
     despesa_salarios   INTEGER NOT NULL DEFAULT 0,
     receita_vendas     INTEGER NOT NULL DEFAULT 0,
     despesa_compras    INTEGER NOT NULL DEFAULT 0,
-    historico_caixa    TEXT NOT NULL DEFAULT '[]'   -- JSON: caixa após cada rodada
+    historico_caixa    TEXT NOT NULL DEFAULT '[]',  -- JSON: caixa após cada rodada
+    -- torcida (v1.4): atual / final e no início da temporada
+    torcedores         INTEGER NOT NULL DEFAULT 0,
+    torcedores_inicial INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS jogador (

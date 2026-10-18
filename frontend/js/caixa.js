@@ -13,6 +13,7 @@ const ICONE_SETOR = {
   "Auxiliar técnico": "prancheta",
   Diretoria: "alvo",
   "Categorias de base": "base",
+  Marketing: "torcida",
 };
 
 const cx = { dados: null, filtro: "todos", aberta: null };
