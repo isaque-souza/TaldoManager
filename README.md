@@ -28,6 +28,11 @@ O projeto está sendo construído do zero para estudar lógica de programação,
 * ✅ Clean Sheets
 * ✅ Cartões amarelos
 * ✅ Cartões vermelhos
+* ✅ Posição específica (função) e posições secundárias
+* ✅ Atributos (VEL, FIN, PAS, DRI, MAR, FIS)
+* ✅ Número de camisa
+* ✅ Valor de mercado, salário e contrato
+* ✅ Potencial, evolução e aposentadoria
 
 ---
 
@@ -40,6 +45,10 @@ O projeto está sendo construído do zero para estudar lógica de programação,
 * ✅ Cálculo automático da força
 * ✅ Forma recente
 * ✅ Vantagem de mando de campo
+* ✅ Identidade visual (cores, escudo e camisa)
+* ✅ Finanças (TV, bilheteria, salários, premiação)
+* ✅ Rivais (clássicos)
+* ✅ Categorias de base
 
 ---
 
@@ -69,6 +78,8 @@ O projeto está sendo construído do zero para estudar lógica de programação,
 * ✅ Acréscimos
 * ✅ Eventos cronológicos
 * ✅ Ordenação por minuto
+* ✅ Táticas e formações com efeito no jogo
+* ✅ Transmissão ao vivo com pausa, substituições e mudança de tática
 
 ---
 
@@ -132,7 +143,7 @@ Este projeto tem como objetivo estudar:
 
 # 🗺️ Roadmap
 
-## 📌 Status atual (2026-09-02)
+## 📌 Status atual (2026-10-18)
 
 O projeto passou do script único para **backend + frontend**:
 
@@ -194,7 +205,7 @@ jogador da temporada.
 
 ---
 
-## ✅ Versão Atual (v0.5) — Concluída
+## ✅ v0.5 — Concluída
 
 ### Base do jogo
 
@@ -299,82 +310,6 @@ jogador da temporada.
 * [x] Evolução por idade (feita na v0.8, na virada de temporada)
 * [x] Potencial dos jogadores (na seed; o jogador ainda não evolui)
 * [x] Duração de contrato (temporadas restantes, na seed)
-
----
-
-# ✅ Atributos e posições (v1.3) — Concluída
-
-Cada jogador tem uma posição de verdade e rende menos fora dela:
-
-* [x] Posições mais específicas — goleiro, zagueiro, lateral, volante, meia
-      central, meia-atacante, ponta, segundo atacante e centroavante
-      (`Jogador.funcao`), e às vezes posições secundárias. O motor segue
-      pensando por setor (`posicao`). Cada formação tem as suas vagas (o 4-3-3
-      é 2 ZAG, 2 LAT, 1 VOL, 2 MC, 2 PON e 1 CA) e todo elenco da seed cabe em
-      qualquer uma sem improvisar
-* [x] Formações desenhadas — cada vaga tem o seu lugar no campo, como no
-      FIFA/EA FC e no Football Manager: laterais na linha da zaga, um pouco à
-      frente e abertos; com três zagueiros eles viram alas, bem mais à
-      frente; volante logo à frente da defesa, meia central no meio e
-      meia-atacante entre o meio e o ataque; meias abertos (ME/MD) e pontas
-      (PE/PD) colados à lateral, o ponta mais alto; segundo atacante atrás do
-      centroavante. Vale no editor, no pré-jogo e na transmissão (que
-      redesenha o time quando a formação muda no meio do jogo). Formações
-      novas: 4-2-3-1, 4-1-2-1-2 (losango) e 4-4-1-1
-* [x] Overall por posição — fora da posição o jogador perde overall, pouco
-      nas vizinhas e muito do outro lado do campo (um volante 80 rende 74 de
-      zagueiro; numa secundária, 78). A força do time usa o overall na vaga.
-      Escalação no campo: qualquer jogador de linha troca com qualquer um de
-      linha, e o banco mostra quanto cada reserva renderia na vaga escolhida;
-      goleiro só troca com goleiro (vale também nas substituições). Dois
-      titulares também trocam de vaga entre si (tocando ou arrastando): onde
-      o técnico põe cada um fica — o posicionamento vale na formação em que
-      foi feito e vai junto nos planos de jogo. Sem posicionamento (ou numa
-      formação nova), o motor distribui o XI nas vagas com a menor perda
-      somada (algoritmo húngaro)
-* [x] Improvisação inteligente — faltando gente numa posição, entra quem
-      rende mais na vaga (um lateral ou volante na zaga, não um meia), e quem
-      sai de campo deixa a vaga para quem entra
-* [x] Caixa de entrada — como no Football Manager e no modo carreira do FIFA,
-      cada setor do clube escreve para o técnico (card no menu do clube, com as
-      não lidas e filtro por setor). O **diretor de futebol** responde cada
-      proposta — aceita, contraproposta (quanto faltou) ou recusada (o que
-      pesou: craque, titular, contrato longo, rival; sem revelar o pedido) — e
-      avisa quando nem deu para negociar (caixa, elenco cheio...); o
-      **departamento médico** fala das lesões e de quem foi liberado; o
-      **auxiliar técnico**, de expulsões, suspensões, pendurados e exaustos; a
-      **diretoria**, da meta e do balanço da temporada; as **categorias de
-      base**, de quem subiu na virada. A resposta da proposta também aparece
-      ao lado do mercado, com o link para a mensagem.
-      API: `GET /simulacoes/{id}/mensagens`, `POST .../mensagens/{id}/lida`,
-      `POST .../mensagens/lidas`
-* [x] Atributos do jogador — como os seis do FIFA/EA FC: Velocidade,
-      Finalização, Passe, Drible, Marcação e Físico (goleiro: Reflexos e
-      Posicionamento). Cada um é o overall + o perfil da posição (o
-      centroavante finaliza, o zagueiro marca, o ponta corre e dribla) + o
-      estilo do jogador, fixo e tirado do nome — acompanha a evolução na
-      carreira e não precisa ser guardado. No motor: quem chuta e quem bate
-      pênalti pela finalização; o goleiro pelos reflexos e posicionamento; as
-      assistências pelo passe; e, pelo ESTILO (quanto o jogador está acima
-      do próprio nível naquilo, para a força não contar duas vezes), o duelo
-      do atacante (velocidade e drible) contra quem tenta parar o lance
-      (velocidade e marcação), a precisão do chute e o cansaço (físico).
-      Calibrado para a liga ficar como antes (2,8 gols por jogo, mesma
-      ordem de forças). Aparecem na página do jogador (barras), no mercado
-      (os destaques de cada um) e nas dicas do campo
-
----
-
-# 📣 Torcida (ideia futura — a desenvolver)
-
-Hoje `torcedores` é fixo e só alimenta a bilheteria. A ideia é a torcida
-crescer (ou encolher) com as decisões do técnico:
-
-* [ ] Crescimento da torcida (campanha boa, títulos, sequência de vitórias)
-* [ ] Campanhas de marketing (gastar dinheiro para atrair torcedores)
-* [ ] Fama dos jogadores (cada jogador tem sua fama; craques famosos atraem torcida)
-* [ ] Contratar ídolos que a torcida ama (impacto na torcida e na bilheteria)
-* [ ] Vender um jogador para o rival irrita a torcida (hoje a oferta só vem marcada com ⚔️)
 
 ---
 
@@ -533,6 +468,82 @@ Partida Interativa.
 
 ---
 
+# ✅ Atributos e posições (v1.3) — Concluída
+
+Cada jogador tem uma posição de verdade e rende menos fora dela:
+
+* [x] Posições mais específicas — goleiro, zagueiro, lateral, volante, meia
+      central, meia-atacante, ponta, segundo atacante e centroavante
+      (`Jogador.funcao`), e às vezes posições secundárias. O motor segue
+      pensando por setor (`posicao`). Cada formação tem as suas vagas (o 4-3-3
+      é 2 ZAG, 2 LAT, 1 VOL, 2 MC, 2 PON e 1 CA) e todo elenco da seed cabe em
+      qualquer uma sem improvisar
+* [x] Formações desenhadas — cada vaga tem o seu lugar no campo, como no
+      FIFA/EA FC e no Football Manager: laterais na linha da zaga, um pouco à
+      frente e abertos; com três zagueiros eles viram alas, bem mais à
+      frente; volante logo à frente da defesa, meia central no meio e
+      meia-atacante entre o meio e o ataque; meias abertos (ME/MD) e pontas
+      (PE/PD) colados à lateral, o ponta mais alto; segundo atacante atrás do
+      centroavante. Vale no editor, no pré-jogo e na transmissão (que
+      redesenha o time quando a formação muda no meio do jogo). Formações
+      novas: 4-2-3-1, 4-1-2-1-2 (losango) e 4-4-1-1
+* [x] Overall por posição — fora da posição o jogador perde overall, pouco
+      nas vizinhas e muito do outro lado do campo (um volante 80 rende 74 de
+      zagueiro; numa secundária, 78). A força do time usa o overall na vaga.
+      Escalação no campo: qualquer jogador de linha troca com qualquer um de
+      linha, e o banco mostra quanto cada reserva renderia na vaga escolhida;
+      goleiro só troca com goleiro (vale também nas substituições). Dois
+      titulares também trocam de vaga entre si (tocando ou arrastando): onde
+      o técnico põe cada um fica — o posicionamento vale na formação em que
+      foi feito e vai junto nos planos de jogo. Sem posicionamento (ou numa
+      formação nova), o motor distribui o XI nas vagas com a menor perda
+      somada (algoritmo húngaro)
+* [x] Improvisação inteligente — faltando gente numa posição, entra quem
+      rende mais na vaga (um lateral ou volante na zaga, não um meia), e quem
+      sai de campo deixa a vaga para quem entra
+* [x] Caixa de entrada — como no Football Manager e no modo carreira do FIFA,
+      cada setor do clube escreve para o técnico (card no menu do clube, com as
+      não lidas e filtro por setor). O **diretor de futebol** responde cada
+      proposta — aceita, contraproposta (quanto faltou) ou recusada (o que
+      pesou: craque, titular, contrato longo, rival; sem revelar o pedido) — e
+      avisa quando nem deu para negociar (caixa, elenco cheio...); o
+      **departamento médico** fala das lesões e de quem foi liberado; o
+      **auxiliar técnico**, de expulsões, suspensões, pendurados e exaustos; a
+      **diretoria**, da meta e do balanço da temporada; as **categorias de
+      base**, de quem subiu na virada. A resposta da proposta também aparece
+      ao lado do mercado, com o link para a mensagem.
+      API: `GET /simulacoes/{id}/mensagens`, `POST .../mensagens/{id}/lida`,
+      `POST .../mensagens/lidas`
+* [x] Atributos do jogador — como os seis do FIFA/EA FC: Velocidade,
+      Finalização, Passe, Drible, Marcação e Físico (goleiro: Reflexos e
+      Posicionamento). Cada um é o overall + o perfil da posição (o
+      centroavante finaliza, o zagueiro marca, o ponta corre e dribla) + o
+      estilo do jogador, fixo e tirado do nome — acompanha a evolução na
+      carreira e não precisa ser guardado. No motor: quem chuta e quem bate
+      pênalti pela finalização; o goleiro pelos reflexos e posicionamento; as
+      assistências pelo passe; e, pelo ESTILO (quanto o jogador está acima
+      do próprio nível naquilo, para a força não contar duas vezes), o duelo
+      do atacante (velocidade e drible) contra quem tenta parar o lance
+      (velocidade e marcação), a precisão do chute e o cansaço (físico).
+      Calibrado para a liga ficar como antes (2,8 gols por jogo, mesma
+      ordem de forças). Aparecem na página do jogador (barras), no mercado
+      (os destaques de cada um) e nas dicas do campo
+
+---
+
+# 📣 Torcida (v1.4 — próxima)
+
+Hoje `torcedores` é fixo e só alimenta a bilheteria. A ideia é a torcida
+crescer (ou encolher) com as decisões do técnico:
+
+* [ ] Crescimento da torcida (campanha boa, títulos, sequência de vitórias)
+* [ ] Campanhas de marketing (gastar dinheiro para atrair torcedores)
+* [ ] Fama dos jogadores (cada jogador tem sua fama; craques famosos atraem torcida)
+* [ ] Contratar ídolos que a torcida ama (impacto na torcida e na bilheteria)
+* [ ] Vender um jogador para o rival irrita a torcida (hoje a oferta só vem marcada com ⚔️)
+
+---
+
 # 📁 Estrutura
 
 ```text
@@ -591,10 +602,10 @@ Transformar o Taldo Manager em um simulador completo de campeonatos com:
 * ✅ Estatísticas completas
 * ✅ Sistema de Save (temporadas salvas em SQLite)
 * ✅ Interface web para navegar nos resultados
-* ⏳ Eventos avançados (suspensões, lesões, acréscimos)
-* ⏳ Mercado de transferências
-* ⏳ Evolução dos jogadores
-* ⏳ Temporadas contínuas (modo carreira)
+* ✅ Eventos avançados (suspensões, lesões, acréscimos)
+* ✅ Mercado de transferências
+* ✅ Evolução dos jogadores
+* ✅ Temporadas contínuas (modo carreira)
 
 ---
 
@@ -602,15 +613,16 @@ Transformar o Taldo Manager em um simulador completo de campeonatos com:
 
 Criar um Football Manager totalmente jogável contendo:
 
-* Banco de Dados SQLite
-* API Flask
-* Interface Web
-* Dashboard completo
-* Mercado de transferências
-* Sistema financeiro
-* Modo carreira
-* Temporadas infinitas
-* Versão jogável pelo navegador
+* ✅ Banco de Dados SQLite
+* ✅ API (FastAPI)
+* ✅ Interface Web
+* ✅ Dashboard completo
+* ✅ Mercado de transferências
+* ✅ Sistema financeiro
+* ✅ Modo carreira
+* ✅ Temporadas infinitas
+* ✅ Versão jogável pelo navegador
+* ⏳ Torcida, vontade dos jogadores e disputa por contratações
 
 ---
 
