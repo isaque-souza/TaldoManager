@@ -11,6 +11,7 @@ import { renderMeta } from "./diretoria.js";
 import { escudo } from "./identidade.js";
 import { icone } from "./icones.js";
 import { abrirPreJogo } from "./prejogo.js";
+import { jogarAoVivo } from "./aovivo.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -202,9 +203,11 @@ export function renderRodadaAntes() {
     marcarEu
   );
 
-  $("r-jogar").innerHTML = info.adversario
-    ? `${icone("play")} Jogar a rodada ${info.rodada}`
-    : `${icone("play")} Avançar a rodada ${info.rodada}`;
+  $("r-jogar").innerHTML = info.transmissao_ativa
+    ? `${icone("play")} Voltar para a partida`
+    : info.adversario
+      ? `${icone("play")} Jogar a rodada ${info.rodada}`
+      : `${icone("play")} Avançar a rodada ${info.rodada}`;
   $("r-jogar").disabled = false;
 
   renderHub(info);
@@ -307,6 +310,14 @@ let timerAutosave = null;
 let simAgendada = null;   // o save da mudança pendente (pode trocar em 800 ms)
 let emVoo = Promise.resolve();
 
+// a escalação na tela, para mandar junto de um POST (o autosave pendente
+// vira redundante, e um PATCH em voo precisa terminar antes)
+export async function decisaoParaEnviar() {
+  cancelarAutosave();
+  await emVoo;
+  return decisaoAtual();
+}
+
 function decisaoAtual() {
   return {
     tatica: $("r-tatica").value,
@@ -375,8 +386,11 @@ $("r-tatica").addEventListener("change", agendarAutosave);
 // contêiner, então um ouvinte só aqui cobre todos
 $("r-slots").addEventListener("change", agendarAutosave);
 
-// "Jogar a rodada" passa pelo pré-jogo (v1.1), que chama jogarRodada
-$("r-jogar").addEventListener("click", abrirPreJogo);
+// "Jogar a rodada" passa pelo pré-jogo (v1.1), que chama jogarRodada; com a
+// partida já rolando (v1.2), volta direto para ela
+$("r-jogar").addEventListener("click", () =>
+  estado.rodadaInfo.transmissao_ativa ? jogarAoVivo() : abrirPreJogo()
+);
 $("r-proxima").addEventListener("click", avancarAposResultado);
 document.querySelectorAll("#r-hub [data-abrir]").forEach((b) =>
   b.addEventListener("click", () => {

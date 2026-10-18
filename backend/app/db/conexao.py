@@ -54,6 +54,8 @@ _COLUNAS_NOVAS = {
         ("atualizada_em", "TEXT"),
         ("meta_posicao", "INTEGER"),
         ("ranking_forca", "INTEGER"),
+        # decisões da partida transmitida em curso (v1.2)
+        ("ao_vivo_json", "TEXT"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")

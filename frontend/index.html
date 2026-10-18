@@ -301,6 +301,7 @@
     <div id="av-faixa" class="faixa-gol" aria-hidden="true"></div>
 
     <div class="av-controles">
+      <button id="av-pausar" class="secondary outline"><span data-icone="pausa"></span> Pausar</button>
       <div class="av-velocidades" role="group" aria-label="Velocidade">
         <button data-vel="1" class="secondary outline">1×</button>
         <button data-vel="2" class="secondary outline">2×</button>
@@ -310,17 +311,27 @@
       <button id="av-pular" class="secondary outline"><span data-icone="avancar"></span> Pular para o fim</button>
     </div>
 
+    <!-- pausado (v1.2): tática e substituições, valendo do minuto seguinte -->
+    <div id="av-painel" class="av-painel" hidden></div>
+
     <div id="av-fim" class="av-fim" hidden>
-      <div id="av-stats" class="av-stats"></div>
+      <p id="av-fim-msg" class="av-fim-msg"></p>
       <button id="av-resultados"><span data-icone="play"></span> Ver resultados da rodada</button>
     </div>
 
     <div class="av-corpo">
       <div>
+        <div id="av-campo" class="sim-campo" role="img"></div>
+        <div class="av-momentum">
+          <span class="av-mom-rotulo">Momentum</span>
+          <svg id="av-momentum" preserveAspectRatio="none" aria-hidden="true"></svg>
+        </div>
         <h3 class="secao">Lance a lance</h3>
         <ol id="av-narracao" class="narracao"></ol>
       </div>
       <aside>
+        <h3 class="secao">Estatísticas</h3>
+        <div id="av-stats" class="av-stats"></div>
         <h3 class="secao">Outros jogos</h3>
         <ul id="av-outros" class="outros"></ul>
       </aside>

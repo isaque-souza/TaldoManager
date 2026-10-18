@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 413 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 427 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -181,7 +181,8 @@ disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado), v0.8
 (Modo Carreira), v0.9 (Persistência/autosave), v1.0 (Jogável: um comando
 só, tela inicial, meta da diretoria e demissão) e v1.1 (Cara de jogo:
 escudos e camisas, tema de transmissão noturna, pré-jogo no campo e jogo ao
-vivo) concluídas** — ver as seções abaixo.
+vivo) concluídas**; **v1.2 (Modo técnico: hub do clube e simulação
+interativa)** em andamento — ver as seções abaixo.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -440,6 +441,29 @@ Visual de jogo de verdade, no clima "estádio noturno".
 
 ---
 
+# 🎮 Modo técnico (v1.2) — Em andamento
+
+Inspirado no Modo Carreira do FIFA: um menu do clube e a Simulação de
+Partida Interativa.
+
+* [x] Hub do clube — a tela antes da rodada é um menu de cards (próximo jogo
+      em destaque, escalação, tabela, mercado, contratos, finanças), cada um
+      com um resumo; o card abre a seção e "← Menu do clube" volta
+* [x] Simulação interativa — "Ir para o jogo" transmite a partida do técnico
+      vista de cima: campo com os 22 jogadores e a bola indo para onde o lance
+      acontece, gráfico de momentum, estatísticas e outros jogos ao vivo.
+      **Pausar** abre a prancheta: muda a tática e faz substituições (em campo
+      com energia, cartões e nota até ali; banco; trocas restantes), valendo
+      do minuto seguinte. O intervalo pausa sozinho. A partida do técnico roda
+      numa corrente de RNG própria, então uma decisão muda só o jogo dele, e
+      só do minuto dela em diante; a rodada é gravada no apito final.
+      Fechar a página não perde nada: "Voltar para a partida" retoma de onde
+      parou, com o elenco travado (mercado, contratos e escalação) até o fim.
+      API: `POST/GET /simulacoes/{id}/transmissao`,
+      `GET .../transmissao/estado?minuto=N`, `POST .../transmissao/decisoes`
+
+---
+
 # 📁 Estrutura
 
 ```text
@@ -456,7 +480,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 413 testes (domain, db, repositories, services, api)
+│   └── tests/              # 427 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

@@ -753,6 +753,123 @@ button.hub-card:hover, button.hub-card:focus-visible {
 .st-rotulo { text-align: center; color: var(--texto-2); text-transform: uppercase; letter-spacing: .06em; font-family: var(--fonte-tarja); font-size: .82rem; font-weight: 700; }
 .st-barra { grid-column: 1 / -1; height: 4px; background: var(--superficie-2); border-radius: 2px; overflow: hidden; }
 .st-barra i { display: block; height: 100%; background: var(--gramado-claro); }
+.av-fim-msg { margin: 0; color: var(--texto-2); }
+.av-fim-msg:empty { display: none; }
+
+/* ---------- simulação interativa (v1.2): o campo visto de cima ---------- */
+.sim-campo {
+  position: relative; aspect-ratio: 120 / 70; overflow: hidden; margin-bottom: .6rem;
+  border-radius: 6px; border: 1px solid #0d3d24;
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgba(255, 255, 255, .1), transparent 60%),
+    repeating-linear-gradient(90deg, #17683b 0 8.333%, #1b7543 8.333% 16.666%);
+  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, .9);
+}
+.sim-marcas {
+  position: absolute; inset: 3%; width: 94%; height: 94%;
+  fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 1.5;
+}
+.sim-marcas * { vector-effect: non-scaling-stroke; }
+.sim-nome {
+  position: absolute; top: .45rem; z-index: 2; display: inline-flex; align-items: center; gap: .3rem;
+  font-family: var(--fonte-tarja); font-weight: 800; font-size: .8rem; letter-spacing: .08em;
+  color: rgba(255, 255, 255, .85); text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+.sim-nome-0 { left: .7rem; }
+.sim-nome-1 { right: .7rem; }
+.sim-jog {
+  position: absolute; z-index: 1; width: clamp(18px, 3.2vw, 26px); aspect-ratio: 1;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--cor); color: var(--cor-texto); border: 2px solid rgba(255, 255, 255, .85);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .5);
+  font: 800 clamp(.55rem, 1.1vw, .72rem) / 1 var(--fonte-tarja);
+  transition-property: left, opacity; transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+.sim-jog.expulso { opacity: 0; }
+.sim-jog.entrou { animation: entrou 1.2s ease-out; }
+@keyframes entrou { 0%, 40% { box-shadow: 0 0 0 6px var(--refletor); } }
+.sim-bola {
+  position: absolute; z-index: 3; width: 11px; height: 11px; transform: translate(-50%, -50%);
+  border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px rgba(0, 0, 0, .35), 0 3px 5px rgba(0, 0, 0, .5);
+  transition-property: left, top; transition-timing-function: cubic-bezier(.3, .7, .3, 1);
+}
+.sim-lance {
+  position: absolute; z-index: 4; top: 10%; transform: translateX(-50%); opacity: 0; pointer-events: none;
+  padding: .15rem .5rem; border-radius: 2px; background: rgba(7, 11, 16, .85); color: #fff;
+  font: 800 .85rem / 1.2 var(--fonte-tarja); text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
+}
+.sim-lance.visivel { animation: lance 1.1s ease-out forwards; }
+@keyframes lance { 0% { opacity: 0; } 15%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
+.av-momentum { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: .7rem; margin-bottom: 1rem; }
+.av-mom-rotulo {
+  font-family: var(--fonte-tarja); font-weight: 700; font-size: .78rem;
+  text-transform: uppercase; letter-spacing: .1em; color: var(--texto-2);
+}
+#av-momentum { width: 100%; height: 44px; background: var(--superficie); border: 1px solid var(--linha); border-radius: 4px; }
+#av-momentum .mom-meio { stroke: var(--linha-forte); stroke-width: .3; }
+#av-momentum .mom-int { stroke: var(--linha); stroke-width: .3; stroke-dasharray: 1 1; }
+#av-momentum .mom-agora { stroke: var(--refletor); stroke-width: .4; }
+
+/* pausado: a prancheta do técnico */
+.av-painel {
+  display: grid; gap: 1rem; margin-bottom: 1.2rem; padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--ambar) 45%, var(--linha)); border-radius: 6px;
+  background: linear-gradient(180deg, #161f2c, var(--superficie) 60%);
+}
+.av-painel-topo { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.av-painel-topo strong { font-family: var(--fonte-tarja); font-size: 1.3rem; text-transform: uppercase; }
+.av-painel-topo span { color: var(--texto-2); font-size: .88rem; }
+.av-painel-topo button { width: auto; margin: 0 0 0 auto; padding: .5rem 1.1rem; }
+.av-tatica { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+.av-tatica-rotulo, .av-trocas h4 {
+  font-family: var(--fonte-tarja); font-weight: 700; font-size: .8rem;
+  text-transform: uppercase; letter-spacing: .1em; color: var(--texto-2); margin: 0;
+}
+.av-trocas h4 { margin-bottom: .4rem; }
+.av-trocas h4 small { text-transform: none; letter-spacing: 0; font-family: var(--fonte-texto); font-weight: 400; margin-left: .3rem; }
+.av-tatica [role="group"] { display: inline-flex; }
+.av-tatica button { width: auto; margin: 0; border-radius: 0; padding: .4rem .9rem; }
+.av-tatica button:first-child { border-radius: 4px 0 0 4px; }
+.av-tatica button:last-child { border-radius: 0 4px 4px 0; }
+.av-tatica button + button { margin-left: -1px; }
+.av-tatica button.ativa { background: var(--gramado); border-color: var(--gramado); color: #fff; }
+.av-trocas { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.av-trocas ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .25rem; }
+.av-trocas li { list-style: none; margin: 0; }
+.av-jog {
+  display: grid; grid-template-columns: 1.6rem 1fr auto auto 3.2rem 2.2rem; align-items: center; gap: .5rem;
+  width: 100%; margin: 0; padding: .4rem .55rem; text-align: left;
+  font-family: var(--fonte-texto); font-size: .86rem; text-transform: none; letter-spacing: 0; font-weight: 400;
+  color: var(--texto); background: var(--superficie-2); border: 1px solid transparent; border-radius: 4px;
+}
+.av-jog:hover:not(:disabled), .av-jog:focus-visible { border-color: var(--linha-forte); background: var(--superficie-2); color: var(--texto); }
+.av-jog:disabled { opacity: .5; cursor: not-allowed; }
+.av-jog.escolhido { border-color: var(--refletor); box-shadow: inset 0 0 0 1px var(--refletor); }
+.av-jog.combina:not(.escolhido) { border-color: color-mix(in srgb, var(--gramado-claro) 50%, transparent); }
+.av-jog.saindo, .av-jog.entrando { opacity: .75; border-style: dashed; border-color: var(--ambar); }
+.av-num { font-family: var(--fonte-tarja); font-weight: 800; color: var(--texto-2); text-align: right; }
+.av-nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.av-nome small { color: var(--ambar); margin-left: .25rem; }
+.av-pos { color: var(--texto-2); font-family: var(--fonte-tarja); letter-spacing: .06em; }
+.av-ovr { font-family: var(--fonte-tarja); font-weight: 700; }
+.av-cartoes { display: inline-flex; min-width: 8px; }
+.av-energia { height: 5px; background: var(--linha); border-radius: 3px; overflow: hidden; }
+.av-energia i { display: block; height: 100%; background: var(--gramado-claro); }
+.av-energia.media i { background: var(--ambar); }
+.av-energia.baixa i { background: var(--ao-vivo); }
+.av-nota {
+  font-family: var(--fonte-tarja); font-weight: 800; text-align: center; border-radius: 2px;
+  padding: .05rem 0; background: var(--linha); font-variant-numeric: tabular-nums;
+}
+.av-nota.boa { background: var(--gramado); color: #fff; }
+.av-nota.ruim { background: color-mix(in srgb, var(--ao-vivo) 70%, var(--linha)); color: #fff; }
+.av-painel-acoes { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin: 0; }
+.av-painel-acoes button { width: auto; margin: 0; }
+.av-painel-msg { color: var(--texto-2); font-size: .88rem; }
+.av-painel-msg.erro { color: var(--texto-alerta); }
+#av-stats { margin-bottom: 1rem; }
 
 @media (max-width: 640px) {
   .placar-tv > * { padding: .45rem .55rem; }
@@ -762,10 +879,15 @@ button.hub-card:hover, button.hub-card:focus-visible {
   .pt-relogio { font-size: 1.3rem; }
   .av-corpo { grid-template-columns: 1fr; }
   .narracao { max-height: 20rem; }
+  .av-trocas { grid-template-columns: 1fr; }
+  .av-jog { grid-template-columns: 1.4rem 1fr auto auto 2.4rem 2rem; gap: .35rem; }
+  .sim-nome { font-size: .68rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .faixa-gol { display: none; }   /* o gol já aparece no placar e na narração */
   .narracao li, .outros li.mexeu, .placar-tv.pulso .pt-gols b, .chip-ao-vivo .luz { animation: none; }
+  .sim-jog, .sim-bola { transition: none; }
+  .sim-jog.entrou, .sim-lance.visivel { animation: none; }
 }
 .cartao.vermelho { background: var(--ao-vivo); }
 th .cartao { vertical-align: -1px; }

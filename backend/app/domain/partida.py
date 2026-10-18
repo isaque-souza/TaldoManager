@@ -30,6 +30,16 @@ class Partida:
         self.titulares_iniciais = set()
         # minutos de acréscimo (definidos em executar_simulacao)
         self.acrescimos = 0
+        # simulação interativa (v1.2): decisões do técnico durante o jogo,
+        # cada uma aplicada no começo do seu minuto —
+        # {"minuto", "clube", "tatica"} ou {"minuto", "clube", "sai", "entra"}
+        self.decisoes = []
+        # um lance por minuto (quem atacou e como acabou), para a transmissão
+        self.linha_do_tempo = []
+        self._lance = None
+        # minuto em que fotografar quem está em campo (pausa da transmissão)
+        self.capturar_em = None
+        self.estado_capturado = None
 
     #Orquestração
         
@@ -67,16 +77,28 @@ class Partida:
 
         self.acrescimos = random.randint(1, 5)
 
+        if self.capturar_em == 0:
+            self.estado_capturado = self.foto_do_momento(0)
+
         for minuto in range(1, 91 + self.acrescimos):
+
+            self.aplicar_decisoes(minuto)
 
             self.simular_minuto(
                 minuto,
             )
-    
+
+            self.linha_do_tempo.append(self._registro_do_minuto(minuto))
+
+            if minuto == self.capturar_em:
+                self.estado_capturado = self.foto_do_momento(minuto)
+
     def simular_minuto(
         self,
         minuto
     ):
+
+        self._lance = None
 
         self.simular_ataque(
             minuto,
@@ -117,6 +139,9 @@ class Partida:
         # suspensão (jogos_suspensao) é o que o mantém fora das próximas
         for jogador in self.clube1.jogadores + self.clube2.jogadores:
             jogador.expulso = False
+
+        # tática mudada no meio do jogo (interativa) vale só para esta partida
+        taticas = {c: c.tatica for c in (self.clube1, self.clube2)}
 
         self.clube1.escalar_time()
         self.clube2.escalar_time()
@@ -201,6 +226,9 @@ class Partida:
 
         self.sortear_lesoes()
 
+        for clube, tatica in taticas.items():
+            clube.tatica = tatica
+
     #Engine
     
     def simular_ataque(
@@ -227,7 +255,13 @@ class Partida:
             if clube_atacando == self.clube1
             else self.clube1
         )
-        
+
+        # o lance do minuto (só anota; não sorteia nada)
+        self._lance = {
+            "lado": 1 if clube_atacando == self.clube1 else 2,
+            "fim": "cortado",
+        }
+
         self.simular_acao_defensiva(
             clube_defendendo,
             minuto
@@ -263,6 +297,8 @@ class Partida:
             artilheiro
         ):
 
+            self._lance["fim"] = "fora"
+
             self.adicionar_evento(
                 minuto,
                 "chute_fora",
@@ -276,10 +312,12 @@ class Partida:
         if self.goleiro_defendeu(
             clube_defendendo
         ):
+            self._lance["fim"] = "defesa"
             self._talvez_escanteio(clube_atacando, 0.45)   # espalmou
             return
 
         # gol
+        self._lance["fim"] = "gol"
         self.marcar_gol(
             clube_atacando,
             minuto,
@@ -413,6 +451,12 @@ class Partida:
             return
 
         resultado = random.random()
+
+        # o pênalti é o lance que fica marcado no minuto
+        self._lance = {
+            "lado": 1 if clube == self.clube1 else 2,
+            "fim": "penalti" if resultado < 0.76 else "penalti_perdido",
+        }
 
         if resultado < 0.76:                    # convertido
             cobrador.gols += 1
@@ -748,6 +792,18 @@ class Partida:
         if entrando is None:
             return
 
+        self._trocar(clube, saindo, entrando, minuto)
+
+    def substituicoes_feitas(self, clube):
+        return (
+            self.substituicoes_c1
+            if clube == self.clube1
+            else self.substituicoes_c2
+        )
+
+    def _trocar(self, clube, saindo, entrando, minuto):
+        """A troca em si, da IA ou do técnico (simulação interativa)."""
+
         # entra zerado (podia ter estatistica de partida antiga)
         entrando.resetar_estatisticas_partida()
 
@@ -786,8 +842,119 @@ class Partida:
             entrando
         )
     
+    #Simulação interativa (v1.2)
+
+    def _clube_por_nome(self, nome):
+        return next(
+            (c for c in (self.clube1, self.clube2) if c.nome == nome), None
+        )
+
+    def aplicar_decisoes(self, minuto):
+        """Decisões do técnico marcadas para este minuto, antes do lance.
+        Foram validadas ao entrar e a simulação é determinística, mas uma
+        que não caiba mais é ignorada em vez de derrubar a rodada."""
+
+        for decisao in self.decisoes:
+            if decisao["minuto"] != minuto:
+                continue
+            clube = self._clube_por_nome(decisao["clube"])
+            if clube is None:
+                continue
+            if "tatica" in decisao:
+                clube.tatica = decisao["tatica"]
+                continue
+            if self.motivo_substituicao_invalida(
+                clube, decisao["sai"], decisao["entra"]
+            ):
+                continue
+            saindo = next(j for j in clube.titulares if j.nome == decisao["sai"])
+            entrando = next(j for j in clube.reservas if j.nome == decisao["entra"])
+            self._trocar(clube, saindo, entrando, minuto)
+
+    def motivo_substituicao_invalida(self, clube, nome_sai, nome_entra):
+        """Por que a troca não pode ser feita agora (None se pode)."""
+
+        if self.substituicoes_feitas(clube) >= self.max_substituicoes:
+            return f"As {self.max_substituicoes} substituições já foram feitas"
+        saindo = next((j for j in clube.titulares if j.nome == nome_sai), None)
+        if saindo is None:
+            return f"{nome_sai} não está em campo"
+        if saindo.expulso:
+            return f"{nome_sai} foi expulso e não pode ser substituído"
+        entrando = next((j for j in clube.reservas if j.nome == nome_entra), None)
+        if entrando is None:
+            return f"{nome_entra} não está no banco"
+        if entrando in self.estatisticas:   # já jogou e saiu
+            return f"{nome_entra} já saiu e não pode voltar"
+        return None
+
+    def _registro_do_minuto(self, minuto):
+        return {
+            "minuto": minuto,
+            "lance": self._lance,
+            "posse": [self.posse_c1, self.posse_c2],
+            "finalizacoes": [self.finalizacoes_c1, self.finalizacoes_c2],
+            "no_gol": [self.finalizacoes_gol_c1, self.finalizacoes_gol_c2],
+            "escanteios": [self.escanteios_c1, self.escanteios_c2],
+        }
+
+    def _placar_ate(self, minuto):
+        """Placar com os gols até `minuto` (o de pênalti não passa por
+        gols_c1/gols_c2 durante o jogo, só pelos eventos)."""
+
+        placar = [0, 0]
+        for evento in self.eventos:
+            if evento["tipo"] in ("gol", "penalti") and evento["minuto"] <= minuto:
+                placar[0 if self._clube_do(evento["jogador"]) == self.clube1 else 1] += 1
+        return placar
+
+    def foto_do_momento(self, minuto):
+        """Quem está em campo e no banco ao fim de `minuto`, com energia,
+        cartões e a nota até ali: o que o técnico vê ao pausar."""
+
+        placar = self._placar_ate(minuto)
+
+        def em_campo(j, gols_pro, gols_contra):
+            stats = self.estatisticas.get(j, {"gols": 0, "assistencias": 0})
+            return {
+                "nome": j.nome,
+                "numero": j.numero,
+                "posicao": j.posicao,
+                "overall": j.overall,
+                "energia": round(j.energia),
+                "amarelos": j.amarelos_partida,
+                "expulso": j.expulso,
+                "gols": stats["gols"],
+                "nota": round(self._nota(j, stats, gols_pro, gols_contra), 1),
+            }
+
+        def no_banco(j):
+            return {
+                "nome": j.nome,
+                "numero": j.numero,
+                "posicao": j.posicao,
+                "overall": j.overall,
+                "energia": round(j.energia),
+                "disponivel": j not in self.estatisticas,
+            }
+
+        clubes = []
+        for i, clube in enumerate((self.clube1, self.clube2)):
+            pro, contra = placar[i], placar[1 - i]
+            clubes.append({
+                "clube": clube.nome,
+                "tatica": clube.tatica,
+                "substituicoes_restantes": (
+                    self.max_substituicoes - self.substituicoes_feitas(clube)
+                ),
+                "em_campo": [em_campo(j, pro, contra) for j in clube.titulares],
+                "banco": [no_banco(j) for j in clube.reservas],
+            })
+
+        return {"minuto": minuto, "placar": placar, "clubes": clubes}
+
     #Escolhas
-    
+
     def escolher_artilheiro(
         self,
         clube
@@ -1040,6 +1207,103 @@ class Partida:
                     f"{jogador.nome}!"
                 )
     
+    def _nota(self, jogador, stats, gols_pro, gols_contra):
+        """Nota de 0 a 10 da atuação, dado o placar do ponto de vista do
+        clube do jogador. Pura: serve ao fim do jogo e na pausa."""
+
+        nota = 6.0
+
+        gols = stats["gols"]
+        assistencias = stats["assistencias"]
+
+        saldo = gols_pro - gols_contra
+        clean_sheet = gols_contra == 0
+
+        # ==========================
+        # AÇÕES DA PARTIDA
+        # ==========================
+
+        if jogador.posicao == "Atacante":
+
+            nota += gols * 1.6
+            nota += assistencias * 1.0
+            nota += jogador.chutes_gol_partida * 0.15
+            nota += jogador.dribles_partida * 0.06
+
+        elif jogador.posicao == "Meio-Campo":
+
+            nota += gols * 1.3
+            nota += assistencias * 1.2
+            nota += jogador.passes_chave_partida * 0.09
+            nota += jogador.interceptacoes_partida * 0.05
+            nota += jogador.dribles_partida * 0.04
+
+        elif jogador.posicao == "Defesa":
+
+            nota += gols * 1.6
+            nota += assistencias * 0.8
+            nota += jogador.desarmes_partida * 0.07
+            nota += jogador.interceptacoes_partida * 0.06
+            nota += jogador.cortes_partida * 0.03
+
+            if clean_sheet:
+                nota += 0.9
+
+        elif jogador.posicao == "Goleiro":
+
+            nota += jogador.defesas_partida * 0.10
+
+            if clean_sheet:
+                nota += 0.8
+
+            nota -= jogador.gols_sofridos_partida * 0.18
+
+        # ==========================
+        # RESULTADO
+        # ==========================
+
+        if saldo > 0:
+            nota += 0.4
+
+        elif saldo < 0:
+            nota -= 0.25
+
+        # ==========================
+        # BÔNUS EXTRAS
+        # ==========================
+
+        if (
+            jogador.posicao == "Atacante"
+            and saldo >= 2
+        ):
+            nota += 0.3
+
+        # atuação de destaque: dois ou mais gols
+        if gols >= 2:
+            nota += 0.4
+
+        if (
+            jogador.posicao in ("Atacante", "Meio-Campo")
+            and gols > 0
+            and assistencias > 0
+        ):
+            nota += 0.3
+
+        if (
+            jogador.posicao == "Goleiro"
+            and saldo == 0
+            and clean_sheet
+        ):
+            nota += 0.2
+
+        # ==========================
+        # LIMITA NOTA
+        # ==========================
+
+        nota = max(0, min(10, nota))
+
+        return nota
+
     def calcular_notas(self):
 
         melhor_jogador = None
@@ -1047,109 +1311,16 @@ class Partida:
 
         for jogador in self.estatisticas:
 
-            nota = 6.0
-
-            gols = self.estatisticas[jogador]["gols"]
-            assistencias = self.estatisticas[jogador]["assistencias"]
-
-            # ==========================
-            # IDENTIFICA O TIME
-            # ==========================
-
             time1 = jogador in self.clube1.jogadores
 
             if time1:
-                gols_pro = self.gols_c1
-                gols_contra = self.gols_c2
+                gols_pro, gols_contra = self.gols_c1, self.gols_c2
             else:
-                gols_pro = self.gols_c2
-                gols_contra = self.gols_c1
+                gols_pro, gols_contra = self.gols_c2, self.gols_c1
 
-            saldo = gols_pro - gols_contra
-            clean_sheet = gols_contra == 0
-
-            # ==========================
-            # AÇÕES DA PARTIDA
-            # ==========================
-
-            if jogador.posicao == "Atacante":
-
-                nota += gols * 1.6
-                nota += assistencias * 1.0
-                nota += jogador.chutes_gol_partida * 0.15
-                nota += jogador.dribles_partida * 0.06
-
-            elif jogador.posicao == "Meio-Campo":
-
-                nota += gols * 1.3
-                nota += assistencias * 1.2
-                nota += jogador.passes_chave_partida * 0.09
-                nota += jogador.interceptacoes_partida * 0.05
-                nota += jogador.dribles_partida * 0.04
-
-            elif jogador.posicao == "Defesa":
-
-                nota += gols * 1.6
-                nota += assistencias * 0.8
-                nota += jogador.desarmes_partida * 0.07
-                nota += jogador.interceptacoes_partida * 0.06
-                nota += jogador.cortes_partida * 0.03
-
-                if clean_sheet:
-                    nota += 0.9
-
-            elif jogador.posicao == "Goleiro":
-
-                nota += jogador.defesas_partida * 0.10
-
-                if clean_sheet:
-                    nota += 0.8
-
-                nota -= jogador.gols_sofridos_partida * 0.18
-
-            # ==========================
-            # RESULTADO
-            # ==========================
-
-            if saldo > 0:
-                nota += 0.4
-
-            elif saldo < 0:
-                nota -= 0.25
-
-            # ==========================
-            # BÔNUS EXTRAS
-            # ==========================
-
-            if (
-                jogador.posicao == "Atacante"
-                and saldo >= 2
-            ):
-                nota += 0.3
-
-            # atuação de destaque: dois ou mais gols
-            if gols >= 2:
-                nota += 0.4
-
-            if (
-                jogador.posicao in ("Atacante", "Meio-Campo")
-                and gols > 0
-                and assistencias > 0
-            ):
-                nota += 0.3
-
-            if (
-                jogador.posicao == "Goleiro"
-                and saldo == 0
-                and clean_sheet
-            ):
-                nota += 0.2
-
-            # ==========================
-            # LIMITA NOTA
-            # ==========================
-
-            nota = max(0, min(10, nota))
+            nota = self._nota(
+                jogador, self.estatisticas[jogador], gols_pro, gols_contra
+            )
 
             # guarda a nota da partida (o snapshot em `atuacao` usa isto)
             self.estatisticas[jogador]["nota"] = round(nota, 2)
