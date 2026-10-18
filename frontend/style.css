@@ -518,6 +518,15 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   margin: 0 0 .8rem; padding: .5rem .8rem; border-left: 3px solid var(--ambar);
   background: color-mix(in srgb, var(--ambar) 12%, transparent); font-size: .9rem;
 }
+.ed-travado {
+  display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: center; justify-content: space-between;
+  margin: 0 0 .8rem; padding: .6rem .8rem; border-left: 3px solid var(--ambar);
+  background: color-mix(in srgb, var(--ambar) 12%, transparent); font-size: .9rem;
+}
+.ed-travado[hidden] { display: none; }
+.ed-travado p { margin: 0; flex: 1 1 18rem; }
+.ed-travado button { width: auto; margin: 0; }
+.travado { opacity: .5; }
 .editor { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; }
 .ed-campo {
   position: relative; display: flex; flex-direction: column; justify-content: space-around;

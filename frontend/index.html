@@ -205,6 +205,13 @@
       <button id="r-hub-voltar" class="voltar secondary" hidden>← Menu do clube</button>
 
       <div data-painel="partida">
+        <!-- partida já começou (v1.2): o elenco fica travado até o apito final -->
+        <div id="ed-travado" class="ed-travado" role="status" hidden>
+          <p><strong>A partida já começou.</strong> A escalação fica travada até
+            o apito final: mude formação, tática e faça substituições na pausa
+            do jogo.</p>
+          <button id="ed-voltar-jogo" type="button">Voltar para a partida</button>
+        </div>
         <!-- planos de jogo (v1.2): escalações salvas; o padrão vem a cada rodada -->
         <div id="pl-planos" class="planos"></div>
 
