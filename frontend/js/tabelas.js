@@ -25,7 +25,7 @@ export function celula(valor, item, coluna) {
     return comEscudo(valor);
   }
   if (coluna === "nome" && item && item.id != null) {
-    return `<a class="jogador" data-jogador="${item.id}">${valor}</a>${item.idolo ? ` ${seloIdolo()}` : ""}`;
+    return `<a class="jogador" data-jogador="${item.id}">${valor}</a>${item.idolo ? `&nbsp;${seloIdolo()}` : ""}`;
   }
   if (coluna === "placar" && item && item.partida_id != null) {
     return `<a class="partida" data-partida="${item.partida_id}">${valor}</a>`;

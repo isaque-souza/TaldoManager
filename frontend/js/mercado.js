@@ -60,7 +60,7 @@ export function acaoVenda(f) {
 export function linhaMercado(f) {
   return {
     ...f,
-    nome: f.idolo ? `${f.nome} ${seloIdolo()}` : f.nome,
+    nome: f.idolo ? `${f.nome}&nbsp;${seloIdolo()}` : f.nome,
     posicao: sigla(posicaoDe(f)),
     // os dois melhores atributos; todos na dica (v1.3)
     atributos_fmt: `<span title="${linhaAtributos(f.atributos)}">${destaques(f.atributos)}</span>`,
