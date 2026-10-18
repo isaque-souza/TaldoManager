@@ -181,9 +181,10 @@ disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado), v0.8
 (Modo Carreira), v0.9 (Persistência/autosave), v1.0 (Jogável: um comando
 só, tela inicial, meta da diretoria e demissão) e v1.1 (Cara de jogo:
 escudos e camisas, tema de transmissão noturna, pré-jogo no campo e jogo ao
-vivo) e v1.2 (Modo técnico: hub do clube, simulação interativa, planos de
-jogo e formação no meio do jogo) concluídas**; **v1.3 (Atributos e
-posições)** em andamento — ver as seções abaixo.
+vivo), v1.2 (Modo técnico: hub do clube, simulação interativa, planos de
+jogo e formação no meio do jogo) e v1.3 (Atributos e posições: posições
+específicas, formações desenhadas, caixa de entrada e atributos nos lances)
+concluídas** — ver as seções abaixo.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -301,7 +302,7 @@ jogador da temporada.
 
 ---
 
-# 🧬 Atributos e posições (v1.3) — Em andamento
+# ✅ Atributos e posições (v1.3) — Concluída
 
 Cada jogador tem uma posição de verdade e rende menos fora dela:
 
