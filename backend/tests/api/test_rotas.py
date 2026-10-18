@@ -483,3 +483,84 @@ def test_rodada_ao_vivo_pela_api():
     assert len(av["partidas"]) == len(jogada["resultados"])
     pid = av["partidas"][0]["partida_id"]
     assert client.get(f"/simulacoes/{sid}/partidas/{pid}").json()["partida"]["acrescimos"] in range(1, 6)
+
+
+# --- simulação interativa (v1.2) ---
+
+def _transmissao_iniciada():
+    clube = _clube_qualquer()
+    sid = client.post(
+        "/simulacoes", json={"seed": 8, "clube": clube, "modo": "rodada_a_rodada"}
+    ).json()["id"]
+    resp = client.post(f"/simulacoes/{sid}/transmissao", json={"tatica": "ofensivo"})
+    assert resp.status_code == 200
+    return sid, resp.json()
+
+
+def test_transmissao_via_api_ate_o_apito():
+    sid, t = _transmissao_iniciada()
+    assert len(t["minutos"]) == 90 + t["acrescimos"]
+    assert client.get(f"/simulacoes/{sid}/transmissao").json() == t
+
+    meu = t["mandante"] if t["mandante"]["clube"] == t["clube_usuario"] else t["visitante"]
+    assert meu["tatica"] == "ofensivo"
+    momento = client.get(f"/simulacoes/{sid}/transmissao/estado?minuto=60")
+    assert momento.status_code == 200
+    assert momento.json()["minuto"] == 60
+
+    mudou = client.post(f"/simulacoes/{sid}/transmissao/decisoes",
+                        json={"minuto": 61, "tatica": "defensivo"})
+    assert mudou.status_code == 200
+    assert mudou.json()["decisoes"][-1]["tatica"] == "defensivo"
+
+    jogou = client.post(f"/simulacoes/{sid}/rodadas")
+    assert jogou.status_code == 200
+    assert client.get(f"/simulacoes/{sid}/transmissao").status_code == 404
+
+
+def test_transmissao_recusa_decisao_invalida_e_trava_o_elenco():
+    sid, _ = _transmissao_iniciada()
+    ruim = client.post(f"/simulacoes/{sid}/transmissao/decisoes",
+                       json={"minuto": 10, "sai": "Ninguém", "entra": "Fulano"})
+    assert ruim.status_code == 400
+    assert client.post(f"/simulacoes/{sid}/transmissao/decisoes",
+                       json={"minuto": 0, "tatica": "ofensivo"}).status_code == 422
+
+    travado = client.patch(f"/simulacoes/{sid}/decisao", json={"tatica": "defensivo"})
+    assert travado.status_code == 409
+    assert client.get(f"/simulacoes/{sid}/rodadas/proxima").json()["transmissao_ativa"] is True
+
+
+def test_transmissao_de_simulacao_inexistente_404():
+    assert client.post("/simulacoes/999999/transmissao").status_code == 404
+    assert client.get("/simulacoes/999999/transmissao").status_code == 404
+
+
+# --- planos de jogo (v1.2) ---
+
+def test_planos_via_api():
+    clube = _clube_qualquer()
+    sid = client.post(
+        "/simulacoes", json={"seed": 8, "clube": clube, "modo": "rodada_a_rodada"}
+    ).json()["id"]
+
+    v = client.get(f"/simulacoes/{sid}/planos")
+    assert v.status_code == 200
+    titular = v.json()["planos"][0]
+    assert titular["nome"] == "Titular" and titular["padrao"]
+
+    novo = client.post(f"/simulacoes/{sid}/planos",
+                       json={"nome": "Retranca", "formacao": "5-4-1", "tatica": "defensivo"})
+    assert novo.status_code == 201
+    retranca = next(p for p in novo.json()["planos"] if p["nome"] == "Retranca")
+
+    assert client.post(f"/simulacoes/{sid}/planos", json={"nome": "Retranca"}).status_code == 400
+    assert client.patch(f"/simulacoes/{sid}/planos/{retranca['id']}",
+                        json={"padrao": True}).json()["planos"][1]["padrao"] is True
+
+    usou = client.post(f"/simulacoes/{sid}/planos/{titular['id']}/usar")
+    assert usou.status_code == 200 and usou.json()["em_uso"] == titular["id"]
+
+    assert client.delete(f"/simulacoes/{sid}/planos/{titular['id']}").status_code == 200
+    assert client.delete(f"/simulacoes/{sid}/planos/{retranca['id']}").status_code == 400
+    assert client.get("/simulacoes/999999/planos").status_code == 404

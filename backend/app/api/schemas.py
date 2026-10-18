@@ -7,7 +7,7 @@ automatica em /docs. Os campos batem com o dict devolvido por
 
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 Tatica = Literal["ofensivo", "equilibrado", "defensivo"]
 
@@ -332,6 +332,8 @@ class ProximaRodada(BaseModel):
     formacoes: list[str]
     confrontos: list[ConfrontoRodada]
     elenco: list[ElencoSituacao]
+    transmissao_ativa: bool = False   # v1.2: a partida já começou
+    escalacao: "EscalacaoPreJogo | None" = None   # v1.2: como o motor vai escalar
 
 
 class ResultadoRodada(BaseModel):
@@ -721,3 +723,140 @@ class RespostaRenovacao(BaseModel):
     salario_pedido: int | None = None    # só na contraproposta
     tentativas_restantes: int
     contrato: ContratoNovo | None = None
+
+
+# ---------------------------------------------------------------------------
+# simulação interativa (v1.2): a partida do técnico transmitida
+# ---------------------------------------------------------------------------
+
+class LanceMinuto(BaseModel):
+    lado: Literal["mandante", "visitante"]   # quem atacou
+    fim: Literal["cortado", "fora", "defesa", "gol", "penalti", "penalti_perdido"]
+
+
+class MinutoTransmissao(BaseModel):
+    """Um minuto do jogo; os números são acumulados até ele, [mandante, visitante]."""
+    minuto: int
+    lance: LanceMinuto | None      # None = minuto sem ataque
+    placar: list[int]
+    posse: list[int]
+    finalizacoes: list[int]
+    no_gol: list[int]
+    escanteios: list[int]
+
+
+class DecisaoAoVivo(BaseModel):
+    minuto: int
+    clube: str
+    tatica: Tatica | None = None
+    sai: str | None = None
+    entra: str | None = None
+
+
+class OutroJogo(BaseModel):
+    mandante: str
+    visitante: str
+    gols: list[GolAoVivo]
+
+
+class Transmissao(BaseModel):
+    """POST/GET /simulacoes/{id}/transmissao: a partida do técnico inteira,
+    como sai com as decisões até aqui. Decisões novas só mudam do minuto
+    delas em diante."""
+    rodada: int
+    clube_usuario: str
+    mandante: EscalacaoPreJogo     # no apito inicial
+    visitante: EscalacaoPreJogo
+    acrescimos: int
+    minutos: list[MinutoTransmissao]
+    eventos: list[LanceOut]
+    decisoes: list[DecisaoAoVivo]
+    outros: list[OutroJogo]
+
+
+class DecisaoNova(BaseModel):
+    """Corpo do POST /simulacoes/{id}/transmissao/decisoes: a tática nova OU
+    uma substituição, valendo a partir de `minuto`."""
+    minuto: int = Field(ge=1)
+    tatica: Tatica | None = None
+    sai: str | None = None
+    entra: str | None = None
+
+
+class JogadorEmCampo(BaseModel):
+    nome: str
+    numero: int | None
+    posicao: str
+    overall: int
+    energia: int
+    amarelos: int
+    expulso: bool
+    gols: int
+    nota: float
+
+
+class JogadorNoBanco(BaseModel):
+    nome: str
+    numero: int | None
+    posicao: str
+    overall: int
+    energia: int
+    disponivel: bool               # False = já jogou e saiu
+
+
+class TimeNoMomento(BaseModel):
+    clube: str
+    tatica: Tatica
+    substituicoes_restantes: int
+    em_campo: list[JogadorEmCampo]
+    banco: list[JogadorNoBanco]
+
+
+class MomentoPartida(BaseModel):
+    """GET /simulacoes/{id}/transmissao/estado?minuto=N: os dois times ao
+    fim do minuto N (o que o técnico vê ao pausar)."""
+    minuto: int
+    placar: list[int]
+    clubes: list[TimeNoMomento]    # [mandante, visitante]
+
+
+# ---------------------------------------------------------------------------
+# planos de jogo (v1.2)
+# ---------------------------------------------------------------------------
+
+class Plano(BaseModel):
+    id: int
+    nome: str
+    formacao: str
+    tatica: Tatica
+    xi: list[str]                  # titulares do molde (pode estar incompleto)
+    padrao: bool                   # carregado a cada rodada nova
+
+
+class Planos(BaseModel):
+    """GET /simulacoes/{id}/planos (e a resposta de toda mudança neles)."""
+    planos: list[Plano]
+    em_uso: int | None             # plano carregado para a próxima partida
+    modificado: bool               # a escalação da partida foi mexida depois
+
+
+class NovoPlano(BaseModel):
+    """Corpo do POST /simulacoes/{id}/planos. O que não vier sai da
+    escalação atual da próxima partida."""
+    nome: str
+    formacao: str | None = None
+    tatica: Tatica | None = None
+    xi: list[str] | None = None
+    padrao: bool = False
+
+
+class PlanoEdicao(BaseModel):
+    """Corpo do PATCH /simulacoes/{id}/planos/{plano_id}."""
+    nome: str | None = None
+    formacao: str | None = None
+    tatica: Tatica | None = None
+    xi: list[str] | None = None
+    padrao: bool | None = None
+
+
+ProximaRodada.model_rebuild()   # `escalacao` aponta para um schema definido depois

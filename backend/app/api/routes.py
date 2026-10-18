@@ -6,6 +6,7 @@ from app.api.schemas import (
     CarreiraDetalhe,
     ClubeComElenco,
     ContratoJogador,
+    DecisaoNova,
     DecisaoSalva,
     ClubeDetalhe,
     ClubeSeed,
@@ -17,6 +18,9 @@ from app.api.schemas import (
     NovaProposta,
     NovaRenovacao,
     NovaVenda,
+    NovoPlano,
+    PlanoEdicao,
+    Planos,
     OfertasJogador,
     RespostaProposta,
     RespostaRenovacao,
@@ -31,6 +35,8 @@ from app.api.schemas import (
     Tatica,
     TemporadaCriada,
     TransferenciaResultado,
+    MomentoPartida,
+    Transmissao,
 )
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
@@ -39,11 +45,15 @@ from app.services import (
     contrato_service,
     escalacao_service,
     mercado_service,
+    plano_service,
     simulacao_service,
     temporada_service,
+    transmissao_service,
 )
 from app.services.carreira_service import CarreiraInvalida
-from app.services.temporada_service import TemporadaConcluida
+from app.services.plano_service import PlanoInvalido
+from app.services.temporada_service import PartidaEmAndamento, TemporadaConcluida
+from app.services.transmissao_service import TransmissaoInvalida
 
 router = APIRouter()
 
@@ -231,7 +241,7 @@ def salvar_decisao(simulacao_id: int, decisao: RodadaDecisao):
             formacao=decisao.formacao,
             xi_preferido=decisao.xi,
         )
-    except TemporadaConcluida as e:
+    except (TemporadaConcluida, PartidaEmAndamento) as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
     except ValueError as e:
         raise _erro_de_valor(e) from e
@@ -278,7 +288,7 @@ def fazer_proposta(simulacao_id: int, proposta: NovaProposta):
         resposta = mercado_service.propor(
             simulacao_id, proposta.jogador_id, proposta.valor
         )
-    except (TemporadaConcluida, TransferenciaInvalida) as e:
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
         raise _erro_de_mercado(e) from e
     if resposta is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
@@ -294,7 +304,7 @@ def obter_ofertas(simulacao_id: int, jogador_id: int):
     """O que cada clube paga por um jogador do seu elenco."""
     try:
         dados = mercado_service.ofertas(simulacao_id, jogador_id)
-    except (TemporadaConcluida, TransferenciaInvalida) as e:
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
         raise _erro_de_mercado(e) from e
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
@@ -310,7 +320,7 @@ def fazer_venda(simulacao_id: int, venda: NovaVenda):
     """Aceita a oferta de um clube por um jogador do seu elenco."""
     try:
         feita = mercado_service.vender(simulacao_id, venda.jogador_id, venda.clube)
-    except (TemporadaConcluida, TransferenciaInvalida) as e:
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
         raise _erro_de_mercado(e) from e
     if feita is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
@@ -326,7 +336,7 @@ def obter_contrato(simulacao_id: int, jogador_id: int):
     """Contrato atual de um jogador do seu elenco e as opções de renovação."""
     try:
         dados = contrato_service.ver_contrato(simulacao_id, jogador_id)
-    except (TemporadaConcluida, ContratoInvalido) as e:
+    except (TemporadaConcluida, PartidaEmAndamento, ContratoInvalido) as e:
         raise _erro_de_mercado(e) from e
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
@@ -345,7 +355,7 @@ def fazer_renovacao(simulacao_id: int, proposta: NovaRenovacao):
             simulacao_id, proposta.jogador_id, proposta.salario,
             proposta.anos, proposta.multa,
         )
-    except (TemporadaConcluida, ContratoInvalido) as e:
+    except (TemporadaConcluida, PartidaEmAndamento, ContratoInvalido) as e:
         raise _erro_de_mercado(e) from e
     if resposta is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
@@ -442,3 +452,150 @@ def obter_jogador(simulacao_id: int, jogador_id: int):
     if detalhe is None:
         raise HTTPException(status_code=404, detail="Jogador não encontrado")
     return detalhe
+
+
+# ---------------------------------------------------------------------------
+# simulação interativa (v1.2): a partida do técnico transmitida
+# ---------------------------------------------------------------------------
+
+def _erro_transmissao(e):
+    if isinstance(e, TransmissaoInvalida):
+        return HTTPException(status_code=400, detail=str(e))
+    return HTTPException(status_code=409, detail=str(e))
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/transmissao",
+    response_model=Transmissao,
+    tags=["simulacoes"],
+)
+def iniciar_transmissao(simulacao_id: int, decisao: RodadaDecisao | None = None):
+    """Rola a bola na partida do técnico: grava a escalação (como o PATCH
+    /decisao) e devolve a partida inteira. Nada da rodada é gravado até o
+    `POST /rodadas`, que aplica as mudanças feitas durante o jogo. Se a
+    partida já começou, retoma (e o corpo é ignorado)."""
+    decisao = decisao or RodadaDecisao()
+    try:
+        dados = transmissao_service.iniciar(
+            simulacao_id, decisao.tatica, decisao.formacao, decisao.xi
+        )
+    except (TemporadaConcluida, TransmissaoInvalida) as e:
+        raise _erro_transmissao(e) from e
+    except ValueError as e:
+        raise _erro_de_valor(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/transmissao",
+    response_model=Transmissao,
+    tags=["simulacoes"],
+)
+def obter_transmissao(simulacao_id: int):
+    """A partida em andamento (404 se não há)."""
+    try:
+        dados = transmissao_service.atual(simulacao_id)
+    except TemporadaConcluida as e:
+        raise _erro_transmissao(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Nenhuma partida em andamento")
+    return dados
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/transmissao/estado",
+    response_model=MomentoPartida,
+    tags=["simulacoes"],
+)
+def obter_momento(simulacao_id: int, minuto: int = Query(..., ge=0)):
+    """Os dois times ao fim do minuto: em campo, banco, substituições e
+    tática — o que o técnico vê ao pausar."""
+    try:
+        dados = transmissao_service.estado(simulacao_id, minuto)
+    except (TemporadaConcluida, TransmissaoInvalida) as e:
+        raise _erro_transmissao(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/transmissao/decisoes",
+    response_model=Transmissao,
+    tags=["simulacoes"],
+)
+def decidir_na_partida(simulacao_id: int, decisao: DecisaoNova):
+    """Muda a tática ou faz uma substituição a partir de `minuto` e devolve
+    a partida refeita (igual até o minuto anterior)."""
+    try:
+        dados = transmissao_service.decidir(
+            simulacao_id, decisao.minuto,
+            tatica=decisao.tatica, sai=decisao.sai, entra=decisao.entra,
+        )
+    except (TemporadaConcluida, TransmissaoInvalida) as e:
+        raise _erro_transmissao(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+# ---------------------------------------------------------------------------
+# planos de jogo (v1.2): escalações com nome; o padrão vem a cada rodada
+# ---------------------------------------------------------------------------
+
+def _resposta_planos(chamada):
+    try:
+        dados = chamada()
+    except (TemporadaConcluida, PartidaEmAndamento) as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
+    except (PlanoInvalido, ValueError) as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação ou plano não encontrado")
+    return dados
+
+
+@router.get("/simulacoes/{simulacao_id}/planos", response_model=Planos, tags=["planos"])
+def listar_planos(simulacao_id: int):
+    """Os planos de jogo, qual está carregado para a próxima partida e se a
+    escalação foi mexida depois de carregar. Save sem plano ganha o
+    "Titular", com a escalação atual."""
+    return _resposta_planos(lambda: plano_service.listar(simulacao_id))
+
+
+@router.post("/simulacoes/{simulacao_id}/planos", response_model=Planos,
+             status_code=201, tags=["planos"])
+def criar_plano(simulacao_id: int, plano: NovoPlano):
+    """Plano novo (o que não vier sai da escalação atual). Ele passa a ser
+    o carregado."""
+    return _resposta_planos(lambda: plano_service.criar(
+        simulacao_id, plano.nome, plano.formacao, plano.tatica, plano.xi, plano.padrao,
+    ))
+
+
+@router.patch("/simulacoes/{simulacao_id}/planos/{plano_id}", response_model=Planos,
+              tags=["planos"])
+def editar_plano(simulacao_id: int, plano_id: int, plano: PlanoEdicao):
+    """Renomeia, muda o molde ou marca como padrão. Não mexe na escalação
+    da próxima partida."""
+    return _resposta_planos(lambda: plano_service.atualizar(
+        simulacao_id, plano_id, plano.nome, plano.formacao, plano.tatica,
+        plano.xi, plano.padrao,
+    ))
+
+
+@router.delete("/simulacoes/{simulacao_id}/planos/{plano_id}", response_model=Planos,
+               tags=["planos"])
+def apagar_plano(simulacao_id: int, plano_id: int):
+    """Apaga um plano (não o último); se era o padrão, outro assume."""
+    return _resposta_planos(lambda: plano_service.apagar(simulacao_id, plano_id))
+
+
+@router.post("/simulacoes/{simulacao_id}/planos/{plano_id}/usar", response_model=Planos,
+             tags=["planos"])
+def usar_plano(simulacao_id: int, plano_id: int):
+    """Carrega o plano na escalação da próxima partida (409 com a partida
+    já rolando)."""
+    return _resposta_planos(lambda: plano_service.usar(simulacao_id, plano_id))

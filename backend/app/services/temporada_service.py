@@ -32,6 +32,36 @@ class TemporadaConcluida(Exception):
     """Tentou avançar uma temporada que já terminou."""
 
 
+class PartidaEmAndamento(Exception):
+    """Mexer no elenco com a partida do técnico sendo transmitida (v1.2):
+    a re-simulação dela depende do elenco de quando a bola rolou."""
+
+
+# ---------------------------------------------------------------------------
+# transmissão em curso (simulação interativa, v1.2 — ver transmissao_service)
+# ---------------------------------------------------------------------------
+
+def transmissao_ativa(sim):
+    """Há uma partida do técnico sendo transmitida nesta rodada?"""
+    if not sim["ao_vivo_json"]:
+        return False
+    return json.loads(sim["ao_vivo_json"])["rodada"] == sim["rodada_atual"]
+
+
+def decisoes_ao_vivo(sim):
+    """As decisões do técnico na transmissão em curso ([] se não há)."""
+    if not transmissao_ativa(sim):
+        return []
+    return json.loads(sim["ao_vivo_json"])["decisoes"]
+
+
+def exigir_sem_transmissao(sim):
+    if transmissao_ativa(sim):
+        raise PartidaEmAndamento(
+            "A partida já começou: o elenco fica travado até o apito final"
+        )
+
+
 def _achar_clube(campeonato, nome):
     clube = next((c for c in campeonato.clubes if c.nome == nome), None)
     if clube is None:
@@ -131,6 +161,7 @@ def proxima_rodada(simulacao_id):
                 "formacoes": [],
                 "confrontos": [],
                 "elenco": [],
+                "transmissao_ativa": False,
             }
 
         estado_rng = random.getstate()
@@ -156,6 +187,10 @@ def proxima_rodada(simulacao_id):
             "formacao": alvo.formacao,
             "xi_preferido": sorted(j.nome for j in alvo.xi_preferido) or None,
             "formacoes": list(alvo.FORMACOES),
+            # a partida já começou (v1.2): a tela retoma a transmissão
+            "transmissao_ativa": transmissao_ativa(sim),
+            # o time como o motor vai escalar (editor no campo, v1.2)
+            "escalacao": _escalacao(alvo),
             "confrontos": [
                 {"mandante": m.nome, "visitante": v.nome} for m, v in rodada
             ],
@@ -286,6 +321,13 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
         seed = sim["seed"]
         clube_usuario = sim["clube_usuario"]
 
+        # partida transmitida (v1.2): a escalação é a do apito inicial (já
+        # gravada) e as mudanças do técnico durante o jogo entram aqui
+        ao_vivo = transmissao_ativa(sim)
+        decisoes = decisoes_ao_vivo(sim)
+        if ao_vivo:
+            tatica = formacao = xi_preferido = None
+
         campeonato = carregar_campeonato()
         restaurar_estado(campeonato, json.loads(sim["estado_json"]))
 
@@ -303,7 +345,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
 
         rodada_jogada = campeonato.rodada
         with redirect_stdout(io.StringIO()):
-            campeonato.jogar_rodada()
+            campeonato.jogar_rodada(clube_usuario, decisoes)
 
         novas = [
             p for p in campeonato.partidas_jogadas
@@ -320,6 +362,17 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
             json.dumps(xi_ef, ensure_ascii=False) if xi_ef else None
         )
 
+        # a rodada seguinte começa no plano de jogo padrão (v1.2): o que o
+        # técnico mexeu antes deste jogo valeu só para ele. Nada aqui sorteia.
+        if not concluida:
+            from app.services import plano_service   # aqui: evita import circular
+            aplicado = plano_service.aplicar_padrao(conn, simulacao_id, alvo)
+            if aplicado:
+                nova_tatica, nova_formacao, xi_padrao = aplicado
+                xi_json = (
+                    json.dumps(xi_padrao, ensure_ascii=False) if xi_padrao else None
+                )
+
         with conn:
             mapa = clube_repo.atualizar(conn, simulacao_id, cru["clubes"])
             mapa_jog = jogador_repo.atualizar(
@@ -328,6 +381,8 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
             partida_ids = partida_repo.inserir(conn, simulacao_id, mapa, novas)
             lance_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
             atuacao_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
+            if ao_vivo:
+                simulacao_repo.definir_ao_vivo(conn, simulacao_id, None)
 
             if concluida:
                 simulacao_repo.atualizar_estado(

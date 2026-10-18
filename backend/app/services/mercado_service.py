@@ -22,7 +22,9 @@ from app.repositories import proposta_repository as proposta_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.repositories import transferencia_repository as transferencia_repo
 from app.services import simulacao_service
-from app.services.temporada_service import TemporadaConcluida
+from app.services.temporada_service import (
+    TemporadaConcluida, exigir_sem_transmissao,
+)
 from scripts.data_loader import carregar_campeonato
 
 
@@ -64,6 +66,8 @@ class _Contexto:
     def gravar(self):
         """Regrava o estado vivo depois de uma mudança fora das partidas
         (transferência, renovação). Devolve o mapa {clube: id}."""
+
+        exigir_sem_transmissao(self.sim)
 
         alvo = self.alvo
         xi = sorted(j.nome for j in alvo.xi_preferido) or None

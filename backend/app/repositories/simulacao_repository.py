@@ -47,6 +47,23 @@ def atualizar_estado(conn, simulacao_id, *, estado, rodada_atual,
     )
 
 
+def definir_ao_vivo(conn, simulacao_id, ao_vivo_json):
+    """Abre/atualiza (JSON) ou encerra (None) a partida transmitida em curso.
+    Não mexe em `atualizada_em`: só o estado vivo da temporada anda ali."""
+    conn.execute(
+        "UPDATE simulacao SET ao_vivo_json = ? WHERE id = ?",
+        (ao_vivo_json, simulacao_id),
+    )
+
+
+def definir_plano_em_uso(conn, simulacao_id, plano_id):
+    """O plano carregado para a próxima partida (None = nenhum)."""
+    conn.execute(
+        "UPDATE simulacao SET plano_em_uso = ? WHERE id = ?",
+        (plano_id, simulacao_id),
+    )
+
+
 def listar(conn):
     # sem `estado_json` — o blob não interessa numa listagem
     return conn.execute(

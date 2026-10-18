@@ -1,3 +1,5 @@
+import random
+
 from . import financas
 from .partida import Partida
 
@@ -9,6 +11,7 @@ class Campeonato:
         self.rodada = 1
         self.historico = []
         self.partidas_jogadas = []
+        self.partida_usuario = None   # a do técnico na última rodada
         self.calendario = self.gerar_calendario()
         self.recordes = {
             "maior_goleada": {
@@ -21,7 +24,12 @@ class Campeonato:
             }
         }
             
-    def jogar_rodada(self):
+    def jogar_rodada(self, clube_usuario=None, decisoes=None, capturar_em=None):
+        """Joga a rodada. Com `clube_usuario`, a partida dele roda numa
+        corrente de RNG própria (semente sorteada antes de tudo): decisões
+        do técnico no meio do jogo (simulação interativa, v1.2) mudam só
+        aquele jogo, nunca os outros da rodada. A Partida dele fica em
+        `self.partida_usuario`."""
 
         self.mostrar_cabecalho()
 
@@ -30,10 +38,25 @@ class Campeonato:
         if rodada_atual is None:
             return
 
+        semente = random.getrandbits(64) if clube_usuario else None
+        self.partida_usuario = None
+
         for clube1, clube2 in rodada_atual:
 
             partida = Partida(clube1, clube2)
-            partida.simular_partida()
+
+            if clube_usuario in (clube1.nome, clube2.nome):
+                partida.decisoes = decisoes or []
+                partida.capturar_em = capturar_em
+                fora = random.getstate()
+                random.seed(semente)
+                try:
+                    partida.simular_partida()
+                finally:
+                    random.setstate(fora)
+                self.partida_usuario = partida
+            else:
+                partida.simular_partida()
 
             self.registrar_partida(
                 clube1,

@@ -97,7 +97,7 @@ def _rodar(seed, clube_usuario=None, tatica="equilibrado",
 
     with redirect_stdout(io.StringIO()):
         while campeonato.rodada <= len(campeonato.calendario):
-            campeonato.jogar_rodada()
+            campeonato.jogar_rodada(clube_usuario)
 
     return campeonato
 
