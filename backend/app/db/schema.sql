@@ -212,3 +212,17 @@ CREATE TABLE IF NOT EXISTS plano (
     padrao        INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS ix_plano_simulacao ON plano(simulacao_id);
+
+-- Caixa de entrada do técnico (v1.3): mensagens dos setores do clube
+-- (diretor de futebol, departamento médico, auxiliar técnico, diretoria...).
+CREATE TABLE IF NOT EXISTS mensagem (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    rodada        INTEGER,                      -- NULL = antes da 1ª rodada
+    setor         TEXT NOT NULL,
+    assunto       TEXT NOT NULL,
+    corpo         TEXT NOT NULL,
+    lida          INTEGER NOT NULL DEFAULT 0,
+    criada_em     TEXT NOT NULL                 -- ISO 8601 (UTC)
+);
+CREATE INDEX IF NOT EXISTS ix_mensagem_simulacao ON mensagem(simulacao_id);

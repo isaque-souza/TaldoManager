@@ -13,6 +13,7 @@ import { icone } from "./icones.js";
 import { abrirPreJogo } from "./prejogo.js";
 import { jogarAoVivo } from "./aovivo.js";
 import { posicaoDe } from "./posicoes.js";
+import { carregarCaixa } from "./caixa.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -195,6 +196,7 @@ export function renderRodadaAntes() {
   renderHub(info);
   renderSecaoRodada();
   carregarMercado();
+  carregarCaixa();
   if (estado.abaRodada === "financas") carregarFinancasRodada();
 }
 

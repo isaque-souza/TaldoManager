@@ -2,11 +2,21 @@
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
-import { carregarProximaRodada, marcarHubMercado } from "./rodada.js";
+import { abrirSecaoRodada, carregarProximaRodada, marcarHubMercado } from "./rodada.js";
 import { renderContratos } from "./contratos.js";
 import { icone } from "./icones.js";
+import { carregarCaixa } from "./caixa.js";
 
 // ---------- mercado de transferências ----------
+
+// a resposta do clube ao lado do mercado, com o caminho para a mensagem
+// completa do diretor de futebol (o que faltou, quantas tentativas sobram)
+function avisoMercado(html, ruim = false) {
+  const el = $("r-mercado-msg");
+  el.innerHTML = `${html} <button class="link-caixa" type="button">${icone("email")} Ver na caixa de entrada</button>`;
+  el.classList.toggle("ruim", ruim);
+  el.querySelector(".link-caixa").addEventListener("click", () => abrirSecaoRodada("caixa"));
+}
 
 export const mercadoFiltro = { posicao: "", valor_max: "" };
 export const MERCADO_LIMITE = 40;   // linhas da lista de compra
@@ -159,7 +169,9 @@ export async function postarMercado(caminho, corpo, ocupadoTexto) {
     });
     const dados = await resp.json().catch(() => ({}));
     if (!resp.ok) {
-      $("erro").textContent = `Mercado: ${dados.detail || `HTTP ${resp.status}`}`;
+      // ao lado do mercado (não só no topo da página): o motivo é o que faltou
+      avisoMercado(`${icone("nao")} Não deu: ${dados.detail || `HTTP ${resp.status}`}.`, true);
+      carregarCaixa();
       return null;
     }
     return dados;
@@ -182,7 +194,8 @@ export async function propor(jogadorId, valor) {
   if (r.resposta === "contraproposta") msg += ` — pede ${dinheiro(r.valor_pedido)}`;
   msg += ".";
   if (t) msg += ` ${t.jogador} chegou do ${t.de_clube} por ${dinheiro(t.valor)}.`;
-  $("r-mercado-msg").textContent = msg;
+  avisoMercado(msg, r.resposta === "recusada");
+  carregarCaixa();
   if (t) await carregarProximaRodada();   // elenco e escalação mudaram
   else await carregarMercado();
 }
@@ -210,7 +223,7 @@ export async function vender(jogadorId, clube) {
     `/simulacoes/${estado.simId}/vendas`, { jogador_id: jogadorId, clube }, "Fechando a venda…"
   );
   if (!t) return carregarMercado();
-  $("r-mercado-msg").textContent =
-    `${icone("ok")} ${t.jogador} vendido ao ${t.para_clube} por ${dinheiro(t.valor)}.`;
+  avisoMercado(`${icone("ok")} ${t.jogador} vendido ao ${t.para_clube} por ${dinheiro(t.valor)}.`);
+  carregarCaixa();
   await carregarProximaRodada();   // elenco e escalação mudaram
 }

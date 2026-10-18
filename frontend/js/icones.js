@@ -3,6 +3,8 @@
 // <span data-icone="play"></span> vira o SVG em preencherIcones().
 
 const TRACOS = {
+  // envelope (caixa de entrada, v1.3)
+  email: "M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2m18 3l-8.991 5.727a2 2 0 0 1-2.009 0L2 7",
   play: "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z",
   mais: "M5 12h14m-7-7v14",
   pasta: "m6 14l1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2",
