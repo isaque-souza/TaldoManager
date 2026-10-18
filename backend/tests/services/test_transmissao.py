@@ -3,6 +3,7 @@ mudanças de tática e substituições durante o jogo."""
 
 import pytest
 
+from app.domain.clube import Clube
 from app.services import (
     escalacao_service, simulacao_service, temporada_service, transmissao_service,
 )
@@ -223,3 +224,14 @@ def test_goleiro_so_sai_para_entrar_outro_goleiro():
     entra = next(j for j in meu["banco"] if j["posicao"] == "Atacante")
     depois = transmissao_service.decidir(sid, 30, sai=sai["nome"], entra=entra["nome"])
     assert depois["decisoes"][-1]["entra"] == entra["nome"]
+
+
+def test_transmissao_traz_o_desenho_de_cada_formacao():
+    _, t = _iniciada()
+    assert set(t["desenhos"]) == set(Clube.FORMACOES)
+    vagas = t["desenhos"]["4-2-3-1"]
+    assert vagas[0]["funcao"] == "Goleiro"
+    assert [v["rotulo"] for v in vagas].count("VOL") == 2
+    # os titulares do apito já vêm no lugar do desenho
+    meu = _meu_time(t)
+    assert all(j["x"] is not None and j["rotulo"] for j in meu["titulares"])

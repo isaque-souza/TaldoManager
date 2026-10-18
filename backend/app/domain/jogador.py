@@ -19,13 +19,14 @@ class Jogador:
         # posição específica (v1.3): zagueiro, lateral, volante... Sem ela
         # (jovens de saves antigos), a padrão do setor, com as outras do
         # setor como secundárias: rende em qualquer vaga do setor dele
-        self.funcao = funcao or posicoes.PADRAO_DO_SETOR[posicao]
+        self.funcao = posicoes.nome_atual(funcao or posicoes.PADRAO_DO_SETOR[posicao])
         if posicoes.SETOR[self.funcao] != posicao:
             raise ValueError(f"{nome}: {self.funcao} não é do setor {posicao}")
         if secundarias is None:
             secundarias = () if funcao else posicoes.do_setor(posicao, self.funcao)
-        self.secundarias = tuple(secundarias)
+        self.secundarias = tuple(posicoes.nome_atual(f) for f in secundarias)
         self.vaga = None   # posição em que está escalado (Clube.escalar_time)
+        self.slot = None   # e a vaga no desenho da formação
         self.overall = overall
         self.numero = None   # camisa (v1.1): dado ao entrar no clube
         # mercado (v0.7): potencial nunca fica abaixo do overall atual

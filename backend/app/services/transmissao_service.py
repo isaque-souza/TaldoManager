@@ -25,6 +25,7 @@ import random
 from contextlib import redirect_stdout
 
 from app.db.conexao import conectar
+from app.domain import posicoes
 from app.domain.clube import Clube
 from app.domain.partida import motivo_goleiro
 from app.domain.temporada import restaurar_estado
@@ -135,6 +136,18 @@ def _montar(sim, campeonato, rodada, decisoes):
         "eventos": eventos,
         "decisoes": decisoes,
         "outros": outros,
+        "desenhos": desenhos_das_formacoes(),
+    }
+
+
+def desenhos_das_formacoes():
+    """{formação: [{funcao, x, y, rotulo}]}, goleiro primeiro."""
+    return {
+        f: [
+            {"funcao": funcao, "x": x, "y": y, "rotulo": rotulo}
+            for funcao, x, y, rotulo in posicoes.desenho(f)
+        ]
+        for f in Clube.FORMACOES
     }
 
 

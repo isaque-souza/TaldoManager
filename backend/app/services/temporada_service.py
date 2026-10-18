@@ -248,6 +248,13 @@ def _jogador_pre_jogo(j, linha=None):
     return dados
 
 
+def _no_desenho(dados, clube, j):
+    """Onde o titular fica no campo: x (largura), y (profundidade) e o
+    rótulo da vaga (LE, VOL, PD...), pelo desenho da formação."""
+    _, x, y, rotulo = posicoes.desenho(clube.formacao)[j.slot]
+    return {**dados, "x": x, "y": y, "rotulo": rotulo}
+
+
 def _escalacao(clube):
     """XI e banco exatamente como o motor escala no apito
     (Clube.escalar_time é determinístico). Cada titular vem com a vaga
@@ -259,7 +266,7 @@ def _escalacao(clube):
         "formacao": clube.formacao,
         "tatica": clube.tatica,
         "titulares": [
-            _jogador_pre_jogo(j, _LINHA[posicoes.SETOR[j.vaga]])
+            _no_desenho(_jogador_pre_jogo(j, _LINHA[posicoes.SETOR[j.vaga]]), clube, j)
             for j in clube.titulares
         ],
         "banco": [_jogador_pre_jogo(j) for j in clube.reservas],

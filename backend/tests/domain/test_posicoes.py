@@ -15,14 +15,14 @@ def _j(nome, funcao, overall=80, secundarias=()):
 
 
 def _time_completo(nome="FC Teste", overall=80):
-    """4-3-3 com cada um na sua posição, mais um reserva por posição."""
+    """Cada posição com gente para o 4-3-3 e para o 4-2-3-1, todos com o
+    mesmo overall: só a posição decide quem joga onde."""
     clube = Clube(nome, "Brasil", 1_000_000)
     for f, n in (("Goleiro", 2), ("Zagueiro", 3), ("Lateral", 3),
-                 ("Volante", 2), ("Meia", 3), ("Ponta", 3),
-                 ("Centroavante", 2)):
+                 ("Volante", 2), ("Meia central", 3), ("Meia-atacante", 2),
+                 ("Ponta", 3), ("Segundo atacante", 2), ("Centroavante", 2)):
         for i in range(n):
-            # o primeiro de cada posição é o melhor (titular natural)
-            clube.contratar_jogador(_j(f"{nome} {f} {i}", f, overall - 5 * i))
+            clube.contratar_jogador(_j(f"{nome} {f} {i}", f, overall))
     return clube
 
 
@@ -206,10 +206,50 @@ def test_menor_custo_acha_o_otimo_que_o_guloso_perde():
 
 def test_formacao_muda_as_vagas():
     clube = _time_completo()
-    clube.formacao = "4-4-2"
+    clube.formacao = "4-2-3-1"
     clube.escalar_time()
-    assert sum(j.vaga == "Centroavante" for j in clube.titulares) == 2
-    assert sum(j.vaga == "Ponta" for j in clube.titulares) == 0
+    vagas = [j.vaga for j in clube.titulares]
+    assert vagas.count("Volante") == 2
+    assert vagas.count("Meia-atacante") == 1
+    assert vagas.count("Centroavante") == 1
+    assert "Meia central" not in vagas
+
+
+def test_desenho_de_cada_formacao():
+    for formacao, desenho in posicoes.DESENHO.items():
+        assert len(desenho) == 10, formacao
+        for funcao, x, y, rotulo in posicoes.desenho(formacao):
+            assert funcao in posicoes.FUNCOES
+            assert 0 <= x <= 100 and 0 <= y <= 100
+            assert rotulo
+
+
+def test_desenho_segue_as_regras_de_profundidade_e_largura():
+    def onde(formacao, rotulo):
+        return [(x, y) for _, x, y, r in posicoes.desenho(formacao) if r == rotulo]
+
+    # laterais na linha da zaga, um pouco à frente e abertos
+    (le_x, le_y), = onde("4-3-3", "LE")
+    zag = onde("4-3-3", "ZAG")
+    assert all(le_y > y and le_x < x for x, y in zag)
+    # volante atrás do meia central; meia-atacante à frente dos dois
+    vol_y = max(y for _, y in onde("4-1-2-1-2", "VOL"))
+    mc_y = min(y for _, y in onde("4-1-2-1-2", "MC"))
+    (_, mei_y), = onde("4-1-2-1-2", "MEI")
+    assert vol_y < mc_y < mei_y
+    # segundo atacante entre o meio e o centroavante
+    (_, sa_y), = onde("4-4-1-1", "SA")
+    (_, ca_y), = onde("4-4-1-1", "CA")
+    assert max(y for _, y in onde("4-4-1-1", "MC")) < sa_y < ca_y
+    # pontas abertos; alas de um 5 atrás mais à frente que os laterais de 4
+    assert all(x < 20 or x > 80 for x, _ in onde("4-3-3", "PE") + onde("4-3-3", "PD"))
+    assert min(y for _, y in onde("5-3-2", "ALA")) > le_y
+
+
+def test_nome_antigo_de_meia_vira_meia_central():
+    j = Jogador("Antigo", 25, "Meio-Campo", 80, funcao="Meia", secundarias=["Meia"])
+    assert j.funcao == "Meia central"
+    assert j.secundarias == ("Meia central",)
 
 
 # ---------------------------------------------------------------------------

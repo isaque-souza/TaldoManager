@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 467 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 471 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -305,11 +305,21 @@ jogador da temporada.
 
 Cada jogador tem uma posição de verdade e rende menos fora dela:
 
-* [x] Posições mais específicas — goleiro, zagueiro, lateral, volante, meia,
-      ponta e centroavante (`Jogador.funcao`), e às vezes posições
-      secundárias. O motor segue pensando por setor (`posicao`). Cada
-      formação tem as suas vagas (o 4-3-3 é 2 ZAG, 2 LAT, 1 VOL, 2 MEI, 2 PON
-      e 1 CA) e todo elenco da seed cabe em qualquer uma sem improvisar
+* [x] Posições mais específicas — goleiro, zagueiro, lateral, volante, meia
+      central, meia-atacante, ponta, segundo atacante e centroavante
+      (`Jogador.funcao`), e às vezes posições secundárias. O motor segue
+      pensando por setor (`posicao`). Cada formação tem as suas vagas (o 4-3-3
+      é 2 ZAG, 2 LAT, 1 VOL, 2 MC, 2 PON e 1 CA) e todo elenco da seed cabe em
+      qualquer uma sem improvisar
+* [x] Formações desenhadas — cada vaga tem o seu lugar no campo, como no
+      FIFA/EA FC e no Football Manager: laterais na linha da zaga, um pouco à
+      frente e abertos; com três zagueiros eles viram alas, bem mais à
+      frente; volante logo à frente da defesa, meia central no meio e
+      meia-atacante entre o meio e o ataque; meias abertos (ME/MD) e pontas
+      (PE/PD) colados à lateral, o ponta mais alto; segundo atacante atrás do
+      centroavante. Vale no editor, no pré-jogo e na transmissão (que
+      redesenha o time quando a formação muda no meio do jogo). Formações
+      novas: 4-2-3-1, 4-1-2-1-2 (losango) e 4-4-1-1
 * [x] Overall por posição — fora da posição o jogador perde overall, pouco
       nas vizinhas e muito do outro lado do campo (um volante 80 rende 74 de
       zagueiro; numa secundária, 78). A força do time usa o overall na vaga.
@@ -508,7 +518,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 467 testes (domain, db, repositories, services, api)
+│   └── tests/              # 471 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas
