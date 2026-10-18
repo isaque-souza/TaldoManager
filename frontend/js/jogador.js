@@ -3,7 +3,7 @@
 import { $, esconderTudo, estado, limparAviso, pedir, voltarUm } from "./nucleo.js";
 import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { minutoFmt } from "./partida.js";
-import { cartao } from "./icones.js";
+import { cartao, seloIdolo } from "./icones.js";
 import { barrasAtributos } from "./atributos.js";
 
 // ---------- visão jogador ----------
@@ -38,6 +38,13 @@ export async function abrirJogador(jogadorId) {
     ? `Valor ${dinheiro(j.valor_mercado)} · salário ${dinheiro(j.salario)}/temporada · ` +
       `potencial ${j.potencial} · contrato: ${j.contrato_anos} ` +
       `temporada${j.contrato_anos === 1 ? "" : "s"}`
+    : "";
+
+  // fama (v1.4); saves anteriores não guardam (null)
+  const casa = j.temporadas_no_clube;
+  $("jogador-fama").innerHTML = j.fama != null
+    ? `Fama ${j.fama}/100 · ${casa} temporada${casa === 1 ? "" : "s"} no clube` +
+      (j.idolo ? ` · ${seloIdolo()} <strong>ídolo da torcida</strong>` : "")
     : "";
 
   $("jogador-atributos").innerHTML = barrasAtributos(j.atributos);

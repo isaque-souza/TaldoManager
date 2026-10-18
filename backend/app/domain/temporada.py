@@ -35,6 +35,9 @@ _JOGADOR_CAMPOS = (
     "idade", "overall", "potencial",
     # camisa (v1.1): vai com o jogador quando ele muda de clube
     "numero",
+    # fama (v1.4): muda no fim da temporada e o tempo de casa nas
+    # transferências
+    "fama", "temporadas_no_clube",
 )
 
 # campos acumulados de Clube (penalidade_expulsao é zerada a cada jogo)

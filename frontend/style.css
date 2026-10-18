@@ -820,6 +820,11 @@ button.hub-card:hover, button.hub-card:focus-visible {
 }
 .pj-ic .icone { width: 11px; height: 11px; }
 .pj-craque { color: var(--refletor); }
+/* ídolo da torcida (v1.4): coroa dourada e cheia, para não confundir com a
+   estrela (vazada) do craque */
+.idolo { color: var(--refletor); white-space: nowrap; }
+.idolo .icone { vertical-align: -2px; }
+.idolo .icone path { fill: currentColor; }
 .pj-cansado { color: var(--ambar); }
 .cartao {
   display: inline-block; width: 9px; height: 12px; border-radius: 1.5px;

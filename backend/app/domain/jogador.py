@@ -3,6 +3,7 @@
 import random
 
 from app.domain import atributos, posicoes
+from app.domain.fama import fator_valor
 
 
 # o titular típico da liga tem físico 1 acima do próprio overall (seed): o
@@ -17,7 +18,8 @@ class Jogador:
 
     def __init__(self, nome, idade, posicao, overall,
                  potencial=None, contrato_anos=3, multa_rescisoria=None,
-                 salario=None, funcao=None, secundarias=None):
+                 salario=None, funcao=None, secundarias=None,
+                 fama=0, temporadas_no_clube=0):
         self.nome = nome
         self.idade = idade
         self.posicao = posicao   # setor (Goleiro, Defesa...): o motor usa
@@ -42,6 +44,10 @@ class Jogador:
         # salário de CONTRATO, por temporada: fica fixo até a renovação, mesmo
         # que o jogador evolua. Sem contrato informado, começa no de mercado.
         self.salario = salario if salario is not None else self.salario_referencia()
+        # fama (v1.4): do jogador, vai com ele; o tempo de casa zera quando
+        # ele muda de clube (ver app.domain.fama)
+        self.fama = fama
+        self.temporadas_no_clube = temporadas_no_clube
         self.gols = 0
         self.assistencias = 0
         self.partidas = 0
@@ -251,6 +257,9 @@ class Jogador:
         # margem de crescimento só pesa para quem ainda tem idade de evoluir
         if self.idade <= 24:
             valor *= 1 + 0.04 * (self.potencial - self.overall)
+
+        # jogador famoso vende camisa e enche estádio: vale mais (v1.4)
+        valor *= fator_valor(self.fama)
 
         return max(10_000, round(valor / 10_000) * 10_000)
 

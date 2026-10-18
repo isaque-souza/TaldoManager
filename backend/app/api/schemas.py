@@ -55,6 +55,10 @@ class JogadorStats(BaseModel):
     salario: int = 0
     multa_rescisoria: int | None = None
     salario_referencia: int | None = None   # só no elenco da página do clube
+    # fama (v1.4); None em saves antigos
+    fama: int | None = None
+    temporadas_no_clube: int | None = None
+    idolo: bool = False
 
 
 class Recorde(BaseModel):
@@ -605,6 +609,10 @@ class JogadorInfo(BaseModel):
     valor_mercado: int = 0
     salario: int = 0
     multa_rescisoria: int | None = None
+    # fama (v1.4); None em saves antigos
+    fama: int | None = None
+    temporadas_no_clube: int | None = None
+    idolo: bool = False
 
 
 class JogadorDetalhe(BaseModel):
@@ -629,6 +637,8 @@ class FichaMercado(BaseModel):
     contrato_anos: int
     multa_rescisoria: int | None = None
     salario_referencia: int = 0          # quanto o mercado paga a esse overall
+    fama: int = 0                        # v1.4
+    idolo: bool = False
     bloqueio: str | None = None          # por que não dá pra negociar (None = dá)
     # só nos jogadores de outros clubes
     rival: bool = False
@@ -698,6 +708,7 @@ class OfertasJogador(BaseModel):
     jogador_id: int
     jogador: str
     valor_mercado: int
+    idolo: bool = False                  # v1.4: vender ídolo revolta a torcida
     bloqueio: str | None = None
     ofertas: list[OfertaClube]
 

@@ -10,7 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, historico
+from app.domain import caixa, fama, historico
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -106,6 +106,11 @@ def proxima_temporada(simulacao_id):
             campeonato = carregar_campeonato()
             preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais)
             envelhecer(campeonato, jogadores_finais, random)
+            # os ídolos de antes da virada: quem se aposentar ganha homenagem
+            idolos = {
+                j.nome for c in campeonato.clubes if c.nome == clube_usuario
+                for j in fama.idolos(c)
+            }
             # aposentadoria antes dos contratos: quem vai parar não renova
             movimentos = aposentar(campeonato, random)
             movimentos += resolver_contratos(campeonato, clube_usuario)
@@ -162,7 +167,7 @@ def proxima_temporada(simulacao_id):
                 ),
                 *caixa.virada(clube_usuario, movimentos, [
                     (j.nome, j.funcao) for j in alvo.jogadores if j.contrato_anos <= 1
-                ]),
+                ], idolos),
             ])
             # os planos de jogo seguem para a temporada nova (v1.2)
             plano_service.copiar(conn, simulacao_id, nova_id, alvo)

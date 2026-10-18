@@ -86,6 +86,9 @@ _COLUNAS_NOVAS = {
         # posição específica (v1.3); secundarias é uma lista JSON
         ("funcao", "TEXT"),
         ("secundarias", "TEXT"),
+        # fama (v1.4); saves antigos ficam com NULL = "sem registro"
+        ("fama", "INTEGER"),
+        ("temporadas_no_clube", "INTEGER"),
     ),
     # onde o técnico pôs cada titular no plano (v1.3), JSON
     "plano": (("posicionamento", "TEXT"),),

@@ -1,6 +1,6 @@
 import random
 
-from . import financas, torcida
+from . import fama, financas, torcida
 from .partida import Partida
 
 
@@ -74,6 +74,8 @@ class Campeonato:
 
         if self.rodada > len(self.calendario):
             financas.pagar_premiacao(self.classificacao())
+            # a fama antes da torcida: os ídolos novos já atraem gente
+            fama.fim_de_temporada(self.classificacao())
             torcida.fim_de_temporada(self.classificacao())
 
         for clube in self.clubes:
