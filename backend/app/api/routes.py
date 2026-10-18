@@ -18,6 +18,9 @@ from app.api.schemas import (
     NovaProposta,
     NovaRenovacao,
     NovaVenda,
+    NovoPlano,
+    PlanoEdicao,
+    Planos,
     OfertasJogador,
     RespostaProposta,
     RespostaRenovacao,
@@ -42,11 +45,13 @@ from app.services import (
     contrato_service,
     escalacao_service,
     mercado_service,
+    plano_service,
     simulacao_service,
     temporada_service,
     transmissao_service,
 )
 from app.services.carreira_service import CarreiraInvalida
+from app.services.plano_service import PlanoInvalido
 from app.services.temporada_service import PartidaEmAndamento, TemporadaConcluida
 from app.services.transmissao_service import TransmissaoInvalida
 
@@ -534,3 +539,63 @@ def decidir_na_partida(simulacao_id: int, decisao: DecisaoNova):
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
     return dados
+
+
+# ---------------------------------------------------------------------------
+# planos de jogo (v1.2): escalações com nome; o padrão vem a cada rodada
+# ---------------------------------------------------------------------------
+
+def _resposta_planos(chamada):
+    try:
+        dados = chamada()
+    except (TemporadaConcluida, PartidaEmAndamento) as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
+    except (PlanoInvalido, ValueError) as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação ou plano não encontrado")
+    return dados
+
+
+@router.get("/simulacoes/{simulacao_id}/planos", response_model=Planos, tags=["planos"])
+def listar_planos(simulacao_id: int):
+    """Os planos de jogo, qual está carregado para a próxima partida e se a
+    escalação foi mexida depois de carregar. Save sem plano ganha o
+    "Titular", com a escalação atual."""
+    return _resposta_planos(lambda: plano_service.listar(simulacao_id))
+
+
+@router.post("/simulacoes/{simulacao_id}/planos", response_model=Planos,
+             status_code=201, tags=["planos"])
+def criar_plano(simulacao_id: int, plano: NovoPlano):
+    """Plano novo (o que não vier sai da escalação atual). Ele passa a ser
+    o carregado."""
+    return _resposta_planos(lambda: plano_service.criar(
+        simulacao_id, plano.nome, plano.formacao, plano.tatica, plano.xi, plano.padrao,
+    ))
+
+
+@router.patch("/simulacoes/{simulacao_id}/planos/{plano_id}", response_model=Planos,
+              tags=["planos"])
+def editar_plano(simulacao_id: int, plano_id: int, plano: PlanoEdicao):
+    """Renomeia, muda o molde ou marca como padrão. Não mexe na escalação
+    da próxima partida."""
+    return _resposta_planos(lambda: plano_service.atualizar(
+        simulacao_id, plano_id, plano.nome, plano.formacao, plano.tatica,
+        plano.xi, plano.padrao,
+    ))
+
+
+@router.delete("/simulacoes/{simulacao_id}/planos/{plano_id}", response_model=Planos,
+               tags=["planos"])
+def apagar_plano(simulacao_id: int, plano_id: int):
+    """Apaga um plano (não o último); se era o padrão, outro assume."""
+    return _resposta_planos(lambda: plano_service.apagar(simulacao_id, plano_id))
+
+
+@router.post("/simulacoes/{simulacao_id}/planos/{plano_id}/usar", response_model=Planos,
+             tags=["planos"])
+def usar_plano(simulacao_id: int, plano_id: int):
+    """Carrega o plano na escalação da próxima partida (409 com a partida
+    já rolando)."""
+    return _resposta_planos(lambda: plano_service.usar(simulacao_id, plano_id))

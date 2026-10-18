@@ -534,3 +534,33 @@ def test_transmissao_recusa_decisao_invalida_e_trava_o_elenco():
 def test_transmissao_de_simulacao_inexistente_404():
     assert client.post("/simulacoes/999999/transmissao").status_code == 404
     assert client.get("/simulacoes/999999/transmissao").status_code == 404
+
+
+# --- planos de jogo (v1.2) ---
+
+def test_planos_via_api():
+    clube = _clube_qualquer()
+    sid = client.post(
+        "/simulacoes", json={"seed": 8, "clube": clube, "modo": "rodada_a_rodada"}
+    ).json()["id"]
+
+    v = client.get(f"/simulacoes/{sid}/planos")
+    assert v.status_code == 200
+    titular = v.json()["planos"][0]
+    assert titular["nome"] == "Titular" and titular["padrao"]
+
+    novo = client.post(f"/simulacoes/{sid}/planos",
+                       json={"nome": "Retranca", "formacao": "5-4-1", "tatica": "defensivo"})
+    assert novo.status_code == 201
+    retranca = next(p for p in novo.json()["planos"] if p["nome"] == "Retranca")
+
+    assert client.post(f"/simulacoes/{sid}/planos", json={"nome": "Retranca"}).status_code == 400
+    assert client.patch(f"/simulacoes/{sid}/planos/{retranca['id']}",
+                        json={"padrao": True}).json()["planos"][1]["padrao"] is True
+
+    usou = client.post(f"/simulacoes/{sid}/planos/{titular['id']}/usar")
+    assert usou.status_code == 200 and usou.json()["em_uso"] == titular["id"]
+
+    assert client.delete(f"/simulacoes/{sid}/planos/{titular['id']}").status_code == 200
+    assert client.delete(f"/simulacoes/{sid}/planos/{retranca['id']}").status_code == 400
+    assert client.get("/simulacoes/999999/planos").status_code == 404

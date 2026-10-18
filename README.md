@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 427 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 438 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -461,6 +461,19 @@ Partida Interativa.
       parou, com o elenco travado (mercado, contratos e escalação) até o fim.
       API: `POST/GET /simulacoes/{id}/transmissao`,
       `GET .../transmissao/estado?minuto=N`, `POST .../transmissao/decisoes`
+* [x] Planos de jogo — como as táticas personalizadas do EA FC: escalações
+      com nome (formação, tática e XI), uma marcada como padrão (★). Toda
+      rodada nova já começa no padrão; antes do apito dá para trocar de plano
+      ou mexer só naquele jogo ("Mexido só neste jogo", com "Salvar no plano"
+      e "Voltar ao plano"). Os planos seguem para a próxima temporada da
+      carreira, sem quem saiu do clube. Saves antigos ganham o plano
+      "Titular" com a escalação que já tinham.
+      API: `GET/POST /simulacoes/{id}/planos`, `PATCH/DELETE .../planos/{id}`,
+      `POST .../planos/{id}/usar`
+* [x] Escalação no campo — os titulares aparecem no gramado como o motor vai
+      escalar (`escalacao` em `GET /rodadas/proxima`); toque (ou arraste) um
+      titular e um reserva da mesma posição para trocar. Grava na hora e
+      avisa se o escolhido está exausto e vai ser poupado
 
 ---
 
@@ -480,7 +493,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 427 testes (domain, db, repositories, services, api)
+│   └── tests/              # 438 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas
