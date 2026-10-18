@@ -906,7 +906,7 @@ button.hub-card:hover, button.hub-card:focus-visible {
   background: var(--cor); color: var(--cor-texto); border: 2px solid rgba(255, 255, 255, .85);
   box-shadow: 0 2px 4px rgba(0, 0, 0, .5);
   font: 800 clamp(.55rem, 1.1vw, .72rem) / 1 var(--fonte-tarja);
-  transition-property: left, opacity; transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+  transition-property: left, top, opacity; transition-timing-function: cubic-bezier(.4, 0, .2, 1);
 }
 .sim-jog.expulso { opacity: 0; }
 .sim-jog.entrou { animation: entrou 1.2s ease-out; }

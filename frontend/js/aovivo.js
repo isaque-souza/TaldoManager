@@ -193,6 +193,7 @@ function avancarMinuto(m, { silencioso = false } = {}) {
   }
   for (const d of jogo.decisoes.filter((x) => x.minuto === m && x.formacao)) {
     adicionarLinha(relogio(m), `O ${d.clube} muda o desenho: agora no <b>${d.formacao}</b>`, "troca");
+    redesenharTime(d.clube, d.formacao);
   }
   for (const e of jogo.eventos.filter((x) => x.minuto === m)) {
     const { classe, texto } = narrar(e);
@@ -553,7 +554,7 @@ function montarCampo() {
     return porLinha.flatMap((js, n) => js.map((j, i) => {
       const x = lado === 0 ? X_LINHA[n] : 100 - X_LINHA[n];
       const y = ((i + 1) / (js.length + 1)) * 100;
-      return `<div class="sim-jog sim-lado-${lado}" data-nome="${j.nome}" data-x="${x}"
+      return `<div class="sim-jog sim-lado-${lado}" data-nome="${j.nome}" data-x="${x}" data-linha="${n}" data-y="${y}"
           style="left:${x}%;top:${y}%;--cor:${jogo.cores[lado]};--cor-texto:${corDoTexto(jogo.cores[lado])}"
           title="${j.nome} · ${j.posicao}"><span>${j.numero ?? ""}</span></div>`;
     }));
@@ -631,6 +632,42 @@ function moverBola() {
 
 function acharPeca(nome) {
   return [...$("av-campo").querySelectorAll(".sim-jog")].find((p) => p.dataset.nome === nome);
+}
+
+// formação mudada no meio do jogo: os bonecos do time vão para as linhas do
+// novo desenho por setor (goleiro, defesa, meio, ataque); dentro do setor,
+// quem estava mais atrás continua mais atrás. Quem joga só muda por
+// substituição, então um setor com gente a mais empurra o excedente para a
+// linha seguinte.
+const SETORES = ["Goleiro", "Defesa", "Meio-Campo", "Atacante"];
+
+function redesenharTime(clube, formacao) {
+  const lado = [jogo.mandante, jogo.visitante].findIndex((t) => t.clube === clube);
+  if (lado < 0) return;
+  const time = [jogo.mandante, jogo.visitante][lado];
+  const elenco = [...time.titulares, ...time.banco];
+  const setor = (p) => {
+    const j = elenco.find((x) => x.nome === p.dataset.nome);
+    const i = SETORES.indexOf(j && j.posicao);
+    return i < 0 ? Number(p.dataset.linha) : i;
+  };
+  const pecas = [...$("av-campo").querySelectorAll(`.sim-jog.sim-lado-${lado}`)].sort((a, b) =>
+    setor(a) - setor(b) || a.dataset.linha - b.dataset.linha || a.dataset.y - b.dataset.y
+  );
+  const tamanhos = [1, ...formacao.split("-").map(Number)];
+  let k = 0;
+  tamanhos.forEach((quantos, n) => {
+    // a última linha leva quem sobrar (time que ainda não fechou as contas)
+    const linha = pecas.slice(k, n === tamanhos.length - 1 ? pecas.length : k + quantos);
+    k += linha.length;
+    linha.forEach((p, i) => {
+      const x = lado === 0 ? X_LINHA[n] : 100 - X_LINHA[n];
+      const y = ((i + 1) / (linha.length + 1)) * 100;
+      Object.assign(p.dataset, { x, linha: n, y });
+      p.style.left = `${x}%`;
+      p.style.top = `${y}%`;
+    });
+  });
 }
 
 function trocarNoCampo(e) {
