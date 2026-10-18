@@ -112,6 +112,8 @@ def _serializar_jogador(jogador, clube_nome):
         "nome": jogador.nome,
         "clube": clube_nome,
         "posicao": jogador.posicao,
+        "funcao": jogador.funcao,
+        "secundarias": json.dumps(list(jogador.secundarias), ensure_ascii=False),
         "overall": jogador.overall,
         "idade": jogador.idade,
         "partidas": jogador.partidas,

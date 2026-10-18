@@ -7,7 +7,9 @@
         "overall": 78,
         "potencial": 80,
         "contrato_anos": 3,
-        "multa_rescisoria": 4600000
+        "multa_rescisoria": 4600000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 2,
@@ -17,7 +19,11 @@
         "overall": 77,
         "potencial": 90,
         "contrato_anos": 5,
-        "multa_rescisoria": 5300000
+        "multa_rescisoria": 5300000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 3,
@@ -27,7 +33,9 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 2,
-        "multa_rescisoria": 7400000
+        "multa_rescisoria": 7400000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 4,
@@ -37,7 +45,9 @@
         "overall": 85,
         "potencial": 91,
         "contrato_anos": 5,
-        "multa_rescisoria": 16500000
+        "multa_rescisoria": 16500000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 5,
@@ -47,7 +57,9 @@
         "overall": 86,
         "potencial": 92,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 6,
@@ -57,7 +69,11 @@
         "overall": 82,
         "potencial": 96,
         "contrato_anos": 5,
-        "multa_rescisoria": 19500000
+        "multa_rescisoria": 19500000,
+        "funcao": "Volante",
+        "secundarias": [
+            "Zagueiro"
+        ]
     },
     {
         "id": 7,
@@ -67,7 +83,9 @@
         "overall": 88,
         "potencial": 91,
         "contrato_anos": 5,
-        "multa_rescisoria": 31100000
+        "multa_rescisoria": 31100000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 8,
@@ -77,7 +95,9 @@
         "overall": 88,
         "potencial": 88,
         "contrato_anos": 2,
-        "multa_rescisoria": 9000000
+        "multa_rescisoria": 9000000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 9,
@@ -87,7 +107,9 @@
         "overall": 84,
         "potencial": 92,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 10,
@@ -97,7 +119,9 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 11,
@@ -107,7 +131,12 @@
         "overall": 81,
         "potencial": 85,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral",
+            "Meia"
+        ]
     },
     {
         "id": 12,
@@ -117,7 +146,9 @@
         "overall": 73,
         "potencial": 78,
         "contrato_anos": 1,
-        "multa_rescisoria": 1500000
+        "multa_rescisoria": 1500000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 13,
@@ -127,7 +158,9 @@
         "overall": 79,
         "potencial": 82,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 14,
@@ -137,7 +170,9 @@
         "overall": 99,
         "potencial": 99,
         "contrato_anos": 4,
-        "multa_rescisoria": 283800000
+        "multa_rescisoria": 283800000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 15,
@@ -147,7 +182,9 @@
         "overall": 80,
         "potencial": 89,
         "contrato_anos": 3,
-        "multa_rescisoria": 9700000
+        "multa_rescisoria": 9700000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 16,
@@ -157,7 +194,9 @@
         "overall": 76,
         "potencial": 76,
         "contrato_anos": 2,
-        "multa_rescisoria": 1200000
+        "multa_rescisoria": 1200000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 17,
@@ -167,7 +206,11 @@
         "overall": 73,
         "potencial": 84,
         "contrato_anos": 5,
-        "multa_rescisoria": 3100000
+        "multa_rescisoria": 3100000,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 18,
@@ -177,7 +220,12 @@
         "overall": 77,
         "potencial": 84,
         "contrato_anos": 1,
-        "multa_rescisoria": 5800000
+        "multa_rescisoria": 5800000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral",
+            "Meia"
+        ]
     },
     {
         "id": 19,
@@ -187,7 +235,9 @@
         "overall": 86,
         "potencial": 88,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 20,
@@ -197,7 +247,11 @@
         "overall": 85,
         "potencial": 85,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 21,
@@ -207,7 +261,9 @@
         "overall": 90,
         "potencial": 92,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 22,
@@ -217,7 +273,11 @@
         "overall": 89,
         "potencial": 89,
         "contrato_anos": 2,
-        "multa_rescisoria": 13300000
+        "multa_rescisoria": 13300000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Zagueiro"
+        ]
     },
     {
         "id": 23,
@@ -227,7 +287,9 @@
         "overall": 89,
         "potencial": 92,
         "contrato_anos": 5,
-        "multa_rescisoria": 36100000
+        "multa_rescisoria": 36100000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 24,
@@ -237,7 +299,9 @@
         "overall": 85,
         "potencial": 94,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 25,
@@ -247,7 +311,9 @@
         "overall": 94,
         "potencial": 96,
         "contrato_anos": 3,
-        "multa_rescisoria": 96200000
+        "multa_rescisoria": 96200000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 26,
@@ -257,7 +323,9 @@
         "overall": 88,
         "potencial": 99,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 27,
@@ -267,7 +335,11 @@
         "overall": 91,
         "potencial": 93,
         "contrato_anos": 4,
-        "multa_rescisoria": 42300000
+        "multa_rescisoria": 42300000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 28,
@@ -277,7 +349,11 @@
         "overall": 86,
         "potencial": 89,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 29,
@@ -287,7 +363,9 @@
         "overall": 94,
         "potencial": 97,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 30,
@@ -297,7 +375,9 @@
         "overall": 81,
         "potencial": 84,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 31,
@@ -307,7 +387,11 @@
         "overall": 83,
         "potencial": 96,
         "contrato_anos": 3,
-        "multa_rescisoria": 13600000
+        "multa_rescisoria": 13600000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 32,
@@ -317,7 +401,9 @@
         "overall": 82,
         "potencial": 93,
         "contrato_anos": 5,
-        "multa_rescisoria": 10200000
+        "multa_rescisoria": 10200000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 33,
@@ -327,7 +413,9 @@
         "overall": 84,
         "potencial": 84,
         "contrato_anos": 2,
-        "multa_rescisoria": 5500000
+        "multa_rescisoria": 5500000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 34,
@@ -337,7 +425,9 @@
         "overall": 83,
         "potencial": 83,
         "contrato_anos": 5,
-        "multa_rescisoria": 7100000
+        "multa_rescisoria": 7100000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 35,
@@ -347,7 +437,11 @@
         "overall": 86,
         "potencial": 86,
         "contrato_anos": 1,
-        "multa_rescisoria": 8200000
+        "multa_rescisoria": 8200000,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 36,
@@ -357,7 +451,11 @@
         "overall": 85,
         "potencial": 93,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 37,
@@ -367,7 +465,9 @@
         "overall": 77,
         "potencial": 85,
         "contrato_anos": 1,
-        "multa_rescisoria": 3000000
+        "multa_rescisoria": 3000000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 38,
@@ -377,7 +477,9 @@
         "overall": 80,
         "potencial": 87,
         "contrato_anos": 5,
-        "multa_rescisoria": 9100000
+        "multa_rescisoria": 9100000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 39,
@@ -387,7 +489,9 @@
         "overall": 84,
         "potencial": 99,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 40,
@@ -397,7 +501,12 @@
         "overall": 73,
         "potencial": 76,
         "contrato_anos": 4,
-        "multa_rescisoria": 1400000
+        "multa_rescisoria": 1400000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia",
+            "Ponta"
+        ]
     },
     {
         "id": 41,
@@ -407,7 +516,11 @@
         "overall": 73,
         "potencial": 73,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 42,
@@ -417,7 +530,9 @@
         "overall": 86,
         "potencial": 89,
         "contrato_anos": 2,
-        "multa_rescisoria": 23200000
+        "multa_rescisoria": 23200000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 43,
@@ -427,7 +542,9 @@
         "overall": 84,
         "potencial": 90,
         "contrato_anos": 4,
-        "multa_rescisoria": 15400000
+        "multa_rescisoria": 15400000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 44,
@@ -437,7 +554,9 @@
         "overall": 79,
         "potencial": 86,
         "contrato_anos": 4,
-        "multa_rescisoria": 6200000
+        "multa_rescisoria": 6200000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 45,
@@ -447,7 +566,11 @@
         "overall": 84,
         "potencial": 86,
         "contrato_anos": 5,
-        "multa_rescisoria": 14400000
+        "multa_rescisoria": 14400000,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 46,
@@ -457,7 +580,11 @@
         "overall": 87,
         "potencial": 98,
         "contrato_anos": 3,
-        "multa_rescisoria": 47100000
+        "multa_rescisoria": 47100000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 47,
@@ -467,7 +594,9 @@
         "overall": 80,
         "potencial": 93,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 48,
@@ -477,7 +606,9 @@
         "overall": 79,
         "potencial": 82,
         "contrato_anos": 4,
-        "multa_rescisoria": 4200000
+        "multa_rescisoria": 4200000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 49,
@@ -487,7 +618,9 @@
         "overall": 75,
         "potencial": 78,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 50,
@@ -497,7 +630,11 @@
         "overall": 78,
         "potencial": 82,
         "contrato_anos": 3,
-        "multa_rescisoria": 6200000
+        "multa_rescisoria": 6200000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 51,
@@ -507,7 +644,9 @@
         "overall": 77,
         "potencial": 79,
         "contrato_anos": 1,
-        "multa_rescisoria": 3600000
+        "multa_rescisoria": 3600000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 52,
@@ -517,7 +656,11 @@
         "overall": 76,
         "potencial": 76,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 53,
@@ -527,7 +670,9 @@
         "overall": 78,
         "potencial": 81,
         "contrato_anos": 5,
-        "multa_rescisoria": 5200000
+        "multa_rescisoria": 5200000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 54,
@@ -537,7 +682,11 @@
         "overall": 71,
         "potencial": 74,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 55,
@@ -547,7 +696,9 @@
         "overall": 86,
         "potencial": 86,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 56,
@@ -557,7 +708,11 @@
         "overall": 91,
         "potencial": 93,
         "contrato_anos": 4,
-        "multa_rescisoria": 77600000
+        "multa_rescisoria": 77600000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 57,
@@ -567,7 +722,9 @@
         "overall": 90,
         "potencial": 93,
         "contrato_anos": 5,
-        "multa_rescisoria": 50100000
+        "multa_rescisoria": 50100000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 58,
@@ -577,7 +734,11 @@
         "overall": 88,
         "potencial": 99,
         "contrato_anos": 4,
-        "multa_rescisoria": 58000000
+        "multa_rescisoria": 58000000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Zagueiro"
+        ]
     },
     {
         "id": 59,
@@ -587,7 +748,12 @@
         "overall": 81,
         "potencial": 94,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ]
     },
     {
         "id": 60,
@@ -597,7 +763,9 @@
         "overall": 85,
         "potencial": 94,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 61,
@@ -607,7 +775,11 @@
         "overall": 85,
         "potencial": 85,
         "contrato_anos": 2,
-        "multa_rescisoria": 6800000
+        "multa_rescisoria": 6800000,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 62,
@@ -617,7 +789,11 @@
         "overall": 83,
         "potencial": 83,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 63,
@@ -627,7 +803,11 @@
         "overall": 88,
         "potencial": 99,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 64,
@@ -637,7 +817,9 @@
         "overall": 84,
         "potencial": 93,
         "contrato_anos": 4,
-        "multa_rescisoria": 23600000
+        "multa_rescisoria": 23600000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 65,
@@ -647,7 +829,12 @@
         "overall": 89,
         "potencial": 89,
         "contrato_anos": 1,
-        "multa_rescisoria": 12100000
+        "multa_rescisoria": 12100000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral",
+            "Meia"
+        ]
     },
     {
         "id": 66,
@@ -657,7 +844,9 @@
         "overall": 88,
         "potencial": 88,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 67,
@@ -667,7 +856,11 @@
         "overall": 87,
         "potencial": 90,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 68,
@@ -677,7 +870,9 @@
         "overall": 76,
         "potencial": 78,
         "contrato_anos": 4,
-        "multa_rescisoria": 2200000
+        "multa_rescisoria": 2200000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 69,
@@ -687,7 +882,9 @@
         "overall": 84,
         "potencial": 84,
         "contrato_anos": 3,
-        "multa_rescisoria": 11000000
+        "multa_rescisoria": 11000000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 70,
@@ -697,7 +894,9 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 2,
-        "multa_rescisoria": 4600000
+        "multa_rescisoria": 4600000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 71,
@@ -707,7 +906,11 @@
         "overall": 82,
         "potencial": 89,
         "contrato_anos": 4,
-        "multa_rescisoria": 12100000
+        "multa_rescisoria": 12100000,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 72,
@@ -717,7 +920,11 @@
         "overall": 87,
         "potencial": 90,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 73,
@@ -727,7 +934,9 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 1,
-        "multa_rescisoria": 5200000
+        "multa_rescisoria": 5200000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 74,
@@ -737,7 +946,9 @@
         "overall": 84,
         "potencial": 84,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 75,
@@ -747,7 +958,11 @@
         "overall": 79,
         "potencial": 85,
         "contrato_anos": 5,
-        "multa_rescisoria": 9600000
+        "multa_rescisoria": 9600000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 76,
@@ -757,7 +972,9 @@
         "overall": 82,
         "potencial": 90,
         "contrato_anos": 1,
-        "multa_rescisoria": 9100000
+        "multa_rescisoria": 9100000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 77,
@@ -767,7 +984,9 @@
         "overall": 79,
         "potencial": 85,
         "contrato_anos": 2,
-        "multa_rescisoria": 8900000
+        "multa_rescisoria": 8900000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 78,
@@ -777,7 +996,9 @@
         "overall": 78,
         "potencial": 78,
         "contrato_anos": 1,
-        "multa_rescisoria": 1000000
+        "multa_rescisoria": 1000000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 79,
@@ -787,7 +1008,9 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 1,
-        "multa_rescisoria": 5400000
+        "multa_rescisoria": 5400000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 80,
@@ -797,7 +1020,9 @@
         "overall": 80,
         "potencial": 86,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 81,
@@ -807,7 +1032,9 @@
         "overall": 80,
         "potencial": 88,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 82,
@@ -817,7 +1044,9 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 2,
-        "multa_rescisoria": 2500000
+        "multa_rescisoria": 2500000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 83,
@@ -827,7 +1056,9 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 84,
@@ -837,7 +1068,9 @@
         "overall": 79,
         "potencial": 79,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 85,
@@ -847,7 +1080,12 @@
         "overall": 79,
         "potencial": 79,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ]
     },
     {
         "id": 86,
@@ -857,7 +1095,9 @@
         "overall": 72,
         "potencial": 76,
         "contrato_anos": 5,
-        "multa_rescisoria": 2000000
+        "multa_rescisoria": 2000000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 87,
@@ -867,7 +1107,9 @@
         "overall": 70,
         "potencial": 73,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 88,
@@ -877,7 +1119,9 @@
         "overall": 77,
         "potencial": 77,
         "contrato_anos": 5,
-        "multa_rescisoria": 2300000
+        "multa_rescisoria": 2300000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 89,
@@ -887,7 +1131,11 @@
         "overall": 75,
         "potencial": 78,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 90,
@@ -897,7 +1145,9 @@
         "overall": 74,
         "potencial": 75,
         "contrato_anos": 5,
-        "multa_rescisoria": 1300000
+        "multa_rescisoria": 1300000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 91,
@@ -907,7 +1157,9 @@
         "overall": 75,
         "potencial": 75,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 92,
@@ -917,7 +1169,9 @@
         "overall": 84,
         "potencial": 84,
         "contrato_anos": 4,
-        "multa_rescisoria": 12200000
+        "multa_rescisoria": 12200000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 93,
@@ -927,7 +1181,11 @@
         "overall": 80,
         "potencial": 81,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 94,
@@ -937,7 +1195,9 @@
         "overall": 83,
         "potencial": 83,
         "contrato_anos": 2,
-        "multa_rescisoria": 5500000
+        "multa_rescisoria": 5500000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 95,
@@ -947,7 +1207,9 @@
         "overall": 86,
         "potencial": 86,
         "contrato_anos": 5,
-        "multa_rescisoria": 13700000
+        "multa_rescisoria": 13700000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 96,
@@ -957,7 +1219,9 @@
         "overall": 85,
         "potencial": 96,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 97,
@@ -967,7 +1231,9 @@
         "overall": 83,
         "potencial": 84,
         "contrato_anos": 5,
-        "multa_rescisoria": 10200000
+        "multa_rescisoria": 10200000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 98,
@@ -977,7 +1243,9 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 1,
-        "multa_rescisoria": 3000000
+        "multa_rescisoria": 3000000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 99,
@@ -987,7 +1255,11 @@
         "overall": 83,
         "potencial": 83,
         "contrato_anos": 2,
-        "multa_rescisoria": 4200000
+        "multa_rescisoria": 4200000,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 100,
@@ -997,7 +1269,9 @@
         "overall": 84,
         "potencial": 84,
         "contrato_anos": 1,
-        "multa_rescisoria": 6200000
+        "multa_rescisoria": 6200000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 101,
@@ -1007,7 +1281,11 @@
         "overall": 81,
         "potencial": 81,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 102,
@@ -1017,7 +1295,9 @@
         "overall": 73,
         "potencial": 73,
         "contrato_anos": 1,
-        "multa_rescisoria": 1400000
+        "multa_rescisoria": 1400000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 103,
@@ -1027,7 +1307,11 @@
         "overall": 72,
         "potencial": 72,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 104,
@@ -1037,7 +1321,9 @@
         "overall": 75,
         "potencial": 75,
         "contrato_anos": 2,
-        "multa_rescisoria": 1000000
+        "multa_rescisoria": 1000000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 105,
@@ -1047,7 +1333,9 @@
         "overall": 81,
         "potencial": 86,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 106,
@@ -1057,7 +1345,11 @@
         "overall": 74,
         "potencial": 77,
         "contrato_anos": 3,
-        "multa_rescisoria": 1700000
+        "multa_rescisoria": 1700000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 107,
@@ -1067,7 +1359,9 @@
         "overall": 81,
         "potencial": 83,
         "contrato_anos": 4,
-        "multa_rescisoria": 9400000
+        "multa_rescisoria": 9400000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 108,
@@ -1077,7 +1371,9 @@
         "overall": 78,
         "potencial": 80,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 109,
@@ -1087,7 +1383,9 @@
         "overall": 86,
         "potencial": 89,
         "contrato_anos": 4,
-        "multa_rescisoria": 11800000
+        "multa_rescisoria": 11800000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 110,
@@ -1097,7 +1395,11 @@
         "overall": 79,
         "potencial": 79,
         "contrato_anos": 5,
-        "multa_rescisoria": 3800000
+        "multa_rescisoria": 3800000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 111,
@@ -1107,7 +1409,12 @@
         "overall": 79,
         "potencial": 80,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ]
     },
     {
         "id": 112,
@@ -1117,7 +1424,9 @@
         "overall": 81,
         "potencial": 82,
         "contrato_anos": 4,
-        "multa_rescisoria": 9000000
+        "multa_rescisoria": 9000000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 113,
@@ -1127,7 +1436,11 @@
         "overall": 79,
         "potencial": 81,
         "contrato_anos": 4,
-        "multa_rescisoria": 4100000
+        "multa_rescisoria": 4100000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 114,
@@ -1137,7 +1450,9 @@
         "overall": 89,
         "potencial": 99,
         "contrato_anos": 2,
-        "multa_rescisoria": 45800000
+        "multa_rescisoria": 45800000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 115,
@@ -1147,7 +1462,9 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 116,
@@ -1157,7 +1474,12 @@
         "overall": 83,
         "potencial": 88,
         "contrato_anos": 1,
-        "multa_rescisoria": 11500000
+        "multa_rescisoria": 11500000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Ponta",
+            "Volante"
+        ]
     },
     {
         "id": 117,
@@ -1167,7 +1489,11 @@
         "overall": 77,
         "potencial": 78,
         "contrato_anos": 2,
-        "multa_rescisoria": 3900000
+        "multa_rescisoria": 3900000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 118,
@@ -1177,7 +1503,11 @@
         "overall": 92,
         "potencial": 92,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 119,
@@ -1187,7 +1517,9 @@
         "overall": 81,
         "potencial": 89,
         "contrato_anos": 1,
-        "multa_rescisoria": 11700000
+        "multa_rescisoria": 11700000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 120,
@@ -1197,7 +1529,9 @@
         "overall": 83,
         "potencial": 86,
         "contrato_anos": 2,
-        "multa_rescisoria": 7600000
+        "multa_rescisoria": 7600000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 121,
@@ -1207,7 +1541,9 @@
         "overall": 77,
         "potencial": 77,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 122,
@@ -1217,7 +1553,11 @@
         "overall": 81,
         "potencial": 88,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 123,
@@ -1227,7 +1567,12 @@
         "overall": 77,
         "potencial": 77,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": [
+            "Ponta",
+            "Volante"
+        ]
     },
     {
         "id": 124,
@@ -1237,7 +1582,11 @@
         "overall": 76,
         "potencial": 77,
         "contrato_anos": 5,
-        "multa_rescisoria": 3300000
+        "multa_rescisoria": 3300000,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 125,
@@ -1247,7 +1596,11 @@
         "overall": 81,
         "potencial": 81,
         "contrato_anos": 1,
-        "multa_rescisoria": 3000000
+        "multa_rescisoria": 3000000,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 126,
@@ -1257,7 +1610,9 @@
         "overall": 77,
         "potencial": 80,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 127,
@@ -1267,7 +1622,9 @@
         "overall": 77,
         "potencial": 77,
         "contrato_anos": 4,
-        "multa_rescisoria": 2400000
+        "multa_rescisoria": 2400000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 128,
@@ -1277,7 +1634,11 @@
         "overall": 77,
         "potencial": 79,
         "contrato_anos": 4,
-        "multa_rescisoria": 3700000
+        "multa_rescisoria": 3700000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 129,
@@ -1287,7 +1648,11 @@
         "overall": 74,
         "potencial": 80,
         "contrato_anos": 4,
-        "multa_rescisoria": 2100000
+        "multa_rescisoria": 2100000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 130,
@@ -1297,7 +1662,11 @@
         "overall": 75,
         "potencial": 83,
         "contrato_anos": 1,
-        "multa_rescisoria": 3700000
+        "multa_rescisoria": 3700000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 131,
@@ -1307,7 +1676,9 @@
         "overall": 80,
         "potencial": 91,
         "contrato_anos": 3,
-        "multa_rescisoria": 11700000
+        "multa_rescisoria": 11700000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 132,
@@ -1317,7 +1688,9 @@
         "overall": 81,
         "potencial": 88,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 133,
@@ -1327,7 +1700,9 @@
         "overall": 83,
         "potencial": 90,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 134,
@@ -1337,7 +1712,9 @@
         "overall": 75,
         "potencial": 87,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 135,
@@ -1347,7 +1724,12 @@
         "overall": 83,
         "potencial": 83,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante",
+            "Meia"
+        ]
     },
     {
         "id": 136,
@@ -1357,7 +1739,11 @@
         "overall": 80,
         "potencial": 89,
         "contrato_anos": 4,
-        "multa_rescisoria": 6700000
+        "multa_rescisoria": 6700000,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 137,
@@ -1367,7 +1753,11 @@
         "overall": 82,
         "potencial": 85,
         "contrato_anos": 3,
-        "multa_rescisoria": 11900000
+        "multa_rescisoria": 11900000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 138,
@@ -1377,7 +1767,9 @@
         "overall": 72,
         "potencial": 85,
         "contrato_anos": 4,
-        "multa_rescisoria": 2000000
+        "multa_rescisoria": 2000000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 139,
@@ -1387,7 +1779,11 @@
         "overall": 68,
         "potencial": 73,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 140,
@@ -1397,7 +1793,9 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 2,
-        "multa_rescisoria": 700000
+        "multa_rescisoria": 700000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 141,
@@ -1407,7 +1805,11 @@
         "overall": 71,
         "potencial": 71,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 142,
@@ -1417,7 +1819,9 @@
         "overall": 77,
         "potencial": 78,
         "contrato_anos": 1,
-        "multa_rescisoria": 2900000
+        "multa_rescisoria": 2900000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 143,
@@ -1427,7 +1831,9 @@
         "overall": 70,
         "potencial": 70,
         "contrato_anos": 1,
-        "multa_rescisoria": 500000
+        "multa_rescisoria": 500000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 144,
@@ -1437,7 +1843,9 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 2,
-        "multa_rescisoria": 700000
+        "multa_rescisoria": 700000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 145,
@@ -1447,7 +1855,9 @@
         "overall": 76,
         "potencial": 91,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 146,
@@ -1457,7 +1867,11 @@
         "overall": 75,
         "potencial": 80,
         "contrato_anos": 5,
-        "multa_rescisoria": 3800000
+        "multa_rescisoria": 3800000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 147,
@@ -1467,7 +1881,9 @@
         "overall": 80,
         "potencial": 95,
         "contrato_anos": 2,
-        "multa_rescisoria": 11300000
+        "multa_rescisoria": 11300000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 148,
@@ -1477,7 +1893,11 @@
         "overall": 73,
         "potencial": 75,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 149,
@@ -1487,7 +1907,9 @@
         "overall": 73,
         "potencial": 81,
         "contrato_anos": 2,
-        "multa_rescisoria": 2600000
+        "multa_rescisoria": 2600000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 150,
@@ -1497,7 +1919,9 @@
         "overall": 78,
         "potencial": 80,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 151,
@@ -1507,7 +1931,9 @@
         "overall": 73,
         "potencial": 80,
         "contrato_anos": 5,
-        "multa_rescisoria": 1400000
+        "multa_rescisoria": 1400000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 152,
@@ -1517,7 +1943,9 @@
         "overall": 83,
         "potencial": 83,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 153,
@@ -1527,7 +1955,11 @@
         "overall": 75,
         "potencial": 75,
         "contrato_anos": 1,
-        "multa_rescisoria": 900000
+        "multa_rescisoria": 900000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 154,
@@ -1537,7 +1969,9 @@
         "overall": 77,
         "potencial": 79,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 155,
@@ -1547,7 +1981,9 @@
         "overall": 80,
         "potencial": 88,
         "contrato_anos": 5,
-        "multa_rescisoria": 10500000
+        "multa_rescisoria": 10500000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 156,
@@ -1557,7 +1993,9 @@
         "overall": 71,
         "potencial": 72,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 157,
@@ -1567,7 +2005,9 @@
         "overall": 69,
         "potencial": 69,
         "contrato_anos": 2,
-        "multa_rescisoria": 500000
+        "multa_rescisoria": 500000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 158,
@@ -1577,7 +2017,9 @@
         "overall": 73,
         "potencial": 87,
         "contrato_anos": 3,
-        "multa_rescisoria": 2900000
+        "multa_rescisoria": 2900000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 159,
@@ -1587,7 +2029,11 @@
         "overall": 78,
         "potencial": 85,
         "contrato_anos": 5,
-        "multa_rescisoria": 5200000
+        "multa_rescisoria": 5200000,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 160,
@@ -1597,7 +2043,9 @@
         "overall": 76,
         "potencial": 77,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 161,
@@ -1607,7 +2055,9 @@
         "overall": 77,
         "potencial": 77,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 162,
@@ -1617,7 +2067,12 @@
         "overall": 72,
         "potencial": 74,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia",
+            "Ponta"
+        ]
     },
     {
         "id": 163,
@@ -1627,7 +2082,9 @@
         "overall": 73,
         "potencial": 73,
         "contrato_anos": 2,
-        "multa_rescisoria": 700000
+        "multa_rescisoria": 700000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 164,
@@ -1637,7 +2094,9 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 1,
-        "multa_rescisoria": 10900000
+        "multa_rescisoria": 10900000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 165,
@@ -1647,7 +2106,11 @@
         "overall": 76,
         "potencial": 84,
         "contrato_anos": 3,
-        "multa_rescisoria": 3500000
+        "multa_rescisoria": 3500000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 166,
@@ -1657,7 +2120,11 @@
         "overall": 79,
         "potencial": 86,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 167,
@@ -1667,7 +2134,9 @@
         "overall": 81,
         "potencial": 87,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 168,
@@ -1677,7 +2146,11 @@
         "overall": 85,
         "potencial": 94,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 169,
@@ -1687,7 +2160,9 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 1,
-        "multa_rescisoria": 3200000
+        "multa_rescisoria": 3200000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 170,
@@ -1697,7 +2172,11 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": [
+            "Zagueiro"
+        ]
     },
     {
         "id": 171,
@@ -1707,7 +2186,9 @@
         "overall": 84,
         "potencial": 88,
         "contrato_anos": 2,
-        "multa_rescisoria": 13100000
+        "multa_rescisoria": 13100000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 172,
@@ -1717,7 +2198,9 @@
         "overall": 77,
         "potencial": 79,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 173,
@@ -1727,7 +2210,9 @@
         "overall": 79,
         "potencial": 79,
         "contrato_anos": 1,
-        "multa_rescisoria": 2600000
+        "multa_rescisoria": 2600000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 174,
@@ -1737,7 +2222,9 @@
         "overall": 78,
         "potencial": 83,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 175,
@@ -1747,7 +2234,11 @@
         "overall": 77,
         "potencial": 79,
         "contrato_anos": 4,
-        "multa_rescisoria": 3300000
+        "multa_rescisoria": 3300000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 176,
@@ -1757,7 +2248,11 @@
         "overall": 73,
         "potencial": 75,
         "contrato_anos": 1,
-        "multa_rescisoria": 1900000
+        "multa_rescisoria": 1900000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 177,
@@ -1767,7 +2262,9 @@
         "overall": 81,
         "potencial": 81,
         "contrato_anos": 1,
-        "multa_rescisoria": 3800000
+        "multa_rescisoria": 3800000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 178,
@@ -1777,7 +2274,11 @@
         "overall": 74,
         "potencial": 77,
         "contrato_anos": 1,
-        "multa_rescisoria": 2500000
+        "multa_rescisoria": 2500000,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 179,
@@ -1787,7 +2288,11 @@
         "overall": 70,
         "potencial": 72,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 180,
@@ -1797,7 +2302,9 @@
         "overall": 72,
         "potencial": 72,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 181,
@@ -1807,7 +2314,9 @@
         "overall": 83,
         "potencial": 85,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 182,
@@ -1817,7 +2326,9 @@
         "overall": 79,
         "potencial": 91,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 183,
@@ -1827,7 +2338,12 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 4,
-        "multa_rescisoria": 11500000
+        "multa_rescisoria": 11500000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ]
     },
     {
         "id": 184,
@@ -1837,7 +2353,9 @@
         "overall": 83,
         "potencial": 87,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 185,
@@ -1847,7 +2365,11 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 186,
@@ -1857,7 +2379,9 @@
         "overall": 79,
         "potencial": 85,
         "contrato_anos": 4,
-        "multa_rescisoria": 6600000
+        "multa_rescisoria": 6600000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 187,
@@ -1867,7 +2391,11 @@
         "overall": 81,
         "potencial": 92,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 188,
@@ -1877,7 +2405,9 @@
         "overall": 82,
         "potencial": 89,
         "contrato_anos": 3,
-        "multa_rescisoria": 13300000
+        "multa_rescisoria": 13300000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 189,
@@ -1887,7 +2417,11 @@
         "overall": 80,
         "potencial": 88,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 190,
@@ -1897,7 +2431,9 @@
         "overall": 78,
         "potencial": 85,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 191,
@@ -1907,7 +2443,12 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 2,
-        "multa_rescisoria": 2300000
+        "multa_rescisoria": 2300000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral",
+            "Meia"
+        ]
     },
     {
         "id": 192,
@@ -1917,7 +2458,9 @@
         "overall": 76,
         "potencial": 85,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 193,
@@ -1927,7 +2470,9 @@
         "overall": 77,
         "potencial": 82,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 194,
@@ -1937,7 +2482,9 @@
         "overall": 77,
         "potencial": 77,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 195,
@@ -1947,7 +2494,11 @@
         "overall": 76,
         "potencial": 83,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": [
+            "Zagueiro"
+        ]
     },
     {
         "id": 196,
@@ -1957,7 +2508,11 @@
         "overall": 75,
         "potencial": 79,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 197,
@@ -1967,7 +2522,11 @@
         "overall": 74,
         "potencial": 76,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 198,
@@ -1977,7 +2536,9 @@
         "overall": 72,
         "potencial": 76,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 199,
@@ -1987,7 +2548,9 @@
         "overall": 72,
         "potencial": 72,
         "contrato_anos": 1,
-        "multa_rescisoria": 500000
+        "multa_rescisoria": 500000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 200,
@@ -1997,7 +2560,9 @@
         "overall": 79,
         "potencial": 85,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 201,
@@ -2007,7 +2572,9 @@
         "overall": 77,
         "potencial": 80,
         "contrato_anos": 5,
-        "multa_rescisoria": 4000000
+        "multa_rescisoria": 4000000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 202,
@@ -2017,7 +2584,11 @@
         "overall": 81,
         "potencial": 81,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 203,
@@ -2027,7 +2598,12 @@
         "overall": 73,
         "potencial": 73,
         "contrato_anos": 1,
-        "multa_rescisoria": 1300000
+        "multa_rescisoria": 1300000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ]
     },
     {
         "id": 204,
@@ -2037,7 +2613,9 @@
         "overall": 80,
         "potencial": 81,
         "contrato_anos": 5,
-        "multa_rescisoria": 4200000
+        "multa_rescisoria": 4200000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 205,
@@ -2047,7 +2625,9 @@
         "overall": 81,
         "potencial": 81,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 206,
@@ -2057,7 +2637,11 @@
         "overall": 80,
         "potencial": 82,
         "contrato_anos": 2,
-        "multa_rescisoria": 9600000
+        "multa_rescisoria": 9600000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 207,
@@ -2067,7 +2651,9 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 208,
@@ -2077,7 +2663,11 @@
         "overall": 75,
         "potencial": 85,
         "contrato_anos": 5,
-        "multa_rescisoria": 4100000
+        "multa_rescisoria": 4100000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 209,
@@ -2087,7 +2677,9 @@
         "overall": 83,
         "potencial": 83,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 210,
@@ -2097,7 +2689,9 @@
         "overall": 76,
         "potencial": 78,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 211,
@@ -2107,7 +2701,9 @@
         "overall": 72,
         "potencial": 73,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 212,
@@ -2117,7 +2713,9 @@
         "overall": 76,
         "potencial": 87,
         "contrato_anos": 4,
-        "multa_rescisoria": 5700000
+        "multa_rescisoria": 5700000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 213,
@@ -2127,7 +2725,9 @@
         "overall": 72,
         "potencial": 75,
         "contrato_anos": 2,
-        "multa_rescisoria": 1200000
+        "multa_rescisoria": 1200000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 214,
@@ -2137,7 +2737,9 @@
         "overall": 78,
         "potencial": 81,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 215,
@@ -2147,7 +2749,9 @@
         "overall": 74,
         "potencial": 81,
         "contrato_anos": 2,
-        "multa_rescisoria": 2800000
+        "multa_rescisoria": 2800000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 216,
@@ -2157,7 +2761,9 @@
         "overall": 73,
         "potencial": 73,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 217,
@@ -2167,7 +2773,9 @@
         "overall": 80,
         "potencial": 83,
         "contrato_anos": 3,
-        "multa_rescisoria": 3600000
+        "multa_rescisoria": 3600000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 218,
@@ -2177,7 +2785,9 @@
         "overall": 83,
         "potencial": 90,
         "contrato_anos": 2,
-        "multa_rescisoria": 15600000
+        "multa_rescisoria": 15600000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 219,
@@ -2187,7 +2797,9 @@
         "overall": 83,
         "potencial": 85,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 220,
@@ -2197,7 +2809,9 @@
         "overall": 77,
         "potencial": 79,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 221,
@@ -2207,7 +2821,9 @@
         "overall": 75,
         "potencial": 87,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 222,
@@ -2217,7 +2833,11 @@
         "overall": 81,
         "potencial": 83,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": [
+            "Zagueiro"
+        ]
     },
     {
         "id": 223,
@@ -2227,7 +2847,11 @@
         "overall": 80,
         "potencial": 81,
         "contrato_anos": 5,
-        "multa_rescisoria": 8700000
+        "multa_rescisoria": 8700000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 224,
@@ -2237,7 +2861,11 @@
         "overall": 78,
         "potencial": 80,
         "contrato_anos": 2,
-        "multa_rescisoria": 5800000
+        "multa_rescisoria": 5800000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 225,
@@ -2247,7 +2875,9 @@
         "overall": 80,
         "potencial": 86,
         "contrato_anos": 1,
-        "multa_rescisoria": 6500000
+        "multa_rescisoria": 6500000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 226,
@@ -2257,7 +2887,11 @@
         "overall": 82,
         "potencial": 89,
         "contrato_anos": 5,
-        "multa_rescisoria": 8400000
+        "multa_rescisoria": 8400000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 227,
@@ -2267,7 +2901,11 @@
         "overall": 83,
         "potencial": 85,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 228,
@@ -2277,7 +2915,9 @@
         "overall": 72,
         "potencial": 87,
         "contrato_anos": 5,
-        "multa_rescisoria": 2100000
+        "multa_rescisoria": 2100000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 229,
@@ -2287,7 +2927,9 @@
         "overall": 74,
         "potencial": 82,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 230,
@@ -2297,7 +2939,9 @@
         "overall": 78,
         "potencial": 78,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 231,
@@ -2307,7 +2951,11 @@
         "overall": 73,
         "potencial": 80,
         "contrato_anos": 1,
-        "multa_rescisoria": 1900000
+        "multa_rescisoria": 1900000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 232,
@@ -2317,7 +2965,9 @@
         "overall": 78,
         "potencial": 79,
         "contrato_anos": 4,
-        "multa_rescisoria": 3300000
+        "multa_rescisoria": 3300000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 233,
@@ -2327,7 +2977,11 @@
         "overall": 71,
         "potencial": 71,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 234,
@@ -2337,7 +2991,9 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 235,
@@ -2347,7 +3003,9 @@
         "overall": 84,
         "potencial": 95,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 236,
@@ -2357,7 +3015,9 @@
         "overall": 88,
         "potencial": 96,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 237,
@@ -2367,7 +3027,9 @@
         "overall": 82,
         "potencial": 90,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 238,
@@ -2377,7 +3039,9 @@
         "overall": 86,
         "potencial": 88,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 239,
@@ -2387,7 +3051,9 @@
         "overall": 84,
         "potencial": 94,
         "contrato_anos": 3,
-        "multa_rescisoria": 23100000
+        "multa_rescisoria": 23100000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 240,
@@ -2397,7 +3063,9 @@
         "overall": 85,
         "potencial": 90,
         "contrato_anos": 4,
-        "multa_rescisoria": 24800000
+        "multa_rescisoria": 24800000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 241,
@@ -2407,7 +3075,9 @@
         "overall": 79,
         "potencial": 85,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 242,
@@ -2417,7 +3087,9 @@
         "overall": 83,
         "potencial": 91,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 243,
@@ -2427,7 +3099,9 @@
         "overall": 84,
         "potencial": 93,
         "contrato_anos": 2,
-        "multa_rescisoria": 24900000
+        "multa_rescisoria": 24900000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 244,
@@ -2437,7 +3111,9 @@
         "overall": 81,
         "potencial": 84,
         "contrato_anos": 4,
-        "multa_rescisoria": 7500000
+        "multa_rescisoria": 7500000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 245,
@@ -2447,7 +3123,11 @@
         "overall": 83,
         "potencial": 84,
         "contrato_anos": 4,
-        "multa_rescisoria": 9100000
+        "multa_rescisoria": 9100000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 246,
@@ -2457,7 +3137,9 @@
         "overall": 81,
         "potencial": 81,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 247,
@@ -2467,7 +3149,11 @@
         "overall": 84,
         "potencial": 87,
         "contrato_anos": 1,
-        "multa_rescisoria": 9700000
+        "multa_rescisoria": 9700000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 248,
@@ -2477,7 +3163,9 @@
         "overall": 77,
         "potencial": 84,
         "contrato_anos": 2,
-        "multa_rescisoria": 5300000
+        "multa_rescisoria": 5300000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 249,
@@ -2487,7 +3175,9 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 250,
@@ -2497,7 +3187,11 @@
         "overall": 77,
         "potencial": 77,
         "contrato_anos": 2,
-        "multa_rescisoria": 1500000
+        "multa_rescisoria": 1500000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 251,
@@ -2507,7 +3201,9 @@
         "overall": 77,
         "potencial": 81,
         "contrato_anos": 5,
-        "multa_rescisoria": 2800000
+        "multa_rescisoria": 2800000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 252,
@@ -2517,7 +3213,12 @@
         "overall": 79,
         "potencial": 79,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante",
+            "Lateral"
+        ]
     },
     {
         "id": 253,
@@ -2527,7 +3228,9 @@
         "overall": 80,
         "potencial": 83,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 254,
@@ -2537,7 +3240,12 @@
         "overall": 74,
         "potencial": 79,
         "contrato_anos": 5,
-        "multa_rescisoria": 2500000
+        "multa_rescisoria": 2500000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia",
+            "Zagueiro"
+        ]
     },
     {
         "id": 255,
@@ -2547,7 +3255,11 @@
         "overall": 81,
         "potencial": 84,
         "contrato_anos": 5,
-        "multa_rescisoria": 7700000
+        "multa_rescisoria": 7700000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 256,
@@ -2557,7 +3269,12 @@
         "overall": 79,
         "potencial": 88,
         "contrato_anos": 5,
-        "multa_rescisoria": 8900000
+        "multa_rescisoria": 8900000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ]
     },
     {
         "id": 257,
@@ -2567,7 +3284,11 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 258,
@@ -2577,7 +3298,9 @@
         "overall": 80,
         "potencial": 91,
         "contrato_anos": 5,
-        "multa_rescisoria": 13700000
+        "multa_rescisoria": 13700000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 259,
@@ -2587,7 +3310,11 @@
         "overall": 73,
         "potencial": 86,
         "contrato_anos": 2,
-        "multa_rescisoria": 3700000
+        "multa_rescisoria": 3700000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 260,
@@ -2597,7 +3324,12 @@
         "overall": 76,
         "potencial": 76,
         "contrato_anos": 1,
-        "multa_rescisoria": 3300000
+        "multa_rescisoria": 3300000,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia",
+            "Zagueiro"
+        ]
     },
     {
         "id": 261,
@@ -2607,7 +3339,11 @@
         "overall": 78,
         "potencial": 78,
         "contrato_anos": 1,
-        "multa_rescisoria": 1300000
+        "multa_rescisoria": 1300000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 262,
@@ -2617,7 +3353,9 @@
         "overall": 75,
         "potencial": 82,
         "contrato_anos": 4,
-        "multa_rescisoria": 4200000
+        "multa_rescisoria": 4200000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 263,
@@ -2627,7 +3365,9 @@
         "overall": 80,
         "potencial": 84,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 264,
@@ -2637,7 +3377,9 @@
         "overall": 70,
         "potencial": 70,
         "contrato_anos": 3,
-        "multa_rescisoria": 700000
+        "multa_rescisoria": 700000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 265,
@@ -2647,7 +3389,11 @@
         "overall": 75,
         "potencial": 79,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 266,
@@ -2657,7 +3403,9 @@
         "overall": 71,
         "potencial": 71,
         "contrato_anos": 1,
-        "multa_rescisoria": 500000
+        "multa_rescisoria": 500000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 267,
@@ -2667,7 +3415,9 @@
         "overall": 75,
         "potencial": 78,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 268,
@@ -2677,7 +3427,11 @@
         "overall": 71,
         "potencial": 73,
         "contrato_anos": 5,
-        "multa_rescisoria": 900000
+        "multa_rescisoria": 900000,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 269,
@@ -2687,7 +3441,9 @@
         "overall": 69,
         "potencial": 73,
         "contrato_anos": 3,
-        "multa_rescisoria": 1000000
+        "multa_rescisoria": 1000000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 270,
@@ -2697,7 +3453,9 @@
         "overall": 73,
         "potencial": 73,
         "contrato_anos": 1,
-        "multa_rescisoria": 500000
+        "multa_rescisoria": 500000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 271,
@@ -2707,7 +3465,9 @@
         "overall": 80,
         "potencial": 85,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 272,
@@ -2717,7 +3477,9 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 5,
-        "multa_rescisoria": 5300000
+        "multa_rescisoria": 5300000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 273,
@@ -2727,7 +3489,9 @@
         "overall": 75,
         "potencial": 78,
         "contrato_anos": 4,
-        "multa_rescisoria": 2300000
+        "multa_rescisoria": 2300000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 274,
@@ -2737,7 +3501,9 @@
         "overall": 86,
         "potencial": 88,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 275,
@@ -2747,7 +3513,9 @@
         "overall": 77,
         "potencial": 80,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 276,
@@ -2757,7 +3525,11 @@
         "overall": 79,
         "potencial": 79,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 277,
@@ -2767,7 +3539,11 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 3,
-        "multa_rescisoria": 4000000
+        "multa_rescisoria": 4000000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 278,
@@ -2777,7 +3553,9 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 1,
-        "multa_rescisoria": 3500000
+        "multa_rescisoria": 3500000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 279,
@@ -2787,7 +3565,9 @@
         "overall": 86,
         "potencial": 93,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 280,
@@ -2797,7 +3577,9 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 281,
@@ -2807,7 +3589,9 @@
         "overall": 78,
         "potencial": 78,
         "contrato_anos": 1,
-        "multa_rescisoria": 2300000
+        "multa_rescisoria": 2300000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 282,
@@ -2817,7 +3601,9 @@
         "overall": 67,
         "potencial": 75,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 283,
@@ -2827,7 +3613,11 @@
         "overall": 72,
         "potencial": 74,
         "contrato_anos": 3,
-        "multa_rescisoria": 1400000
+        "multa_rescisoria": 1400000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 284,
@@ -2837,7 +3627,11 @@
         "overall": 78,
         "potencial": 82,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 285,
@@ -2847,7 +3641,9 @@
         "overall": 70,
         "potencial": 71,
         "contrato_anos": 5,
-        "multa_rescisoria": 700000
+        "multa_rescisoria": 700000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 286,
@@ -2857,7 +3653,9 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 5,
-        "multa_rescisoria": 1000000
+        "multa_rescisoria": 1000000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 287,
@@ -2867,7 +3665,9 @@
         "overall": 79,
         "potencial": 80,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 288,
@@ -2877,7 +3677,11 @@
         "overall": 79,
         "potencial": 81,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 289,
@@ -2887,7 +3691,9 @@
         "overall": 76,
         "potencial": 88,
         "contrato_anos": 1,
-        "multa_rescisoria": 4700000
+        "multa_rescisoria": 4700000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 290,
@@ -2897,7 +3703,9 @@
         "overall": 86,
         "potencial": 92,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 291,
@@ -2907,7 +3715,9 @@
         "overall": 84,
         "potencial": 86,
         "contrato_anos": 5,
-        "multa_rescisoria": 10700000
+        "multa_rescisoria": 10700000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 292,
@@ -2917,7 +3727,9 @@
         "overall": 83,
         "potencial": 85,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 293,
@@ -2927,7 +3739,11 @@
         "overall": 77,
         "potencial": 77,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 294,
@@ -2937,7 +3753,9 @@
         "overall": 76,
         "potencial": 79,
         "contrato_anos": 4,
-        "multa_rescisoria": 2000000
+        "multa_rescisoria": 2000000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 295,
@@ -2947,7 +3765,9 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 5,
-        "multa_rescisoria": 7300000
+        "multa_rescisoria": 7300000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 296,
@@ -2957,7 +3777,9 @@
         "overall": 81,
         "potencial": 82,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 297,
@@ -2967,7 +3789,9 @@
         "overall": 78,
         "potencial": 85,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 298,
@@ -2977,7 +3801,9 @@
         "overall": 85,
         "potencial": 99,
         "contrato_anos": 3,
-        "multa_rescisoria": 35500000
+        "multa_rescisoria": 35500000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 299,
@@ -2987,7 +3813,11 @@
         "overall": 78,
         "potencial": 78,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 300,
@@ -2997,7 +3827,9 @@
         "overall": 77,
         "potencial": 83,
         "contrato_anos": 4,
-        "multa_rescisoria": 4300000
+        "multa_rescisoria": 4300000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 301,
@@ -3007,7 +3839,9 @@
         "overall": 74,
         "potencial": 76,
         "contrato_anos": 3,
-        "multa_rescisoria": 1900000
+        "multa_rescisoria": 1900000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 302,
@@ -3017,7 +3851,9 @@
         "overall": 75,
         "potencial": 75,
         "contrato_anos": 1,
-        "multa_rescisoria": 1000000
+        "multa_rescisoria": 1000000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 303,
@@ -3027,7 +3863,11 @@
         "overall": 70,
         "potencial": 77,
         "contrato_anos": 3,
-        "multa_rescisoria": 1200000
+        "multa_rescisoria": 1200000,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 304,
@@ -3037,7 +3877,9 @@
         "overall": 71,
         "potencial": 74,
         "contrato_anos": 5,
-        "multa_rescisoria": 800000
+        "multa_rescisoria": 800000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 305,
@@ -3047,7 +3889,9 @@
         "overall": 78,
         "potencial": 80,
         "contrato_anos": 3,
-        "multa_rescisoria": 5400000
+        "multa_rescisoria": 5400000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 306,
@@ -3057,7 +3901,11 @@
         "overall": 77,
         "potencial": 92,
         "contrato_anos": 4,
-        "multa_rescisoria": 7200000
+        "multa_rescisoria": 7200000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 307,
@@ -3067,7 +3915,9 @@
         "overall": 72,
         "potencial": 83,
         "contrato_anos": 3,
-        "multa_rescisoria": 2600000
+        "multa_rescisoria": 2600000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 308,
@@ -3077,7 +3927,12 @@
         "overall": 76,
         "potencial": 76,
         "contrato_anos": 1,
-        "multa_rescisoria": 1400000
+        "multa_rescisoria": 1400000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ]
     },
     {
         "id": 309,
@@ -3087,7 +3942,11 @@
         "overall": 80,
         "potencial": 81,
         "contrato_anos": 4,
-        "multa_rescisoria": 5100000
+        "multa_rescisoria": 5100000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Zagueiro"
+        ]
     },
     {
         "id": 310,
@@ -3097,7 +3956,9 @@
         "overall": 83,
         "potencial": 84,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 311,
@@ -3107,7 +3968,11 @@
         "overall": 74,
         "potencial": 76,
         "contrato_anos": 4,
-        "multa_rescisoria": 1600000
+        "multa_rescisoria": 1600000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 312,
@@ -3117,7 +3982,9 @@
         "overall": 75,
         "potencial": 83,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 313,
@@ -3127,7 +3994,9 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 314,
@@ -3137,7 +4006,9 @@
         "overall": 71,
         "potencial": 79,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 315,
@@ -3147,7 +4018,9 @@
         "overall": 74,
         "potencial": 86,
         "contrato_anos": 5,
-        "multa_rescisoria": 3300000
+        "multa_rescisoria": 3300000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 316,
@@ -3157,7 +4030,11 @@
         "overall": 77,
         "potencial": 78,
         "contrato_anos": 4,
-        "multa_rescisoria": 2500000
+        "multa_rescisoria": 2500000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 317,
@@ -3167,7 +4044,11 @@
         "overall": 73,
         "potencial": 75,
         "contrato_anos": 3,
-        "multa_rescisoria": 1400000
+        "multa_rescisoria": 1400000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 318,
@@ -3177,7 +4058,9 @@
         "overall": 74,
         "potencial": 74,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 319,
@@ -3187,7 +4070,12 @@
         "overall": 68,
         "potencial": 70,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ]
     },
     {
         "id": 320,
@@ -3197,7 +4085,9 @@
         "overall": 69,
         "potencial": 71,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 321,
@@ -3207,7 +4097,9 @@
         "overall": 63,
         "potencial": 65,
         "contrato_anos": 2,
-        "multa_rescisoria": 500000
+        "multa_rescisoria": 500000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 322,
@@ -3217,7 +4109,9 @@
         "overall": 76,
         "potencial": 78,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 323,
@@ -3227,7 +4121,9 @@
         "overall": 70,
         "potencial": 70,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 324,
@@ -3237,7 +4133,9 @@
         "overall": 68,
         "potencial": 68,
         "contrato_anos": 2,
-        "multa_rescisoria": 500000
+        "multa_rescisoria": 500000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 325,
@@ -3247,7 +4145,9 @@
         "overall": 78,
         "potencial": 87,
         "contrato_anos": 5,
-        "multa_rescisoria": 6300000
+        "multa_rescisoria": 6300000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 326,
@@ -3257,7 +4157,11 @@
         "overall": 82,
         "potencial": 87,
         "contrato_anos": 4,
-        "multa_rescisoria": 9100000
+        "multa_rescisoria": 9100000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 327,
@@ -3267,7 +4171,9 @@
         "overall": 78,
         "potencial": 81,
         "contrato_anos": 1,
-        "multa_rescisoria": 3100000
+        "multa_rescisoria": 3100000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 328,
@@ -3277,7 +4183,11 @@
         "overall": 80,
         "potencial": 86,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Zagueiro"
+        ]
     },
     {
         "id": 329,
@@ -3287,7 +4197,9 @@
         "overall": 82,
         "potencial": 89,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 330,
@@ -3297,7 +4209,11 @@
         "overall": 79,
         "potencial": 79,
         "contrato_anos": 2,
-        "multa_rescisoria": 2200000
+        "multa_rescisoria": 2200000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 331,
@@ -3307,7 +4223,9 @@
         "overall": 80,
         "potencial": 80,
         "contrato_anos": 1,
-        "multa_rescisoria": 2100000
+        "multa_rescisoria": 2100000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 332,
@@ -3317,7 +4235,12 @@
         "overall": 80,
         "potencial": 83,
         "contrato_anos": 5,
-        "multa_rescisoria": 6800000
+        "multa_rescisoria": 6800000,
+        "funcao": "Meia",
+        "secundarias": [
+            "Centroavante",
+            "Ponta"
+        ]
     },
     {
         "id": 333,
@@ -3327,7 +4250,11 @@
         "overall": 82,
         "potencial": 82,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 334,
@@ -3337,7 +4264,9 @@
         "overall": 77,
         "potencial": 80,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 335,
@@ -3347,7 +4276,11 @@
         "overall": 81,
         "potencial": 96,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 336,
@@ -3357,7 +4290,9 @@
         "overall": 70,
         "potencial": 75,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 337,
@@ -3367,7 +4302,9 @@
         "overall": 78,
         "potencial": 85,
         "contrato_anos": 2,
-        "multa_rescisoria": 6000000
+        "multa_rescisoria": 6000000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 338,
@@ -3377,7 +4314,11 @@
         "overall": 75,
         "potencial": 75,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 339,
@@ -3387,7 +4328,11 @@
         "overall": 76,
         "potencial": 80,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Meia",
+        "secundarias": [
+            "Centroavante"
+        ]
     },
     {
         "id": 340,
@@ -3397,7 +4342,9 @@
         "overall": 76,
         "potencial": 78,
         "contrato_anos": 2,
-        "multa_rescisoria": 2600000
+        "multa_rescisoria": 2600000,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 341,
@@ -3407,7 +4354,12 @@
         "overall": 72,
         "potencial": 76,
         "contrato_anos": 5,
-        "multa_rescisoria": 2000000
+        "multa_rescisoria": 2000000,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Meia",
+            "Ponta"
+        ]
     },
     {
         "id": 342,
@@ -3417,7 +4369,9 @@
         "overall": 75,
         "potencial": 78,
         "contrato_anos": 4,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 343,
@@ -3427,7 +4381,9 @@
         "overall": 77,
         "potencial": 80,
         "contrato_anos": 3,
-        "multa_rescisoria": 2400000
+        "multa_rescisoria": 2400000,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 344,
@@ -3437,7 +4393,11 @@
         "overall": 77,
         "potencial": 82,
         "contrato_anos": 1,
-        "multa_rescisoria": 4500000
+        "multa_rescisoria": 4500000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 345,
@@ -3447,7 +4407,11 @@
         "overall": 78,
         "potencial": 79,
         "contrato_anos": 1,
-        "multa_rescisoria": 3500000
+        "multa_rescisoria": 3500000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia"
+        ]
     },
     {
         "id": 346,
@@ -3457,7 +4421,11 @@
         "overall": 77,
         "potencial": 92,
         "contrato_anos": 3,
-        "multa_rescisoria": 7100000
+        "multa_rescisoria": 7100000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
     },
     {
         "id": 347,
@@ -3467,7 +4435,9 @@
         "overall": 74,
         "potencial": 76,
         "contrato_anos": 1,
-        "multa_rescisoria": 1500000
+        "multa_rescisoria": 1500000,
+        "funcao": "Lateral",
+        "secundarias": []
     },
     {
         "id": 348,
@@ -3477,7 +4447,9 @@
         "overall": 72,
         "potencial": 80,
         "contrato_anos": 2,
-        "multa_rescisoria": 1600000
+        "multa_rescisoria": 1600000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 349,
@@ -3487,7 +4459,11 @@
         "overall": 82,
         "potencial": 85,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": [
+            "Zagueiro"
+        ]
     },
     {
         "id": 350,
@@ -3497,7 +4473,9 @@
         "overall": 75,
         "potencial": 84,
         "contrato_anos": 5,
-        "multa_rescisoria": 4400000
+        "multa_rescisoria": 4400000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 351,
@@ -3507,7 +4485,9 @@
         "overall": 68,
         "potencial": 68,
         "contrato_anos": 2,
-        "multa_rescisoria": 500000
+        "multa_rescisoria": 500000,
+        "funcao": "Ponta",
+        "secundarias": []
     },
     {
         "id": 352,
@@ -3517,7 +4497,9 @@
         "overall": 77,
         "potencial": 83,
         "contrato_anos": 5,
-        "multa_rescisoria": 4100000
+        "multa_rescisoria": 4100000,
+        "funcao": "Centroavante",
+        "secundarias": []
     },
     {
         "id": 353,
@@ -3527,7 +4509,11 @@
         "overall": 74,
         "potencial": 82,
         "contrato_anos": 5,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 354,
@@ -3537,7 +4523,9 @@
         "overall": 72,
         "potencial": 72,
         "contrato_anos": 1,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
     },
     {
         "id": 355,
@@ -3547,7 +4535,11 @@
         "overall": 70,
         "potencial": 73,
         "contrato_anos": 3,
-        "multa_rescisoria": 1300000
+        "multa_rescisoria": 1300000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
     },
     {
         "id": 356,
@@ -3557,7 +4549,9 @@
         "overall": 73,
         "potencial": 73,
         "contrato_anos": 2,
-        "multa_rescisoria": 1000000
+        "multa_rescisoria": 1000000,
+        "funcao": "Zagueiro",
+        "secundarias": []
     },
     {
         "id": 357,
@@ -3567,7 +4561,9 @@
         "overall": 70,
         "potencial": 75,
         "contrato_anos": 2,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Volante",
+        "secundarias": []
     },
     {
         "id": 358,
@@ -3577,7 +4573,9 @@
         "overall": 71,
         "potencial": 77,
         "contrato_anos": 2,
-        "multa_rescisoria": 2000000
+        "multa_rescisoria": 2000000,
+        "funcao": "Meia",
+        "secundarias": []
     },
     {
         "id": 359,
@@ -3587,7 +4585,11 @@
         "overall": 65,
         "potencial": 72,
         "contrato_anos": 3,
-        "multa_rescisoria": null
+        "multa_rescisoria": null,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta"
+        ]
     },
     {
         "id": 360,
@@ -3597,6 +4599,8 @@
         "overall": 69,
         "potencial": 69,
         "contrato_anos": 5,
-        "multa_rescisoria": 600000
+        "multa_rescisoria": 600000,
+        "funcao": "Centroavante",
+        "secundarias": []
     }
 ]

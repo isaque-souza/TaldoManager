@@ -2,6 +2,8 @@
 
 import random
 
+from app.domain import posicoes
+
 
 class Jogador:
 
@@ -10,10 +12,20 @@ class Jogador:
 
     def __init__(self, nome, idade, posicao, overall,
                  potencial=None, contrato_anos=3, multa_rescisoria=None,
-                 salario=None):
+                 salario=None, funcao=None, secundarias=None):
         self.nome = nome
         self.idade = idade
-        self.posicao = posicao
+        self.posicao = posicao   # setor (Goleiro, Defesa...): o motor usa
+        # posição específica (v1.3): zagueiro, lateral, volante... Sem ela
+        # (jovens de saves antigos), a padrão do setor, com as outras do
+        # setor como secundárias: rende em qualquer vaga do setor dele
+        self.funcao = funcao or posicoes.PADRAO_DO_SETOR[posicao]
+        if posicoes.SETOR[self.funcao] != posicao:
+            raise ValueError(f"{nome}: {self.funcao} não é do setor {posicao}")
+        if secundarias is None:
+            secundarias = () if funcao else posicoes.do_setor(posicao, self.funcao)
+        self.secundarias = tuple(secundarias)
+        self.vaga = None   # posição em que está escalado (Clube.escalar_time)
         self.overall = overall
         self.numero = None   # camisa (v1.1): dado ao entrar no clube
         # mercado (v0.7): potencial nunca fica abaixo do overall atual
@@ -64,6 +76,21 @@ class Jogador:
         self.jogos_suspensao = 0   # jogos que ainda vai cumprir de fora
         self.amarelos_ciclo = 0    # amarelos rumo à próxima suspensão
         self.rodadas_lesao = 0     # rodadas que ainda fica fora por lesão
+
+    def overall_em(self, vaga):
+        """Quanto o jogador rende jogando na `vaga` (ver app.domain.posicoes)."""
+        return max(1, self.overall - posicoes.perda(
+            self.funcao, vaga, self.secundarias
+        ))
+
+    def overall_por_posicao(self):
+        """{posição: overall nela}, para a tela mostrar quanto rende em cada
+        vaga (v1.3)."""
+        return {f: self.overall_em(f) for f in posicoes.FUNCOES}
+
+    def overall_em_campo(self):
+        """O overall na vaga em que está escalado (o natural, fora do XI)."""
+        return self.overall_em(self.vaga or self.funcao)
 
     @property
     def suspenso(self):
@@ -236,9 +263,9 @@ class Jogador:
             self.soma_nota / self.partidas, 2
         )
     
-    def score_escalacao(self, preferido=False):
+    def score_escalacao(self, preferido=False, vaga=None):
 
-        score = self.overall
+        score = self.overall_em(vaga) if vaga else self.overall
 
         # bônus por energia
         score += self.energia * 0.15

@@ -1,4 +1,4 @@
-from app.domain import numeros
+from app.domain import numeros, posicoes
 
 
 class Clube:
@@ -181,8 +181,9 @@ class Clube:
             elif jogador.condicao == "Exausto":
                 modificador = 0.75
 
+            # o overall NA VAGA (v1.3): improvisado rende menos
             total += (
-                jogador.overall
+                jogador.overall_em_campo()
                 * modificador
             )
 
@@ -191,49 +192,80 @@ class Clube:
         ) - self.penalidade_expulsao
         
     def escalar_time(self):
+        """Monta o XI nas vagas da formação (posicoes.VAGAS) e o banco.
+
+        O XI do técnico é respeitado: quem ele escolheu entra na frente de
+        qualquer um, menos se estiver exausto (aí o motor poupa), e os
+        escolhidos são distribuídos nas vagas com a menor perda somada —
+        escolher um volante no lugar de um zagueiro improvisa o volante na
+        zaga. As vagas que sobram ficam com quem rende mais nelas (score
+        com o overall na vaga). Faltando gente (venda, lesão, suspensão), improvisa quem
+        sabe jogar ali, em vez de jogar com 10.
+        """
 
         disponiveis = [
             j for j in self.jogadores
             if j.disponivel
         ]
+        vagas = posicoes.vagas(self.formacao)
+        ocupante = [None] * len(vagas)
+        proibido = 1000   # goleiro × linha: só se não houver outro jeito
 
-        n_def, n_mei, n_ata = self.FORMACOES.get(self.formacao, (4, 3, 3))
-
-        def melhores(posicao, quantos):
-            elegiveis = [
-                j for j in disponiveis
-                if j.posicao == posicao
+        def atribuir(candidatos, custo, linha_no_gol):
+            # quem joga em que vaga com o menor custo SOMADO (algoritmo
+            # húngaro): um ponta sobrando num 5-3-2 vai para o meio e um meia
+            # recua, em vez de o ponta virar zagueiro
+            livres = [i for i, o in enumerate(ocupante) if o is None]
+            if not candidatos or not livres:
+                return
+            cruza = lambda j, v: (j.posicao == "Goleiro") != (v == "Goleiro")
+            m = [
+                [custo(j, vagas[i]) + (proibido if cruza(j, vagas[i]) else 0)
+                 for i in livres]
+                for j in candidatos
             ]
-            # o XI do técnico é respeitado: quem ele escolheu entra na frente
-            # de qualquer um, menos se estiver exausto (aí o motor poupa).
-            # Entre os escolhidos (ou para completar as vagas), o score decide.
-            def ordem(j):
-                escolhido = j in self.xi_preferido and j.condicao != "Exausto"
-                return (escolhido, j.score_escalacao(
-                    preferido=j in self.xi_preferido
-                ))
+            if len(candidatos) <= len(livres):
+                pares = zip(candidatos, (livres[k] for k in posicoes.menor_custo(m)))
+            else:
+                transposta = [list(coluna) for coluna in zip(*m)]
+                pares = (
+                    (candidatos[k], i)
+                    for i, k in zip(livres, posicoes.menor_custo(transposta))
+                )
+            for j, i in pares:
+                # goleiro nunca vai para a linha; jogador de linha no gol só
+                # quando não sobrou goleiro
+                if cruza(j, vagas[i]) and (
+                    j.posicao == "Goleiro" or not linha_no_gol
+                ):
+                    continue
+                ocupante[i] = j
 
-            elegiveis.sort(key=ordem, reverse=True)
-            return elegiveis[:quantos]
-
-        self.titulares = (
-            melhores("Goleiro", 1)
-            + melhores("Defesa", n_def)
-            + melhores("Meio-Campo", n_mei)
-            + melhores("Atacante", n_ata)
+        escolhidos = [
+            j for j in disponiveis
+            if j in self.xi_preferido and j.condicao != "Exausto"
+        ]
+        atribuir(
+            escolhidos, lambda j, v: j.overall - j.overall_em(v),
+            linha_no_gol=False,
         )
 
-        # faltou gente numa posição (venda, lesão, suspensão)? Improvisa os
-        # melhores jogadores de linha que sobraram, em vez de jogar com 10.
-        # Com o elenco completo isto não faz nada. (Roadmap: quando houver
-        # overall por posição, improvisar quem SABE jogar ali.)
-        if len(self.titulares) < 11:
-            sobra = [
-                j for j in disponiveis
-                if j not in self.titulares and j.posicao != "Goleiro"
-            ]
-            sobra.sort(key=lambda j: j.score_escalacao(), reverse=True)
-            self.titulares += sobra[: 11 - len(self.titulares)]
+        resto = [j for j in disponiveis if j not in ocupante]
+        atribuir(
+            resto,
+            lambda j, v: -j.score_escalacao(
+                preferido=j in self.xi_preferido, vaga=v
+            ),
+            linha_no_gol=True,
+        )
+
+        for jogador in self.jogadores:
+            jogador.vaga = None
+        self.titulares = []
+        for vaga, jogador in zip(vagas, ocupante):
+            if jogador is not None:
+                jogador.vaga = vaga
+                self.titulares.append(jogador)
 
         self.reservas = [
             j for j in disponiveis

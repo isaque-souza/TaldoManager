@@ -31,8 +31,11 @@ def test_quantos_sobem_completa_ate_18_com_minimo_de_1():
 
 
 def test_posicao_carente_e_a_que_falta():
-    # FC Taldo da seed: 6 meias e 5 defensores → falta defensor
-    assert posicao_carente(_clube(), random.Random(1)) == "Defesa"
+    clube = _clube()
+    laterais = [j for j in clube.jogadores if j.funcao == "Lateral"]
+    for j in laterais[: len(laterais) - 1]:   # sobra 1, o ideal é 2
+        clube.jogadores.remove(j)
+    assert posicao_carente(clube, random.Random(1)) == "Lateral"
 
 
 def test_posicao_carente_repoe_o_goleiro():
@@ -43,9 +46,12 @@ def test_posicao_carente_repoe_o_goleiro():
 
 
 def test_posicao_carente_empata_na_sorte_entre_as_carentes():
-    # o Real Taldo tem a composição ideal: empate geral (déficit 0). O FC
-    # Taldo não serve: tem 6 meias e 5 defensores
-    clube = carregar_campeonato().clubes[1]
+    # elenco exatamente na composição ideal: empate geral (déficit 0)
+    clube = _clube()
+    ideal = []
+    for funcao, n in COMPOSICAO_IDEAL.items():
+        ideal += [j for j in clube.jogadores if j.funcao == funcao][:n]
+    clube.jogadores = ideal
     vistas = {posicao_carente(clube, random.Random(s)) for s in range(40)}
     assert vistas == set(COMPOSICAO_IDEAL)
 

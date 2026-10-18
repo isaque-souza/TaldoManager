@@ -29,6 +29,8 @@ def carregar_jogadores():
             potencial=j.get("potencial"),
             contrato_anos=j.get("contrato_anos", 3),
             multa_rescisoria=j.get("multa_rescisoria"),
+            funcao=j.get("funcao"),
+            secundarias=j.get("secundarias"),
         )
 
     return jogadores

@@ -207,3 +207,19 @@ def test_formacao_mudada_no_intervalo():
 
     temporada_service.avancar(sid)
     assert temporada_service.proxima_rodada(sid)["formacao"] == original
+
+
+def test_goleiro_so_sai_para_entrar_outro_goleiro():
+    sid, t = _iniciada()
+    meu = _meu_time(t)
+    goleiro = next(j for j in meu["titulares"] if j["posicao"] == "Goleiro")
+    linha = next(j for j in meu["banco"] if j["posicao"] != "Goleiro")
+
+    with pytest.raises(TransmissaoInvalida, match="goleiro"):
+        transmissao_service.decidir(sid, 30, sai=goleiro["nome"], entra=linha["nome"])
+
+    # jogador de linha por qualquer outro de linha, de outra posição: pode
+    sai = next(j for j in meu["titulares"] if j["posicao"] == "Defesa")
+    entra = next(j for j in meu["banco"] if j["posicao"] == "Atacante")
+    depois = transmissao_service.decidir(sid, 30, sai=sai["nome"], entra=entra["nome"])
+    assert depois["decisoes"][-1]["entra"] == entra["nome"]

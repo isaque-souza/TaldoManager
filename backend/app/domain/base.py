@@ -2,19 +2,24 @@
 base para repor quem saiu.
 
 Clube grande tem base melhor: o overall do jovem parte da média do elenco.
-A posição é a mais carente do elenco, comparando com a composição da seed,
-então nenhum clube fica sem goleiro.
+A posição (específica, v1.3) é a mais carente do elenco, comparando com a
+composição da seed, então nenhum clube fica sem goleiro.
 """
 
 from itertools import product
 
-from app.domain import mercado
+from app.domain import mercado, posicoes
 from app.domain.jogador import Jogador
 from app.domain.nomes import NOMES, SOBRENOMES
 
 TAMANHO_ALVO = 18             # tamanho dos elencos da seed
 MINIMO_POR_TEMPORADA = 1      # todo clube revela pelo menos um jovem
-COMPOSICAO_IDEAL = {"Goleiro": 2, "Defesa": 6, "Meio-Campo": 5, "Atacante": 5}
+# o mínimo da seed (scripts/gerar_funcoes.py): o que a formação mais
+# exigente pede de cada posição, mais um goleiro reserva
+COMPOSICAO_IDEAL = {
+    "Goleiro": 2, "Zagueiro": 3, "Lateral": 2, "Volante": 2, "Meia": 3,
+    "Ponta": 2, "Centroavante": 2,
+}
 
 IDADE_MIN, IDADE_MAX = 16, 18
 # jovem ≈ média do elenco − 10. Com −15 a liga entrava numa espiral (o jovem
@@ -38,7 +43,7 @@ def posicao_carente(clube, rng):
     """A posição com o maior déficit em relação à composição ideal (empate
     decidido na sorte)."""
     deficit = {
-        pos: ideal - sum(1 for j in clube.jogadores if j.posicao == pos)
+        pos: ideal - sum(1 for j in clube.jogadores if j.funcao == pos)
         for pos, ideal in COMPOSICAO_IDEAL.items()
     }
     maior = max(deficit.values())
@@ -72,13 +77,15 @@ def gerar_jovem(clube, proibidos, rng):
     )
     overall = max(OVERALL_MIN, overall)
     potencial = min(99, overall + rng.randint(*MARGEM_POTENCIAL))
+    funcao = posicao_carente(clube, rng)
     return Jogador(
         gerar_nome(proibidos, rng),
         rng.randint(IDADE_MIN, IDADE_MAX),
-        posicao_carente(clube, rng),
+        posicoes.SETOR[funcao],
         overall,
         potencial=potencial,
         contrato_anos=mercado.CONTRATO_PADRAO_ANOS,
+        funcao=funcao,
     )
 
 

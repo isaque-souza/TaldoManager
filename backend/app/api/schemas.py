@@ -309,6 +309,8 @@ class ConfrontoRodada(BaseModel):
 class ElencoSituacao(BaseModel):
     nome: str
     posicao: str
+    funcao: str | None = None          # v1.3: posição específica
+    secundarias: list[str] = []
     overall: int
     energia: int
     condicao: str
@@ -354,6 +356,12 @@ class JogadorPreJogo(BaseModel):
     pendurado: bool               # mais um amarelo e está suspenso
     craque: bool                  # overall 88+
     linha: int | None = None      # titular: 0 goleiro, 1 defesa, 2 meio, 3 ataque
+    # v1.3: posição específica, onde está escalado e quanto rende ali
+    funcao: str | None = None
+    secundarias: list[str] = []
+    vaga: str | None = None
+    overall_vaga: int | None = None
+    overall_por_posicao: dict[str, int] = {}
 
 
 class EscalacaoPreJogo(BaseModel):
@@ -789,6 +797,9 @@ class JogadorEmCampo(BaseModel):
     nome: str
     numero: int | None
     posicao: str
+    funcao: str | None = None          # v1.3
+    vaga: str | None = None            # posição em que está jogando
+    overall_vaga: int | None = None    # o overall nela
     overall: int
     energia: int
     amarelos: int
@@ -801,6 +812,8 @@ class JogadorNoBanco(BaseModel):
     nome: str
     numero: int | None
     posicao: str
+    funcao: str | None = None                # v1.3
+    overall_por_posicao: dict[str, int] = {}
     overall: int
     energia: int
     disponivel: bool               # False = já jogou e saiu

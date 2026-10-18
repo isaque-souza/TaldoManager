@@ -10,3 +10,15 @@ def banco_temporario(tmp_path, monkeypatch):
     monkeypatch.setenv("TALDO_DB", str(tmp_path / "teste.db"))
     init_db()
     yield
+
+
+@pytest.fixture
+def cargo_garantido(monkeypatch):
+    """Para testes de virada que não são sobre a diretoria: com a seed
+    fixa, o técnico pode acabar demitido (e a virada é recusada) a cada
+    ajuste do motor que mexe nos resultados."""
+    from app.services import simulacao_service
+    monkeypatch.setattr(
+        simulacao_service, "cargo_da_temporada",
+        lambda conn, sim: {"estado": "mantido", "motivo": None},
+    )

@@ -12,6 +12,7 @@ import { escudo } from "./identidade.js";
 import { icone } from "./icones.js";
 import { abrirPreJogo } from "./prejogo.js";
 import { jogarAoVivo } from "./aovivo.js";
+import { posicaoDe } from "./posicoes.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -162,7 +163,7 @@ export function renderRodadaAntes() {
   };
   const elenco = [...info.elenco]
     .sort((a, b) => b.overall - a.overall)
-    .map((j) => ({ ...j, situacao: situacao(j) }));
+    .map((j) => ({ ...j, posicao: posicaoDe(j), situacao: situacao(j) }));
   $("r-elenco").innerHTML = tabela(elenco, COLS_ELENCO_RODADA);
 
   const marcarEu = (c) =>

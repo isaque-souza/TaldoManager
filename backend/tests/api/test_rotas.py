@@ -402,7 +402,7 @@ def _save_concluido_com_clube():
     return client.post("/simulacoes", json={"seed": 3, "clube": clube}).json()["id"]
 
 
-def test_proxima_temporada_cria_e_lista_a_carreira():
+def test_proxima_temporada_cria_e_lista_a_carreira(cargo_garantido):
     sid = _save_concluido_com_clube()
 
     resp = client.post(f"/simulacoes/{sid}/proxima-temporada")
