@@ -11,7 +11,14 @@ def _dict(r):
         "tatica": r["tatica"],
         "xi": json.loads(r["xi"]),
         "padrao": bool(r["padrao"]),
+        "posicionamento": (
+            json.loads(r["posicionamento"]) if r["posicionamento"] else None
+        ),
     }
+
+
+def _json(posicionamento):
+    return json.dumps(posicionamento, ensure_ascii=False) if posicionamento else None
 
 
 def listar(conn, simulacao_id):
@@ -30,22 +37,29 @@ def buscar(conn, simulacao_id, plano_id):
     return _dict(r) if r else None
 
 
-def criar(conn, simulacao_id, nome, formacao, tatica, xi, padrao=False):
+def criar(conn, simulacao_id, nome, formacao, tatica, xi, padrao=False,
+          posicionamento=None):
     cur = conn.execute(
         """
-        INSERT INTO plano (simulacao_id, nome, formacao, tatica, xi, padrao)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO plano (simulacao_id, nome, formacao, tatica, xi, padrao,
+                           posicionamento)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
         (simulacao_id, nome, formacao, tatica,
-         json.dumps(xi, ensure_ascii=False), int(padrao)),
+         json.dumps(xi, ensure_ascii=False), int(padrao), _json(posicionamento)),
     )
     return cur.lastrowid
 
 
-def atualizar(conn, plano_id, nome, formacao, tatica, xi):
+def atualizar(conn, plano_id, nome, formacao, tatica, xi, posicionamento=None):
     conn.execute(
-        "UPDATE plano SET nome = ?, formacao = ?, tatica = ?, xi = ? WHERE id = ?",
-        (nome, formacao, tatica, json.dumps(xi, ensure_ascii=False), plano_id),
+        """
+        UPDATE plano SET nome = ?, formacao = ?, tatica = ?, xi = ?,
+                         posicionamento = ?
+         WHERE id = ?
+        """,
+        (nome, formacao, tatica, json.dumps(xi, ensure_ascii=False),
+         _json(posicionamento), plano_id),
     )
 
 

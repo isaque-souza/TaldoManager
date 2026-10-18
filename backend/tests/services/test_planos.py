@@ -175,3 +175,39 @@ def test_planos_seguem_para_a_proxima_temporada_e_ela_comeca_no_padrao(cargo_gar
     assert padrao["nome"] == "Ataque total" and v["em_uso"] == padrao["id"]
     pr = temporada_service.proxima_rodada(nova)
     assert (pr["tatica"], pr["formacao"]) == ("ofensivo", "3-4-3")
+
+
+def test_posicionamento_do_tecnico_vai_para_a_escalacao_e_para_o_plano():
+    sid = temporada_service.iniciar(seed=3, clube_usuario=_clube())
+    plano_service.listar(sid)   # nasce o plano "Titular", sem posicionamento
+    esc = temporada_service.proxima_rodada(sid)["escalacao"]
+    nomes = [None] * 11
+    for j in esc["titulares"]:
+        nomes[j["slot"]] = j["nome"]
+    # dois titulares de linha trocam de vaga (o último e o da vaga 1)
+    nomes[1], nomes[10] = nomes[10], nomes[1]
+    pos = {"formacao": esc["formacao"], "nomes": nomes}
+
+    escalacao_service.salvar_decisao(sid, xi_preferido=[n for n in nomes], posicionamento=pos)
+    depois = temporada_service.proxima_rodada(sid)["escalacao"]
+
+    assert {j["slot"]: j["nome"] for j in depois["titulares"]} == dict(enumerate(nomes))
+    assert plano_service.listar(sid)["modificado"] is True
+
+    plano_service.criar(sid, "Invertido")
+    plano = next(p for p in plano_service.listar(sid)["planos"] if p["nome"] == "Invertido")
+    assert plano["posicionamento"] == pos
+
+
+def test_goleiro_na_linha_no_posicionamento_e_recusado():
+    sid = temporada_service.iniciar(seed=3, clube_usuario=_clube())
+    esc = temporada_service.proxima_rodada(sid)["escalacao"]
+    nomes = [None] * 11
+    for j in esc["titulares"]:
+        nomes[j["slot"]] = j["nome"]
+    nomes[0], nomes[1] = nomes[1], nomes[0]
+
+    with pytest.raises(ValueError, match="Goleiro"):
+        escalacao_service.salvar_decisao(
+            sid, posicionamento={"formacao": esc["formacao"], "nomes": nomes}
+        )

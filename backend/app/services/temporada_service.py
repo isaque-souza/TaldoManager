@@ -252,7 +252,7 @@ def _no_desenho(dados, clube, j):
     """Onde o titular fica no campo: x (largura), y (profundidade) e o
     rótulo da vaga (LE, VOL, PD...), pelo desenho da formação."""
     _, x, y, rotulo = posicoes.desenho(clube.formacao)[j.slot]
-    return {**dados, "x": x, "y": y, "rotulo": rotulo}
+    return {**dados, "slot": j.slot, "x": x, "y": y, "rotulo": rotulo}
 
 
 def _escalacao(clube):
@@ -319,7 +319,8 @@ def pre_jogo(simulacao_id):
 # avançar uma rodada
 # ---------------------------------------------------------------------------
 
-def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
+def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
+            posicionamento=None):
     """Joga a próxima rodada. Devolve `{rodada_jogada, concluida, ...visão}`.
     None se a simulação não existe; `TemporadaConcluida` se já terminou."""
 
@@ -341,7 +342,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
         ao_vivo = transmissao_ativa(sim)
         decisoes = decisoes_ao_vivo(sim)
         if ao_vivo:
-            tatica = formacao = xi_preferido = None
+            tatica = formacao = xi_preferido = posicionamento = None
 
         campeonato = carregar_campeonato()
         restaurar_estado(campeonato, json.loads(sim["estado_json"]))
@@ -351,7 +352,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
         nova_formacao = formacao or alvo.formacao
         # xi None = mantém o salvo; [] = todos no automático
         simulacao_service._configurar_clube(
-            alvo, nova_tatica, nova_formacao, xi_preferido
+            alvo, nova_tatica, nova_formacao, xi_preferido, posicionamento
         )
         if xi_preferido is not None:
             xi_ef = list(dict.fromkeys(xi_preferido)) or None

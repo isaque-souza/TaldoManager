@@ -60,6 +60,7 @@ def snapshot_estado(campeonato):
         dados["tatica"] = clube.tatica
         dados["formacao"] = clube.formacao
         dados["xi_preferido"] = sorted(j.nome for j in clube.xi_preferido)
+        dados["posicionamento"] = clube.posicionamento
         # o elenco entra no snapshot porque transferências mudam quem joga
         # onde; sem isso, cada jogador voltaria para o clube da seed
         dados["elenco"] = [j.nome for j in clube.jogadores]
@@ -119,6 +120,7 @@ def restaurar_estado(campeonato, blob):
         clube.xi_preferido = {
             por_nome[n] for n in dados["xi_preferido"] if n in por_nome
         }
+        clube.posicionamento = dados.get("posicionamento")
         for nome, campos in dados["jogadores"].items():
             jogador = por_nome[nome]
             for c in _JOGADOR_CAMPOS:

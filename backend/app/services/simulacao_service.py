@@ -16,7 +16,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import diretoria
+from app.domain import diretoria, posicoes
 from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
@@ -37,9 +37,11 @@ NOME_CAMPEONATO = "Taldo"
 # rodar a simulação
 # ---------------------------------------------------------------------------
 
-def _configurar_clube(clube, tatica, formacao, xi_preferido):
+def _configurar_clube(clube, tatica, formacao, xi_preferido, posicionamento=None):
     """Aplica as escolhas do técnico no clube. Levanta ValueError se algo
-    não bate com o elenco / opções válidas."""
+    não bate com o elenco / opções válidas. `posicionamento` (v1.3):
+    {"formacao", "nomes"} com quem joga em cada vaga do desenho; None não
+    mexe, {} limpa."""
 
     if tatica not in Clube.TATICAS:
         raise ValueError(f"Tática inválida: {tatica!r}")
@@ -62,6 +64,35 @@ def _configurar_clube(clube, tatica, formacao, xi_preferido):
                 f"Não são do elenco de {clube.nome}: {fora}"
             )
         clube.xi_preferido = {do_elenco[n] for n in nomes}
+
+    if posicionamento is not None:
+        clube.posicionamento = validar_posicionamento(clube, posicionamento)
+
+
+def validar_posicionamento(clube, posicionamento):
+    """O posicionamento limpo (ou None, se vazio). ValueError se a formação
+    não existe, se o tamanho não bate com as vagas, se alguém não é do
+    elenco ou se um goleiro está na linha (ou alguém de linha no gol)."""
+    if not posicionamento:
+        return None
+    formacao = posicionamento.get("formacao")
+    if formacao not in Clube.FORMACOES:
+        raise ValueError(f"Formação inválida no posicionamento: {formacao!r}")
+    nomes = list(posicionamento.get("nomes") or [])
+    vagas = posicoes.vagas(formacao)
+    if len(nomes) != len(vagas):
+        raise ValueError(f"O posicionamento do {formacao} tem {len(vagas)} vagas")
+    do_elenco = {j.nome: j for j in clube.jogadores}
+    for vaga, nome in zip(vagas, nomes):
+        if nome is None:
+            continue
+        if nome not in do_elenco:
+            raise ValueError(f"Não é do elenco de {clube.nome}: {nome}")
+        if (do_elenco[nome].posicao == "Goleiro") != (vaga == "Goleiro"):
+            raise ValueError("Goleiro só joga no gol, e só goleiro joga no gol")
+    if len({n for n in nomes if n}) != len([n for n in nomes if n]):
+        raise ValueError("Cada jogador ocupa uma vaga só")
+    return {"formacao": formacao, "nomes": nomes}
 
 
 def meta_inicial(campeonato, clube_usuario):

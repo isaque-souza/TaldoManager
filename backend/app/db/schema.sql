@@ -209,6 +209,7 @@ CREATE TABLE IF NOT EXISTS plano (
     formacao      TEXT NOT NULL,
     tatica        TEXT NOT NULL,
     xi            TEXT NOT NULL DEFAULT '[]',   -- JSON: nomes dos titulares
-    padrao        INTEGER NOT NULL DEFAULT 0
+    padrao        INTEGER NOT NULL DEFAULT 0,
+    posicionamento TEXT                         -- JSON {formacao, nomes} (v1.3)
 );
 CREATE INDEX IF NOT EXISTS ix_plano_simulacao ON plano(simulacao_id);

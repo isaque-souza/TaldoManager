@@ -169,7 +169,8 @@ def _sim_em_andamento(conn, simulacao_id):
 # API do serviço
 # ---------------------------------------------------------------------------
 
-def iniciar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
+def iniciar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
+            posicionamento=None):
     """Começa (ou retoma) a transmissão da partida do técnico na próxima
     rodada. Ao começar, grava a escalação como `PATCH /decisao`; se já há
     uma transmissão nesta rodada, a escalação dela vale e o corpo é
@@ -186,7 +187,9 @@ def iniciar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
         conn.close()
 
     # ainda não começou: grava a escalação e abre a transmissão
-    escalacao_service.salvar_decisao(simulacao_id, tatica, formacao, xi_preferido)
+    escalacao_service.salvar_decisao(
+        simulacao_id, tatica, formacao, xi_preferido, posicionamento
+    )
     conn = conectar()
     try:
         sim = simulacao_repo.buscar(conn, simulacao_id)

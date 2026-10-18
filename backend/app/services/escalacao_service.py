@@ -19,7 +19,8 @@ from app.services.mercado_service import _carregar
 from app.services.temporada_service import TemporadaConcluida
 
 
-def salvar_decisao(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
+def salvar_decisao(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
+                   posicionamento=None):
     """Grava a escalação do técnico para a próxima rodada. O que não vier
     fica como está (mesma regra do `avancar`). None se a simulação não
     existe; `TemporadaConcluida` se já terminou; ValueError se a escolha não
@@ -37,7 +38,7 @@ def salvar_decisao(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
         alvo = ctx.alvo
         simulacao_service._configurar_clube(
             alvo, tatica or alvo.tatica, formacao or alvo.formacao,
-            xi_preferido,
+            xi_preferido, posicionamento,
         )
 
         with conn:
