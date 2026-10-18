@@ -209,7 +209,9 @@ export async function mostrarOfertas(jogadorId) {
   const d = await pedir(`/simulacoes/${estado.simId}/jogadores/${jogadorId}/ofertas`);
   if (!d) return;
   const linhas = d.ofertas.map((o) => ({
-    clube_fmt: o.rival ? `${icone("rival", "rival")} ${o.clube} (rival — a torcida não vai gostar)` : o.clube,
+    clube_fmt: o.rival
+      ? `${icone("rival", "rival")} ${o.clube} (rival — a torcida vai encolher ${Math.abs(o.revolta_torcida ?? 2).toLocaleString("pt-BR")}%)`
+      : o.clube,
     valor_fmt: dinheiro(o.valor),
     papel: o.seria_titular ? "seria titular" : "seria banco",
     acao: `<button class="transf" data-acao="vender" data-id="${jogadorId}" data-clube="${o.clube}">Aceitar</button>`,

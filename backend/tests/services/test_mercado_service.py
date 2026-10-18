@@ -214,3 +214,55 @@ def test_compra_aparece_no_historico_do_caixa():
     assert len(hist) == 1
     # caixa após a R1 = antes da compra - compra + finanças da rodada
     assert hist[0] < m["caixa"] - r["transferencia"]["valor"] + 2_000_000
+
+
+def _torcidas(sid):
+    return {
+        f["clube"]: f["torcedores"]
+        for f in simulacao_service.carregar_temporada(sid)["financas"]
+    }
+
+
+def test_vender_para_o_rival_irrita_a_torcida():
+    """Torcida (v1.4): a oferta do rival avisa o estrago, e a venda cobra."""
+    sid, clube = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    antes = _torcidas(sid)
+    for f in m["elenco"]:
+        if f["bloqueio"] is not None:
+            continue
+        lista = mercado_service.ofertas(sid, f["jogador_id"])
+        rival = next((o for o in lista["ofertas"] if o["rival"]), None)
+        if rival:
+            break
+    else:
+        pytest.skip("o rival não fez oferta por ninguém")
+    assert rival["revolta_torcida"] < 0
+    assert all(o["revolta_torcida"] is None for o in lista["ofertas"] if not o["rival"])
+
+    mercado_service.vender(sid, f["jogador_id"], rival["clube"])
+
+    depois = _torcidas(sid)
+    assert depois[clube] == round(antes[clube] * (1 + rival["revolta_torcida"] / 100))
+    assert depois[rival["clube"]] > antes[rival["clube"]]
+
+    conn = conectar()
+    try:
+        from app.repositories import mensagem_repository
+        assuntos = [r["assunto"] for r in mensagem_repository.listar(conn, sid)]
+    finally:
+        conn.close()
+    assert "A torcida não perdoou" in assuntos
+
+
+def test_vender_para_outro_clube_nao_mexe_na_torcida():
+    sid, clube = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    antes = _torcidas(sid)
+    vendido = next(f for f in m["elenco"] if f["bloqueio"] is None)
+    oferta = next(
+        o for o in mercado_service.ofertas(sid, vendido["jogador_id"])["ofertas"]
+        if not o["rival"]
+    )
+    mercado_service.vender(sid, vendido["jogador_id"], oferta["clube"])
+    assert _torcidas(sid)[clube] == antes[clube]

@@ -166,3 +166,38 @@ def test_mandante_com_mais_torcida_e_mais_forte():
         return p.forca_em_campo(casa) - p.forca_em_campo(fora)
 
     assert vantagem(10_000_000) > vantagem(300_000) > 0
+
+
+def test_venda_ao_rival_pesa_pela_importancia_do_jogador():
+    from app.domain.jogador import Jogador
+
+    casa, rival, neutro = _clube("Casa"), _clube("Rival"), _clube("Neutro")
+    casa.rivais = {"Rival"}
+    craque = Jogador("Craque", 25, "Atacante", 88)
+    titular = Jogador("Titular", 25, "Atacante", 80)
+    # gente melhor que o reserva em todas as vagas de ataque
+    outros = [Jogador(f"Bom {i}", 25, "Atacante", 75) for i in range(5)]
+    reservas = [Jogador("Reserva", 25, "Atacante", 60)]
+    for j in (craque, titular, *outros, *reservas):
+        casa.contratar_jogador(j)
+
+    assert torcida.revolta_venda_rival(casa, neutro, craque) == 0
+    assert torcida.revolta_venda_rival(casa, rival, craque) == torcida.VENDA_RIVAL_CRAQUE
+    assert torcida.revolta_venda_rival(casa, rival, titular) == torcida.VENDA_RIVAL_TITULAR
+    assert torcida.revolta_venda_rival(casa, rival, reservas[-1]) == torcida.VENDA_RIVAL
+
+    assert torcida.vender_ao_rival(casa, neutro, titular) is None
+    antes, depois = torcida.vender_ao_rival(casa, rival, craque)
+    assert (antes, depois) == (1_000_000, round(1_000_000 * (1 + torcida.VENDA_RIVAL_CRAQUE)))
+    assert casa.torcedores == depois
+    assert rival.torcedores == round(1_000_000 * (1 + torcida.RIVAL_COMEMORA))
+
+
+def test_revolta_da_torcida_na_caixa():
+    from app.domain.jogador import Jogador
+
+    msg = caixa.revolta_da_torcida(
+        Jogador("Fulano", 25, "Atacante", 80), _clube("Rival"), 1_000_000, 950_000,
+    )
+    assert msg["setor"] == "Marketing"
+    assert "perdemos 5% da torcida" in msg["corpo"]

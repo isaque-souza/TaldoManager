@@ -268,6 +268,18 @@ def balanco_da_torcida(inicial, final):
     )
 
 
+def revolta_da_torcida(jogador, rival, antes, depois):
+    """Venda para o rival (v1.4): o marketing conta o estrago."""
+    pct = f"{abs(depois / antes - 1) * 100:.0f}".replace(".", ",")
+    return _mensagem(
+        "Marketing", "A torcida não perdoou",
+        f"Vender {jogador.nome} para o {rival.nome} caiu muito mal: perdemos "
+        f"{pct}% da torcida, de {_torcedores(antes)} para "
+        f"{_torcedores(depois)} torcedores. Do outro lado, a torcida do "
+        f"{rival.nome} está em festa.",
+    )
+
+
 def virada(clube, movimentos, contratos_acabando):
     """Mensagens da virada de temporada para o clube do técnico: quem subiu
     da base, quem saiu, quem renovou e os contratos que acabam no fim desta.
