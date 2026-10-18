@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 471 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 477 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -325,8 +325,12 @@ Cada jogador tem uma posição de verdade e rende menos fora dela:
       zagueiro; numa secundária, 78). A força do time usa o overall na vaga.
       Escalação no campo: qualquer jogador de linha troca com qualquer um de
       linha, e o banco mostra quanto cada reserva renderia na vaga escolhida;
-      goleiro só troca com goleiro (vale também nas substituições). O motor
-      distribui o XI nas vagas com a menor perda somada (algoritmo húngaro)
+      goleiro só troca com goleiro (vale também nas substituições). Dois
+      titulares também trocam de vaga entre si (tocando ou arrastando): onde
+      o técnico põe cada um fica — o posicionamento vale na formação em que
+      foi feito e vai junto nos planos de jogo. Sem posicionamento (ou numa
+      formação nova), o motor distribui o XI nas vagas com a menor perda
+      somada (algoritmo húngaro)
 * [x] Improvisação inteligente — faltando gente numa posição, entra quem
       rende mais na vaga (um lateral ou volante na zaga, não um meia), e quem
       sai de campo deixa a vaga para quem entra
@@ -518,7 +522,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 471 testes (domain, db, repositories, services, api)
+│   └── tests/              # 477 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

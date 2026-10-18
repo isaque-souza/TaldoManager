@@ -306,3 +306,77 @@ def test_todo_elenco_da_seed_cabe_em_qualquer_formacao():
             clube.formacao = formacao
             clube.escalar_time()
             assert len(clube.titulares) == 11
+
+
+# ---------------------------------------------------------------------------
+# posicionamento do técnico
+# ---------------------------------------------------------------------------
+
+def _posicionado(clube):
+    return {"formacao": clube.formacao, "nomes": [j.nome for j in _por_slot(clube)]}
+
+
+def _por_slot(clube):
+    return sorted(clube.titulares, key=lambda j: j.slot)
+
+
+def test_trocar_dois_titulares_de_vaga_e_respeitado():
+    clube = _time_completo()
+    clube.escalar_time()
+    clube.xi_preferido = set(clube.titulares)
+    pos = _posicionado(clube)
+    # o lateral esquerdo (vaga 1) e o ponta direito trocam de lugar
+    i = pos["nomes"].index(next(j.nome for j in clube.titulares if j.vaga == "Lateral"))
+    k = max(n for n, v in enumerate(posicoes.vagas("4-3-3")) if v == "Ponta")
+    pos["nomes"][i], pos["nomes"][k] = pos["nomes"][k], pos["nomes"][i]
+    clube.posicionamento = pos
+
+    clube.escalar_time()
+
+    assert [j.nome for j in _por_slot(clube)] == pos["nomes"]
+    lateral = next(j for j in clube.titulares if j.funcao == "Lateral" and j.slot == k)
+    assert lateral.vaga == "Ponta"
+
+
+def test_posicionamento_de_outra_formacao_e_ignorado():
+    clube = _time_completo()
+    clube.escalar_time()
+    clube.xi_preferido = set(clube.titulares)
+    pos = _posicionado(clube)
+    pos["nomes"][1], pos["nomes"][-1] = pos["nomes"][-1], pos["nomes"][1]
+    clube.posicionamento = pos
+    clube.formacao = "4-2-3-1"
+
+    clube.escalar_time()
+
+    # no desenho novo, o motor distribui pela menor perda
+    assert all(j.vaga == j.funcao or j.funcao == "Meia central" for j in clube.titulares)
+
+
+def test_goleiro_posicionado_na_linha_nao_vale():
+    clube = _time_completo()
+    clube.escalar_time()
+    clube.xi_preferido = set(clube.titulares)
+    pos = _posicionado(clube)
+    pos["nomes"][0], pos["nomes"][1] = pos["nomes"][1], pos["nomes"][0]
+    clube.posicionamento = pos
+
+    clube.escalar_time()
+
+    assert _por_slot(clube)[0].funcao == "Goleiro"
+    assert all(j.vaga != "Goleiro" for j in clube.titulares if j.funcao != "Goleiro")
+
+
+def test_vaga_de_quem_esta_exausto_fica_com_outro():
+    clube = _time_completo()
+    clube.escalar_time()
+    clube.xi_preferido = set(clube.titulares)
+    clube.posicionamento = _posicionado(clube)
+    cansado = _por_slot(clube)[2]
+    cansado.energia = 10
+    cansado.atualizar_condicao()
+
+    clube.escalar_time()
+
+    assert cansado not in clube.titulares
+    assert len(clube.titulares) == 11

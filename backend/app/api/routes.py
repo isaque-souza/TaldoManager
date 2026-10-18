@@ -216,6 +216,7 @@ def jogar_proxima_rodada(
             tatica=decisao.tatica,
             formacao=decisao.formacao,
             xi_preferido=decisao.xi,
+            posicionamento=_posicionamento(decisao.posicionamento),
         )
     except TemporadaConcluida as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
@@ -240,6 +241,7 @@ def salvar_decisao(simulacao_id: int, decisao: RodadaDecisao):
             tatica=decisao.tatica,
             formacao=decisao.formacao,
             xi_preferido=decisao.xi,
+            posicionamento=_posicionamento(decisao.posicionamento),
         )
     except (TemporadaConcluida, PartidaEmAndamento) as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
@@ -477,7 +479,8 @@ def iniciar_transmissao(simulacao_id: int, decisao: RodadaDecisao | None = None)
     decisao = decisao or RodadaDecisao()
     try:
         dados = transmissao_service.iniciar(
-            simulacao_id, decisao.tatica, decisao.formacao, decisao.xi
+            simulacao_id, decisao.tatica, decisao.formacao, decisao.xi,
+            _posicionamento(decisao.posicionamento),
         )
     except (TemporadaConcluida, TransmissaoInvalida) as e:
         raise _erro_transmissao(e) from e
@@ -546,6 +549,11 @@ def decidir_na_partida(simulacao_id: int, decisao: DecisaoNova):
 # planos de jogo (v1.2): escalações com nome; o padrão vem a cada rodada
 # ---------------------------------------------------------------------------
 
+def _posicionamento(p):
+    """Posicionamento do corpo (Pydantic) → dict para os serviços."""
+    return p.model_dump() if p is not None else None
+
+
 def _resposta_planos(chamada):
     try:
         dados = chamada()
@@ -573,6 +581,7 @@ def criar_plano(simulacao_id: int, plano: NovoPlano):
     o carregado."""
     return _resposta_planos(lambda: plano_service.criar(
         simulacao_id, plano.nome, plano.formacao, plano.tatica, plano.xi, plano.padrao,
+        _posicionamento(plano.posicionamento),
     ))
 
 
@@ -583,7 +592,7 @@ def editar_plano(simulacao_id: int, plano_id: int, plano: PlanoEdicao):
     da próxima partida."""
     return _resposta_planos(lambda: plano_service.atualizar(
         simulacao_id, plano_id, plano.nome, plano.formacao, plano.tatica,
-        plano.xi, plano.padrao,
+        plano.xi, plano.padrao, _posicionamento(plano.posicionamento),
     ))
 
 

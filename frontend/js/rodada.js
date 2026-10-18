@@ -5,7 +5,7 @@ import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { COLUNAS, mostrarTemporada } from "./temporada.js";
 import { carregarMercado } from "./mercado.js";
 import { carregarLista } from "./saves.js";
-import { carregarPlanos, gravarEConferir, planoEmUso, renderEditor, xiDoEditor } from "./editor.js";
+import { carregarPlanos, gravarEConferir, planoEmUso, posicionamentoDoEditor, renderEditor, xiDoEditor } from "./editor.js";
 import { renderDashboard } from "./financas.js";
 import { renderMeta } from "./diretoria.js";
 import { escudo } from "./identidade.js";
@@ -305,6 +305,7 @@ function decisaoAtual() {
     tatica: $("r-tatica").value,
     formacao: $("r-formacao").value,
     xi: xiDoEditor(),
+    posicionamento: posicionamentoDoEditor(),
   };
 }
 

@@ -283,6 +283,14 @@ class NovaSimulacao(BaseModel):
     modo: Literal["completa", "rodada_a_rodada"] = "completa"
 
 
+class Posicionamento(BaseModel):
+    """Onde o técnico pôs cada titular (v1.3): `nomes[i]` joga na vaga i do
+    desenho da `formacao` (o goleiro é a 0; null = vaga livre). Só vale
+    enquanto o time joga nessa formação."""
+    formacao: str
+    nomes: list[str | None]
+
+
 class RodadaDecisao(BaseModel):
     """Corpo do POST /simulacoes/{id}/rodadas — o que o técnico muda antes da
     próxima rodada. Tudo opcional: o que não vier fica como está. `xi: []`
@@ -290,6 +298,7 @@ class RodadaDecisao(BaseModel):
     tatica: Tatica | None = None
     formacao: str | None = None
     xi: list[str] | None = None
+    posicionamento: Posicionamento | None = None
 
 
 class DecisaoSalva(BaseModel):
@@ -366,6 +375,7 @@ class JogadorPreJogo(BaseModel):
     x: float | None = None
     y: float | None = None
     rotulo: str | None = None          # LE, ZAG, VOL, MC, PD...
+    slot: int | None = None            # a vaga no desenho (índice)
 
 
 class EscalacaoPreJogo(BaseModel):
@@ -854,6 +864,7 @@ class Plano(BaseModel):
     tatica: Tatica
     xi: list[str]                  # titulares do molde (pode estar incompleto)
     padrao: bool                   # carregado a cada rodada nova
+    posicionamento: Posicionamento | None = None   # v1.3
 
 
 class Planos(BaseModel):
@@ -871,6 +882,7 @@ class NovoPlano(BaseModel):
     tatica: Tatica | None = None
     xi: list[str] | None = None
     padrao: bool = False
+    posicionamento: Posicionamento | None = None
 
 
 class PlanoEdicao(BaseModel):
@@ -880,6 +892,7 @@ class PlanoEdicao(BaseModel):
     tatica: Tatica | None = None
     xi: list[str] | None = None
     padrao: bool | None = None
+    posicionamento: Posicionamento | None = None
 
 
 ProximaRodada.model_rebuild()   # `escalacao` aponta para um schema definido depois

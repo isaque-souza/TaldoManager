@@ -4,11 +4,13 @@
 // mexer só naquele jogo; "Salvar no plano" guarda a mudança no molde.
 //
 // O campo mostra o time como o motor vai escalar (GET /rodadas/proxima →
-// `escalacao`): trocar um titular por um reserva grava na hora e o campo é
-// refeito pelo servidor. Qualquer jogador de linha joga em qualquer vaga
-// (v1.3), rendendo menos fora da posição dele; goleiro só troca com
-// goleiro. O motor põe cada escolhido na vaga onde ele rende mais. Quem
-// está exausto pode ser poupado mesmo escolhido, e o aviso diz isso.
+// `escalacao`): trocar um titular por um reserva, ou dois titulares de
+// vaga, grava na hora e o campo é refeito pelo servidor. Qualquer jogador
+// de linha joga em qualquer vaga (v1.3), rendendo menos fora da posição
+// dele; goleiro só troca com goleiro. Onde o técnico põe cada um fica
+// (o posicionamento, que vale na formação em que foi feito); mudando a
+// formação, o motor redistribui pela menor perda. Quem está exausto pode
+// ser poupado mesmo escolhido, e o aviso diz isso.
 
 import { $, estado, pedir } from "./nucleo.js";
 import { camisa } from "./identidade.js";
@@ -19,10 +21,19 @@ import { naTela, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
 
 // o que está no campo e no banco agora, e o que está selecionado
-const ed = { titulares: [], banco: [], sel: null, planos: null, editando: null, apagar: null };
+const ed = { titulares: [], banco: [], formacao: null, sel: null, planos: null, editando: null, apagar: null };
 
 export function xiDoEditor() {
   return ed.titulares.map((j) => j.nome);
+}
+
+// quem está em cada vaga do desenho da formação mostrada no campo (v1.3);
+// o servidor só usa enquanto o time joga nessa formação
+export function posicionamentoDoEditor() {
+  if (!ed.formacao || ed.titulares.some((j) => j.slot == null)) return undefined;
+  const nomes = Array(Math.max(11, ...ed.titulares.map((j) => j.slot + 1))).fill(null);
+  ed.titulares.forEach((j) => { nomes[j.slot] = j.nome; });
+  return { formacao: ed.formacao, nomes };
 }
 
 export function planoEmUso() {
@@ -36,6 +47,7 @@ export function renderEditor() {
   if (!esc) return;
   ed.titulares = esc.titulares.map((j) => ({ ...j }));
   ed.banco = esc.banco.map((j) => ({ ...j }));
+  ed.formacao = esc.formacao;
   ed.sel = null;
   desenhar();
 }
@@ -189,18 +201,31 @@ function tocar(lado, nome) {
   desenhar();
 }
 
-// titular com reserva: qualquer um de linha com qualquer um de linha, goleiro
-// com goleiro. Entre titulares não há troca: em que vaga cada um joga, o
-// motor decide pelo rendimento
+// titular com reserva, ou dois titulares trocando de vaga: qualquer um de
+// linha com qualquer um de linha, goleiro com goleiro. Reserva com reserva
+// não muda nada
 function compativel(sel, lado, nome) {
   const a = doLado(sel.lado, sel.nome);
   const b = doLado(lado, nome);
-  if (!a || !b || sel.lado === lado) return false;
+  if (!a || !b || (sel.lado === "banco" && lado === "banco")) return false;
   return podemTrocar(a, b);
 }
 
+// o que é da vaga (não do jogador): lugar no desenho e rótulo
+const daVaga = ({ slot, linha, vaga, x, y, rotulo }) => ({ slot, linha, vaga, x, y, rotulo });
+
 async function trocar(a, b) {
   const ia = (x) => (x.lado === "campo" ? ed.titulares : ed.banco).findIndex((j) => j.nome === x.nome);
+  if (a.lado === "campo" && b.lado === "campo") {   // dois titulares trocam de vaga
+    const [i, k] = [ia(a), ia(b)];
+    const [va, vb] = [daVaga(ed.titulares[i]), daVaga(ed.titulares[k])];
+    ed.titulares[i] = { ...ed.titulares[i], ...vb, overall_vaga: overallNa(ed.titulares[i], vb.vaga) };
+    ed.titulares[k] = { ...ed.titulares[k], ...va, overall_vaga: overallNa(ed.titulares[k], va.vaga) };
+    ed.sel = null;
+    desenhar();
+    await gravarEConferir();
+    return;
+  }
   const campo = a.lado === "campo" ? a : b;
   const banco = a.lado === "campo" ? b : a;
   const i = ia(campo);
@@ -208,8 +233,7 @@ async function trocar(a, b) {
   const sai = ed.titulares[i];
   const entra = ed.banco[k];
   // até o servidor responder, quem entra fica na vaga de quem saiu
-  const { linha, vaga, x, y, rotulo } = sai;
-  ed.titulares[i] = { ...entra, linha, vaga, x, y, rotulo, overall_vaga: overallNa(entra, vaga) };
+  ed.titulares[i] = { ...entra, ...daVaga(sai), overall_vaga: overallNa(entra, sai.vaga) };
   ed.banco[k] = { ...sai };
   ed.sel = null;
   desenhar();
@@ -351,6 +375,7 @@ async function acao(qual) {
     await salvarEscalacaoAgora();
     const v = await mandar(`${base()}/${atual.id}`, "PATCH", {
       formacao: $("r-formacao").value, tatica: $("r-tatica").value, xi: xiDoEditor(),
+      posicionamento: posicionamentoDoEditor(),
     });
     if (v) { ed.planos = v; renderPlanos(); msg(`${atual.nome} atualizado.`); }
     return;
@@ -374,6 +399,7 @@ async function confirmarNome() {
     await salvarEscalacaoAgora();   // o plano novo nasce da escalação na tela
     v = await mandar(base(), "POST", {
       nome, formacao: $("r-formacao").value, tatica: $("r-tatica").value, xi: xiDoEditor(),
+      posicionamento: posicionamentoDoEditor(),
     });
   }
   if (!v) return;

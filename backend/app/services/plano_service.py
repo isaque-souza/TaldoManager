@@ -61,6 +61,13 @@ def _validar(alvo, nome, formacao, tatica, xi):
     return nome, xi
 
 
+def _validar_posicionamento(alvo, pos):
+    try:
+        return simulacao_service.validar_posicionamento(alvo, pos)
+    except ValueError as e:
+        raise PlanoInvalido(str(e)) from e
+
+
 def _xi_atual(sim):
     return json.loads(sim["xi_preferido"]) if sim["xi_preferido"] else []
 
@@ -68,6 +75,18 @@ def _xi_atual(sim):
 def _no_elenco(alvo, xi):
     elenco = {j.nome for j in alvo.jogadores}
     return [n for n in xi if n in elenco]
+
+
+def _posicionamento_no_elenco(alvo, pos):
+    """O posicionamento do plano sem quem saiu do clube (a vaga fica livre;
+    o motor completa). {} quando o plano não tem — "usar" limpa o atual."""
+    if not pos:
+        return {}
+    elenco = {j.nome for j in alvo.jogadores}
+    return {
+        "formacao": pos["formacao"],
+        "nomes": [n if n in elenco else None for n in pos["nomes"]],
+    }
 
 
 def _modificado(alvo, plano):
@@ -79,6 +98,8 @@ def _modificado(alvo, plano):
         alvo.tatica != plano["tatica"]
         or alvo.formacao != plano["formacao"]
         or {j.nome for j in alvo.xi_preferido} != set(_no_elenco(alvo, plano["xi"]))
+        or (alvo.posicionamento or {})
+        != _posicionamento_no_elenco(alvo, plano.get("posicionamento"))
     )
 
 
@@ -123,6 +144,7 @@ def listar(simulacao_id):
                 pid = plano_repo.criar(
                     conn, simulacao_id, NOME_INICIAL, alvo.formacao, alvo.tatica,
                     _no_elenco(alvo, _xi_atual(sim)), padrao=True,
+                    posicionamento=alvo.posicionamento,
                 )
                 simulacao_repo.definir_plano_em_uso(conn, simulacao_id, pid)
             sim = simulacao_repo.buscar(conn, simulacao_id)
@@ -131,7 +153,8 @@ def listar(simulacao_id):
         conn.close()
 
 
-def criar(simulacao_id, nome, formacao=None, tatica=None, xi=None, padrao=False):
+def criar(simulacao_id, nome, formacao=None, tatica=None, xi=None, padrao=False,
+          posicionamento=None):
     """Plano novo; o que não vier sai da escalação atual da próxima partida.
     O plano novo passa a ser o carregado (é o que está na tela)."""
 
@@ -148,12 +171,15 @@ def criar(simulacao_id, nome, formacao=None, tatica=None, xi=None, padrao=False)
         tatica = tatica or alvo.tatica
         xi = _xi_atual(sim) if xi is None else xi
         nome, xi = _validar(alvo, nome, formacao, tatica, xi)
+        posicionamento = _validar_posicionamento(
+            alvo, alvo.posicionamento if posicionamento is None else posicionamento
+        )
         if any(p["nome"].lower() == nome.lower() for p in planos):
             raise PlanoInvalido(f"Já existe um plano chamado {nome!r}")
         with conn:
             pid = plano_repo.criar(
                 conn, simulacao_id, nome, formacao, tatica, xi,
-                padrao=padrao or not planos,
+                padrao=padrao or not planos, posicionamento=posicionamento,
             )
             if padrao:
                 plano_repo.definir_padrao(conn, simulacao_id, pid)
@@ -164,7 +190,7 @@ def criar(simulacao_id, nome, formacao=None, tatica=None, xi=None, padrao=False)
 
 
 def atualizar(simulacao_id, plano_id, nome=None, formacao=None, tatica=None,
-              xi=None, padrao=None):
+              xi=None, padrao=None, posicionamento=None):
     """Renomeia, muda o molde e/ou vira padrão. Não mexe na escalação da
     próxima partida (para isso, `usar`)."""
 
@@ -189,10 +215,14 @@ def atualizar(simulacao_id, plano_id, nome=None, formacao=None, tatica=None,
             for p in plano_repo.listar(conn, simulacao_id)
         ):
             raise PlanoInvalido(f"Já existe um plano chamado {novo_nome!r}")
+        novo_pos = _validar_posicionamento(
+            alvo,
+            plano["posicionamento"] if posicionamento is None else posicionamento,
+        )
         with conn:
             plano_repo.atualizar(
                 conn, plano_id, novo_nome, formacao or plano["formacao"],
-                tatica or plano["tatica"], novo_xi,
+                tatica or plano["tatica"], novo_xi, novo_pos,
             )
             if padrao:
                 plano_repo.definir_padrao(conn, simulacao_id, plano_id)
@@ -241,11 +271,12 @@ def usar(simulacao_id, plano_id):
             return None
         alvo = _carregar(conn, simulacao_id).alvo
         xi = _no_elenco(alvo, plano["xi"])
+        pos = _posicionamento_no_elenco(alvo, plano["posicionamento"])
     finally:
         conn.close()
 
     escalacao_service.salvar_decisao(
-        simulacao_id, plano["tatica"], plano["formacao"], xi
+        simulacao_id, plano["tatica"], plano["formacao"], xi, pos
     )
     conn = conectar()
     try:
@@ -273,7 +304,10 @@ def aplicar_padrao(conn, simulacao_id, alvo):
     if plano is None:
         return None
     xi = _no_elenco(alvo, plano["xi"])
-    simulacao_service._configurar_clube(alvo, plano["tatica"], plano["formacao"], xi)
+    simulacao_service._configurar_clube(
+        alvo, plano["tatica"], plano["formacao"], xi,
+        _posicionamento_no_elenco(alvo, plano["posicionamento"]),
+    )
     simulacao_repo.definir_plano_em_uso(conn, simulacao_id, plano["id"])
     return plano["tatica"], plano["formacao"], xi
 
@@ -285,6 +319,7 @@ def copiar(conn, de_simulacao, para_simulacao, alvo):
         pid = plano_repo.criar(
             conn, para_simulacao, p["nome"], p["formacao"], p["tatica"],
             _no_elenco(alvo, p["xi"]), padrao=p["padrao"],
+            posicionamento=_posicionamento_no_elenco(alvo, p["posicionamento"]) or None,
         )
         if p["padrao"]:
             simulacao_repo.definir_plano_em_uso(conn, para_simulacao, pid)

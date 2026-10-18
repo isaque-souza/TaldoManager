@@ -70,6 +70,9 @@ class Clube:
         self.formacao = "4-3-3"
         self.tatica = "equilibrado"
         self.xi_preferido = set()   # Jogadores que o técnico prefere como titulares
+        # onde o técnico pôs cada um (v1.3): {"formacao", "nomes"}, com
+        # nomes[i] na vaga i do desenho. Só vale na formação em que foi feito
+        self.posicionamento = None
 
         self.pontos = 0
         self.gols_marcados = 0
@@ -241,8 +244,19 @@ class Clube:
             j for j in disponiveis
             if j in self.xi_preferido and j.condicao != "Exausto"
         ]
+
+        # quem o técnico pôs numa vaga fica nela (goleiro só no gol)
+        pos = self.posicionamento
+        if pos and pos.get("formacao") == self.formacao:
+            por_nome = {j.nome: j for j in escolhidos}
+            for i, nome in enumerate(pos.get("nomes", [])[: len(vagas)]):
+                j = por_nome.get(nome)
+                if j and (j.posicao == "Goleiro") == (vagas[i] == "Goleiro"):
+                    ocupante[i] = j
+
         atribuir(
-            escolhidos, lambda j, v: j.overall - j.overall_em(v),
+            [j for j in escolhidos if j not in ocupante],
+            lambda j, v: j.overall - j.overall_em(v),
             linha_no_gol=False,
         )
 
