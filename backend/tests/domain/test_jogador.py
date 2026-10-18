@@ -142,9 +142,11 @@ def test_peso_assistencia_por_posicao():
     meia = Jogador("Meia", 25, "Meio-Campo", 80)
     defesa = Jogador("Defesa", 25, "Defesa", 80)
 
-    assert atacante.peso_assistencia() == 17
-    assert meia.peso_assistencia() == 23
-    assert defesa.peso_assistencia() == 12
+    # base da posição + o passe (v1.3; antes, o overall)
+    assert atacante.peso_assistencia() == 7 + atacante.atributo("passe") // 8
+    assert meia.peso_assistencia() == 13 + meia.atributo("passe") // 8
+    assert defesa.peso_assistencia() == 2 + defesa.atributo("passe") // 8
+    assert meia.peso_assistencia() > atacante.peso_assistencia() > defesa.peso_assistencia()
 
 
 def test_peso_assistencia_considera_condicao():

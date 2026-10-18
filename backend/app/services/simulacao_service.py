@@ -16,7 +16,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import diretoria, posicoes
+from app.domain import atributos, diretoria, posicoes
 from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
@@ -935,6 +935,10 @@ def game_log_jogador(simulacao_id, jogador_id):
             "clube": j["clube"],
             "clube_id": j["clube_id"],
             "posicao": j["posicao"],
+            "funcao": j["funcao"],
+            "atributos": atributos.calcular(
+                j["nome"], j["posicao"], j["funcao"], j["overall"]
+            ),
             "overall": j["overall"],
             "idade": j["idade"],
             "partidas": j["partidas"],

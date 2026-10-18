@@ -137,7 +137,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 489 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 502 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -347,7 +347,20 @@ Cada jogador tem uma posição de verdade e rende menos fora dela:
       ao lado do mercado, com o link para a mensagem.
       API: `GET /simulacoes/{id}/mensagens`, `POST .../mensagens/{id}/lida`,
       `POST .../mensagens/lidas`
-* [ ] Atributos do jogador (ex.: passe, finalização, marcação, velocidade...)
+* [x] Atributos do jogador — como os seis do FIFA/EA FC: Velocidade,
+      Finalização, Passe, Drible, Marcação e Físico (goleiro: Reflexos e
+      Posicionamento). Cada um é o overall + o perfil da posição (o
+      centroavante finaliza, o zagueiro marca, o ponta corre e dribla) + o
+      estilo do jogador, fixo e tirado do nome — acompanha a evolução na
+      carreira e não precisa ser guardado. No motor: quem chuta e quem bate
+      pênalti pela finalização; o goleiro pelos reflexos e posicionamento; as
+      assistências pelo passe; e, pelo ESTILO (quanto o jogador está acima
+      do próprio nível naquilo, para a força não contar duas vezes), o duelo
+      do atacante (velocidade e drible) contra quem tenta parar o lance
+      (velocidade e marcação), a precisão do chute e o cansaço (físico).
+      Calibrado para a liga ficar como antes (2,8 gols por jogo, mesma
+      ordem de forças). Aparecem na página do jogador (barras), no mercado
+      (os destaques de cada um) e nas dicas do campo
 
 ---
 
@@ -535,7 +548,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 489 testes (domain, db, repositories, services, api)
+│   └── tests/              # 502 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

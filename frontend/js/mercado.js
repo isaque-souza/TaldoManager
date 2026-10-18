@@ -6,6 +6,8 @@ import { abrirSecaoRodada, carregarProximaRodada, marcarHubMercado } from "./rod
 import { renderContratos } from "./contratos.js";
 import { icone } from "./icones.js";
 import { carregarCaixa } from "./caixa.js";
+import { destaques, linhaAtributos } from "./atributos.js";
+import { posicaoDe, sigla } from "./posicoes.js";
 
 // ---------- mercado de transferências ----------
 
@@ -58,6 +60,9 @@ export function acaoVenda(f) {
 export function linhaMercado(f) {
   return {
     ...f,
+    posicao: sigla(posicaoDe(f)),
+    // os dois melhores atributos; todos na dica (v1.3)
+    atributos_fmt: `<span title="${linhaAtributos(f.atributos)}">${destaques(f.atributos)}</span>`,
     clube_fmt: f.rival ? `${icone("rival", "rival")} ${f.clube}` : f.clube,
     valor: dinheiro(f.valor_mercado),
     sal: dinheiro(f.salario),
@@ -94,7 +99,7 @@ export function renderMercado(m) {
       .map((f) => ({ ...linhaMercado(f), acao: acaoCompra(f) }));
     html += tabela(lista, [
       ["nome", "Jogador"], ["clube_fmt", "Clube"], ["posicao", "Pos."], ["idade", "Idade"],
-      ["overall", "OVR"], ["pot", "Pot."], ["valor", "Valor"], ["multa", "Multa"],
+      ["overall", "OVR"], ["atributos_fmt", "Destaques"], ["pot", "Pot."], ["valor", "Valor"], ["multa", "Multa"],
       ["sal", "Salário"], ["acao", "Proposta"],
     ]);
     if (m.disponiveis.length > MERCADO_LIMITE) {
@@ -104,7 +109,7 @@ export function renderMercado(m) {
     html += `<h5>Vender do seu elenco</h5><div id="m-ofertas"></div>`;
     html += tabela(m.elenco.map((f) => ({ ...linhaMercado(f), acao: acaoVenda(f) })), [
       ["nome", "Jogador"], ["posicao", "Pos."], ["idade", "Idade"], ["overall", "OVR"],
-      ["valor", "Valor"], ["multa", "Multa"], ["sal", "Salário"], ["acao", ""],
+      ["atributos_fmt", "Destaques"], ["valor", "Valor"], ["multa", "Multa"], ["sal", "Salário"], ["acao", ""],
     ]);
   }
 

@@ -148,6 +148,8 @@ def _ficha(jogador, jogador_id, clube):
         "nome": jogador.nome,
         "clube": clube.nome,
         "posicao": jogador.posicao,
+        "funcao": jogador.funcao,
+        "atributos": jogador.atributos,
         "idade": jogador.idade,
         "overall": jogador.overall,
         "potencial": jogador.potencial,
