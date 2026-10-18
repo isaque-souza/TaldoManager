@@ -308,7 +308,18 @@ def test_contrato_vencido_do_tecnico_sai_ou_fica_por_emergencia():
         )
 
 
-def test_elencos_continuam_validos_depois_de_varias_viradas():
+def _cargo_garantido(monkeypatch):
+    """Para testes de várias viradas que não são sobre a diretoria: com a
+    seed fixa, o técnico pode acabar demitido no meio (e a virada é
+    recusada) a cada ajuste do motor que mexe nos resultados."""
+    monkeypatch.setattr(
+        simulacao_service, "cargo_da_temporada",
+        lambda conn, sim: {"estado": "mantido", "motivo": None},
+    )
+
+
+def test_elencos_continuam_validos_depois_de_varias_viradas(monkeypatch):
+    _cargo_garantido(monkeypatch)
     sid = _temporada_concluida(seed=5)
     for _ in range(3):
         sid = carreira_service.proxima_temporada(sid)["simulacao_id"]
@@ -393,7 +404,8 @@ def test_jovem_da_base_pode_ser_renovado_e_vendido():
     assert meu_jovem in _jogadores(nova)
 
 
-def test_nomes_nao_se_repetem_na_carreira():
+def test_nomes_nao_se_repetem_na_carreira(monkeypatch):
+    _cargo_garantido(monkeypatch)
     sid = _temporada_concluida(seed=5)
     vistos = set(_jogadores(sid))
     for _ in range(2):

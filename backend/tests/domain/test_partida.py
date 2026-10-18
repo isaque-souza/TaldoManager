@@ -672,3 +672,22 @@ def test_chutes_no_gol_e_escanteios_sao_contados():
         total_escanteios += p.escanteios_c1 + p.escanteios_c2
 
     assert total_escanteios > 0            # houve escanteios nos 10 jogos
+
+
+def test_quem_sai_nao_volta_a_campo():
+    # a substituição automática não escolhe quem já jogou e saiu (inclusive
+    # quem o técnico tirou: no 46' tira um meia; ele não pode voltar)
+    for seed in range(60):
+        random.seed(seed)
+        c1, c2 = _clube_completo("A"), _clube_completo("B")
+        partida = Partida(c1, c2)
+        meia = next(j for j in c1.jogadores if j.posicao == "Meio-Campo")
+        reserva = next(j for j in c1.jogadores if j.posicao == "Meio-Campo" and j is not meia)
+        partida.decisoes = [{"minuto": 46, "clube": "A", "sai": meia.nome, "entra": reserva.nome}]
+        c1.xi_preferido = {meia}   # garante que ele começa jogando
+        partida.simular_partida()
+
+        jogaram = set(partida.titulares_iniciais)
+        for troca in partida.substituicoes_log:
+            assert troca["entra"] not in jogaram, (seed, troca["entra"].nome)
+            jogaram.add(troca["entra"])

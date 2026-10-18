@@ -739,9 +739,12 @@ class Partida:
         titular
     ):
 
+        # quem já jogou e saiu volta para `reservas`, mas não pode voltar a
+        # campo (está em `estatisticas`); só entra quem ainda não jogou
         reservas = [
             j for j in clube.reservas
             if j.posicao == titular.posicao
+            and j not in self.estatisticas
         ]
 
         if not reservas:
@@ -1430,9 +1433,8 @@ class Partida:
         """Uma linha por jogador que entrou em campo: se foi titular, quando
         entrou/saiu, contribuição e nota. Chamar depois de `calcular_notas`."""
 
-        # percorre as trocas em ordem: um titular pode sair e voltar (quando
-        # o substituto entra no lugar de outro companheiro), então a última
-        # troca é que vale.
+        # percorre as trocas em ordem, a última vale. Quem sai não volta mais
+        # (escolher_substituto), mas a leitura continua certa se voltasse.
         entrou_min = {}
         saiu_min = {}
 
