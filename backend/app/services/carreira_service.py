@@ -10,7 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import historico
+from app.domain import caixa, historico
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -23,6 +23,7 @@ from app.domain.temporada import snapshot_estado
 from app.repositories import carreira_repository as carreira_repo
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
+from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import movimento_repository as movimento_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import plano_service, simulacao_service
@@ -153,6 +154,16 @@ def proxima_temporada(simulacao_id):
             mapa = clube_repo.inserir(conn, nova_id, cru["clubes"])
             jogador_repo.inserir(conn, nova_id, mapa, cru["jogadores"])
             movimento_repo.inserir(conn, nova_id, movimentos)
+            # caixa de entrada (v1.3): a meta nova e o que mudou no elenco
+            meta = simulacao_service.meta_inicial(campeonato, clube_usuario)
+            mensagem_repo.inserir(conn, nova_id, None, [
+                caixa.meta_da_temporada(
+                    clube_usuario, meta["meta_posicao"], meta["ranking_forca"],
+                ),
+                *caixa.virada(clube_usuario, movimentos, [
+                    (j.nome, j.funcao) for j in alvo.jogadores if j.contrato_anos <= 1
+                ]),
+            ])
             # os planos de jogo seguem para a temporada nova (v1.2)
             plano_service.copiar(conn, simulacao_id, nova_id, alvo)
 

@@ -334,6 +334,19 @@ Cada jogador tem uma posição de verdade e rende menos fora dela:
 * [x] Improvisação inteligente — faltando gente numa posição, entra quem
       rende mais na vaga (um lateral ou volante na zaga, não um meia), e quem
       sai de campo deixa a vaga para quem entra
+* [x] Caixa de entrada — como no Football Manager e no modo carreira do FIFA,
+      cada setor do clube escreve para o técnico (card no menu do clube, com as
+      não lidas e filtro por setor). O **diretor de futebol** responde cada
+      proposta — aceita, contraproposta (quanto faltou) ou recusada (o que
+      pesou: craque, titular, contrato longo, rival; sem revelar o pedido) — e
+      avisa quando nem deu para negociar (caixa, elenco cheio...); o
+      **departamento médico** fala das lesões e de quem foi liberado; o
+      **auxiliar técnico**, de expulsões, suspensões, pendurados e exaustos; a
+      **diretoria**, da meta e do balanço da temporada; as **categorias de
+      base**, de quem subiu na virada. A resposta da proposta também aparece
+      ao lado do mercado, com o link para a mensagem.
+      API: `GET /simulacoes/{id}/mensagens`, `POST .../mensagens/{id}/lida`,
+      `POST .../mensagens/lidas`
 * [ ] Atributos do jogador (ex.: passe, finalização, marcação, velocidade...)
 
 ---

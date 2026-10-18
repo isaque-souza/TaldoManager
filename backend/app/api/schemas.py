@@ -895,4 +895,21 @@ class PlanoEdicao(BaseModel):
     posicionamento: Posicionamento | None = None
 
 
+class Mensagem(BaseModel):
+    id: int
+    rodada: int | None           # None = antes da 1ª rodada
+    setor: str                   # Diretor de futebol, Departamento médico...
+    assunto: str
+    corpo: str
+    lida: bool
+    criada_em: str
+
+
+class CaixaDeEntrada(BaseModel):
+    """GET /simulacoes/{id}/mensagens (v1.3)."""
+    mensagens: list[Mensagem]
+    nao_lidas: int
+    setores: list[str]
+
+
 ProximaRodada.model_rebuild()   # `escalacao` aponta para um schema definido depois

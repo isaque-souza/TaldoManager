@@ -17,11 +17,12 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import posicoes
+from app.domain import caixa, posicoes
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import atuacao_repository as atuacao_repo
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
+from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import lance_repository as lance_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
@@ -128,6 +129,11 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
             jogador_repo.inserir(conn, sim_id, mapa, cru["jogadores"])
+            meta = simulacao_service.meta_inicial(campeonato, clube_usuario)
+            if meta:
+                mensagem_repo.inserir(conn, sim_id, None, [caixa.meta_da_temporada(
+                    clube_usuario, meta["meta_posicao"], meta["ranking_forca"],
+                )])
         return sim_id
     finally:
         conn.close()
@@ -360,8 +366,14 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             xi_ef = sorted(j.nome for j in alvo.xi_preferido) or None
 
         rodada_jogada = campeonato.rodada
+        # para a caixa de entrada: o elenco antes da rodada (v1.3)
+        antes = caixa.foto_do_elenco(alvo)
+        adversario, _ = _confronto_do_clube(
+            campeonato.calendario[rodada_jogada - 1], alvo.nome
+        )
         with redirect_stdout(io.StringIO()):
             campeonato.jogar_rodada(clube_usuario, decisoes)
+        mensagens = caixa.depois_da_rodada(antes, caixa.foto_do_elenco(alvo), adversario)
 
         novas = [
             p for p in campeonato.partidas_jogadas
@@ -374,6 +386,12 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
         )
 
         concluida = campeonato.rodada > len(campeonato.calendario)
+        if concluida:
+            tabela = campeonato.classificacao()
+            mensagens.append(caixa.fim_de_temporada(
+                next(i for i, c in enumerate(tabela, start=1) if c.nome == clube_usuario),
+                sim["meta_posicao"], tabela[0].nome, clube_usuario,
+            ))
         xi_json = (
             json.dumps(xi_ef, ensure_ascii=False) if xi_ef else None
         )
@@ -397,6 +415,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             partida_ids = partida_repo.inserir(conn, simulacao_id, mapa, novas)
             lance_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
             atuacao_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
+            mensagem_repo.inserir(conn, simulacao_id, rodada_jogada, mensagens)
             if ao_vivo:
                 simulacao_repo.definir_ao_vivo(conn, simulacao_id, None)
 

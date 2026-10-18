@@ -3,6 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query, Response
 
 from app.api.schemas import (
+    CaixaDeEntrada,
     CarreiraDetalhe,
     ClubeComElenco,
     ContratoJogador,
@@ -44,6 +45,7 @@ from app.services import (
     carreira_service,
     contrato_service,
     escalacao_service,
+    mensagem_service,
     mercado_service,
     plano_service,
     simulacao_service,
@@ -609,3 +611,37 @@ def usar_plano(simulacao_id: int, plano_id: int):
     """Carrega o plano na escalação da próxima partida (409 com a partida
     já rolando)."""
     return _resposta_planos(lambda: plano_service.usar(simulacao_id, plano_id))
+
+
+# ---------------------------------------------------------------------------
+# caixa de entrada (v1.3): mensagens dos setores do clube
+# ---------------------------------------------------------------------------
+
+def _caixa_ou_404(caixa, oque="Simulação não encontrada"):
+    if caixa is None:
+        raise HTTPException(status_code=404, detail=oque)
+    return caixa
+
+
+@router.get("/simulacoes/{simulacao_id}/mensagens", response_model=CaixaDeEntrada,
+            tags=["caixa"])
+def listar_mensagens(simulacao_id: int):
+    """As mensagens do diretor de futebol, do departamento médico, do
+    auxiliar técnico e da diretoria, da mais nova para a mais antiga."""
+    return _caixa_ou_404(mensagem_service.listar(simulacao_id))
+
+
+@router.post("/simulacoes/{simulacao_id}/mensagens/{mensagem_id}/lida",
+             response_model=CaixaDeEntrada, tags=["caixa"])
+def ler_mensagem(simulacao_id: int, mensagem_id: int):
+    """Marca uma mensagem como lida."""
+    return _caixa_ou_404(
+        mensagem_service.ler(simulacao_id, mensagem_id), "Mensagem não encontrada"
+    )
+
+
+@router.post("/simulacoes/{simulacao_id}/mensagens/lidas",
+             response_model=CaixaDeEntrada, tags=["caixa"])
+def ler_todas_as_mensagens(simulacao_id: int):
+    """Marca todas como lidas."""
+    return _caixa_ou_404(mensagem_service.ler_todas(simulacao_id))

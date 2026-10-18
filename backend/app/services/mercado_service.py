@@ -13,11 +13,12 @@ import json
 import random
 
 from app.db.conexao import conectar
-from app.domain import mercado
+from app.domain import caixa, mercado
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
+from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import proposta_repository as proposta_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.repositories import transferencia_repository as transferencia_repo
@@ -320,13 +321,23 @@ def propor(simulacao_id, jogador_id, valor):
         if vendedor is comprador:
             raise TransferenciaInvalida(f"{jogador.nome} já é do seu elenco")
 
+        def bloqueada(motivo):
+            # o diretor de futebol conta o que faltou na caixa de entrada
+            with conn:
+                mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                    caixa.negociacao_bloqueada(
+                        jogador, vendedor, motivo, comprador.dinheiro
+                    )
+                ])
+            return TransferenciaInvalida(motivo)
+
         # regras que nem chegam a ser negociação (não gastam tentativa)
         motivo = (
             mercado.motivo_saida_bloqueada(vendedor, jogador)
             or mercado.motivo_entrada_bloqueada(comprador, valor)
         )
         if motivo:
-            raise TransferenciaInvalida(motivo)
+            raise bloqueada(motivo)
 
         feitas = _propostas_por_jogador(ctx).get(jogador_id, [])
         ultima = feitas[-1] if feitas else None
@@ -337,14 +348,20 @@ def propor(simulacao_id, jogador_id, valor):
         )
         # aceitar a contraproposta sempre vale, mesmo no limite de tentativas
         if len(feitas) >= mercado.MAX_PROPOSTAS and not aceitando_contra:
-            raise TransferenciaInvalida(
+            raise bloqueada(
                 f"O {vendedor.nome} encerrou as conversas por {jogador.nome} "
                 "nesta janela"
             )
 
         resposta = mercado.avaliar_proposta(jogador, vendedor, comprador, valor)
+        restantes = max(0, mercado.MAX_PROPOSTAS - len(feitas) - 1)
 
         with conn:
+            mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                caixa.resposta_proposta(
+                    jogador, vendedor, comprador, valor, resposta, restantes
+                )
+            ])
             proposta_repo.inserir(
                 conn, simulacao_id, ctx.rodada, jogador_id, valor,
                 resposta.tipo,
@@ -356,7 +373,6 @@ def propor(simulacao_id, jogador_id, valor):
                     jogador_id, jogador, vendedor, comprador, resposta.valor
                 )
 
-        restantes = max(0, mercado.MAX_PROPOSTAS - len(feitas) - 1)
         return {
             "resposta": resposta.tipo,
             "motivo": resposta.motivo,
@@ -402,6 +418,9 @@ def vender(simulacao_id, jogador_id, clube):
             )
 
         with conn:
+            mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                caixa.venda(jogador, oferta.clube, oferta.valor)
+            ])
             return ctx.efetivar(
                 jogador_id, jogador, ctx.alvo, oferta.clube, oferta.valor
             )
