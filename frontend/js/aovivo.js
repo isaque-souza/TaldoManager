@@ -106,6 +106,10 @@ function iniciar(res, det, av) {
   $("aovivo").hidden = false;
   window.scrollTo(0, 0);
   $("av-narracao").innerHTML = "";
+  // a faixa e o pulso do jogo anterior ficam com a classe; ao reexibir a
+  // tela o navegador reinicia a animação e um "GOL!" fantasma aparece no 0'
+  $("av-faixa").classList.remove("visivel");
+  $("av-placar").classList.remove("pulso");
   $("av-fim").hidden = true;
   $("av-pular").disabled = false;
   escolherVelocidade(jogo.velocidade);
