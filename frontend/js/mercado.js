@@ -2,7 +2,7 @@
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
-import { carregarProximaRodada, marcarAbasRodada } from "./rodada.js";
+import { carregarProximaRodada, marcarHubMercado } from "./rodada.js";
 import { renderContratos } from "./contratos.js";
 import { icone } from "./icones.js";
 
@@ -111,12 +111,7 @@ export function renderMercado(m) {
 
   renderContratos(m.elenco);
   const acabando = m.elenco.filter((f) => f.contrato_anos <= 1).length;
-  marcarAbasRodada({
-    mercado: m.janela_aberta
-      ? `<span class="luz-aberta" role="img" aria-label="janela aberta"></span>`
-      : icone("cadeado", "janela fechada"),
-    contratos: acabando ? `<span class="chip chip-perto">${acabando}</span>` : "",
-  });
+  marcarHubMercado({ janelaAberta: m.janela_aberta, acabando });
 
   const box = $("r-mercado");
   box.innerHTML = html;

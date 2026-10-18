@@ -27,7 +27,6 @@ export function lembrarSessao() {
     localStorage.setItem(CHAVE_SESSAO, JSON.stringify({
       simId: estado.simId,
       abaAtual: estado.abaAtual,
-      abaRodada: estado.abaRodada,
     }));
   } catch {
     // sem storage o jogo segue igual, só não lembra a aba
@@ -92,7 +91,7 @@ export async function abrirSimulacao(id, abas = {}) {
   // aba lembrada só se ainda existe neste save (ex.: "Virada" só na carreira)
   const validas = abasDaTemporada().map(([k]) => k);
   estado.abaAtual = validas.includes(abas.abaAtual) ? abas.abaAtual : "classificacao";
-  if (abas.abaRodada) estado.abaRodada = abas.abaRodada;
+  estado.abaRodada = "hub";   // abrir um save sempre cai no menu do clube
   pilhaVoltar.length = 0;
   lembrarSessao();
   if (dados.estado === "em_andamento") {

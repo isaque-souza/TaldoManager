@@ -167,15 +167,42 @@
     </hgroup>
     <p id="r-meta" hidden></p>
 
-    <!-- antes de jogar: abas (o botão de jogar fica fora delas) -->
+    <!-- antes de jogar: o hub do clube (cards) abre cada seção -->
     <div id="rodada-antes">
-      <p class="acoes-rodada">
-        <button id="r-jogar"></button>
-        <button id="r-ver-tabela" class="secondary outline">
-          Ver tabela completa
+      <div id="r-hub" class="hub">
+        <article class="hub-card hub-jogo">
+          <span class="hub-rotulo"><span data-icone="calendario"></span> Próximo jogo</span>
+          <div id="hub-jogo"></div>
+          <button id="r-jogar"></button>
+        </article>
+        <button class="hub-card" data-abrir="partida">
+          <span class="hub-rotulo"><span data-icone="camisa"></span> Escalação</span>
+          <strong id="hub-escalacao"></strong>
+          <small id="hub-escalacao-info"></small>
         </button>
-      </p>
-      <nav class="abas" id="r-abas"></nav>
+        <button class="hub-card" data-abrir="tabela">
+          <span class="hub-rotulo"><span data-icone="trofeu"></span> Tabela</span>
+          <strong id="hub-tabela"></strong>
+          <small id="hub-tabela-info"></small>
+        </button>
+        <button class="hub-card" data-abrir="mercado">
+          <span class="hub-rotulo"><span data-icone="troca"></span> Mercado</span>
+          <strong id="hub-mercado"></strong>
+          <small id="hub-mercado-info"></small>
+        </button>
+        <button class="hub-card" data-abrir="contratos">
+          <span class="hub-rotulo"><span data-icone="contrato"></span> Contratos</span>
+          <strong id="hub-contratos"></strong>
+          <small id="hub-contratos-info"></small>
+        </button>
+        <button class="hub-card" data-abrir="financas">
+          <span class="hub-rotulo"><span data-icone="carteira"></span> Finanças</span>
+          <strong id="hub-financas"></strong>
+          <small id="hub-financas-info"></small>
+        </button>
+      </div>
+
+      <button id="r-hub-voltar" class="voltar secondary" hidden>← Menu do clube</button>
 
       <div data-painel="partida">
         <div class="colunas">
