@@ -205,33 +205,38 @@
       <button id="r-hub-voltar" class="voltar secondary" hidden>← Menu do clube</button>
 
       <div data-painel="partida">
-        <div class="colunas">
-          <div>
-            <h3 class="secao">Sua escalação</h3>
-            <div class="controles" style="margin: .5rem 0">
-              <label>Formação <select id="r-formacao"></select></label>
-              <label>Tática
-                <select id="r-tatica">
-                  <option value="equilibrado">Equilibrado</option>
-                  <option value="ofensivo">Ofensivo</option>
-                  <option value="defensivo">Defensivo</option>
-                </select>
-              </label>
-              <span id="r-aviso" class="vazio"></span>
-              <span id="r-salvo" class="salvo" aria-live="polite"></span>
-            </div>
-            <p id="r-suspensos" class="aviso-fora" hidden></p>
-            <div id="r-slots" class="slots"></div>
-            <p class="vazio" style="margin-top: .5rem">
-              Slot em <em>automático</em> = o motor escolhe. Fique de olho na
-              energia — quem joga demais chega cansado.
-            </p>
-          </div>
-          <div>
-            <h3 class="secao">Elenco</h3>
-            <div id="r-elenco"></div>
+        <!-- planos de jogo (v1.2): escalações salvas; o padrão vem a cada rodada -->
+        <div id="pl-planos" class="planos"></div>
+
+        <div class="controles ed-controles">
+          <label>Formação <select id="r-formacao"></select></label>
+          <label>Tática
+            <select id="r-tatica">
+              <option value="equilibrado">Equilibrado</option>
+              <option value="ofensivo">Ofensivo</option>
+              <option value="defensivo">Defensivo</option>
+            </select>
+          </label>
+          <span id="r-salvo" class="salvo" aria-live="polite"></span>
+        </div>
+        <p id="ed-aviso" class="ed-aviso" role="status" hidden></p>
+
+        <!-- o time no campo: troca tocando (ou arrastando) titular e reserva -->
+        <div class="editor">
+          <div id="ed-campo" class="ed-campo" role="group" aria-label="Titulares no campo"></div>
+          <div class="ed-lado">
+            <h3 class="secao">Banco</h3>
+            <ul id="ed-banco" class="ed-banco"></ul>
+            <p class="vazio ed-dica">Toque num titular e depois num reserva da
+              mesma posição (ou arraste um sobre o outro) para trocar. Fique de
+              olho na energia: quem chega exausto pode ser poupado pelo motor.</p>
           </div>
         </div>
+
+        <details class="ed-elenco">
+          <summary>Elenco completo</summary>
+          <div id="r-elenco"></div>
+        </details>
         <h3 class="secao" style="margin-top: 1.5rem">Outros jogos da rodada</h3>
         <div id="r-confrontos"></div>
       </div>

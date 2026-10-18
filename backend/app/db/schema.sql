@@ -196,3 +196,17 @@ CREATE TABLE IF NOT EXISTS movimento_virada (
     overall       INTEGER NOT NULL,
     detalhe       TEXT NOT NULL DEFAULT ''
 );
+
+-- Planos de jogo (v1.2): escalações com nome que o técnico deixa salvas
+-- (formação, tática e XI, na ordem dos slots). O padrão é carregado a cada
+-- rodada nova; mexer antes do apito vale só para aquele jogo.
+CREATE TABLE IF NOT EXISTS plano (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    nome          TEXT NOT NULL,
+    formacao      TEXT NOT NULL,
+    tatica        TEXT NOT NULL,
+    xi            TEXT NOT NULL DEFAULT '[]',   -- JSON: nomes dos titulares
+    padrao        INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS ix_plano_simulacao ON plano(simulacao_id);

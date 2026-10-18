@@ -333,6 +333,7 @@ class ProximaRodada(BaseModel):
     confrontos: list[ConfrontoRodada]
     elenco: list[ElencoSituacao]
     transmissao_ativa: bool = False   # v1.2: a partida já começou
+    escalacao: "EscalacaoPreJogo | None" = None   # v1.2: como o motor vai escalar
 
 
 class ResultadoRodada(BaseModel):
@@ -817,3 +818,45 @@ class MomentoPartida(BaseModel):
     minuto: int
     placar: list[int]
     clubes: list[TimeNoMomento]    # [mandante, visitante]
+
+
+# ---------------------------------------------------------------------------
+# planos de jogo (v1.2)
+# ---------------------------------------------------------------------------
+
+class Plano(BaseModel):
+    id: int
+    nome: str
+    formacao: str
+    tatica: Tatica
+    xi: list[str]                  # titulares do molde (pode estar incompleto)
+    padrao: bool                   # carregado a cada rodada nova
+
+
+class Planos(BaseModel):
+    """GET /simulacoes/{id}/planos (e a resposta de toda mudança neles)."""
+    planos: list[Plano]
+    em_uso: int | None             # plano carregado para a próxima partida
+    modificado: bool               # a escalação da partida foi mexida depois
+
+
+class NovoPlano(BaseModel):
+    """Corpo do POST /simulacoes/{id}/planos. O que não vier sai da
+    escalação atual da próxima partida."""
+    nome: str
+    formacao: str | None = None
+    tatica: Tatica | None = None
+    xi: list[str] | None = None
+    padrao: bool = False
+
+
+class PlanoEdicao(BaseModel):
+    """Corpo do PATCH /simulacoes/{id}/planos/{plano_id}."""
+    nome: str | None = None
+    formacao: str | None = None
+    tatica: Tatica | None = None
+    xi: list[str] | None = None
+    padrao: bool | None = None
+
+
+ProximaRodada.model_rebuild()   # `escalacao` aponta para um schema definido depois

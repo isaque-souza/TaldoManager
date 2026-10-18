@@ -189,6 +189,8 @@ def proxima_rodada(simulacao_id):
             "formacoes": list(alvo.FORMACOES),
             # a partida já começou (v1.2): a tela retoma a transmissão
             "transmissao_ativa": transmissao_ativa(sim),
+            # o time como o motor vai escalar (editor no campo, v1.2)
+            "escalacao": _escalacao(alvo),
             "confrontos": [
                 {"mandante": m.nome, "visitante": v.nome} for m, v in rodada
             ],
@@ -359,6 +361,17 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None):
         xi_json = (
             json.dumps(xi_ef, ensure_ascii=False) if xi_ef else None
         )
+
+        # a rodada seguinte começa no plano de jogo padrão (v1.2): o que o
+        # técnico mexeu antes deste jogo valeu só para ele. Nada aqui sorteia.
+        if not concluida:
+            from app.services import plano_service   # aqui: evita import circular
+            aplicado = plano_service.aplicar_padrao(conn, simulacao_id, alvo)
+            if aplicado:
+                nova_tatica, nova_formacao, xi_padrao = aplicado
+                xi_json = (
+                    json.dumps(xi_padrao, ensure_ascii=False) if xi_padrao else None
+                )
 
         with conn:
             mapa = clube_repo.atualizar(conn, simulacao_id, cru["clubes"])

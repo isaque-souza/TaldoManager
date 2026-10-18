@@ -56,6 +56,14 @@ def definir_ao_vivo(conn, simulacao_id, ao_vivo_json):
     )
 
 
+def definir_plano_em_uso(conn, simulacao_id, plano_id):
+    """O plano carregado para a próxima partida (None = nenhum)."""
+    conn.execute(
+        "UPDATE simulacao SET plano_em_uso = ? WHERE id = ?",
+        (plano_id, simulacao_id),
+    )
+
+
 def listar(conn):
     # sem `estado_json` — o blob não interessa numa listagem
     return conn.execute(

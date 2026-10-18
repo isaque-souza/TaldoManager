@@ -5,7 +5,7 @@ import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { COLUNAS, mostrarTemporada } from "./temporada.js";
 import { carregarMercado } from "./mercado.js";
 import { carregarLista } from "./saves.js";
-import { renderSlots, xiEscolhido } from "./escalacao.js";
+import { carregarPlanos, gravarEConferir, planoEmUso, renderEditor, xiDoEditor } from "./editor.js";
 import { renderDashboard } from "./financas.js";
 import { renderMeta } from "./diretoria.js";
 import { escudo } from "./identidade.js";
@@ -72,7 +72,9 @@ function resumoEscalacao() {
   const fora = estado.rodadaInfo.elenco.filter((j) => j.suspenso || j.lesionado).length;
   const tatica = $("r-tatica");
   $("hub-escalacao").textContent = $("r-formacao").value;
+  const plano = planoEmUso();
   $("hub-escalacao-info").textContent =
+    (plano ? `${plano.nome} · ` : "") +
     tatica.options[tatica.selectedIndex].text + (fora ? ` · ${fora} fora da rodada` : "");
 }
 
@@ -149,38 +151,8 @@ export function renderRodadaAntes() {
   $("r-tatica").value = info.tatica || "equilibrado";
   marcarSalvo("");
 
-  // suspensos e lesionados não entram na escalação
-  const disponiveis = info.elenco.filter(
-    (j) => !j.suspenso && !j.lesionado
-  );
-
-  // preseleção: distribui o XI preferido salvo pelos slots de cada posição
-  let preselecao = null;
-  if (info.xi_preferido && info.xi_preferido.length) {
-    const pref = new Set(info.xi_preferido);
-    preselecao = {};
-    ["Goleiro", "Defesa", "Meio-Campo", "Atacante"].forEach((pos) => {
-      preselecao[pos] = disponiveis
-        .filter((j) => j.posicao === pos && pref.has(j.nome))
-        .map((j) => j.nome);
-    });
-  }
-
-  renderSlots(
-    $("r-slots"), $("r-formacao").value, disponiveis, $("r-aviso"), preselecao
-  );
-
-  const fora = [];
-  info.elenco
-    .filter((j) => j.suspenso)
-    .forEach((j) => fora.push(`${icone("proibido", "suspenso")} ${j.nome} (susp. ${j.jogos_suspensao}j)`));
-  info.elenco
-    .filter((j) => j.lesionado)
-    .forEach((j) => fora.push(`${icone("lesao", "lesionado")} ${j.nome} (lesão ${j.rodadas_lesao}r)`));
-  $("r-suspensos").innerHTML = fora.length
-    ? "Fora desta rodada: " + fora.join(", ")
-    : "";
-  $("r-suspensos").hidden = fora.length === 0;
+  renderEditor();
+  carregarPlanos().then(resumoEscalacao);   // o card do hub diz o plano
 
   const situacao = (j) => {
     if (j.lesionado) return `<span class="chip chip-longe">Lesionado ${j.rodadas_lesao}r</span>`;
@@ -322,7 +294,7 @@ function decisaoAtual() {
   return {
     tatica: $("r-tatica").value,
     formacao: $("r-formacao").value,
-    xi: [...new Set(xiEscolhido($("r-slots")))],   // dedup, mantém a ordem
+    xi: xiDoEditor(),
   };
 }
 
@@ -341,6 +313,12 @@ function agendarAutosave() {
   simAgendada = estado.simId;
   marcarSalvo("alterações não salvas…");
   timerAutosave = setTimeout(salvarEscalacaoAgora, ESPERA_AUTOSAVE);
+}
+
+// grava já a escalação da tela, mesmo sem mudança pendente
+export async function salvarJa() {
+  agendarAutosave();
+  return salvarEscalacaoAgora();
 }
 
 // grava já o que estiver pendente (e espera um PATCH em voo terminar)
@@ -381,10 +359,8 @@ window.addEventListener("pagehide", () => {
   });
 });
 
-$("r-tatica").addEventListener("change", agendarAutosave);
-// os <select> dos slots são recriados a cada render; o `change` sobe até o
-// contêiner, então um ouvinte só aqui cobre todos
-$("r-slots").addEventListener("change", agendarAutosave);
+// tática e formação gravam na hora e o campo é refeito pelo servidor (v1.2)
+$("r-tatica").addEventListener("change", () => gravarEConferir());
 
 // "Jogar a rodada" passa pelo pré-jogo (v1.1), que chama jogarRodada; com a
 // partida já rolando (v1.2), volta direto para ela
@@ -399,12 +375,4 @@ document.querySelectorAll("#r-hub [data-abrir]").forEach((b) =>
   })
 );
 $("r-hub-voltar").addEventListener("click", () => abrirSecaoRodada("hub"));
-$("r-formacao").addEventListener("change", () => {
-  renderSlots(
-    $("r-slots"),
-    $("r-formacao").value,
-    estado.rodadaInfo.elenco.filter((j) => !j.suspenso && !j.lesionado),
-    $("r-aviso")
-  );
-  agendarAutosave();
-});
+$("r-formacao").addEventListener("change", () => gravarEConferir());

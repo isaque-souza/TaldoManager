@@ -25,7 +25,7 @@ from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import movimento_repository as movimento_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import simulacao_service
+from app.services import plano_service, simulacao_service
 from scripts.data_loader import carregar_campeonato, carregar_jogadores
 
 
@@ -113,14 +113,19 @@ def proxima_temporada(simulacao_id):
                 campeonato, _nomes_usados(conn, carreira_id), random
             )
 
-            # o técnico mantém tática, formação e XI — menos quem saiu do clube
+            # o técnico mantém tática, formação e XI — menos quem saiu do
+            # clube. Com planos de jogo (v1.2), a temporada começa no padrão.
             alvo = next(c for c in campeonato.clubes if c.nome == clube_usuario)
             elenco = {j.nome for j in alvo.jogadores}
-            xi = json.loads(sim["xi_preferido"]) if sim["xi_preferido"] else []
+            padrao = plano_service.padrao(conn, simulacao_id)
+            if padrao:
+                tatica, formacao, xi = padrao["tatica"], padrao["formacao"], padrao["xi"]
+            else:
+                tatica = sim["tatica"] or "equilibrado"
+                formacao = sim["formacao"]
+                xi = json.loads(sim["xi_preferido"]) if sim["xi_preferido"] else []
             xi = [n for n in xi if n in elenco] or None
-            simulacao_service._configurar_clube(
-                alvo, sim["tatica"] or "equilibrado", sim["formacao"], xi
-            )
+            simulacao_service._configurar_clube(alvo, tatica, formacao, xi)
 
             cru = simulacao_service._serializar(
                 campeonato, seed, clube_usuario,
@@ -148,6 +153,8 @@ def proxima_temporada(simulacao_id):
             mapa = clube_repo.inserir(conn, nova_id, cru["clubes"])
             jogador_repo.inserir(conn, nova_id, mapa, cru["jogadores"])
             movimento_repo.inserir(conn, nova_id, movimentos)
+            # os planos de jogo seguem para a temporada nova (v1.2)
+            plano_service.copiar(conn, simulacao_id, nova_id, alvo)
 
         return {
             "simulacao_id": nova_id,
