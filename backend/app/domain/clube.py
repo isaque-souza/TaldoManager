@@ -204,12 +204,16 @@ class Clube:
                 j for j in disponiveis
                 if j.posicao == posicao
             ]
-            elegiveis.sort(
-                key=lambda j: j.score_escalacao(
+            # o XI do técnico é respeitado: quem ele escolheu entra na frente
+            # de qualquer um, menos se estiver exausto (aí o motor poupa).
+            # Entre os escolhidos (ou para completar as vagas), o score decide.
+            def ordem(j):
+                escolhido = j in self.xi_preferido and j.condicao != "Exausto"
+                return (escolhido, j.score_escalacao(
                     preferido=j in self.xi_preferido
-                ),
-                reverse=True,
-            )
+                ))
+
+            elegiveis.sort(key=ordem, reverse=True)
             return elegiveis[:quantos]
 
         self.titulares = (

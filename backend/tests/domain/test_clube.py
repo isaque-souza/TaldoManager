@@ -356,3 +356,47 @@ def test_formacao_pesa_na_postura_e_4_3_3_e_neutra():
 
 def test_toda_formacao_tem_modificador():
     assert set(Clube._MODS_FORMACAO) == set(Clube.FORMACOES)
+
+
+def _elenco_completo(clube, extras=()):
+    """2 GK, 6 DEF, 4 MEI, 4 ATA de overall 80, mais os `extras`: dá para
+    escalar qualquer formação sem improvisar ninguém."""
+    for posicao, n in (("Goleiro", 2), ("Defesa", 6), ("Meio-Campo", 4), ("Atacante", 4)):
+        for i in range(n):
+            clube.contratar_jogador(Jogador(f"{posicao} {i}", 25, posicao, 80))
+    for j in extras:
+        clube.contratar_jogador(j)
+
+
+def _xi_sem(clube, *fora):
+    """Os 11 que o motor escalaria hoje, menos os `fora`."""
+    clube.escalar_time()
+    return [j for j in clube.titulares if j not in fora]
+
+
+def test_xi_do_tecnico_e_respeitado_mesmo_deixando_o_craque_no_banco():
+    # o caso real: no 4-4-2 o técnico tira o melhor meia (99) e põe um de 76
+    clube = Clube("FC Taldo", "Brasil", 1000000)
+    craque = Jogador("Craque", 25, "Meio-Campo", 99)
+    reserva = Jogador("Reserva", 25, "Meio-Campo", 76)
+    _elenco_completo(clube, [craque, reserva])
+    clube.formacao = "4-4-2"
+    clube.xi_preferido = set(_xi_sem(clube, craque)) | {reserva}
+
+    clube.escalar_time()
+    assert reserva in clube.titulares
+    assert craque not in clube.titulares
+
+
+def test_escolhido_exausto_e_poupado():
+    clube = Clube("FC Taldo", "Brasil", 1000000)
+    exausto = Jogador("Exausto", 25, "Atacante", 99)
+    exausto.energia = 20
+    exausto.atualizar_condicao()
+    _elenco_completo(clube, [exausto])
+    clube.formacao = "4-3-3"
+    clube.xi_preferido = set(_xi_sem(clube)) | {exausto}
+
+    clube.escalar_time()
+    assert exausto not in clube.titulares
+    assert len(clube.titulares) == 11
