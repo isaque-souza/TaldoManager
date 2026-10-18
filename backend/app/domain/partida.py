@@ -1,10 +1,14 @@
 import random
 
+from app.domain import torcida
+
 
 class Partida:
 
-    # vantagem do mandante, em pontos de "overall" somados à força do time
-    MANDO_DE_CAMPO = 2.5
+    # vantagem do mandante, em pontos de "overall" somados à força do time,
+    # para quem não tem torcida registrada; com torcida, quanto maior ela,
+    # maior o mando (torcida.mando_de_campo, v1.4)
+    MANDO_DE_CAMPO = torcida.MANDO_BASE
 
     def __init__(self, clube1, clube2):
         self.clube1 = clube1
@@ -1620,12 +1624,12 @@ class Partida:
     def forca_em_campo(self, clube):
         """Força do time neste momento: média de overall do XI ajustada por
         fadiga e expulsões (Clube.calcular_forca), mais o mando de campo se
-        for o mandante."""
+        for o mandante — maior quanto maior a torcida dele."""
 
         forca = clube.calcular_forca()
 
         if clube is self.clube1:
-            forca += self.MANDO_DE_CAMPO
+            forca += torcida.mando_de_campo(clube.torcedores)
 
         return forca
 

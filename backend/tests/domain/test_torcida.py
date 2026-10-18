@@ -100,17 +100,20 @@ def test_temporada_inteira_premia_o_topo_e_castiga_o_fundo():
     assert lanterna.torcedores < lanterna.torcedores_inicial
 
 
-def test_torcida_nao_mexe_nos_resultados():
-    """Nada aqui sorteia: com a torcida ou sem ela, o mesmo seed dá o mesmo
-    campeonato."""
-    com = [(c.nome, c.pontos) for c in _temporada(11).classificacao()]
-    original = torcida.processar_jogo
-    torcida.processar_jogo = lambda *a: None
-    try:
-        sem = [(c.nome, c.pontos) for c in _temporada(11).classificacao()]
-    finally:
-        torcida.processar_jogo = original
-    assert com == sem
+def test_torcida_nao_sorteia_nada():
+    """A torcida muda o mando (e assim os jogos), mas nunca consome a
+    sequência aleatória: o mesmo seed segue dando o mesmo campeonato."""
+    random.seed(5)
+    antes = random.getstate()
+    casa, fora = _clube("Casa", forma=["V"] * 3), _clube("Fora", forma=["D"])
+    torcida.processar_jogo(casa, fora, 3, 0)
+    torcida.fim_de_temporada([casa, fora])
+    torcida.mando_de_campo(casa.torcedores)
+    assert random.getstate() == antes
+
+    a = [(c.nome, c.pontos, c.torcedores) for c in _temporada(11).classificacao()]
+    b = [(c.nome, c.pontos, c.torcedores) for c in _temporada(11).classificacao()]
+    assert a == b
 
 
 def test_snapshot_guarda_a_torcida():
@@ -135,3 +138,31 @@ def test_balanco_da_torcida_na_caixa():
     assert "encolheu" in caixa.balanco_da_torcida(2_000_000, 1_900_000)["corpo"]
     assert "mesmo tamanho" in caixa.balanco_da_torcida(800_000, 800_000)["corpo"]
     assert caixa.balanco_da_torcida(0, 100) is None
+
+
+def test_mando_de_campo_cresce_com_a_torcida():
+    pequeno = torcida.mando_de_campo(200_000)
+    medio = torcida.mando_de_campo(torcida.MANDO_REFERENCIA)
+    grande = torcida.mando_de_campo(12_000_000)
+    assert torcida.MANDO_MIN <= pequeno < medio < grande <= torcida.MANDO_MAX
+    assert medio == torcida.MANDO_BASE
+    # jogar em casa sempre conforta, até com a menor torcida
+    assert torcida.mando_de_campo(torcida.MINIMO) == torcida.MANDO_MIN > 0
+    # sem torcida registrada, o mando de sempre
+    assert torcida.mando_de_campo(0) == torcida.MANDO_BASE
+
+
+def test_mandante_com_mais_torcida_e_mais_forte():
+    from app.domain.jogador import Jogador
+    from app.domain.partida import Partida
+
+    casa, fora = _clube("Casa"), _clube("Fora")
+    for clube in (casa, fora):
+        clube.contratar_jogador(Jogador(f"{clube.nome} 1", 25, "Atacante", 80))
+
+    def vantagem(torcedores):
+        casa.torcedores = torcedores
+        p = Partida(casa, fora)
+        return p.forca_em_campo(casa) - p.forca_em_campo(fora)
+
+    assert vantagem(10_000_000) > vantagem(300_000) > 0

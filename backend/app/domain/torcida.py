@@ -13,6 +13,8 @@ mesmo seed.
 As constantes ficam juntas para facilitar o balanceamento.
 """
 
+import math
+
 # por jogo, em fração da torcida atual
 VITORIA = 0.003
 EMPATE = 0.0
@@ -33,6 +35,15 @@ POR_POSICAO = (
 )
 
 MINIMO = 50_000    # a torcida mais fiel não vai embora
+
+# mando de campo (v1.4): jogar em casa sempre conforta, e estádio cheio
+# empurra mais. Em pontos de "overall" somados à força do mandante; a
+# referência é o meio da liga (média geométrica das torcidas da seed), então
+# na média o mando segue o de antes e a calibragem do motor não muda
+MANDO_BASE = 2.5
+MANDO_REFERENCIA = 3_000_000
+MANDO_POR_DEZ_VEZES = 0.75   # torcida 10× maior → +0,75 de mando
+MANDO_MIN, MANDO_MAX = 1.5, 3.5
 
 
 def _aplicar(clube, fracao):
@@ -90,6 +101,17 @@ def variacao_da_posicao(posicao):
 def fim_de_temporada(classificacao):
     for posicao, clube in enumerate(classificacao, start=1):
         _aplicar(clube, variacao_da_posicao(posicao))
+
+
+def mando_de_campo(torcedores):
+    """Vantagem do mandante pela torcida. Sem torcida registrada (clubes
+    montados à mão, nos testes), o mando de sempre."""
+    if torcedores <= 0:
+        return MANDO_BASE
+    mando = MANDO_BASE + MANDO_POR_DEZ_VEZES * math.log10(
+        torcedores / MANDO_REFERENCIA
+    )
+    return min(MANDO_MAX, max(MANDO_MIN, mando))
 
 
 def variacao_percentual(atual, inicial):
