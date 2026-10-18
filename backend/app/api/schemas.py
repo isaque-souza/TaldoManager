@@ -690,6 +690,7 @@ class OfertaClube(BaseModel):
     valor: int
     seria_titular: bool
     rival: bool
+    revolta_torcida: float | None = None   # % da torcida que vai embora (v1.4)
 
 
 class OfertasJogador(BaseModel):

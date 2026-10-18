@@ -13,7 +13,7 @@ import json
 import random
 
 from app.db.conexao import conectar
-from app.domain import caixa, mercado
+from app.domain import caixa, mercado, torcida
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import clube_repository as clube_repo
@@ -290,6 +290,10 @@ def ofertas(simulacao_id, jogador_id):
                     "valor": o.valor,
                     "seria_titular": o.titular,
                     "rival": o.rival,
+                    # quanto da torcida vai embora (%, negativo), v1.4
+                    "revolta_torcida": round(100 * torcida.revolta_venda_rival(
+                        ctx.alvo, o.clube, jogador,
+                    ), 1) if o.rival else None,
                 }
                 for o in mercado.ofertas(jogador, ctx.alvo, ctx.campeonato.clubes)
             ],
@@ -419,9 +423,13 @@ def vender(simulacao_id, jogador_id, clube):
                 f"O {clube} não tem oferta por {jogador.nome}"
             )
 
+        # a torcida reage antes da transferência: o peso do jogador é medido
+        # no elenco de onde ele sai (v1.4)
+        revolta = torcida.vender_ao_rival(ctx.alvo, oferta.clube, jogador)
         with conn:
             mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
-                caixa.venda(jogador, oferta.clube, oferta.valor)
+                caixa.venda(jogador, oferta.clube, oferta.valor),
+                revolta and caixa.revolta_da_torcida(jogador, oferta.clube, *revolta),
             ])
             return ctx.efetivar(
                 jogador_id, jogador, ctx.alvo, oferta.clube, oferta.valor

@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 519 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 523 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -554,7 +554,10 @@ e o tamanho dela é o que enche a bilheteria:
 * [ ] Campanhas de marketing (gastar dinheiro para atrair torcedores)
 * [ ] Fama dos jogadores (cada jogador tem sua fama; craques famosos atraem torcida)
 * [ ] Contratar ídolos que a torcida ama (impacto na torcida e na bilheteria)
-* [ ] Vender um jogador para o rival irrita a torcida (hoje a oferta só vem marcada com ⚔️)
+* [x] Vender um jogador para o rival irrita a torcida — some 2% dela (3% se
+      era titular, 5% se era o craque do elenco) e a torcida do rival cresce
+      1%. A oferta do rival já mostra quanto a torcida vai encolher, e o
+      **marketing** manda "A torcida não perdoou" depois da venda
 
 ---
 
@@ -574,7 +577,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 519 testes (domain, db, repositories, services, api)
+│   └── tests/              # 523 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

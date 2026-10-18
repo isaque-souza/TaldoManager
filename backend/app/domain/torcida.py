@@ -15,6 +15,8 @@ As constantes ficam juntas para facilitar o balanceamento.
 
 import math
 
+from app.domain import mercado
+
 # por jogo, em fração da torcida atual
 VITORIA = 0.003
 EMPATE = 0.0
@@ -35,6 +37,13 @@ POR_POSICAO = (
 )
 
 MINIMO = 50_000    # a torcida mais fiel não vai embora
+
+# vender para o rival (v1.4): a torcida não perdoa — e a do rival comemora.
+# Quanto mais importante o jogador, maior a revolta
+VENDA_RIVAL = -0.02
+VENDA_RIVAL_TITULAR = -0.03
+VENDA_RIVAL_CRAQUE = -0.05
+RIVAL_COMEMORA = 0.01
 
 # mando de campo (v1.4): jogar em casa sempre conforta, e estádio cheio
 # empurra mais. Em pontos de "overall" somados à força do mandante; a
@@ -112,6 +121,31 @@ def mando_de_campo(torcedores):
         torcedores / MANDO_REFERENCIA
     )
     return min(MANDO_MAX, max(MANDO_MIN, mando))
+
+
+def revolta_venda_rival(vendedor, comprador, jogador):
+    """Fração que a torcida do `vendedor` perde se o jogador for para o
+    `comprador` (0 se não são rivais). Chamar antes da transferência: o
+    peso do jogador é medido no elenco de onde ele sai."""
+    if not mercado.sao_rivais(vendedor, comprador):
+        return 0.0
+    if mercado.eh_craque(vendedor, jogador):
+        return VENDA_RIVAL_CRAQUE
+    if mercado.seria_titular(vendedor, jogador):
+        return VENDA_RIVAL_TITULAR
+    return VENDA_RIVAL
+
+
+def vender_ao_rival(vendedor, comprador, jogador):
+    """Aplica a revolta (e a festa do rival). Devolve (antes, depois) da
+    torcida do vendedor, ou None se não são rivais."""
+    fracao = revolta_venda_rival(vendedor, comprador, jogador)
+    if not fracao:
+        return None
+    antes = vendedor.torcedores
+    _aplicar(vendedor, fracao)
+    _aplicar(comprador, RIVAL_COMEMORA)
+    return antes, vendedor.torcedores
 
 
 def variacao_percentual(atual, inicial):
