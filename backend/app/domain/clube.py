@@ -15,6 +15,20 @@ class Clube:
         "defensivo":    (0.85, 1.20),
     }
 
+    # a formação também pesa (v1.2), na metade da escala da tática: mais
+    # atacantes criam mais e deixam mais espaço atrás; mais zagueiros, o
+    # contrário. 4-3-3 (o padrão de todo clube) é a neutra.
+    _MODS_FORMACAO = {
+        "3-4-3": (1.12, 0.90),
+        "4-2-4": (1.12, 0.90),
+        "3-5-2": (1.05, 0.96),
+        "4-3-3": (1.00, 1.00),
+        "4-4-2": (0.97, 1.04),
+        "4-5-1": (0.92, 1.07),
+        "5-3-2": (0.92, 1.08),
+        "5-4-1": (0.88, 1.12),
+    }
+
     # {formação: (defensores, meias, atacantes)} — o goleiro é sempre 1
     FORMACOES = {
         "4-4-2": (4, 4, 2),
@@ -106,12 +120,19 @@ class Clube:
         return bonus
 
     def mod_ataque(self):
-        """Multiplicador da chance de gol do clube quando ataca."""
-        return self._MODS.get(self.tatica, (1.0, 1.0))[0]
+        """Multiplicador da chance de gol do clube quando ataca (tática ×
+        formação)."""
+        return (
+            self._MODS.get(self.tatica, (1.0, 1.0))[0]
+            * self._MODS_FORMACAO.get(self.formacao, (1.0, 1.0))[0]
+        )
 
     def mod_defesa(self):
         """> 1 quando o clube concede menos; < 1 quando concede mais."""
-        return self._MODS.get(self.tatica, (1.0, 1.0))[1]
+        return (
+            self._MODS.get(self.tatica, (1.0, 1.0))[1]
+            * self._MODS_FORMACAO.get(self.formacao, (1.0, 1.0))[1]
+        )
     
     def mostrar(self):
         print(f"\nClube: {self.nome}")

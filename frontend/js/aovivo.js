@@ -14,6 +14,8 @@ import { icone } from "./icones.js";
 const MS_POR_MINUTO = 500;          // 1×: ~45 s por jogo (escolha do usuário)
 const CHAVE_VELOCIDADE = "taldo:velocidade";
 const TATICAS = [["ofensivo", "Ofensivo"], ["equilibrado", "Equilibrado"], ["defensivo", "Defensivo"]];
+// formações, da mais ofensiva à mais fechada (a postura pesa no motor, v1.2)
+const FORMACOES = ["3-4-3", "4-2-4", "3-5-2", "4-3-3", "4-4-2", "4-5-1", "5-3-2", "5-4-1"];
 const SIGLA_POS = { Goleiro: "GOL", Defesa: "DEF", "Meio-Campo": "MEI", Atacante: "ATA" };
 
 let jogo = null;   // estado da transmissão em curso
@@ -189,6 +191,9 @@ function avancarMinuto(m, { silencioso = false } = {}) {
     const rotulo = TATICAS.find(([k]) => k === d.tatica)[1];
     adicionarLinha(relogio(m), `Mudança tática no ${d.clube}: time agora <b>${rotulo.toLowerCase()}</b>`, "troca");
   }
+  for (const d of jogo.decisoes.filter((x) => x.minuto === m && x.formacao)) {
+    adicionarLinha(relogio(m), `O ${d.clube} muda o desenho: agora no <b>${d.formacao}</b>`, "troca");
+  }
   for (const e of jogo.eventos.filter((x) => x.minuto === m)) {
     const { classe, texto } = narrar(e);
     adicionarLinha(relogio(m), texto, classe);
@@ -248,8 +253,10 @@ function meuTimeAgora() {
   const saem = new Set(prox.filter((d) => d.sai).map((d) => d.sai));
   const entram = new Set(prox.filter((d) => d.entra).map((d) => d.entra));
   const tatica = [...prox].reverse().find((d) => d.tatica)?.tatica || time.tatica;
+  const formacao = [...prox].reverse().find((d) => d.formacao)?.formacao || time.formacao;
   return {
     tatica,
+    formacao,
     restantes: time.substituicoes_restantes - saem.size,
     em_campo: time.em_campo.map((j) => ({ ...j, saindo: saem.has(j.nome) })),
     banco: time.banco.map((j) => ({ ...j, entrando: entram.has(j.nome) })),
@@ -307,6 +314,12 @@ function renderPainel() {
           `<button data-tatica="${k}" class="secondary outline ${k === t.tatica ? "ativa" : ""}" aria-pressed="${k === t.tatica}">${rot}</button>`
         ).join("")}
       </div>
+      <label class="av-formacao">
+        <span class="av-tatica-rotulo">Formação</span>
+        <select id="av-formacao">
+          ${FORMACOES.map((f) => `<option${f === t.formacao ? " selected" : ""}>${f}</option>`).join("")}
+        </select>
+      </label>
     </div>
     <div class="av-trocas">
       <div>
@@ -331,6 +344,9 @@ function renderPainel() {
       if (b.dataset.tatica !== t.tatica) decidir({ tatica: b.dataset.tatica });
     })
   );
+  $("av-formacao").addEventListener("change", (e) => {
+    if (e.target.value !== t.formacao) decidir({ formacao: e.target.value });
+  });
   $("av-painel").querySelectorAll("[data-sai]").forEach((b) =>
     b.addEventListener("click", () => {
       jogo.selecao.sai = jogo.selecao.sai === b.dataset.sai ? null : b.dataset.sai;
@@ -383,7 +399,9 @@ async function decidir(mudanca) {
   renderPainel();
   $("av-painel-msg").textContent = mudanca.tatica
     ? "Instrução passada: o time muda a postura no próximo lance."
-    : `${mudanca.entra} se aquece na beira do campo.`;
+    : mudanca.formacao
+      ? `O time passa ao ${mudanca.formacao}. Para mudar quem joga, faça substituições.`
+      : `${mudanca.entra} se aquece na beira do campo.`;
 }
 
 // ---------- fim ----------

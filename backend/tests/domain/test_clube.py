@@ -339,6 +339,24 @@ def test_xi_preferido_coloca_um_jogador_pior_como_titular():
     clube.escalar_time()
     assert fraco in clube.titulares           # com preferência (bônus), joga
 
+def test_formacao_pesa_na_postura_e_4_3_3_e_neutra():
+    clube = Clube("FC Taldo", "Brasil", 1000000)
+    assert (clube.formacao, clube.mod_ataque(), clube.mod_defesa()) == ("4-3-3", 1.0, 1.0)
+
+    clube.formacao = "3-4-3"
+    assert clube.mod_ataque() > 1 and clube.mod_defesa() < 1
+    clube.formacao = "5-4-1"
+    assert clube.mod_ataque() < 1 and clube.mod_defesa() > 1
+
+    # tática e formação se combinam; a formação pesa menos que a tática
+    clube.tatica, clube.formacao = "ofensivo", "4-2-4"
+    assert clube.mod_ataque() > Clube._MODS["ofensivo"][0]
+    assert Clube._MODS_FORMACAO["4-2-4"][0] - 1 < Clube._MODS["ofensivo"][0] - 1
+
+
+def test_toda_formacao_tem_modificador():
+    assert set(Clube._MODS_FORMACAO) == set(Clube.FORMACOES)
+
 
 def _elenco_completo(clube, extras=()):
     """2 GK, 6 DEF, 4 MEI, 4 ATA de overall 80, mais os `extras`: dá para

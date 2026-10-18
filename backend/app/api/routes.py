@@ -527,12 +527,13 @@ def obter_momento(simulacao_id: int, minuto: int = Query(..., ge=0)):
     tags=["simulacoes"],
 )
 def decidir_na_partida(simulacao_id: int, decisao: DecisaoNova):
-    """Muda a tática ou faz uma substituição a partir de `minuto` e devolve
-    a partida refeita (igual até o minuto anterior)."""
+    """Muda a tática, a formação ou faz uma substituição a partir de
+    `minuto` e devolve a partida refeita (igual até o minuto anterior)."""
     try:
         dados = transmissao_service.decidir(
             simulacao_id, decisao.minuto,
             tatica=decisao.tatica, sai=decisao.sai, entra=decisao.entra,
+            formacao=decisao.formacao,
         )
     except (TemporadaConcluida, TransmissaoInvalida) as e:
         raise _erro_transmissao(e) from e
