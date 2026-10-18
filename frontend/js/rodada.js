@@ -1,7 +1,7 @@
 // Modo rodada a rodada: antes (escalação) e depois (resultados).
 
 import { $, api, esconderTudo, estado, limparAviso, navegarPara, ocupado, pedir, pilhaVoltar } from "./nucleo.js";
-import { ligarLinks, tabela } from "./tabelas.js";
+import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { COLUNAS, mostrarTemporada } from "./temporada.js";
 import { carregarMercado } from "./mercado.js";
 import { carregarLista } from "./saves.js";
@@ -29,34 +29,79 @@ export async function carregarProximaRodada() {
   mostrarRodadaTela();
 }
 
-// ---------- abas da tela "antes da rodada" ----------
+// ---------- hub do clube (tela "antes da rodada") ----------
+// A página inicial do clube é um menu de cards; cada card abre uma seção
+// (partida, mercado, contratos, finanças) e "← Menu do clube" volta.
 
-export const ABAS_RODADA = [
-  ["partida", "camisa", "Partida"], ["mercado", "troca", "Mercado"],
-  ["contratos", "contrato", "Contratos"], ["financas", "carteira", "Finanças"],
-];
-const selosAba = {};   // selo ao lado do rótulo: janela aberta, contratos acabando...
+// "hub" ou a seção aberta
+export function abrirSecaoRodada(secao) {
+  estado.abaRodada = secao;
+  renderSecaoRodada();
+  if (secao === "financas") carregarFinancasRodada();
+  window.scrollTo(0, 0);
+}
 
-export function renderAbasRodada() {
-  $("r-abas").innerHTML = ABAS_RODADA.map(([k, ic, rot]) =>
-    `<button data-aba="${k}" class="${k === estado.abaRodada ? "ativa" : ""}">${icone(ic)} ${rot}` +
-    `${selosAba[k] ? ` <small>${selosAba[k]}</small>` : ""}</button>`
-  ).join("");
-  $("r-abas").querySelectorAll("button").forEach((b) =>
-    b.addEventListener("click", () => {
-      estado.abaRodada = b.dataset.aba;
-      renderAbasRodada();
-      if (estado.abaRodada === "financas") carregarFinancasRodada();
-    })
-  );
+export function renderSecaoRodada() {
+  const noHub = estado.abaRodada === "hub";
+  if (noHub && estado.rodadaInfo) resumoEscalacao();
+  $("r-hub").hidden = !noHub;
+  $("r-hub-voltar").hidden = noHub;
   document.querySelectorAll("#rodada-antes [data-painel]").forEach((p) => {
     p.hidden = p.dataset.painel !== estado.abaRodada;
   });
 }
 
-export function marcarAbasRodada(selos) {
-  Object.assign(selosAba, selos);
-  renderAbasRodada();
+// resumo do mercado/contratos nos cards (vem de carregarMercado)
+export function marcarHubMercado({ janelaAberta, acabando }) {
+  $("hub-mercado").textContent = janelaAberta ? "Janela aberta" : "Janela fechada";
+  $("hub-mercado-info").innerHTML = janelaAberta
+    ? `<span class="luz-aberta" aria-hidden="true"></span> compre e venda jogadores`
+    : `${icone("cadeado")} só veja o elenco e as transferências`;
+  $("hub-contratos").textContent = acabando
+    ? `${acabando} ${acabando === 1 ? "contrato acaba" : "contratos acabam"}`
+    : "Elenco em dia";
+  $("hub-contratos-info").textContent = acabando
+    ? "no fim da temporada: renove ou perca de graça"
+    : "nenhum contrato no último ano";
+  $("hub-contratos").closest(".hub-card").classList.toggle("hub-alerta", acabando > 0);
+}
+
+// lê dos seletores (não do rodadaInfo): o técnico pode ter mexido e voltado
+function resumoEscalacao() {
+  const fora = estado.rodadaInfo.elenco.filter((j) => j.suspenso || j.lesionado).length;
+  const tatica = $("r-tatica");
+  $("hub-escalacao").textContent = $("r-formacao").value;
+  $("hub-escalacao-info").textContent =
+    tatica.options[tatica.selectedIndex].text + (fora ? ` · ${fora} fora da rodada` : "");
+}
+
+function renderHub(info) {
+  const t = estado.temporada;
+  const loc = info.mando === "casa" ? "em casa" : "fora";
+  $("hub-jogo").innerHTML = info.adversario
+    ? `<div class="hub-confronto">
+         <span>${escudo(info.clube_usuario, 44)}<b>${info.clube_usuario}</b></span>
+         <i>x</i>
+         <span>${escudo(info.adversario, 44)}<b>${info.adversario}</b></span>
+       </div>
+       <small>Rodada ${info.rodada} de ${info.total_rodadas} · ${loc}</small>`
+    : `<p class="hub-folga">${info.clube_usuario} folga nesta rodada</p>
+       <small>Rodada ${info.rodada} de ${info.total_rodadas}</small>`;
+
+  resumoEscalacao();
+
+  const linha = t && t.classificacao.find((c) => c.clube === info.clube_usuario);
+  const comecou = linha && linha.jogos > 0;
+  $("hub-tabela").textContent = comecou ? `${linha.posicao}º lugar` : "Pré-temporada";
+  $("hub-tabela-info").textContent = comecou
+    ? `${linha.pontos} pts em ${linha.jogos} ${linha.jogos === 1 ? "jogo" : "jogos"} · saldo ${linha.saldo_gols > 0 ? "+" : ""}${linha.saldo_gols}`
+    : "a liga ainda não começou";
+
+  const fin = t && (t.financas || []).find((f) => f.clube === info.clube_usuario);
+  $("hub-financas").textContent = fin ? `R$ ${dinheiro(fin.caixa)}` : "—";
+  $("hub-financas-info").textContent = fin
+    ? `em caixa · folha de R$ ${dinheiro(fin.folha)}/temporada`
+    : "receitas, despesas e folha";
 }
 
 export async function carregarFinancasRodada() {
@@ -162,7 +207,8 @@ export function renderRodadaAntes() {
     : `${icone("play")} Avançar a rodada ${info.rodada}`;
   $("r-jogar").disabled = false;
 
-  renderAbasRodada();
+  renderHub(info);
+  renderSecaoRodada();
   carregarMercado();
   if (estado.abaRodada === "financas") carregarFinancasRodada();
 }
@@ -247,6 +293,7 @@ export async function avancarAposResultado() {
   if (estado.rodadaResultado && estado.rodadaResultado.concluida) {
     await carregarLista(estado.simId);
   } else {
+    estado.abaRodada = "hub";   // toda rodada nova começa no menu do clube
     await carregarProximaRodada();
   }
 }
@@ -331,7 +378,13 @@ $("r-slots").addEventListener("change", agendarAutosave);
 // "Jogar a rodada" passa pelo pré-jogo (v1.1), que chama jogarRodada
 $("r-jogar").addEventListener("click", abrirPreJogo);
 $("r-proxima").addEventListener("click", avancarAposResultado);
-$("r-ver-tabela").addEventListener("click", () => navegarPara(mostrarTemporada));
+document.querySelectorAll("#r-hub [data-abrir]").forEach((b) =>
+  b.addEventListener("click", () => {
+    if (b.dataset.abrir === "tabela") navegarPara(mostrarTemporada);
+    else abrirSecaoRodada(b.dataset.abrir);
+  })
+);
+$("r-hub-voltar").addEventListener("click", () => abrirSecaoRodada("hub"));
 $("r-formacao").addEventListener("change", () => {
   renderSlots(
     $("r-slots"),

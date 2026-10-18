@@ -3,7 +3,7 @@
 // de GET /pre-jogo, que roda a mesma escalação do motor: é quem vai entrar.
 
 import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
-import { jogarRodada, salvarEscalacaoAgora } from "./rodada.js";
+import { abrirSecaoRodada, jogarRodada, salvarEscalacaoAgora } from "./rodada.js";
 import { jogarAoVivo } from "./aovivo.js";
 import { camisa, escudo } from "./identidade.js";
 import { icone } from "./icones.js";
@@ -129,4 +129,7 @@ $("pj-jogar").addEventListener("click", async () => {
   await jogarAoVivo();   // envia a escalação desses mesmos seletores
   $("pj-jogar").disabled = false;
 });
-$("pj-voltar").addEventListener("click", voltarParaRodada);
+$("pj-voltar").addEventListener("click", () => {
+  voltarParaRodada();
+  abrirSecaoRodada("partida");   // direto na escalação, não no menu do clube
+});

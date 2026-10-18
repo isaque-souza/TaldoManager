@@ -23,7 +23,7 @@ export const estado = {
   rodadaInfo: null,   // payload de /rodadas/proxima
   rodadaResultado: null,   // payload de POST /rodadas
   faseRodada: "antes",   // "antes" | "depois"
-  abaRodada: "partida",   // aba da tela antes da rodada
+  abaRodada: "hub",   // tela antes da rodada: "hub" (menu do clube) ou a seção aberta
   elencoClube: null,   // { elenco, formacoes } do clube escolhido
   carreira: null,   // payload de /carreiras/{id} (tela da carreira)
 };

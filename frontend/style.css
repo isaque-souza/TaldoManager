@@ -473,6 +473,85 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   display: inline-block; width: .55rem; height: .55rem; border-radius: 50%;
   background: var(--gramado-claro); box-shadow: 0 0 0 3px rgba(34, 180, 106, .22);
 }
+
+/* ---------- hub do clube: a página inicial da rodada, em cards ---------- */
+.hub {
+  display: grid; gap: .8rem; margin-bottom: 1.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas: "jogo jogo escalacao" "jogo jogo tabela" "mercado contratos financas";
+}
+.hub[hidden] { display: none; }
+.hub-jogo { grid-area: jogo; }
+.hub [data-abrir="partida"] { grid-area: escalacao; }
+.hub [data-abrir="tabela"] { grid-area: tabela; }
+.hub [data-abrir="mercado"] { grid-area: mercado; }
+.hub [data-abrir="contratos"] { grid-area: contratos; }
+.hub [data-abrir="financas"] { grid-area: financas; }
+
+.hub-card {
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: .3rem;
+  margin: 0; min-height: 8.5rem; padding: 1rem 1.1rem; width: auto; text-align: left;
+  font-family: var(--fonte-texto); text-transform: none; letter-spacing: 0; font-weight: 400;
+  color: var(--texto); background: linear-gradient(180deg, #142133, var(--superficie) 70%);
+  border: 1px solid var(--linha); border-radius: 6px; box-shadow: none;
+}
+button.hub-card {
+  cursor: pointer;
+  transition: transform .18s cubic-bezier(.2, .7, .2, 1), border-color .18s, box-shadow .18s;
+}
+button.hub-card:hover, button.hub-card:focus-visible {
+  transform: translateY(-3px); border-color: var(--linha-forte); color: var(--texto);
+  background: linear-gradient(180deg, #142133, var(--superficie) 70%);
+  box-shadow: 0 14px 28px -16px rgba(0, 0, 0, .9);
+}
+.hub-rotulo {
+  display: inline-flex; align-items: center; gap: .4rem; margin-bottom: auto;
+  font-family: var(--fonte-tarja); font-weight: 700; font-size: .85rem;
+  text-transform: uppercase; letter-spacing: .1em; color: var(--texto-2);
+}
+.hub-card strong {
+  font-family: var(--fonte-tarja); font-weight: 800; text-transform: uppercase;
+  font-size: 1.6rem; line-height: 1.05; color: var(--texto);
+}
+.hub-card small { color: var(--texto-2); font-size: .85rem; }
+.hub-card small .icone { vertical-align: -2px; }
+.hub-card.hub-alerta { border-color: color-mix(in srgb, var(--ambar) 55%, var(--linha)); }
+.hub-card.hub-alerta strong { color: var(--ambar); }
+
+/* o card do próximo jogo é o destaque: gramado no fundo, escudos grandes */
+.hub-jogo {
+  justify-content: space-between; min-height: 18rem; padding: 1.3rem 1.4rem;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 3.5rem, rgba(255, 255, 255, .025) 3.5rem 7rem),
+    linear-gradient(160deg, var(--gramado-noite), var(--superficie) 75%);
+  border-color: color-mix(in srgb, var(--gramado) 55%, var(--linha));
+}
+.hub-jogo .hub-rotulo { margin-bottom: 0; color: var(--gramado-claro); }
+.hub-confronto {
+  display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+  font-family: var(--fonte-tarja); text-transform: uppercase;
+}
+.hub-confronto > span { display: inline-flex; align-items: center; gap: .6rem; }
+.hub-confronto b { font-size: clamp(1.4rem, 3.4vw, 2.3rem); font-weight: 800; line-height: 1; }
+.hub-confronto i { font-style: normal; font-weight: 700; font-size: 1.3rem; color: var(--texto-2); }
+.hub-jogo #hub-jogo small, .hub-folga + small { display: block; margin-top: .6rem; }
+.hub-folga { margin: 0; font-family: var(--fonte-tarja); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; }
+.hub-jogo > button { width: auto; margin: 0; padding: .75rem 1.5rem; font-size: 1.05rem; }
+
+@media (max-width: 760px) {
+  .hub {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "jogo jogo" "escalacao tabela" "mercado contratos" "financas financas";
+  }
+  .hub-jogo { min-height: 14rem; gap: 1rem; }
+  .hub-card strong { font-size: 1.35rem; }
+  .hub-confronto { flex-direction: column; align-items: flex-start; gap: .35rem; }
+  .hub-confronto i { font-size: 1rem; padding-left: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  button.hub-card { transition: none; }
+  button.hub-card:hover { transform: none; }
+}
 .abas button .chip { font-size: .72rem; padding: .1rem .35rem; }
 
 /* correções da inspeção */
