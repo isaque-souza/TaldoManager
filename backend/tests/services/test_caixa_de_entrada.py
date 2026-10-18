@@ -111,12 +111,17 @@ def test_sem_caixa_nem_negocia_e_o_diretor_conta_o_que_faltou():
 # ---------------------------------------------------------------------------
 
 def test_rodadas_trazem_lesoes_e_cartoes_do_meu_time():
+    # joga até o médico e o auxiliar escreverem (lesão e cartão acontecem
+    # em toda temporada; a seed fixa só não diz em qual rodada)
     sid = _iniciar()
+    queridos = {"Departamento médico", "Auxiliar técnico"}
     setores = set()
-    for _ in range(12):
+    for _ in range(38):
         temporada_service.avancar(sid)
         setores |= {m["setor"] for m in mensagem_service.listar(sid)["mensagens"]}
-    assert {"Departamento médico", "Auxiliar técnico"} <= setores
+        if queridos <= setores:
+            break
+    assert queridos <= setores
     medicas = _do_setor(sid, "Departamento médico")
     assert all(m["rodada"] is not None for m in medicas)
 

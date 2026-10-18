@@ -4,6 +4,7 @@ import { $, esconderTudo, estado, limparAviso, pedir, voltarUm } from "./nucleo.
 import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { minutoFmt } from "./partida.js";
 import { cartao } from "./icones.js";
+import { barrasAtributos } from "./atributos.js";
 
 // ---------- visão jogador ----------
 
@@ -28,7 +29,7 @@ export async function abrirJogador(jogadorId) {
     ? ` · pênaltis ${j.penaltis}/${j.penaltis + j.penaltis_perdidos}`
     : "";
   $("jogador-info").innerHTML =
-    `${j.clube} · ${j.posicao} · OVR ${j.overall} · ${j.idade} anos · ` +
+    `${j.clube} · ${j.funcao || j.posicao} · OVR ${j.overall} · ${j.idade} anos · ` +
     `${j.partidas}J ${j.gols}G ${j.assistencias}A · nota média ${j.nota_media} · ` +
     `melhor ${j.melhor_nota} · ${j.melhor_em_campo}x melhor em campo · ` +
     `${cartao()} ${j.amarelos} ${cartao("vermelho")} ${j.vermelhos} · ${j.faltas} faltas${penas}`;
@@ -38,6 +39,8 @@ export async function abrirJogador(jogadorId) {
       `potencial ${j.potencial} · contrato: ${j.contrato_anos} ` +
       `temporada${j.contrato_anos === 1 ? "" : "s"}`
     : "";
+
+  $("jogador-atributos").innerHTML = barrasAtributos(j.atributos);
 
   const linhas = d.jogos.map((g) => ({
     partida_id: g.partida_id,

@@ -660,6 +660,26 @@ button.hub-card:hover, button.hub-card:focus-visible {
 }
 .hub-card small { color: var(--texto-2); font-size: .85rem; }
 
+/* ---------- atributos do jogador (v1.3) ---------- */
+.atributos {
+  list-style: none; padding: 0; margin: 0 0 1.4rem; max-width: 34rem;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem 1.6rem;
+}
+.atr { list-style: none; display: grid; grid-template-columns: 9.5rem 1fr 2.2rem; align-items: center; gap: .6rem; }
+.atr-nome { color: var(--texto-2); font-size: .88rem; white-space: nowrap; }
+.atr-nome b { display: inline-block; width: 2.4rem; color: var(--texto); font-family: var(--fonte-tarja); letter-spacing: .04em; }
+.atr-barra { height: .45rem; border-radius: 999px; background: var(--superficie-2); overflow: hidden; }
+.atr-barra i { display: block; height: 100%; border-radius: inherit; background: var(--cor-atr); }
+.atr-valor { text-align: right; font-family: var(--fonte-tarja); font-size: 1rem; color: var(--cor-atr); }
+.atr.otimo { --cor-atr: #2bd17e; }
+.atr.bom { --cor-atr: #8fd14f; }
+.atr.medio { --cor-atr: var(--ambar); }
+.atr.fraco { --cor-atr: #ef5b5b; }
+@media (max-width: 640px) {
+  .atributos { grid-template-columns: 1fr; }
+  .atr { grid-template-columns: 8.5rem 1fr 2rem; }
+}
+
 /* ---------- caixa de entrada (v1.3) ---------- */
 .cx-barra { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: center; justify-content: space-between; margin-bottom: .8rem; }
 .cx-filtros { display: flex; flex-wrap: wrap; gap: .4rem; }

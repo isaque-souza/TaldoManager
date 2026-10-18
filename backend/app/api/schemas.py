@@ -320,6 +320,7 @@ class ElencoSituacao(BaseModel):
     posicao: str
     funcao: str | None = None          # v1.3: posição específica
     secundarias: list[str] = []
+    atributos: dict[str, int] = {}     # v1.3: VEL, FIN, PAS... (ou REF, POS)
     overall: int
     energia: int
     condicao: str
@@ -371,6 +372,7 @@ class JogadorPreJogo(BaseModel):
     vaga: str | None = None
     overall_vaga: int | None = None
     overall_por_posicao: dict[str, int] = {}
+    atributos: dict[str, int] = {}     # v1.3
     # titular: lugar no desenho da formação (x largura, y profundidade, 0–100)
     x: float | None = None
     y: float | None = None
@@ -576,6 +578,8 @@ class JogadorInfo(BaseModel):
     clube: str
     clube_id: int
     posicao: str
+    funcao: str | None = None              # v1.3
+    atributos: dict[str, int] = {}         # v1.3
     overall: int
     idade: int
     partidas: int
@@ -609,6 +613,8 @@ class FichaMercado(BaseModel):
     nome: str
     clube: str
     posicao: str
+    funcao: str | None = None              # v1.3
+    atributos: dict[str, int] = {}         # v1.3
     idade: int
     overall: int
     potencial: int

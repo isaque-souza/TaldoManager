@@ -258,6 +258,7 @@ class Partida:
             else self.clube1
         )
 
+        self._defensor = None
         # o lance do minuto (só anota; não sorteia nada)
         self._lance = {
             "lado": 1 if clube_atacando == self.clube1 else 2,
@@ -339,7 +340,9 @@ class Partida:
         artilheiro
     ):
 
-        chance_finalizacao = 0.25
+        # duelo (v1.3): velocidade e drible do atacante contra velocidade e
+        # marcação de quem tentou parar o lance
+        chance_finalizacao = 0.25 * (1 + self.duelo(artilheiro, self._defensor))
 
         if random.random() > chance_finalizacao:
             return False
@@ -361,6 +364,13 @@ class Partida:
     ):
 
         chance_no_gol = 0.50 * self.fator_ataque(clube_atacando)
+        # quem finaliza melhor do que o próprio nível acerta mais o alvo (v1.3);
+        # o nível em si já pesa no fator_ataque
+        if artilheiro:
+            chance_no_gol *= 1 + max(-0.12, min(0.12, (
+                artilheiro.atributo("finalizacao") - artilheiro.overall_em_campo()
+                - self.REF_FINALIZACAO
+            ) * 0.01))
 
         if random.random() > chance_no_gol:
             return False
@@ -385,9 +395,10 @@ class Partida:
         if goleiro is None:
             return False
 
+        # reflexos e posicionamento (v1.3; antes, o overall)
         chance_defesa = (
             0.14 +
-            (goleiro.overall - 70) * 0.012
+            (self.nivel_goleiro(goleiro) - 71) * 0.012
         )
 
         if random.random() < chance_defesa:
@@ -454,13 +465,20 @@ class Partida:
 
         resultado = random.random()
 
+        # finalização do cobrador contra reflexos do goleiro (v1.3)
+        goleiro = self._goleiro(self.adversario(clube))
+        diferenca = cobrador.atributo("finalizacao") - (
+            self.nivel_goleiro(goleiro) if goleiro else self.REF_FINALIZACAO
+        ) - self.VANTAGEM_COBRADOR
+        converte = max(0.62, min(0.88, 0.76 + diferenca * 0.003))
+
         # o pênalti é o lance que fica marcado no minuto
         self._lance = {
             "lado": 1 if clube == self.clube1 else 2,
-            "fim": "penalti" if resultado < 0.76 else "penalti_perdido",
+            "fim": "penalti" if resultado < converte else "penalti_perdido",
         }
 
-        if resultado < 0.76:                    # convertido
+        if resultado < converte:                # convertido
             cobrador.gols += 1
             cobrador.penaltis += 1
             self.estatisticas[cobrador]["gols"] += 1
@@ -469,8 +487,8 @@ class Partida:
 
         cobrador.penaltis_perdidos += 1
 
-        goleiro = self._goleiro(self.adversario(clube))
-        if resultado < 0.90 and goleiro is not None:   # o goleiro pegou
+        # dos que não entram, ~58% o goleiro pega (como antes: 0.76–0.90)
+        if resultado < converte + (1 - converte) * 0.58 and goleiro is not None:
             goleiro.defesas_partida += 1
             self.adicionar_evento(minuto, "penalti_defendido", goleiro)
         else:                                          # jogou fora
@@ -488,14 +506,17 @@ class Partida:
         jogador
     ):
 
+        # o drible do jogador muda a chance (v1.3)
+        fator = max(0.5, min(1.5, 1 + (jogador.atributo("drible") - 80) * 0.02))
+
         if jogador.posicao == "Atacante":
 
-            if random.random() < 0.40:
+            if random.random() < 0.40 * fator:
                 jogador.dribles_partida += 1
 
         elif jogador.posicao == "Meio-Campo":
 
-            if random.random() < 0.25:
+            if random.random() < 0.25 * fator:
                 jogador.dribles_partida += 1
     
     def gerar_passe_chave(
@@ -503,14 +524,17 @@ class Partida:
         jogador
     ):
 
+        # o passe do jogador muda a chance (v1.3)
+        fator = max(0.5, min(1.5, 1 + (jogador.atributo("passe") - 79) * 0.02))
+
         if jogador.posicao == "Meio-Campo":
 
-            if random.random() < 0.50:
+            if random.random() < 0.50 * fator:
                 jogador.passes_chave_partida += 1
 
         elif jogador.posicao == "Atacante":
 
-            if random.random() < 0.20:
+            if random.random() < 0.20 * fator:
                 jogador.passes_chave_partida += 1
     
     #Ações Defensivas
@@ -538,6 +562,7 @@ class Partida:
         defensor = random.choice(
             defensores
         )
+        self._defensor = defensor   # duela com o atacante (v1.3)
 
         self.gerar_desarme(
             defensor
@@ -1012,16 +1037,18 @@ class Partida:
 
         pesos = []
 
+        # quem bate é quem finaliza bem (v1.3; antes, o overall)
         for jogador in cobradores:
 
+            finalizacao = jogador.atributo("finalizacao")
             if jogador.posicao == "Atacante":
-                peso = jogador.overall * 4
+                peso = finalizacao * 4
 
             elif jogador.posicao == "Meio-Campo":
-                peso = jogador.overall * 2
+                peso = finalizacao * 2
 
             else:  # Defesa
-                peso = max(1, jogador.overall // 8)
+                peso = max(1, finalizacao // 8)
 
             pesos.append(peso)
 
@@ -1601,6 +1628,41 @@ class Partida:
             forca += self.MANDO_DE_CAMPO
 
         return forca
+
+    # atributos (v1.3). O nível de cada time já pesa pela força (overall);
+    # os atributos entram pelo ESTILO — quanto o jogador está acima ou
+    # abaixo do próprio overall naquilo — para não contar a força duas vezes.
+    # As referências são as médias dos titulares da seed: o lance típico
+    # sai como antes.
+    REF_FINALIZACAO = 2       # quem chuta finaliza, em média, 2 acima do overall
+    VANTAGEM_COBRADOR = -2    # FIN média de quem bate − nível médio dos goleiros
+    REF_DUELO = 3             # o atacante típico leva essa vantagem de estilo
+    PESO_DUELO = 0.015        # por ponto de vantagem
+    DUELO_MAX = 0.25
+
+    def duelo(self, atacante, defensor):
+        """Quanto o atacante leva de vantagem de estilo sobre quem tentou
+        parar o lance (−DUELO_MAX a +DUELO_MAX): velocidade e drible acima
+        do próprio nível contra velocidade e marcação acima do dele — um
+        ponta rápido contra um zagueiro lento. Sem defensor, 0."""
+        if atacante is None or defensor is None:
+            return 0.0
+        ataque = (atacante.atributo("velocidade") + atacante.atributo("drible")) / 2
+        defesa = (defensor.atributo("velocidade") + defensor.atributo("marcacao")) / 2
+        vantagem = (
+            (ataque - atacante.overall_em_campo())
+            - (defesa - defensor.overall_em_campo())
+            - self.REF_DUELO
+        ) * self.PESO_DUELO
+        return max(-self.DUELO_MAX, min(self.DUELO_MAX, vantagem))
+
+    @staticmethod
+    def nivel_goleiro(goleiro):
+        """Reflexos e posicionamento juntos (um goleiro improvisado, de linha,
+        usa o overall no gol)."""
+        if goleiro.posicao != "Goleiro":
+            return goleiro.overall_em_campo()
+        return (goleiro.atributo("reflexos") + goleiro.atributo("posicionamento")) / 2
 
     def adversario(self, clube):
 

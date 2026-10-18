@@ -2,7 +2,12 @@
 
 import random
 
-from app.domain import posicoes
+from app.domain import atributos, posicoes
+
+
+# o titular típico da liga tem físico 1 acima do próprio overall (seed): o
+# efeito do físico é centrado aí, então um jogador típico cansa como antes
+REF_FISICO = 1
 
 
 class Jogador:
@@ -83,6 +88,14 @@ class Jogador:
         return max(1, self.overall - posicoes.perda(
             self.funcao, vaga, self.secundarias
         ))
+
+    @property
+    def atributos(self):
+        """{atributo: valor} (v1.3): os seis de linha, ou os de goleiro."""
+        return atributos.de(self)
+
+    def atributo(self, nome):
+        return self.atributos[nome]
 
     def overall_por_posicao(self):
         """{posição: overall nela}, para a tela mostrar quanto rende em cada
@@ -170,9 +183,12 @@ class Jogador:
         else:
             return 0
 
-        # o overall vira o fator dominante: um atacante 88 finaliza muito
-        # mais que um de 72, para existir uma disputa de artilharia
-        peso = base + (max(50, self.overall) - 50) ** 1.7 / 22
+        # o nível de finalização é o fator dominante: um atacante 88 finaliza
+        # muito mais que um de 72, para existir uma disputa de artilharia. Com
+        # os atributos (v1.3), meio overall, meio finalização: quem finaliza
+        # melhor que o próprio nível ganha espaço sem virar o único artilheiro
+        nivel = (self.overall + self.atributo("finalizacao")) / 2
+        peso = base + (max(50, nivel) - 50) ** 1.7 / 22
 
         if self.condicao == "Cansado":
             peso *= 0.90
@@ -193,9 +209,10 @@ class Jogador:
             "Defesa": 2
         }
 
+        # o passe decide quem dá as assistências (v1.3; antes, o overall)
         peso = (
             base[self.posicao]
-            + (self.overall // 8)
+            + (self.atributo("passe") // 8)
         )
 
         if self.condicao == "Cansado":
@@ -319,6 +336,13 @@ class Jogador:
 
         elif self.posicao == "Defesa":
             gasto += 2
+
+        # quem tem mais físico do que o próprio nível cansa menos (v1.3): ±1%
+        # por ponto. Pelo estilo, não pelo valor: senão o time forte, que tem
+        # tudo mais alto, ganharia de novo só por ser forte
+        if self.posicao != "Goleiro":
+            estilo = self.atributo("fisico") - self.overall - REF_FISICO
+            gasto = round(gasto * max(0.8, min(1.2, 1 - estilo * 0.01)))
 
         self.energia = max(0, self.energia - gasto)
 

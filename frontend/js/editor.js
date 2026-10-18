@@ -17,6 +17,7 @@ import { camisa } from "./identidade.js";
 import { icone } from "./icones.js";
 import { carregarProximaRodada, salvarEscalacaoAgora, salvarJa } from "./rodada.js";
 import { naTela, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
+import { linhaAtributos } from "./atributos.js";
 
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
 
@@ -86,9 +87,9 @@ function desenhar() {
       j.condicao !== "Normal" ? `<span class="pj-ic pj-cansado" title="${j.condicao} (energia ${j.energia})">${icone("raio", j.condicao)}</span>` : "",
       j.pendurado ? `<span class="cartao" title="Pendurado" role="img" aria-label="pendurado"></span>` : "",
     ].join("");
-    const dica = fora
+    const dica = (fora
       ? `${j.nome} · ${posicaoDe(j)} improvisado de ${vaga} · rende ${ovr} aqui (overall ${j.overall}) · energia ${j.energia}`
-      : `${j.nome} · ${vaga} · overall ${ovr} · energia ${j.energia}`;
+      : `${j.nome} · ${vaga} · overall ${ovr} · energia ${j.energia}`) + `\n${linhaAtributos(j.atributos)}`;
     // cada um no seu lugar do desenho da formação (laterais um pouco à
     // frente da zaga, volante atrás do meia, pontas abertos...)
     const { left, top } = naTela(j);
@@ -120,7 +121,7 @@ function desenhar() {
     const tambem = j.secundarias && j.secundarias.length ? ` (também ${j.secundarias.join(", ")})` : "";
     return `<li><button class="ed-reserva ${sel ? "sel" : ""}"
         data-lado="banco" data-nome="${j.nome}" draggable="true"
-        title="${j.nome} · ${posicaoDe(j)}${tambem} · overall ${j.overall}${vaga ? ` · rende ${ovr} de ${vaga}` : ""}">
+        title="${j.nome} · ${posicaoDe(j)}${tambem} · overall ${j.overall}${vaga ? ` · rende ${ovr} de ${vaga}` : ""}&#10;${linhaAtributos(j.atributos)}">
       <b class="ed-num">${j.numero ?? "–"}</b>
       <span class="ed-reserva-nome">${j.nome}</span>
       <small class="ed-pos">${sigla(posicaoDe(j))}</small>
