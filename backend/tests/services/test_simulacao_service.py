@@ -209,7 +209,7 @@ def _xi_de(nome):
 def test_elenco_do_clube():
     el = simulacao_service.elenco_do_clube("Taldo City")
     assert el["nome"] == "Taldo City"
-    assert len(el["elenco"]) == 18
+    assert len(el["elenco"]) == 23
     assert "4-4-2" in el["formacoes"]
     assert {"nome", "posicao", "overall"} == set(el["elenco"][0])
     assert simulacao_service.elenco_do_clube("Não Existe") is None
@@ -269,7 +269,7 @@ def test_detalhe_clube():
 
     det = simulacao_service.detalhe_clube(sid, campeao_id)
 
-    assert len(det["elenco"]) == 18
+    assert len(det["elenco"]) == 23
     assert len(det["jogos"]) == 38
     assert det["clube"]["posicao_final"] == 1
     # pontos batem com o aproveitamento nos jogos

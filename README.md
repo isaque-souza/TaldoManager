@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 576 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 577 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -611,6 +611,27 @@ O estádio é onde a torcida vira dinheiro e empurra o time:
 
 ---
 
+# 👥 Elencos e segunda liga (v1.6 — em andamento)
+
+Elencos de verdade e, depois, uma segunda liga com jogadores reais (Premier
+League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
+
+* [x] Elencos de 23 com 3 goleiros — com 18 jogadores e exatamente 2
+      goleiros em todo clube (o mínimo do mercado), nenhum goleiro podia ser
+      contratado. Cada clube ganhou 5 reservas fictícios nas posições mais
+      carentes (sempre 1 goleiro), com overall um pouco abaixo da média dos
+      reservas do clube (`scripts/ampliar_elencos.py`). A base passa a
+      completar o elenco até 23. Calibração mantida (2,8 gols por jogo,
+      mandante vence ~47%)
+* [ ] Jogadores livres — uns 50 sem clube, contratados só com as luvas
+* [ ] Importador da Premier League 2023/24 (OpenFootball, CC0) — overall
+      por fórmula + ajuste manual das estrelas
+* [ ] Várias ligas no banco e no motor
+* [ ] Várias ligas na tela (escolher liga, tabelas e mercado entre ligas)
+* [ ] Copa entre as ligas (futuro)
+
+---
+
 # 📁 Estrutura
 
 ```text
@@ -627,7 +648,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 576 testes (domain, db, repositories, services, api)
+│   └── tests/              # 577 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

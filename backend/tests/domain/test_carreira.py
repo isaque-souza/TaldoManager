@@ -168,7 +168,7 @@ def test_sem_sorte_ninguem_se_aposenta():
     camp = carregar_campeonato()
     _clube_com_veterano(camp)
     aposentar(camp, NUNCA)
-    assert all(len(c.jogadores) == 18 for c in camp.clubes)
+    assert all(len(c.jogadores) == 23 for c in camp.clubes)
 
 
 def test_elenco_minimo_faz_o_veterano_adiar():

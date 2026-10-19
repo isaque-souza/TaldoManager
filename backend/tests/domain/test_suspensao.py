@@ -107,8 +107,9 @@ def test_cartoes_saem_de_faltas_e_goleiro_quase_nao_leva():
     jogadores = [j for c in camp.clubes for j in c.jogadores]
 
     # todo cartão veio de uma falta -> ninguém tem mais cartões que faltas
+    # (o 2º amarelo dá amarelo e vermelho na mesma falta, por isso separados)
     for j in jogadores:
-        assert j.amarelos + j.vermelhos <= j.faltas
+        assert j.amarelos <= j.faltas and j.vermelhos <= j.faltas
 
     # goleiro praticamente não leva cartão (não comete as faltas do jogo)
     gols = [j for j in jogadores if j.posicao == "Goleiro"]
