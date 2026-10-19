@@ -20,7 +20,9 @@ from app.api.schemas import (
     NovaContratacaoLivre,
     NovaProposta,
     NovaRenovacao,
-    NovaVenda,
+    NovaContrapropostaOferta,
+    OfertaRecusada,
+    RespostaContrapropostaOferta,
     NovoPlano,
     PlanoEdicao,
     Planos,
@@ -439,7 +441,7 @@ def propor_contrato(simulacao_id: int, negociacao_id: int, proposta: NovoContrat
     tags=["mercado"],
 )
 def obter_ofertas(simulacao_id: int, jogador_id: int):
-    """O que cada clube paga por um jogador do seu elenco."""
+    """As ofertas que a CPU fez por um jogador do seu elenco nesta janela."""
     try:
         dados = mercado_service.ofertas(simulacao_id, jogador_id)
     except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
@@ -449,20 +451,46 @@ def obter_ofertas(simulacao_id: int, jogador_id: int):
     return dados
 
 
+def _resposta_oferta(chamada):
+    try:
+        feito = chamada()
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if feito is None:
+        raise HTTPException(status_code=404, detail="Simulação ou oferta não encontrada")
+    return feito
+
+
 @router.post(
-    "/simulacoes/{simulacao_id}/vendas",
+    "/simulacoes/{simulacao_id}/ofertas/{oferta_id}/aceitar",
     response_model=TransferenciaResultado,
     tags=["mercado"],
 )
-def fazer_venda(simulacao_id: int, venda: NovaVenda):
-    """Aceita a oferta de um clube por um jogador do seu elenco."""
-    try:
-        feita = mercado_service.vender(simulacao_id, venda.jogador_id, venda.clube)
-    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
-        raise _erro_de_mercado(e) from e
-    if feita is None:
-        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
-    return feita
+def aceitar_oferta(simulacao_id: int, oferta_id: int):
+    """Aceita a oferta de um clube: a venda acontece na hora."""
+    return _resposta_oferta(lambda: mercado_service.aceitar_oferta(simulacao_id, oferta_id))
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/ofertas/{oferta_id}/recusar",
+    response_model=OfertaRecusada,
+    tags=["mercado"],
+)
+def recusar_oferta(simulacao_id: int, oferta_id: int):
+    return _resposta_oferta(lambda: mercado_service.recusar_oferta(simulacao_id, oferta_id))
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/ofertas/{oferta_id}/contraproposta",
+    response_model=RespostaContrapropostaOferta,
+    tags=["mercado"],
+)
+def contrapropor_oferta(simulacao_id: int, oferta_id: int, pedido: NovaContrapropostaOferta):
+    """Pede mais, uma vez só: o clube aceita (a venda fecha pelo pedido) ou
+    retira a oferta."""
+    return _resposta_oferta(
+        lambda: mercado_service.contrapropor_oferta(simulacao_id, oferta_id, pedido.valor)
+    )
 
 
 @router.put(

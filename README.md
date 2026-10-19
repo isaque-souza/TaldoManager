@@ -823,8 +823,29 @@ etapas (o clube e depois o jogador):
         `PUT /simulacoes/{id}/observados` `{nome, observar}`,
         `GET /simulacoes/{id}/historico-transferencias`
       - Quem é contratado sai sozinho dos observados
-* [ ] Ofertas recebidas — a CPU faz propostas pelos jogadores à venda (e,
-      às vezes, pelos craques)
+* [x] Ofertas recebidas — a CPU faz propostas pelos jogadores à venda (e,
+      às vezes, pelos craques). Na Central do Elenco, o selo "N ofertas", a
+      aba "Com ofertas" e as ofertas na ficha (aceitar, recusar ou pedir
+      mais); na Central de Transferências, a aba Negociações lista todas da
+      janela; o card Elenco do hub avisa enquanto houver oferta esperando
+      - [x] backend — o "balcão" (toda oferta pronta, de todo clube) sai: as
+            ofertas chegam quando a janela abre (pré-temporada e depois da
+            rodada 19) e na hora em que o técnico põe alguém na lista com a
+            janela aberta. Quem está à venda recebe de 0 a 3 ofertas de
+            clubes que precisam da posição e podem pagar, um pouco abaixo do
+            valor; em metade das janelas um dos 3 melhores (fora da lista) é
+            **assediado** por um clube mais forte, por 1,2 a 1,5× o valor (o
+            mais forte da liga, pelos 3 logo abaixo). Aceitar vende na hora;
+            recusar; ou **contrapropor uma vez**: até um teto escondido o
+            clube topa, acima ele retira a oferta. Valem até a rodada ser
+            jogada; a CPU ainda não paga multa. Sorteio próprio por temporada,
+            rodada e jogador: não mexe nos jogos (`app/domain/ofertas.py`,
+            `oferta_service`)
+      - API: `ofertas_recebidas` em `GET /mercado`;
+        `GET /simulacoes/{id}/jogadores/{jid}/ofertas` (as recebidas);
+        `POST /simulacoes/{id}/ofertas/{oid}/aceitar`, `/recusar`,
+        `/contraproposta` `{valor}` — sai `POST /vendas`
+      - [x] tela
 * [ ] Empréstimos
 * [ ] Clubes da CPU negociam entre si
 

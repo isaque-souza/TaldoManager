@@ -7,7 +7,9 @@
 import { $, estado, navegarPara } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { carregarProximaRodada } from "./rodada.js";
-import { avisoMercado, carregarMercado, mostrarOfertas, postarMercado } from "./mercado.js";
+import {
+  acoesOferta, avisoMercado, carregarMercado, detalheOferta, ligarBotoesMercado, postarMercado,
+} from "./mercado.js";
 import { abrirContrato, MULTA_ROTULO, PAPEL_ROTULO as PAPEL } from "./contratos.js";
 import { abrirJogador } from "./jogador.js";
 import { carregarCaixa } from "./caixa.js";
@@ -16,16 +18,18 @@ import { barrasAtributos } from "./atributos.js";
 import { camisa } from "./identidade.js";
 import { posicaoDe, sigla } from "./posicoes.js";
 
-// setor: "" (todos), um setor do motor, "venda" (a lista de transferências)
-// ou "humor" (quem não está contente com o tempo de jogo)
+// setor: "" (todos), um setor do motor, "venda" (a lista de transferências),
+// "ofertas" (quem a CPU quer, v1.7) ou "humor" (quem não está contente com o
+// tempo de jogo)
 const FILTROS = [
   ["", "Todos"], ["Goleiro", "Goleiros"], ["Defesa", "Defesa"],
   ["Meio-Campo", "Meio-campo"], ["Atacante", "Ataque"], ["venda", "À venda"],
-  ["humor", "Insatisfeitos"],
+  ["ofertas", "Com ofertas"], ["humor", "Insatisfeitos"],
 ];
 const IDADE_PROMESSA = 21;
 const passaFiltro = (f, v) =>
-  !v || (v === "venda" ? f.a_venda : v === "humor" ? f.humor !== "contente" : f.posicao === v);
+  !v || (v === "venda" ? f.a_venda : v === "ofertas" ? f.ofertas > 0
+    : v === "humor" ? f.humor !== "contente" : f.posicao === v);
 const filtro = { setor: "", selecionado: null };
 let mercado = null;   // o último GET /mercado, para redesenhar sem pedir de novo
 
@@ -55,6 +59,7 @@ function selos(f, { acabando = true } = {}) {
     f.humor === "quer_sair" ? `<span class="chip chip-longe">Quer sair</span>`
       : f.humor === "incomodado" ? `<span class="chip chip-perto">Incomodado</span>` : "",
     f.a_venda ? `<span class="chip">À venda</span>` : "",
+    f.ofertas ? `<span class="chip chip-batida">${f.ofertas} oferta${f.ofertas === 1 ? "" : "s"}</span>` : "",
     acabando && f.contrato_anos <= 1 ? `<span class="chip chip-perto">Acabando</span>` : "",
   ].join(" ");
 }
@@ -107,16 +112,13 @@ function ficha(f) {
       <button type="button" data-el="renovar">${icone("contrato")} Renovar</button>
       <button type="button" class="secondary" data-el="lista">
         ${f.a_venda ? "Tirar da lista" : "Pôr na lista de transferências"}</button>
-      ${venda
-        ? `<button type="button" class="secondary" data-el="ofertas">${icone("troca")} Ver ${f.ofertas} oferta${f.ofertas === 1 ? "" : "s"}</button>`
-        : ""}
       <button type="button" class="secondary outline" data-el="dispensar"${f.dispensa_bloqueada ? " disabled" : ""}>
         ${icone("saiu")} Dispensar (${dinheiro(f.rescisao)})</button>
       <button type="button" class="secondary outline" data-el="pagina">Página completa</button>
     </div>
     ${dispensa}
     ${venda ? "" : `<small class="bloqueio">${icone("cadeado")} Vender: ${f.bloqueio || "janela fechada"}</small>`}
-    <div id="m-ofertas"></div>
+    ${blocoOfertas(f)}
     <dl class="el-numeros">
       <div><dt>Jogos</dt><dd>${f.partidas}</dd></div>
       <div><dt>Gols</dt><dd>${f.gols}</dd></div>
@@ -135,6 +137,30 @@ function ficha(f) {
     </dl>
     <div id="c-form"></div>
   </article>`;
+}
+
+// as ofertas da CPU por ele nesta janela (v1.7): aceitar, recusar ou pedir mais
+function blocoOfertas(f) {
+  if (!mercado.janela_aberta) return "";
+  const lista = mercado.ofertas_recebidas.filter((o) => o.jogador_id === f.jogador_id && o.status === "aberta");
+  if (!lista.length) {
+    return `<p class="el-ofertas vazio">${f.a_venda
+      ? "Nenhum clube fez oferta por ele nesta janela."
+      : "Nenhuma oferta. Na lista de transferências, os clubes olham na hora."}</p>`;
+  }
+  return `<div class="el-ofertas">
+    <h3 class="secao">${icone("troca")} Ofertas recebidas</h3>
+    ${lista.map((o) => `<div class="el-oferta">
+      <div class="el-oferta-topo">
+        <b>${o.rival ? `${icone("rival", "rival")} ` : ""}${o.clube}</b>
+        <strong>${dinheiro(o.valor)}</strong>
+      </div>
+      <small>${detalheOferta(o) || "&nbsp;"}</small>
+      ${acoesOferta(o)}
+    </div>`).join("")}
+    <small class="bloqueio">Pedir mais é uma vez só: acima do que o clube aceita, ele retira a oferta.
+      Valem até a próxima rodada.</small>
+  </div>`;
 }
 
 // o papel prometido, o humor e quanto da meta ele está cumprindo
@@ -205,8 +231,8 @@ function ligarAcoes(box, f) {
   const botao = (acao) => box.querySelector(`[data-el="${acao}"]`);
   botao("renovar").addEventListener("click", () => abrirContrato(f.jogador_id));
   botao("lista").addEventListener("click", () => marcarAVenda(f, !f.a_venda));
-  // as ofertas abrem na ficha (v1.7: vender fica só aqui)
-  botao("ofertas")?.addEventListener("click", () => mostrarOfertas(f.jogador_id));
+  // aceitar, recusar e pedir mais nas ofertas da CPU (v1.7)
+  ligarBotoesMercado(box.querySelector(".el-ficha"));
   botao("pagina").addEventListener("click", () => navegarPara(() => abrirJogador(f.jogador_id)));
   botao("papel").addEventListener("change", (e) => definirPapel(f, e.target.value));
 

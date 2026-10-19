@@ -90,6 +90,7 @@ export function renderMercado(m, observados) {
     total: m.elenco.length,
     acabando: m.elenco.filter((f) => f.contrato_anos <= 1).length,
     aVenda: m.elenco.filter((f) => f.a_venda).length,
+    ofertas: m.ofertas_recebidas.filter((o) => o.status === "aberta").length,
   });
 }
 
@@ -99,11 +100,10 @@ export function ligarBotoesMercado(container) {
   );
 }
 
-// propor e vender pedem dois cliques (sem alert/confirm, que travam a página);
-// "ver ofertas" e "acertar contrato" só abrem, então vão direto
+// propor, aceitar, recusar e contrapropor pedem dois cliques (sem
+// alert/confirm, que travam a página); "acertar contrato" só abre
 export function cliqueMercado(botao) {
   const acao = botao.dataset.acao;
-  if (acao === "ofertas") return mostrarOfertas(Number(botao.dataset.id));
   if (acao === "negociacao") return abrirNegociacao(Number(botao.dataset.neg));
   if (botao.dataset.confirmar !== "1") {
     botao.dataset.confirmar = "1";
@@ -117,8 +117,16 @@ export function cliqueMercado(botao) {
     const valor = Number(botao.dataset.valor || (campo && campo.value));
     return propor(id, valor);
   }
-  if (acao === "vender") return vender(id, botao.dataset.clube);
   if (acao === "livre") return contratarLivre(botao.dataset.nome);
+  // ofertas da CPU (v1.7): o aviso sai no painel onde o botão está
+  const oferta = Number(botao.dataset.oferta);
+  const onde = botao.closest('[data-painel="elenco"]') ? "r-contrato-msg" : "r-mercado-msg";
+  if (acao === "aceitar") return aceitarOferta(oferta, onde);
+  if (acao === "recusar") return recusarOferta(oferta, onde);
+  if (acao === "contrapropor") {
+    const campo = botao.closest(".proposta").querySelector("input[data-contra]");
+    return contraproporOferta(oferta, Number(campo.value), onde);
+  }
 }
 
 // POST com o motivo do 400 visível (o `pedir` genérico só mostra o status);
@@ -245,38 +253,64 @@ export async function proporContrato(negId, contrato) {
   if (r.status === "aberta") await abrirNegociacao(negId);
 }
 
-export async function mostrarOfertas(jogadorId) {
-  const d = await pedir(`/simulacoes/${estado.simId}/jogadores/${jogadorId}/ofertas`);
-  if (!d) return;
-  // a torcida encolhe se for para o rival ou se ele for ídolo (v1.4)
-  const encolhe = (o) => `a torcida vai encolher ${Math.abs(o.revolta_torcida).toLocaleString("pt-BR")}%`;
-  const linhas = d.ofertas.map((o) => ({
-    clube_fmt: o.rival
-      ? `${icone("rival", "rival")} ${o.clube} (rival — ${encolhe(o)})`
-      : o.revolta_torcida ? `${o.clube} (ídolo — ${encolhe(o)})` : o.clube,
-    valor_fmt: dinheiro(o.valor),
-    papel: o.seria_titular ? "seria titular" : "seria banco",
-    acao: `<button class="transf" data-acao="vender" data-id="${jogadorId}" data-clube="${o.clube}">Aceitar</button>`,
-  }));
-  const box = $("m-ofertas");
-  box.innerHTML =
-    `<article><header><strong>Ofertas por ${d.jogador}</strong> · valor de mercado ${dinheiro(d.valor_mercado)}</header>` +
-    tabela(linhas, [["clube_fmt", "Clube"], ["valor_fmt", "Oferta"], ["papel", "Lá ele"], ["acao", ""]]) +
-    `</article>`;
-  ligarBotoesMercado(box);
-  box.scrollIntoView({ block: "nearest" });
+// ---------- ofertas da CPU (v1.7) ----------
+
+// as ações de uma oferta aberta: aceitar, recusar ou pedir mais (uma vez)
+export function acoesOferta(o) {
+  const sugestao = Math.round((o.valor * 1.1) / 10000) * 10000;
+  return `<span class="proposta">` +
+    `<button class="transf" data-acao="aceitar" data-oferta="${o.oferta_id}">Aceitar</button>` +
+    `<button class="transf secondary outline" data-acao="recusar" data-oferta="${o.oferta_id}">Recusar</button>` +
+    `<input type="number" min="10000" step="10000" value="${sugestao}" data-contra="${o.oferta_id}" ` +
+    `aria-label="Contraproposta por ${o.jogador}">` +
+    `<button class="transf secondary" data-acao="contrapropor" data-oferta="${o.oferta_id}">Pedir</button></span>`;
 }
 
-export async function vender(jogadorId, clube) {
-  const t = await postarMercado(
-    `/simulacoes/${estado.simId}/vendas`, { jogador_id: jogadorId, clube }, "Fechando a venda…",
-    { onde: "r-contrato-msg" }
-  );
-  if (!t) return carregarMercado();
-  avisoMercado(`${icone("ok")} ${t.jogador} vendido ao ${t.para_clube} por ${dinheiro(t.valor)}.`,
-    false, "r-contrato-msg");
+// o que muda se aceitar: rival e ídolo levam parte da torcida (v1.4)
+export function detalheOferta(o) {
+  const encolhe = o.revolta_torcida
+    ? ` · a torcida encolhe ${Math.abs(o.revolta_torcida).toLocaleString("pt-BR")}%` : "";
+  return [
+    o.espontanea ? "sem estar à venda" : "",
+    o.seria_titular == null ? "" : o.seria_titular ? "lá seria titular" : "lá seria banco",
+  ].filter(Boolean).join(" · ") + encolhe;
+}
+
+async function depoisDaVenda(t, onde, extra = "") {
+  avisoMercado(`${icone("ok")} ${t.jogador} vendido ao ${t.para_clube} por ${dinheiro(t.valor)}.${extra}`,
+    false, onde);
   carregarCaixa();
   await carregarProximaRodada();   // elenco e escalação mudaram
+}
+
+export async function aceitarOferta(ofertaId, onde) {
+  const t = await postarMercado(
+    `/simulacoes/${estado.simId}/ofertas/${ofertaId}/aceitar`, {}, "Fechando a venda…", { onde }
+  );
+  if (!t) return carregarMercado();
+  await depoisDaVenda(t, onde);
+}
+
+export async function recusarOferta(ofertaId, onde) {
+  const r = await postarMercado(
+    `/simulacoes/${estado.simId}/ofertas/${ofertaId}/recusar`, {}, "Recusando…", { onde }
+  );
+  if (r) {
+    const el = $(onde);
+    el.classList.remove("ruim");
+    el.innerHTML = `${icone("nao")} Recusamos a oferta do ${r.clube} por ${r.jogador}.`;
+  }
+  await carregarMercado();
+}
+
+export async function contraproporOferta(ofertaId, valor, onde) {
+  const r = await postarMercado(
+    `/simulacoes/${estado.simId}/ofertas/${ofertaId}/contraproposta`, { valor }, "Pedindo mais…", { onde }
+  );
+  if (!r) return carregarMercado();
+  if (r.resposta === "aceita") return depoisDaVenda(r.transferencia, onde, " O clube topou o pedido.");
+  avisoMercado(`${icone("nao")} O clube achou ${dinheiro(valor)} demais e retirou a oferta.`, true, onde);
+  await carregarMercado();
 }
 
 export async function contratarLivre(nome) {

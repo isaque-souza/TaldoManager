@@ -59,7 +59,7 @@ export function renderSecaoRodada() {
 }
 
 // resumo do mercado/elenco nos cards (vem de carregarMercado)
-export function marcarHubMercado({ janelaAberta, total, acabando, aVenda }) {
+export function marcarHubMercado({ janelaAberta, total, acabando, aVenda, ofertas = 0 }) {
   $("hub-mercado").textContent = janelaAberta ? "Janela aberta" : "Janela fechada";
   $("hub-mercado-info").innerHTML = janelaAberta
     ? `<span class="luz-aberta" aria-hidden="true"></span> busque, negocie e acompanhe`
@@ -71,7 +71,12 @@ export function marcarHubMercado({ janelaAberta, total, acabando, aVenda }) {
   $("hub-elenco-info").textContent = acabando
     ? `no fim da temporada: renove ou perca de graça${venda}`
     : `nenhum contrato no último ano${venda}`;
-  $("hub-elenco").closest(".hub-card").classList.toggle("hub-alerta", acabando > 0);
+  // ofertas da CPU esperando resposta (v1.7) passam na frente: caem com a rodada
+  if (ofertas) {
+    $("hub-elenco").textContent = `${ofertas} ${ofertas === 1 ? "oferta recebida" : "ofertas recebidas"}`;
+    $("hub-elenco-info").textContent = `responda antes de jogar a rodada${venda}`;
+  }
+  $("hub-elenco").closest(".hub-card").classList.toggle("hub-alerta", acabando > 0 || ofertas > 0);
 }
 
 // lê dos seletores (não do rodadaInfo): o técnico pode ter mexido e voltado

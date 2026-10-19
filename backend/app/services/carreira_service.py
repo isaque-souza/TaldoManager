@@ -28,7 +28,7 @@ from app.repositories import movimento_repository as movimento_repo
 from app.repositories import observado_repository as observado_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import copa_service, plano_service, simulacao_service
+from app.services import copa_service, oferta_service, plano_service, simulacao_service
 from scripts.data_loader import (
     LIGA_PADRAO, TODAS_AS_LIGAS, carregar_campeonato_do_save, carregar_jogadores,
     carregar_livres, ligas_do_save,
@@ -220,6 +220,8 @@ def proxima_temporada(simulacao_id):
                 ]),
                 copa_service.mensagem_de_inicio(campeonato, clube_usuario),
             ])
+            # a janela da pré-temporada abre: a CPU faz ofertas (v1.7)
+            oferta_service.abrir_janela(conn, nova_id, 1, campeonato, clube_usuario, None)
             # os planos de jogo seguem para a temporada nova (v1.2)
             plano_service.copiar(conn, simulacao_id, nova_id, alvo)
             # e os observados do técnico (v1.7)

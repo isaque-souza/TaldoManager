@@ -12,3 +12,20 @@ def fechar(sid, negociacao_id):
     )
     assert r["resposta"] == "aceita", r
     return r
+
+
+def oferecer(sid, jogador_id, clube, valor, teto=None, espontanea=False):
+    """Uma oferta da CPU (v1.7) gravada direto, sem o sorteio: para testar a
+    venda com o clube e o valor que o teste quer. Devolve o id."""
+    from app.db.conexao import conectar
+    from app.repositories import oferta_repository, simulacao_repository
+
+    conn = conectar()
+    try:
+        with conn:
+            rodada = simulacao_repository.buscar(conn, sid)["rodada_atual"]
+            return oferta_repository.inserir(
+                conn, sid, rodada, jogador_id, clube, valor, teto or valor, espontanea,
+            )
+    finally:
+        conn.close()
