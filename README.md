@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 557 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 576 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -586,6 +586,31 @@ e o tamanho dela é o que enche a bilheteria:
 
 ---
 
+# 🏟️ Estádio (v1.5 — em andamento)
+
+O estádio é onde a torcida vira dinheiro e empurra o time:
+
+* [x] Público, capacidade e ingresso — a cada jogo em casa parte da torcida
+      vai ao estádio, com retorno decrescente (~5 mil pagantes para 200 mil
+      torcedores, ~60 mil para 12 milhões); clássico (+30%) e boa fase
+      (±4% por resultado nos últimos 5) enchem mais, e quem não cabe fica de
+      fora. Cada clube nasce com um estádio do tamanho da sua demanda (uns
+      já lotam nos jogos grandes, ~1 em cada 4 jogos). Card **Estádio** no
+      menu do clube com três faixas de ingresso: popular (−40% no preço, +35%
+      de público), normal e premium (+60% no preço, −40% de público). O
+      preço normal sobe com o tamanho do clube, então a bilheteria segue a
+      de antes na média. O **mando de campo vem do público presente** (não
+      mais da torcida inteira): ingresso barato e estádio cheio empurram o
+      time. Calibrado para os placares não mudarem (2,8 gols por jogo,
+      mandante vence ~47%). O público aparece na página da partida.
+      API: `GET /simulacoes/{id}/estadio`, `POST /simulacoes/{id}/estadio/ingresso`
+* [ ] Ampliação — obras de +5 mil (10 rodadas), +10 mil (um turno) e +20
+      mil lugares (uma temporada), pagas com o caixa, uma por vez, com
+      manutenção por lugar
+* [ ] Clubes da CPU ampliam o estádio quando lotam
+
+---
+
 # 📁 Estrutura
 
 ```text
@@ -602,7 +627,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 557 testes (domain, db, repositories, services, api)
+│   └── tests/              # 576 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

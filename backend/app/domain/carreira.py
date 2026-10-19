@@ -30,7 +30,8 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
     anterior.
 
     `clubes_finais`: dicts com `nome`, `dinheiro` (caixa final),
-    `torcedores` (torcida final) e `torcedores_base` (tamanho natural).
+    `torcedores` (torcida final), `torcedores_base` (tamanho natural),
+    `capacidade` e `ingresso` (estádio).
     `jogadores_finais`: dicts com `nome`, `clube`, `idade`, `overall`,
     `potencial`, `salario`, `contrato_anos`, `multa_rescisoria`, `fama` e
     `temporadas_no_clube`, na ordem do elenco.
@@ -85,6 +86,10 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
         # o tamanho natural também (temporadas anteriores: 0, fica o da seed)
         if final.get("torcedores_base"):
             clube.torcedores_base = final["torcedores_base"]
+        # o estádio também (v1.5); antes dele (0), fica o da seed
+        if final.get("capacidade"):
+            clube.capacidade = final["capacidade"]
+            clube.ingresso = final.get("ingresso") or "normal"
 
     return campeonato
 

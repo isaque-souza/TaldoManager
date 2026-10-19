@@ -60,7 +60,10 @@ export async function abrirPartida(partidaId) {
   $("partida-placar").innerHTML =
     `<span class="placar">${escudo(p.mandante.nome, 36)} ${p.mandante.nome}` +
     ` <b>${p.gols_mandante} x ${p.gols_visitante}</b> ${p.visitante.nome} ${escudo(p.visitante.nome, 36)}</span>`;
-  $("partida-info").textContent = `Rodada ${p.rodada}`;
+  // público (v1.5); partidas de antes do estádio não têm
+  $("partida-info").textContent = p.publico
+    ? `Rodada ${p.rodada} · público ${p.publico.toLocaleString("pt-BR")}`
+    : `Rodada ${p.rodada}`;
 
   const stat = (rot, a, b) =>
     `<article><header><strong>${rot}</strong></header>${a} &nbsp;—&nbsp; ${b}</article>`;

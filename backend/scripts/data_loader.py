@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from app.domain import fama
+from app.domain import estadio, fama
 from app.domain.jogador import Jogador
 from app.domain.clube import Clube
 from app.domain.campeonato import Campeonato
@@ -62,6 +62,8 @@ def carregar_clubes(jogadores):
             c["dinheiro"],
             c["torcedores"]
         )
+        # o estádio nasce do tamanho da torcida (v1.5)
+        clube.capacidade = estadio.capacidade_inicial(c["nome"], c["torcedores"])
 
         for id_jogador in c["titulares"]:
 

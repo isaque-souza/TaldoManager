@@ -72,7 +72,8 @@ def test_ver_marketing_mostra_torcida_mando_e_campanhas():
     sid = _iniciar()
     m = marketing_service.ver(sid)
     assert m["turno"] == 1 and m["disponivel"]
-    assert m["mando_de_campo"] == round(torcida.mando_de_campo(m["torcedores"]), 2)
+    # o mando vem do público de um jogo comum (v1.5)
+    assert 1.5 <= m["mando_de_campo"] <= 3.5
     assert [c["tipo"] for c in m["campanhas"]] == list(torcida.CAMPANHAS)
     assert all(c["bloqueio"] is None for c in m["campanhas"])
     assert m["feitas"] == []

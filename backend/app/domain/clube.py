@@ -54,6 +54,11 @@ class Clube:
         # temporada a torcida volta um pouco em direção a ele; título o
         # aumenta (ver app.domain.torcida)
         self.torcedores_base = torcedores
+        # estádio (v1.5): lugares e faixa do ingresso (ver app.domain.estadio).
+        # 0 = sem estádio registrado (clubes montados à mão): bilheteria e
+        # mando caem nas regras da torcida
+        self.capacidade = 0
+        self.ingresso = "normal"
         self.rivais = set()   # nomes dos clubes rivais (clássicos)
         self.identidade = None   # cores/escudo/camisa (só visual, v1.1)
 

@@ -1128,3 +1128,8 @@ body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .
 .mk-ficha dd small { font-family: var(--fonte-texto); font-weight: 400; font-size: .8rem; color: var(--texto-2); }
 .mk-bloqueio { color: var(--texto-2); font-size: .82rem; }
 .mk-campanha .mk-fazer { margin: auto 0 0; }
+/* estádio (v1.5): as faixas do ingresso reaproveitam os cards do marketing */
+.es-faixa .es-usar { margin: auto 0 0; }
+.es-escolhida { outline: 2px solid var(--gramado-claro); outline-offset: -2px; }
+.es-escolhida header { background: var(--gramado-noite); }
+.es-atual { color: var(--gramado-claro); font-size: .8rem; font-weight: 600; }

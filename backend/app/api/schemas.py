@@ -555,6 +555,7 @@ class PartidaInfo(BaseModel):
     escanteios_mandante: int = 0
     escanteios_visitante: int = 0
     acrescimos: int | None = None   # v1.1; None em partidas antigas
+    publico: int | None = None      # pagantes (v1.5); None em partidas antigas
 
 
 class PartidaDetalhe(BaseModel):
@@ -963,7 +964,7 @@ class CampanhaFeita(BaseModel):
 class Marketing(BaseModel):
     torcedores: int
     torcedores_inicial: int
-    mando_de_campo: float        # pontos de força em casa, pela torcida
+    mando_de_campo: float        # pontos de força num jogo comum em casa (pelo público, v1.5)
     caixa: int
     turno: int
     disponivel: bool             # ainda dá para fazer uma campanha neste turno
@@ -973,3 +974,37 @@ class Marketing(BaseModel):
 
 class NovaCampanha(BaseModel):
     tipo: str
+
+
+# --- estádio (v1.5) ---
+
+class FaixaIngresso(BaseModel):
+    faixa: str                   # popular | normal | premium
+    nome: str
+    descricao: str
+    preco: float                 # ingresso nesta faixa
+    publico: int                 # estimativa para um jogo comum em casa
+    ocupacao: float              # % da capacidade
+    bilheteria: int              # estimativa por jogo
+    mando_de_campo: float        # força em casa com esse público
+
+
+class EstadioTemporada(BaseModel):
+    jogos_em_casa: int
+    publico_medio: int
+    ocupacao_media: float        # %
+    lotados: int
+    bilheteria: int              # arrecadada na temporada
+
+
+class Estadio(BaseModel):
+    capacidade: int
+    ingresso: str
+    torcedores: int
+    caixa: int
+    faixas: list[FaixaIngresso]
+    temporada: EstadioTemporada
+
+
+class NovoIngresso(BaseModel):
+    faixa: str
