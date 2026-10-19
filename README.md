@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 697 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 710 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -785,8 +785,20 @@ etapas (o clube e depois o jogador):
         ele pede 5% a menos; abaixo, 10% a mais
       - API: `PUT /simulacoes/{id}/jogadores/{jid}/papel`; `papel` em
         `POST /simulacoes/{id}/renovacoes`
-* [ ] Negociação em duas etapas — o valor com o clube, depois salário, anos,
-      multa e papel com o jogador
+* [x] Negociação em duas etapas — o aceite do clube (ou a multa paga) só
+      **trava o valor**; nada é pago até o jogador assinar. Na etapa 2 você
+      oferece salário, anos, multa e papel: ele pede o de mercado ajustado
+      pela importância que teria no seu clube, pela multa e pelo papel
+      prometido, **+10% pela mudança** e **+15% se o seu clube é mais fraco**
+      que o dele (ranking de força), e nunca aceita ganhar menos do que já
+      ganha. Ele aceita, contrapropõe ou recusa; na **3ª recusa desiste** e
+      não volta na janela. Jogar a rodada com o contrato pendente desfaz o
+      acordo. Livres vão direto à etapa 2 (luvas fixas, sem o custo da
+      mudança). O mercado mostra as negociações da janela e um ponto de
+      partida para o salário (`contrato.avaliar_chegada`)
+      - API: `negociacao_id` na resposta de `POST /propostas` e de
+        `POST /livres/contratar`; `GET /simulacoes/{id}/negociacoes/{nid}`,
+        `POST /simulacoes/{id}/negociacoes/{nid}/contrato`
 * [ ] Central de Transferências — buscar nas duas ligas, observados,
       negociações e histórico
 * [ ] Ofertas recebidas — a CPU faz propostas pelos jogadores à venda (e,

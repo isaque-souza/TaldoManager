@@ -10,6 +10,7 @@ from app.domain.mercado import TransferenciaInvalida
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import mercado_service, simulacao_service, temporada_service
 from app.services.temporada_service import TemporadaConcluida
+from tests.negociar import fechar
 
 
 def _iniciar(seed=11, clube="Real Taldo"):
@@ -87,8 +88,10 @@ def test_contraproposta_pode_ser_aceita_e_o_jogador_vem():
     # aceitar a contraproposta funciona mesmo que as tentativas acabem
     aceita = mercado_service.propor(sid, alvo["jogador_id"], r["valor_pedido"])
     assert aceita["resposta"] == "aceita"
-    assert aceita["transferencia"]["para_clube"] == clube
-    assert aceita["transferencia"]["caixa"] == m["caixa"] - r["valor_pedido"]
+    # v1.7: o aceite do clube só trava o valor; o contrato fecha a compra
+    t = fechar(sid, aceita["negociacao_id"])["transferencia"]
+    assert t["para_clube"] == clube
+    assert t["caixa"] == m["caixa"] - r["valor_pedido"]
 
     # o reforço sobrevive ao snapshot e entra em campo pelo clube novo
     temporada_service.avancar(sid)
@@ -119,8 +122,9 @@ def test_pagar_a_multa_do_rival_traz_o_jogador():
     )
     r = mercado_service.propor(sid, alvo["jogador_id"], alvo["multa_rescisoria"])
     assert r["resposta"] == "multa"
-    assert r["transferencia"]["valor"] == alvo["multa_rescisoria"]
-    assert r["transferencia"]["de_clube"] == "Taldo City"
+    t = fechar(sid, r["negociacao_id"])["transferencia"]
+    assert t["valor"] == alvo["multa_rescisoria"]
+    assert t["de_clube"] == "Taldo City"
 
 
 def test_proposta_acima_do_caixa_nao_gasta_tentativa():
@@ -205,7 +209,8 @@ def test_compra_aparece_no_historico_do_caixa():
     m = mercado_service.ver_mercado(sid)
     alvo = _alvo(m)
     r = mercado_service.propor(sid, alvo["jogador_id"], alvo["valor_mercado"] * 3)
-    assert r["transferencia"]
+    t = fechar(sid, r["negociacao_id"])["transferencia"]
+    assert t
     temporada_service.avancar(sid)
 
     visao = simulacao_service.carregar_temporada(sid)
@@ -213,7 +218,7 @@ def test_compra_aparece_no_historico_do_caixa():
     hist = simulacao_service.detalhe_clube(sid, cid)["clube"]["historico_caixa"]
     assert len(hist) == 1
     # caixa após a R1 = antes da compra - compra + finanças da rodada
-    assert hist[0] < m["caixa"] - r["transferencia"]["valor"] + 2_000_000
+    assert hist[0] < m["caixa"] - t["valor"] + 2_000_000
 
 
 def _torcidas(sid):
@@ -305,11 +310,13 @@ def test_contratar_livre_paga_as_luvas_e_entra_no_elenco():
     m = mercado_service.ver_mercado(sid)
     goleiro = next(f for f in m["livres"] if f["posicao"] == "Goleiro")
 
-    feita = mercado_service.contratar_livre(sid, goleiro["nome"])
+    # v1.7: o livre topa conversar e a negociação vai direto ao contrato
+    aberta = mercado_service.contratar_livre(sid, goleiro["nome"])
+    assert aberta["valor"] == goleiro["luvas"] and aberta["clube"] is None
+    feita = fechar(sid, aberta["negociacao_id"])
 
-    assert feita["luvas"] == goleiro["luvas"]
     assert feita["caixa"] == m["caixa"] - goleiro["luvas"]
-    assert feita["contrato_anos"] == mercado.CONTRATO_LIVRE_ANOS
+    assert feita["contrato"]["contrato_anos"] == 2
     depois = mercado_service.ver_mercado(sid)
     assert goleiro["nome"] in {f["nome"] for f in depois["elenco"]}
     assert goleiro["nome"] not in {f["nome"] for f in depois["livres"]}
@@ -322,7 +329,7 @@ def test_contratar_livre_paga_as_luvas_e_entra_no_elenco():
 def test_livre_contratado_joga_e_continua_no_elenco_depois_da_rodada():
     sid, clube = _iniciar()
     nome = mercado_service.ver_mercado(sid)["livres"][0]["nome"]
-    mercado_service.contratar_livre(sid, nome)
+    fechar(sid, mercado_service.contratar_livre(sid, nome)["negociacao_id"])
 
     temporada_service.avancar(sid)
 

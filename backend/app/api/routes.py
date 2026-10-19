@@ -49,6 +49,9 @@ from app.api.schemas import (
     NovaListaTransferencia,
     ListaTransferencia,
     Dispensa,
+    NegociacaoDetalhe,
+    NovoContratoChegada,
+    RespostaContrato,
     NovoPapel,
     PapelDefinido,
 )
@@ -329,7 +332,8 @@ def fazer_proposta(simulacao_id: int, proposta: NovaProposta):
     tags=["mercado"],
 )
 def contratar_livre(simulacao_id: int, contratacao: NovaContratacaoLivre):
-    """Contrata um jogador sem clube: sem transferência, só as luvas."""
+    """Abre a negociação com um jogador sem clube: sem transferência, só as
+    luvas; o contrato vem na etapa 2 (`/negociacoes/{id}/contrato`)."""
     try:
         feita = mercado_service.contratar_livre(simulacao_id, contratacao.nome)
     except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
@@ -337,6 +341,42 @@ def contratar_livre(simulacao_id: int, contratacao: NovaContratacaoLivre):
     if feita is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador livre não encontrado")
     return feita
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/negociacoes/{negociacao_id}",
+    response_model=NegociacaoDetalhe,
+    tags=["mercado"],
+)
+def obter_negociacao(simulacao_id: int, negociacao_id: int):
+    """Uma contratação em andamento: o que dá para oferecer ao jogador."""
+    try:
+        dados = mercado_service.ver_negociacao(simulacao_id, negociacao_id)
+    except (TemporadaConcluida, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Negociação não encontrada")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/negociacoes/{negociacao_id}/contrato",
+    response_model=RespostaContrato,
+    tags=["mercado"],
+)
+def propor_contrato(simulacao_id: int, negociacao_id: int, proposta: NovoContratoChegada):
+    """Etapa 2: o contrato oferecido ao jogador (salário, anos, multa e
+    papel). Aceito, a transferência acontece; na 3ª recusa ele desiste."""
+    try:
+        r = mercado_service.propor_contrato(
+            simulacao_id, negociacao_id, proposta.salario, proposta.anos,
+            proposta.multa, proposta.papel,
+        )
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida, ContratoInvalido) as e:
+        raise _erro_de_mercado(e) from e
+    if r is None:
+        raise HTTPException(status_code=404, detail="Negociação não encontrada")
+    return r
 
 
 @router.get(

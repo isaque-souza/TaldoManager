@@ -9,6 +9,7 @@ from app.domain.jogador import Jogador
 from app.domain.mercado import TransferenciaInvalida
 from app.main import app
 from app.services import mensagem_service, mercado_service, temporada_service
+from tests.negociar import fechar
 
 client = TestClient(app)
 
@@ -86,10 +87,14 @@ def test_compra_fechada_vira_mensagem():
     sid = _iniciar()
     alvo = _alvo(mercado_service.ver_mercado(sid))
 
-    mercado_service.propor(sid, alvo["jogador_id"], _pedido(sid, alvo["jogador_id"]))
+    r = mercado_service.propor(sid, alvo["jogador_id"], _pedido(sid, alvo["jogador_id"]))
+    (acordo,) = _do_setor(sid, "Diretor de futebol")
+    assert acordo["assunto"].startswith("Acordo com o")
+    assert "falta acertar o contrato" in acordo["corpo"]
 
-    (msg,) = _do_setor(sid, "Diretor de futebol")
-    assert msg["assunto"] == f"Contratado: {alvo['nome']}"
+    fechar(sid, r["negociacao_id"])
+    assuntos = [m["assunto"] for m in _do_setor(sid, "Diretor de futebol")]
+    assert f"Contratado: {alvo['nome']}" in assuntos
 
 
 def test_sem_caixa_nem_negocia_e_o_diretor_conta_o_que_faltou():

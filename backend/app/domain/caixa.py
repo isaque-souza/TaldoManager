@@ -62,17 +62,20 @@ def _por_que_custa(jogador, vendedor, comprador):
 def resposta_proposta(jogador, vendedor, comprador, valor, resposta, restantes):
     """Mensagem do diretor de futebol sobre uma proposta de compra."""
     alvo = f"{jogador.nome} ({jogador.funcao}, {jogador.overall})"
+    # o acordo com o clube só trava o valor (v1.7): falta o contrato com ele
+    falta = (" Agora falta acertar o contrato com o jogador (salário, anos, "
+             "multa e papel) antes da rodada; se a rodada for jogada antes, o "
+             "acordo cai.")
     if resposta.tipo == "multa":
         return _mensagem(
-            "Diretor de futebol", f"Contratado: {jogador.nome}",
-            f"Pagamos a multa rescisória de {_dinheiro(resposta.valor)} e o "
-            f"{vendedor.nome} não pôde recusar. {alvo} já é do nosso elenco.",
+            "Diretor de futebol", f"Acordo pela multa: {jogador.nome}",
+            f"Cobrimos a multa rescisória de {_dinheiro(resposta.valor)} por "
+            f"{alvo} e o {vendedor.nome} não pode recusar.{falta}",
         )
     if resposta.tipo == "aceita":
         return _mensagem(
-            "Diretor de futebol", f"Contratado: {jogador.nome}",
-            f"O {vendedor.nome} aceitou os {_dinheiro(valor)}. {alvo} já é do "
-            "nosso elenco.",
+            "Diretor de futebol", f"Acordo com o {vendedor.nome}: {jogador.nome}",
+            f"O {vendedor.nome} aceitou os {_dinheiro(valor)} por {alvo}.{falta}",
         )
 
     razoes = _por_que_custa(jogador, vendedor, comprador)
@@ -96,6 +99,53 @@ def resposta_proposta(jogador, vendedor, comprador, valor, resposta, restantes):
         "baixo demais: ficou longe do que eles esperam (menos de "
         f"{round(mercado.FAIXA_CONTRAPROPOSTA * 100)}% do pedido).{porque}"
         f"{tentativas}",
+    )
+
+
+def resposta_contrato(jogador, vendedor, resposta, restantes, valor, desistiu=False):
+    """A etapa 2 (v1.7): o jogador responde o contrato oferecido."""
+    de = f" do {vendedor.nome}" if vendedor else " (estava sem clube)"
+    if resposta.fechou:
+        pago = (f"Pagamos {_dinheiro(valor)} ao {vendedor.nome}" if vendedor
+                else f"Pagamos {_dinheiro(valor)} de luvas")
+        return _mensagem(
+            "Diretor de futebol", f"Contratado: {jogador.nome}",
+            f"{jogador.nome}{de} assinou: {_dinheiro(jogador.salario)} por "
+            f"temporada, por {jogador.contrato_anos} "
+            f"{'temporada' if jogador.contrato_anos == 1 else 'temporadas'}. "
+            f"{pago}. Ele já é do nosso elenco.",
+        )
+    if desistiu:
+        return _mensagem(
+            "Diretor de futebol", f"{jogador.nome} desistiu",
+            f"{jogador.nome}{de} não gostou das propostas de contrato e "
+            "desistiu de vir. O acordo com o clube caiu; nesta janela não dá "
+            "para tentar de novo.",
+        )
+    tentativas = (
+        f" Ainda dá para fazer mais {restantes} {'proposta' if restantes == 1 else 'propostas'}."
+        if restantes else " Não há mais tentativas: só vale aceitar o que ele pediu."
+    )
+    if resposta.tipo == "contraproposta":
+        return _mensagem(
+            "Diretor de futebol", f"{jogador.nome} pede mais",
+            f"{jogador.nome}{de} quer vir, mas pede {_dinheiro(resposta.valor)} "
+            f"por temporada.{tentativas}",
+        )
+    return _mensagem(
+        "Diretor de futebol", f"{jogador.nome} recusou o contrato",
+        f"{jogador.nome}{de} achou o salário baixo demais.{tentativas}",
+    )
+
+
+def acordos_expirados(nomes):
+    """A rodada foi jogada com contratos por acertar (v1.7)."""
+    if not nomes:
+        return None
+    return _mensagem(
+        "Diretor de futebol", "Acordos que caíram",
+        f"A rodada começou sem o contrato acertado com {', '.join(nomes)}: os "
+        "acordos com os clubes caíram.",
     )
 
 

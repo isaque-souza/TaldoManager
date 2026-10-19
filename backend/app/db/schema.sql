@@ -158,6 +158,25 @@ CREATE TABLE IF NOT EXISTS proposta (
     valor_pedido  INTEGER           -- só nas contrapropostas
 );
 
+-- Negociações de contratação do técnico (v1.7): o acordo com o clube (etapa
+-- 1, nas propostas) trava o valor; a etapa 2 é o contrato com o jogador.
+-- Livres vão direto à etapa 2 (sem jogador_id nem clube; valor = luvas).
+CREATE TABLE IF NOT EXISTS negociacao (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    rodada        INTEGER NOT NULL,   -- a janela (antes desta rodada)
+    jogador_id    INTEGER REFERENCES jogador(id) ON DELETE CASCADE,
+    jogador       TEXT NOT NULL,      -- nome (livres não têm id)
+    clube         TEXT,               -- de onde vem; NULL = livre
+    valor         INTEGER NOT NULL,   -- transferência acertada (ou luvas)
+    status        TEXT NOT NULL,      -- aberta | fechada | desistiu | expirada
+    tentativas    INTEGER NOT NULL DEFAULT 0,   -- propostas de contrato feitas
+    contra_salario INTEGER,           -- última contraproposta do jogador
+    contra_anos   INTEGER,
+    contra_multa  TEXT,
+    contra_papel  TEXT
+);
+
 -- Campanhas de marketing do técnico (v1.4): uma por turno.
 CREATE TABLE IF NOT EXISTS campanha (
     id                 INTEGER PRIMARY KEY,

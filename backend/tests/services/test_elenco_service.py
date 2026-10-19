@@ -13,6 +13,7 @@ from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import carreira_service, mercado_service, temporada_service
+from tests.negociar import fechar
 
 
 def _iniciar(seed=11, clube="Real Taldo"):
@@ -166,7 +167,7 @@ def test_dispensado_pode_ser_contratado_de_volta_com_a_mesma_linha():
     alvo = _reserva(mercado_service.ver_mercado(sid))
     mercado_service.dispensar(sid, alvo["jogador_id"])
 
-    mercado_service.contratar_livre(sid, alvo["nome"])
+    fechar(sid, mercado_service.contratar_livre(sid, alvo["nome"])["negociacao_id"])
 
     volta = next(
         f for f in mercado_service.ver_mercado(sid)["elenco"] if f["nome"] == alvo["nome"]

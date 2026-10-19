@@ -708,6 +708,57 @@ class JogadorDetalhe(BaseModel):
 
 # --- mercado de transferências (v0.7) ---
 
+class ContraContratoChegada(BaseModel):
+    salario: int
+    anos: int
+    multa: str
+    papel: str
+
+
+class NegociacaoResumo(BaseModel):
+    """Uma contratação em duas etapas (v1.7)."""
+    negociacao_id: int
+    jogador_id: int | None = None       # livres não têm
+    jogador: str
+    clube: str | None = None            # None = estava sem clube
+    valor: int                          # transferência acertada (ou luvas)
+    status: Literal["aberta", "fechada", "desistiu", "expirada"]
+    tentativas_restantes: int
+    contraproposta: ContraContratoChegada | None = None
+
+
+class NegociacaoDetalhe(NegociacaoResumo):
+    idade: int | None = None
+    overall: int | None = None
+    funcao: str | None = None
+    salario_atual: int | None = None    # None = livre
+    salario_referencia: int | None = None
+    salario_sugerido: int | None = None  # ponto de partida (sem os fatores escondidos)
+    duracao_max: int | None = None
+    opcoes_multa: list["OpcaoMultaValor"] = []
+    papeis: list[str] = []
+    papel_esperado: str | None = None
+    clube_mais_fraco: bool = False
+
+
+class NovoContratoChegada(BaseModel):
+    salario: int
+    anos: int
+    multa: str
+    papel: str | None = None
+
+
+class RespostaContrato(BaseModel):
+    resposta: Literal["aceita", "contraproposta", "recusada"]
+    motivo: str
+    status: Literal["aberta", "fechada", "desistiu", "expirada"]
+    salario_pedido: int | None = None
+    tentativas_restantes: int
+    transferencia: "TransferenciaResultado | None" = None
+    contrato: "ContratoNovo | None" = None
+    caixa: int
+
+
 class FichaMercado(BaseModel):
     jogador_id: int | None = None          # livres (v1.6) não têm id: vão pelo nome
     nome: str
@@ -750,6 +801,7 @@ class FichaMercado(BaseModel):
     aproveitamento: float | None = None
     # só nos livres (v1.6): o bônus de assinatura, no lugar da transferência
     luvas: int | None = None
+    negociacao: "NegociacaoResumo | None" = None   # v1.7: a desta janela
 
 
 class TransferenciaFeita(BaseModel):
@@ -775,6 +827,7 @@ class Mercado(BaseModel):
     elenco: list[FichaMercado]
     disponiveis: list[FichaMercado]
     livres: list[FichaMercado] = []        # sem clube (v1.6)
+    negociacoes: list[NegociacaoResumo] = []   # desta janela (v1.7)
     transferencias: list[TransferenciaFeita]
 
 
@@ -812,12 +865,11 @@ class NovaContratacaoLivre(BaseModel):
 
 
 class ContratacaoLivre(BaseModel):
-    rodada: int
+    """O livre topou conversar (v1.7): a negociação vai direto ao contrato."""
+    negociacao_id: int
     jogador: str
-    luvas: int
-    salario: int
-    contrato_anos: int
-    caixa: int
+    clube: str | None = None
+    valor: int                           # as luvas
 
 
 class TransferenciaResultado(BaseModel):
@@ -840,7 +892,8 @@ class RespostaProposta(BaseModel):
     motivo: str
     valor_pedido: int | None = None      # só na contraproposta
     propostas_restantes: int
-    transferencia: TransferenciaResultado | None = None
+    # v1.7: o aceite do clube abre a negociação (a etapa 2 é o contrato)
+    negociacao_id: int | None = None
 
 
 class OfertaClube(BaseModel):

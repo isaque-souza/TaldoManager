@@ -25,6 +25,7 @@ from app.repositories import atuacao_repository as atuacao_repo
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
+from app.repositories import negociacao_repository as negociacao_repo
 from app.repositories import lance_repository as lance_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
@@ -447,6 +448,9 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             partida_ids = partida_repo.inserir(conn, simulacao_id, mapa, novas)
             lance_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
             atuacao_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
+            # acordos com clubes sem contrato acertado caem com a rodada (v1.7)
+            expiradas = negociacao_repo.expirar_abertas(conn, simulacao_id, rodada_jogada)
+            mensagens.append(caixa.acordos_expirados([n["jogador"] for n in expiradas]))
             mensagem_repo.inserir(conn, simulacao_id, rodada_jogada, mensagens)
             if ao_vivo:
                 simulacao_repo.definir_ao_vivo(conn, simulacao_id, None)

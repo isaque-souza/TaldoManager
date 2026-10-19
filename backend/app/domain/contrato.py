@@ -10,7 +10,7 @@ propostas de outros clubes, mas ele cobra por isso no salário.
 Determinístico, como o resto do mercado: não mexe na sorte da temporada.
 """
 
-from app.domain import mercado, papeis
+from app.domain import diretoria, mercado, papeis
 from app.domain.mercado import Resposta
 
 FATOR_CRAQUE = 1.4
@@ -56,10 +56,13 @@ FATOR_PAPEL_ACIMA = 0.95
 FATOR_PAPEL_ABAIXO = 1.10
 
 
-def fator_papel(jogador, papel):
-    if papel is None or jogador.papel is None:
+def fator_papel(jogador, papel, base=None):
+    """`base`: o papel de partida (o atual, na renovação; o que ele espera
+    no clube novo, na chegada)."""
+    base = base or jogador.papel
+    if papel is None or base is None:
         return 1.0
-    diferenca = papeis.NIVEL[papel] - papeis.NIVEL[jogador.papel]
+    diferenca = papeis.NIVEL[papel] - papeis.NIVEL[base]
     if diferenca >= 0:
         return FATOR_PAPEL_ACIMA ** diferenca
     return FATOR_PAPEL_ABAIXO ** -diferenca
@@ -133,3 +136,90 @@ def renovar(jogador, anos, salario, opcao_multa, papel=None):
         if jogador.papel is not None and papeis.NIVEL[papel] > papeis.NIVEL[jogador.papel]:
             jogador.humor = papeis.CONTENTE
         jogador.papel = papel
+
+
+# ---------------------------------------------------------------------------
+# contrato de quem chega (v1.7): a etapa 2 da negociação
+# ---------------------------------------------------------------------------
+#
+# Acertado o valor com o clube (ou, para um livre, direto), o jogador
+# negocia salário, anos, multa e papel. Pede o de mercado ajustado pela
+# importância que teria no clube novo, pela multa e pelo papel prometido; se
+# vem de outro clube, cobra pela mudança (e mais ainda para descer a um
+# clube mais fraco) e nunca aceita ganhar menos do que já ganha.
+
+FATOR_MUDANCA = 1.10      # trocar de clube: quer ganhar para isso
+FATOR_PRESTIGIO = 1.15    # descer para um clube mais fraco (ranking de força)
+
+
+def papel_esperado(clube, jogador):
+    """O papel que o jogador imagina ter no `clube` (a base do papel
+    prometido na chegada)."""
+    if mercado.seria_titular(clube, jogador):
+        return papeis.TITULAR
+    if (jogador.idade <= papeis.IDADE_PROMESSA
+            and jogador.potencial - jogador.overall >= papeis.MARGEM_PROMESSA):
+        return papeis.PROMESSA
+    acima = sum(1 for j in clube.jogadores if j is not jogador and j.overall > jogador.overall)
+    return papeis.ROTACAO if acima < 11 + papeis.VAGAS_ROTACAO else papeis.RESERVA
+
+
+def clube_mais_fraco(comprador, vendedor):
+    return diretoria.forca_do_elenco(comprador) < diretoria.forca_do_elenco(vendedor)
+
+
+def salario_pedido_chegada(jogador, comprador, vendedor, opcao_multa, papel=None):
+    """Quanto o jogador quer para assinar com o `comprador`. `vendedor` None
+    = está livre (sem custo de mudança)."""
+
+    salario = jogador.salario_referencia()
+
+    if jogador.overall >= max((j.overall for j in comprador.jogadores), default=0):
+        salario *= FATOR_CRAQUE
+    elif mercado.seria_titular(comprador, jogador):
+        salario *= FATOR_TITULAR
+
+    salario *= MULTAS[opcao_multa][1]
+    salario *= fator_papel(jogador, papel, base=papel_esperado(comprador, jogador))
+
+    if vendedor is not None:
+        salario *= FATOR_MUDANCA
+        if clube_mais_fraco(comprador, vendedor):
+            salario *= FATOR_PRESTIGIO
+        salario = max(salario, jogador.salario)
+
+    return max(1_000, round(salario / 1_000) * 1_000)
+
+
+def salario_sugerido_chegada(jogador, comprador, vendedor):
+    """Um ponto de partida para a proposta: o de mercado com o custo da
+    mudança e o peso do papel que ele espera, sem os fatores escondidos
+    (craque, multa, clube mais fraco). Nunca abaixo do que já ganha."""
+    salario = jogador.salario_referencia()
+    if mercado.seria_titular(comprador, jogador):
+        salario *= FATOR_TITULAR
+    if vendedor is not None:
+        salario = max(salario * FATOR_MUDANCA, jogador.salario)
+    return max(1_000, round(salario / 1_000) * 1_000)
+
+
+def avaliar_chegada(jogador, comprador, vendedor, salario, anos, opcao_multa, papel):
+    """Resposta do jogador ao contrato oferecido pelo `comprador`."""
+
+    validar(jogador, anos, opcao_multa, papel)
+    pedido = salario_pedido_chegada(jogador, comprador, vendedor, opcao_multa, papel)
+    mais_fraco = (
+        " — e para descer de clube, só ganhando bem"
+        if vendedor is not None and clube_mais_fraco(comprador, vendedor) else ""
+    )
+
+    if salario >= pedido:
+        return Resposta("aceita", salario, f"{jogador.nome} aceitou o contrato")
+    if salario >= FAIXA_CONTRAPROPOSTA * pedido:
+        return Resposta(
+            "contraproposta", pedido,
+            f"{jogador.nome} quer vir, mas pede um salário maior{mais_fraco}",
+        )
+    return Resposta(
+        "recusada", pedido, f"{jogador.nome} achou o salário baixo demais{mais_fraco}",
+    )
