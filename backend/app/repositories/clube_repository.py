@@ -7,13 +7,14 @@ CAMPOS = (
     "receita_premiacao", "despesa_salarios",
     "receita_vendas", "despesa_compras", "historico_caixa",
     "torcedores", "torcedores_inicial", "despesa_marketing",
-    "torcedores_base", "capacidade", "ingresso",
+    "torcedores_base", "capacidade", "ingresso", "liga",
 )
 
 # campos mais novos que quem monta os dicts pode não mandar
 _PADRAO = {
     "torcedores": 0, "torcedores_inicial": 0, "despesa_marketing": 0,
     "torcedores_base": 0, "capacidade": 0, "ingresso": "normal",
+    "liga": "taldo",
 }
 
 

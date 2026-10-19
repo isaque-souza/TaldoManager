@@ -29,7 +29,9 @@ from app.repositories import lance_repository as lance_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import simulacao_service
-from scripts.data_loader import carregar_campeonato
+from scripts.data_loader import (
+    LIGA_PADRAO, carregar_campeonato, carregar_campeonato_do_save,
+)
 
 
 class TemporadaConcluida(Exception):
@@ -89,8 +91,9 @@ def _confronto_do_clube(rodada, nome):
 # ---------------------------------------------------------------------------
 
 def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
-            formacao=None, xi_preferido=None):
-    """Cria uma temporada em andamento, parada antes da rodada 1. Devolve o id."""
+            formacao=None, xi_preferido=None, ligas=LIGA_PADRAO):
+    """Cria uma temporada em andamento, parada antes da rodada 1. Devolve o
+    id. `ligas` (v1.6): as que rodam juntas — sem dizer, só a Taldo."""
 
     if not clube_usuario:
         raise ValueError("Simular rodada a rodada exige um clube dirigido")
@@ -100,7 +103,7 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
     else:
         random.seed()
 
-    campeonato = carregar_campeonato()
+    campeonato = carregar_campeonato(ligas)
     alvo = _achar_clube(campeonato, clube_usuario)
     simulacao_service._configurar_clube(alvo, tatica, formacao, xi_preferido)
 
@@ -127,6 +130,7 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
                 estado="em_andamento",
                 rodada_atual=1,
                 estado_json=json.dumps(snapshot_estado(campeonato)),
+                ligas=ligas if tuple(ligas) != LIGA_PADRAO else None,
                 **simulacao_service.meta_inicial(campeonato, clube_usuario),
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
@@ -175,7 +179,7 @@ def proxima_rodada(simulacao_id):
 
         estado_rng = random.getstate()
         try:
-            campeonato = carregar_campeonato()
+            campeonato = carregar_campeonato_do_save(sim)
             restaurar_estado(campeonato, json.loads(sim["estado_json"]))
         finally:
             random.setstate(estado_rng)
@@ -301,7 +305,7 @@ def pre_jogo(simulacao_id):
 
     estado_rng = random.getstate()
     try:
-        campeonato = carregar_campeonato()
+        campeonato = carregar_campeonato_do_save(sim)
         restaurar_estado(campeonato, json.loads(sim["estado_json"]))
     finally:
         random.setstate(estado_rng)
@@ -354,7 +358,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
         if ao_vivo:
             tatica = formacao = xi_preferido = posicionamento = None
 
-        campeonato = carregar_campeonato()
+        campeonato = carregar_campeonato_do_save(sim)
         restaurar_estado(campeonato, json.loads(sim["estado_json"]))
 
         alvo = _achar_clube(campeonato, clube_usuario)
@@ -392,7 +396,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
 
         concluida = campeonato.rodada > len(campeonato.calendario)
         if concluida:
-            tabela = campeonato.classificacao()
+            # a tabela da liga do técnico (v1.6)
+            tabela = campeonato.classificacao(
+                simulacao_service.liga_do_tecnico(campeonato, clube_usuario)
+            )
             mensagens.append(caixa.fim_de_temporada(
                 next(i for i, c in enumerate(tabela, start=1) if c.nome == clube_usuario),
                 sim["meta_posicao"], tabela[0].nome, clube_usuario,
@@ -437,7 +444,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
                     estado="concluida",
                     rodada_atual=None,
                     estado_json=None,
-                    campeao=campeonato.classificacao()[0].nome,
+                    campeao=tabela[0].nome,
                     tatica=nova_tatica,
                     formacao=nova_formacao,
                     xi_preferido=xi_json,

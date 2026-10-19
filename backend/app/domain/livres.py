@@ -107,19 +107,21 @@ def _perfil(rng):
 
 def completar(campeonato, nomes_usados, rng):
     """Completa a lista até QUANTOS com livres novos e corta em LIMITE
-    (fica quem tem o overall mais alto). `nomes_usados`: nomes que não podem
-    se repetir na carreira."""
+    (fica quem tem o overall mais alto) — por liga do campeonato (v1.6): a
+    lista é uma só, mas cresce com o mundo. `nomes_usados`: nomes que não
+    podem se repetir na carreira."""
     livres = campeonato.livres
+    ligas = max(1, len(campeonato.ligas))
     proibidos = set(nomes_usados) | {j.nome for j in livres} | {
         j.nome for c in campeonato.clubes for j in c.jogadores
     }
-    while len(livres) < QUANTOS:
+    while len(livres) < QUANTOS * ligas:
         livres.append(para_jogador(
             gerar(_carente(livres, rng), _perfil(rng), proibidos, rng)
         ))
-    if len(livres) > LIMITE:
+    if len(livres) > LIMITE * ligas:
         livres.sort(key=lambda j: -j.overall)
-        del livres[LIMITE:]
+        del livres[LIMITE * ligas:]
 
 
 def cpu_contrata(campeonato, clube_usuario, rng):

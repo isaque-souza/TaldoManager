@@ -28,7 +28,8 @@ from app.repositories import movimento_repository as movimento_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import plano_service, simulacao_service
 from scripts.data_loader import (
-    carregar_campeonato, carregar_jogadores, carregar_livres,
+    LIGA_PADRAO, TODAS_AS_LIGAS, carregar_campeonato_do_save, carregar_jogadores,
+    carregar_livres, ligas_do_save,
 )
 
 
@@ -40,8 +41,10 @@ class CarreiraInvalida(Exception):
 def _nomes_usados(conn, carreira_id):
     """Seed (com os livres, v1.6) + todos que já jogaram em alguma
     temporada da carreira."""
-    seed = {j.nome for j in carregar_jogadores().values()}
-    seed |= {j.nome for j in carregar_livres()}
+    seed = set()
+    for liga in TODAS_AS_LIGAS:
+        seed |= {j.nome for j in carregar_jogadores(liga).values()}
+        seed |= {j.nome for j in carregar_livres(liga)}
     rows = conn.execute(
         "SELECT DISTINCT j.nome FROM jogador j"
         " JOIN simulacao s ON s.id = j.simulacao_id"
@@ -112,7 +115,8 @@ def proxima_temporada(simulacao_id):
             else:
                 random.seed()
 
-            campeonato = carregar_campeonato()
+            # as ligas seguem as da temporada anterior (v1.6)
+            campeonato = carregar_campeonato_do_save(sim)
             preparar_nova_temporada(
                 campeonato, clubes_finais, jogadores_finais, livres_finais
             )
@@ -168,6 +172,8 @@ def proxima_temporada(simulacao_id):
                 estado_json=json.dumps(snapshot_estado(campeonato)),
                 carreira_id=carreira_id,
                 temporada=temporada,
+                ligas=(ligas_do_save(sim) if ligas_do_save(sim) != LIGA_PADRAO
+                       else None),
                 # a meta nasce do elenco depois da virada (base, saídas...)
                 **simulacao_service.meta_inicial(campeonato, clube_usuario),
             )

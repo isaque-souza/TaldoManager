@@ -61,6 +61,8 @@ _COLUNAS_NOVAS = {
         # livres no fim da temporada (v1.6), JSON: o estado_json é apagado
         # ao concluir e a virada da carreira precisa deles
         ("livres_json", "TEXT"),
+        # ligas do save (v1.6), JSON; NULL = só a Taldo (saves antigos)
+        ("ligas", "TEXT"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")
@@ -80,6 +82,8 @@ _COLUNAS_NOVAS = {
         # estádio (v1.5); 0 = "sem registro" (o da seed na virada)
         ("capacidade", "INTEGER NOT NULL DEFAULT 0"),
         ("ingresso", "TEXT NOT NULL DEFAULT 'normal'"),
+        # liga do clube (v1.6); saves antigos só têm a Taldo
+        ("liga", "TEXT NOT NULL DEFAULT 'taldo'"),
     ),
     "jogador": (
         ("penaltis", "INTEGER NOT NULL DEFAULT 0"),

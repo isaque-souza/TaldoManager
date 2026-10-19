@@ -28,7 +28,7 @@ from app.services import simulacao_service
 from app.services.temporada_service import (
     TemporadaConcluida, exigir_sem_transmissao,
 )
-from scripts.data_loader import carregar_campeonato
+from scripts.data_loader import carregar_campeonato_do_save
 
 
 # ---------------------------------------------------------------------------
@@ -132,7 +132,7 @@ def _carregar(conn, simulacao_id):
 
     estado_rng = random.getstate()
     try:
-        campeonato = carregar_campeonato()
+        campeonato = carregar_campeonato_do_save(sim)
         restaurar_estado(campeonato, json.loads(sim["estado_json"]))
     finally:
         random.setstate(estado_rng)
