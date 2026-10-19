@@ -50,6 +50,10 @@ class Clube:
         self.torcedores = torcedores
         # torcida no início da temporada (v1.4), para medir quanto mudou
         self.torcedores_inicial = torcedores
+        # tamanho natural da torcida (v1.4): a história do clube. No fim da
+        # temporada a torcida volta um pouco em direção a ele; título o
+        # aumenta (ver app.domain.torcida)
+        self.torcedores_base = torcedores
         self.rivais = set()   # nomes dos clubes rivais (clássicos)
         self.identidade = None   # cores/escudo/camisa (só visual, v1.1)
 

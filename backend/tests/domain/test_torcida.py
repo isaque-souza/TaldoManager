@@ -201,3 +201,88 @@ def test_revolta_da_torcida_na_caixa():
     )
     assert msg["setor"] == "Marketing"
     assert "perdemos 5% da torcida" in msg["corpo"]
+
+
+# --- freio: tamanho natural (v1.4) -----------------------------------------
+
+def test_torcida_volta_aos_poucos_ao_tamanho_natural():
+    acima, abaixo, igual = _clube("Acima"), _clube("Abaixo"), _clube("Igual")
+    acima.torcedores, abaixo.torcedores = 4_000_000, 250_000
+    for clube in (acima, abaixo):
+        torcida.voltar_ao_natural(clube)
+    torcida.voltar_ao_natural(igual)
+
+    # 15% do caminho em escala log: 4× vira 4^0,85, ¼ vira ¼^0,85
+    fator = 1 - torcida.VOLTA_AO_NATURAL
+    assert acima.torcedores == round(1_000_000 * 4 ** fator)
+    assert abaixo.torcedores == round(1_000_000 * 0.25 ** fator)
+    assert 1_000_000 < acima.torcedores < 4_000_000
+    assert 250_000 < abaixo.torcedores < 1_000_000
+    assert igual.torcedores == 1_000_000
+
+
+def test_sem_tamanho_natural_nao_ha_freio():
+    clube = _clube()
+    clube.torcedores_base = 0
+    clube.torcedores = 3_000_000
+    torcida.voltar_ao_natural(clube)
+    assert clube.torcedores == 3_000_000
+
+
+def test_titulo_aumenta_o_tamanho_natural():
+    clubes = [_clube(f"C{i}") for i in range(20)]
+    torcida.fim_de_temporada(clubes)
+    assert clubes[0].torcedores_base == round(1_000_000 * (1 + torcida.TITULO_NATURAL))
+    assert all(c.torcedores_base == 1_000_000 for c in clubes[1:])
+
+
+def test_dinastia_cresce_mas_nao_dispara():
+    """Campeão todo ano: com o freio, a torcida se estabiliza no ritmo do
+    tamanho natural (+5% por título) em vez de crescer ~16% por ano."""
+    campeao = _clube()
+    por_ano = 1.11 * (1 + torcida.variacao_da_posicao(1))   # jogos + título
+    for _ in range(30):
+        torcida._aplicar(campeao, 0.11)   # ~25 vitórias na temporada
+        torcida.fim_de_temporada([campeao] + [_clube(f"C{i}") for i in range(19)])
+    # sem o freio seriam ~99 mi; com ele, ~8 mi
+    assert campeao.torcedores < 1_000_000 * por_ano ** 30 / 10
+    # acima do natural (que também cresceu), mas a uns 2×, não 20×
+    assert campeao.torcedores_base < campeao.torcedores < 3 * campeao.torcedores_base
+
+
+def test_snapshot_guarda_o_tamanho_natural():
+    campeonato = carregar_campeonato()
+    campeonato.clubes[0].torcedores_base = 123_000
+    blob = snapshot_estado(campeonato)
+
+    estado = random.getstate()
+    try:
+        novo = carregar_campeonato()
+        restaurar_estado(novo, blob)
+    finally:
+        random.setstate(estado)
+    assert novo.clubes[0].torcedores_base == 123_000
+
+
+def test_virada_leva_o_tamanho_natural():
+    from app.domain.carreira import preparar_nova_temporada
+
+    campeonato = carregar_campeonato()
+    clube = campeonato.clubes[0]
+    seed = clube.torcedores_base
+    finais = [
+        {"nome": c.nome, "dinheiro": c.dinheiro, "torcedores": c.torcedores,
+         "torcedores_base": 999_000 if c is clube else 0}
+        for c in campeonato.clubes
+    ]
+    jogadores = [
+        {"nome": j.nome, "clube": c.nome, "idade": j.idade, "overall": j.overall,
+         "potencial": j.potencial, "salario": j.salario,
+         "contrato_anos": j.contrato_anos, "multa_rescisoria": j.multa_rescisoria}
+        for c in campeonato.clubes for j in c.jogadores
+    ]
+    novo = preparar_nova_temporada(carregar_campeonato(), finais, jogadores)
+    assert novo.clubes[0].torcedores_base == 999_000
+    # saves antigos (0): fica o da seed
+    assert novo.clubes[1].torcedores_base == campeonato.clubes[1].torcedores_base
+    assert seed > 0

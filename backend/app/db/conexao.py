@@ -72,6 +72,8 @@ _COLUNAS_NOVAS = {
         ("torcedores", "INTEGER NOT NULL DEFAULT 0"),
         ("torcedores_inicial", "INTEGER NOT NULL DEFAULT 0"),
         ("despesa_marketing", "INTEGER NOT NULL DEFAULT 0"),
+        # tamanho natural da torcida (v1.4); 0 = "sem registro" (o da seed)
+        ("torcedores_base", "INTEGER NOT NULL DEFAULT 0"),
     ),
     "jogador": (
         ("penaltis", "INTEGER NOT NULL DEFAULT 0"),

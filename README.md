@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 551 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 557 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -542,6 +542,11 @@ e o tamanho dela é o que enche a bilheteria:
       o clássico vale o dobro. No fim da temporada pesa a posição: campeão
       +5%, G-4 +2%, até o 8º +1%, Z-4 −2% (mínimo de 50 mil). Em média o
       campeão termina com ~16% a mais e o lanterna com ~10% a menos.
+      Freio: cada clube tem um tamanho natural (a história dele), que
+      cresce 5% a cada título, e no fim da temporada a torcida volta 15% do
+      caminho até ele. Uma dinastia ainda vira clube grande (o Galaxy, com
+      9 títulos em 12 temporadas, vai de 11 a 32 milhões), mas a vantagem
+      não dispara: sem o freio a liga dobrava e ele chegava a 56 milhões.
       Determinístico (não sorteia nada: o mesmo seed dá o mesmo
       campeonato); vai para a temporada seguinte da carreira. Aparece no tile "Torcida"
       das finanças do clube, numa coluna da aba Finanças da liga e no
@@ -597,7 +602,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 551 testes (domain, db, repositories, services, api)
+│   └── tests/              # 557 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

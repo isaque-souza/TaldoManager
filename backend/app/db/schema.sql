@@ -62,7 +62,8 @@ CREATE TABLE IF NOT EXISTS clube (
     -- torcida (v1.4): atual / final e no início da temporada
     torcedores         INTEGER NOT NULL DEFAULT 0,
     torcedores_inicial INTEGER NOT NULL DEFAULT 0,
-    despesa_marketing  INTEGER NOT NULL DEFAULT 0   -- campanhas (v1.4)
+    despesa_marketing  INTEGER NOT NULL DEFAULT 0,  -- campanhas (v1.4)
+    torcedores_base    INTEGER NOT NULL DEFAULT 0   -- tamanho natural (v1.4)
 );
 
 CREATE TABLE IF NOT EXISTS jogador (

@@ -49,7 +49,7 @@ _CLUBE_CAMPOS = (
     "receita_vendas", "despesa_compras", "historico_caixa",
     "despesa_marketing",
     # torcida (v1.4): cresce e encolhe com a campanha
-    "torcedores", "torcedores_inicial",
+    "torcedores", "torcedores_inicial", "torcedores_base",
 )
 
 
