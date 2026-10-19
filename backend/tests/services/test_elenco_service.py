@@ -218,3 +218,30 @@ def test_papel_invalido_e_recusado():
         mercado_service.definir_papel(sid, veterano["jogador_id"], "promessa")
     with pytest.raises(TransferenciaInvalida):
         mercado_service.definir_papel(sid, veterano["jogador_id"], "craque")
+
+
+def test_renovar_prometendo_papel_maior_sai_mais_barato_e_fica_gravado():
+    from app.services import contrato_service
+
+    sid = _iniciar()
+    j = next(f for f in mercado_service.ver_mercado(sid)["elenco"] if f["papel"] == "rotacao")
+    c = contrato_service.ver_contrato(sid, j["jogador_id"])
+    assert c["papel"] == "rotacao" and "titular" in c["papeis"]
+
+    from app.domain import contrato
+
+    conn = conectar()
+    try:
+        ctx = mercado_service._carregar(conn, sid)
+        jogador, _ = ctx.jogador(j["jogador_id"])
+        como_rotacao = contrato.salario_pedido(jogador, ctx.alvo, "3x")
+        como_titular = contrato.salario_pedido(jogador, ctx.alvo, "3x", "titular")
+    finally:
+        conn.close()
+    assert como_titular < como_rotacao
+
+    # o que ele pede como titular não fecharia como rotação, mas fecha assim
+    r = contrato_service.renovar(sid, j["jogador_id"], como_titular, 1, "3x", papel="titular")
+    assert r["resposta"] == "aceita" and r["contrato"]["papel"] == "titular"
+    elenco = {f["nome"]: f for f in mercado_service.ver_mercado(sid)["elenco"]}
+    assert elenco[j["nome"]]["papel"] == "titular"

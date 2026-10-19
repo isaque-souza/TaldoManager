@@ -7,7 +7,7 @@ mercado (`mercado_service._carregar` + `_Contexto.gravar`).
 """
 
 from app.db.conexao import conectar
-from app.domain import contrato
+from app.domain import contrato, papeis
 from app.domain.contrato import ContratoInvalido
 from app.repositories import renovacao_repository as renovacao_repo
 from app.services.mercado_service import _carregar
@@ -55,6 +55,13 @@ def ver_contrato(simulacao_id, jogador_id):
             "multa_rescisoria": jogador.multa_rescisoria,
             "valor_mercado": jogador.valor_mercado(),
             "duracao_max": contrato.duracao_max(jogador),
+            # papel no elenco (v1.7): entra na conversa
+            "papel": jogador.papel,
+            "humor": jogador.humor,
+            "papeis": [
+                p for p in papeis.PAPEIS
+                if papeis.motivo_papel_bloqueado(jogador, p) is None
+            ],
             "opcoes_multa": [
                 {"opcao": op, "valor": contrato.valor_multa(jogador, op)}
                 for op in contrato.MULTAS
@@ -65,6 +72,7 @@ def ver_contrato(simulacao_id, jogador_id):
                     "salario": ultima["salario_pedido"],
                     "anos": ultima["anos"],
                     "multa": ultima["multa"],
+                    "papel": ultima["papel"] or jogador.papel,
                 }
                 if ultima and ultima["resposta"] == "contraproposta"
                 else None
@@ -74,9 +82,10 @@ def ver_contrato(simulacao_id, jogador_id):
         conn.close()
 
 
-def renovar(simulacao_id, jogador_id, salario, anos, multa):
-    """Proposta de renovação. Devolve a resposta do jogador e, se fechou, o
-    contrato novo. None se a simulação ou o jogador não existem."""
+def renovar(simulacao_id, jogador_id, salario, anos, multa, papel=None):
+    """Proposta de renovação (com o papel prometido, v1.7; None = o atual).
+    Devolve a resposta do jogador e, se fechou, o contrato novo. None se a
+    simulação ou o jogador não existem."""
 
     if salario <= 0:
         raise ContratoInvalido("O salário precisa ser positivo")
@@ -89,7 +98,8 @@ def renovar(simulacao_id, jogador_id, salario, anos, multa):
         jogador = _do_meu_elenco(ctx, jogador_id)
         if jogador is None:
             return None
-        contrato.validar(jogador, anos, multa)   # inválida não gasta tentativa
+        papel = papel or jogador.papel
+        contrato.validar(jogador, anos, multa, papel)   # inválida não gasta tentativa
 
         feitas = _tentativas(ctx, jogador_id)
         ultima = feitas[-1] if feitas else None
@@ -99,6 +109,7 @@ def renovar(simulacao_id, jogador_id, salario, anos, multa):
             and ultima["resposta"] == "contraproposta"
             and ultima["anos"] == anos
             and ultima["multa"] == multa
+            and (ultima["papel"] or jogador.papel) == papel
             and salario >= ultima["salario_pedido"]
         )
         if len(feitas) >= contrato.MAX_TENTATIVAS and not aceitando_contra:
@@ -108,7 +119,7 @@ def renovar(simulacao_id, jogador_id, salario, anos, multa):
             )
 
         resposta = contrato.avaliar_renovacao(
-            jogador, ctx.alvo, salario, anos, multa
+            jogador, ctx.alvo, salario, anos, multa, papel
         )
 
         with conn:
@@ -116,15 +127,17 @@ def renovar(simulacao_id, jogador_id, salario, anos, multa):
                 conn, simulacao_id, ctx.rodada, jogador_id, salario, anos,
                 multa, resposta.tipo,
                 resposta.valor if resposta.tipo == "contraproposta" else None,
+                papel,
             )
             novo = None
             if resposta.fechou:
-                contrato.renovar(jogador, anos, resposta.valor, multa)
+                contrato.renovar(jogador, anos, resposta.valor, multa, papel)
                 ctx.gravar()
                 novo = {
                     "contrato_anos": jogador.contrato_anos,
                     "salario": jogador.salario,
                     "multa_rescisoria": jogador.multa_rescisoria,
+                    "papel": jogador.papel,
                 }
 
         restantes = max(0, contrato.MAX_TENTATIVAS - len(feitas) - 1)

@@ -120,6 +120,8 @@ _COLUNAS_NOVAS = {
     ),
     # onde o técnico pôs cada titular no plano (v1.3), JSON
     "plano": (("posicionamento", "TEXT"),),
+    # papel prometido na renovação (v1.7)
+    "renovacao": (("papel", "TEXT"),),
     "partida": (
         ("finalizacoes_gol_mandante", "INTEGER NOT NULL DEFAULT 0"),
         ("finalizacoes_gol_visitante", "INTEGER NOT NULL DEFAULT 0"),

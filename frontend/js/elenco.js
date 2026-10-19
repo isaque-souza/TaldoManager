@@ -8,7 +8,7 @@ import { $, estado, navegarPara } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { abrirSecaoRodada, carregarProximaRodada } from "./rodada.js";
 import { avisoMercado, carregarMercado, mostrarOfertas, postarMercado } from "./mercado.js";
-import { abrirContrato, MULTA_ROTULO } from "./contratos.js";
+import { abrirContrato, MULTA_ROTULO, PAPEL_ROTULO as PAPEL } from "./contratos.js";
 import { abrirJogador } from "./jogador.js";
 import { carregarCaixa } from "./caixa.js";
 import { icone, seloIdolo } from "./icones.js";
@@ -23,7 +23,6 @@ const FILTROS = [
   ["Meio-Campo", "Meio-campo"], ["Atacante", "Ataque"], ["venda", "À venda"],
   ["humor", "Insatisfeitos"],
 ];
-const PAPEL = { titular: "Titular", rotacao: "Rotação", promessa: "Promessa", reserva: "Reserva" };
 const IDADE_PROMESSA = 21;
 const passaFiltro = (f, v) =>
   !v || (v === "venda" ? f.a_venda : v === "humor" ? f.humor !== "contente" : f.posicao === v);

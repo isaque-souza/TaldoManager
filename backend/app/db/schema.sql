@@ -179,7 +179,8 @@ CREATE TABLE IF NOT EXISTS renovacao (
     anos          INTEGER NOT NULL,
     multa         TEXT NOT NULL,     -- opção: sem | 2x | 3x | 5x
     resposta      TEXT NOT NULL,     -- aceita | contraproposta | recusada
-    salario_pedido INTEGER           -- só nas contrapropostas
+    salario_pedido INTEGER,          -- só nas contrapropostas
+    papel         TEXT               -- papel prometido (v1.7); NULL = o atual
 );
 
 -- Timeline da partida: um registro por evento (gol, cartão, substituição, ...).

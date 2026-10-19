@@ -130,3 +130,33 @@ def test_quem_quer_sair_nao_renova():
     j.humor = QUER_SAIR
     r = contrato.avaliar_renovacao(j, clube, j.salario * 10, 2, "3x")
     assert r.tipo == "recusada" and "quer sair" in r.motivo
+
+
+def test_prometer_papel_maior_baixa_o_salario_pedido_e_menor_sobe():
+    clube = _clube()
+    papeis.completar(clube)
+    j = next(x for x in clube.jogadores if x.papel == papeis.ROTACAO)
+    atual = contrato.salario_pedido(j, clube, "3x")
+    assert contrato.salario_pedido(j, clube, "3x", papeis.ROTACAO) == atual
+    assert contrato.salario_pedido(j, clube, "3x", papeis.TITULAR) < atual
+    assert contrato.salario_pedido(j, clube, "3x", papeis.RESERVA) > atual
+    assert contrato.fator_papel(j, papeis.RESERVA) == pytest.approx(1.10 ** 2)
+
+
+def test_renovar_com_papel_novo_muda_o_papel_sem_incomodar():
+    j = Jogador("J", 25, "Atacante", 80)
+    j.papel = papeis.TITULAR
+    contrato.renovar(j, 2, 1_000_000, "3x", papeis.RESERVA)
+    assert j.papel == papeis.RESERVA and j.humor == CONTENTE   # ele aceitou
+
+    j.humor = INCOMODADO
+    contrato.renovar(j, 2, 1_000_000, "3x", papeis.TITULAR)
+    assert j.papel == papeis.TITULAR and j.humor == CONTENTE
+
+
+def test_renovacao_com_promessa_para_veterano_e_invalida():
+    clube = _clube()
+    veterano = clube.jogadores[3]
+    veterano.idade = 30
+    with pytest.raises(contrato.ContratoInvalido):
+        contrato.avaliar_renovacao(veterano, clube, 1_000_000, 2, "3x", papeis.PROMESSA)

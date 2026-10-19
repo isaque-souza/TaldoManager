@@ -447,7 +447,7 @@ def fazer_renovacao(simulacao_id: int, proposta: NovaRenovacao):
     try:
         resposta = contrato_service.renovar(
             simulacao_id, proposta.jogador_id, proposta.salario,
-            proposta.anos, proposta.multa,
+            proposta.anos, proposta.multa, proposta.papel,
         )
     except (TemporadaConcluida, PartidaEmAndamento, ContratoInvalido) as e:
         raise _erro_de_mercado(e) from e
