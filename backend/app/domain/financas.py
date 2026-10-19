@@ -59,6 +59,8 @@ def processar_rodada(confrontos, total_rodadas, publicos=None):
         mandante.lancar(
             "receita_bilheteria", bilheteria(mandante, publicos.get(mandante.nome))
         )
+        if mandante.lugares_ampliados:
+            mandante.lancar("despesa_estadio", estadio.manutencao(mandante))
         for clube in (mandante, visitante):
             clube.lancar("receita_tv", tv)
             clube.lancar("despesa_salarios", salarios_rodada(clube, total_rodadas))

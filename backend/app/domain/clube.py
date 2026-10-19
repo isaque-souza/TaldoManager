@@ -59,6 +59,11 @@ class Clube:
         # mando caem nas regras da torcida
         self.capacidade = 0
         self.ingresso = "normal"
+        # ampliação em andamento (0 = nenhuma) e os lugares já construídos,
+        # que pagam manutenção
+        self.obra_lugares = 0
+        self.obra_rodadas = 0
+        self.lugares_ampliados = 0
         self.rivais = set()   # nomes dos clubes rivais (clássicos)
         self.liga = "taldo"   # em que liga joga (v1.6)
         self.identidade = None   # cores/escudo/camisa (só visual, v1.1)
@@ -72,6 +77,7 @@ class Clube:
         self.receita_vendas = 0
         self.despesa_compras = 0
         self.despesa_marketing = 0   # campanhas da torcida (v1.4)
+        self.despesa_estadio = 0     # obras e manutenção (v1.5)
         # caixa ao fim de cada rodada (para o gráfico). Guardado, não
         # reconstruído: transferências e renovações mexem no caixa e na folha
         # ENTRE as rodadas, então as partidas sozinhas não contam a história

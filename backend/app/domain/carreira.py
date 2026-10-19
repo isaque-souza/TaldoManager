@@ -32,7 +32,8 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
 
     `clubes_finais`: dicts com `nome`, `dinheiro` (caixa final),
     `torcedores` (torcida final), `torcedores_base` (tamanho natural),
-    `capacidade` e `ingresso` (estádio).
+    `capacidade`, `ingresso`, `obra_lugares`, `obra_rodadas` e
+    `lugares_ampliados` (estádio).
     `jogadores_finais`: dicts com `nome`, `clube`, `idade`, `overall`,
     `potencial`, `salario`, `contrato_anos`, `multa_rescisoria`, `fama` e
     `temporadas_no_clube`, na ordem do elenco.
@@ -93,6 +94,10 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
         if final.get("capacidade"):
             clube.capacidade = final["capacidade"]
             clube.ingresso = final.get("ingresso") or "normal"
+            # a obra em andamento segue de onde parou
+            clube.obra_lugares = final.get("obra_lugares") or 0
+            clube.obra_rodadas = final.get("obra_rodadas") or 0
+            clube.lugares_ampliados = final.get("lugares_ampliados") or 0
 
     # livres (v1.6): os do fim da temporada anterior; sem registro, os da
     # seed — nos dois casos, menos quem já está num clube

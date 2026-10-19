@@ -506,6 +506,7 @@ class ClubeInfo(BaseModel):
     torcedores: int = 0
     torcedores_inicial: int = 0
     despesa_marketing: int = 0
+    despesa_estadio: int = 0             # obras e manutenção (v1.5)
 
 
 class JogoResumo(BaseModel):
@@ -1026,6 +1027,25 @@ class EstadioTemporada(BaseModel):
     bilheteria: int              # arrecadada na temporada
 
 
+class ObraEstadio(BaseModel):
+    tipo: str                    # pequena | media | grande
+    nome: str
+    descricao: str
+    lugares: int
+    rodadas: int                 # prazo
+    custo: int                   # à vista
+    manutencao: int              # dos lugares novos, por jogo em casa
+    bloqueio: str | None         # por que não dá para começar agora
+
+
+class ObraEmAndamento(BaseModel):
+    tipo: str
+    nome: str
+    lugares: int
+    rodadas: int                 # prazo total
+    faltam: int
+
+
 class Estadio(BaseModel):
     capacidade: int
     ingresso: str
@@ -1033,6 +1053,14 @@ class Estadio(BaseModel):
     caixa: int
     faixas: list[FaixaIngresso]
     temporada: EstadioTemporada
+    obras: list[ObraEstadio]
+    obra: ObraEmAndamento | None
+    lugares_ampliados: int
+    manutencao: int              # por jogo em casa, hoje
+
+
+class NovaObra(BaseModel):
+    tipo: str
 
 
 class NovoIngresso(BaseModel):

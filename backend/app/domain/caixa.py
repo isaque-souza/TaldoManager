@@ -354,6 +354,27 @@ def campanha(nome, custo, antes, depois):
     )
 
 
+def obra_iniciada(nome, lugares, rodadas, custo):
+    """Ampliação do estádio contratada (v1.5)."""
+    return _mensagem(
+        "Estádio", f"{nome}: obra começou",
+        f"A obra de +{lugares // 1000} mil lugares saiu por {_dinheiro(custo)}, "
+        f"pagos à vista, e fica pronta em {_rodadas(rodadas)}. O estádio "
+        "segue funcionando normalmente até lá.",
+    )
+
+
+def obra_concluida(lugares, capacidade):
+    """Ampliação do estádio entregue (v1.5)."""
+    return _mensagem(
+        "Estádio", "Obra concluída",
+        f"Os {lugares // 1000} mil lugares novos estão prontos: o estádio "
+        f"agora recebe {capacidade:,} torcedores.".replace(",", ".")
+        + " Lugar novo tem manutenção a cada jogo em casa, então vale "
+        "enchê-lo.",
+    )
+
+
 def virada(clube, movimentos, contratos_acabando, idolos=()):
     """Mensagens da virada de temporada para o clube do técnico: quem subiu
     da base, quem saiu, quem renovou e os contratos que acabam no fim desta.

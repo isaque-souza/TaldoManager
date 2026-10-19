@@ -1133,6 +1133,12 @@ body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .
 .es-escolhida { outline: 2px solid var(--gramado-claro); outline-offset: -2px; }
 .es-escolhida header { background: var(--gramado-noite); }
 .es-atual { color: var(--gramado-claro); font-size: .8rem; font-weight: 600; }
+.es-titulo { display: flex; align-items: center; gap: .4rem; margin: 1.5rem 0 .25rem; }
+.es-andamento { display: flex; flex-direction: column; gap: .4rem; max-width: 46rem; margin: .75rem 0; }
+.es-andamento p { margin: 0; }
+.es-progresso { display: block; height: 6px; background: var(--linha); border-radius: 3px; overflow: hidden; }
+.es-progresso span { display: block; height: 100%; background: var(--gramado-claro); }
+.es-obra { margin: auto 0 0; }
 
 /* ligas (v1.6): a outra liga da rodada, recolhida */
 details.outra-liga { margin-top: 1rem; }

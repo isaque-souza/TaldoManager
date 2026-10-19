@@ -84,6 +84,11 @@ _COLUNAS_NOVAS = {
         ("ingresso", "TEXT NOT NULL DEFAULT 'normal'"),
         # liga do clube (v1.6); saves antigos só têm a Taldo
         ("liga", "TEXT NOT NULL DEFAULT 'taldo'"),
+        # ampliação do estádio (v1.5)
+        ("obra_lugares", "INTEGER NOT NULL DEFAULT 0"),
+        ("obra_rodadas", "INTEGER NOT NULL DEFAULT 0"),
+        ("lugares_ampliados", "INTEGER NOT NULL DEFAULT 0"),
+        ("despesa_estadio", "INTEGER NOT NULL DEFAULT 0"),
     ),
     "jogador": (
         ("penaltis", "INTEGER NOT NULL DEFAULT 0"),
