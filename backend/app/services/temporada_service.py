@@ -17,7 +17,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, fama, posicoes
+from app.domain import caixa, copa, fama, posicoes
 from app.domain.temporada import (
     livres_para_json, restaurar_estado, snapshot_estado,
 )
@@ -104,6 +104,7 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
         random.seed()
 
     campeonato = carregar_campeonato(ligas)
+    campeonato.iniciar_copa(copa.classificados_de_inicio(campeonato))
     alvo = _achar_clube(campeonato, clube_usuario)
     simulacao_service._configurar_clube(alvo, tatica, formacao, xi_preferido)
 
@@ -459,6 +460,11 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
                 simulacao_repo.definir_livres(conn, simulacao_id, json.dumps(
                     livres_para_json(campeonato), ensure_ascii=False,
                 ))
+                # a copa também (v1.6)
+                if cru["copa"]:
+                    simulacao_repo.definir_copa(conn, simulacao_id, json.dumps(
+                        cru["copa"], ensure_ascii=False,
+                    ))
             else:
                 simulacao_repo.atualizar_estado(
                     conn, simulacao_id,

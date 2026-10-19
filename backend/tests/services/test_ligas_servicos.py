@@ -98,3 +98,56 @@ def test_outros_jogos_ao_vivo_sao_da_liga_do_tecnico():
     premier = {c["nome"] for c in simulacao_service.listar_clubes(DUAS) if c["liga"] == "premier"}
     assert len(jogos) == 10
     assert all(j["mandante"] in premier for j in jogos)
+
+
+# --- copa entre as ligas (v1.6) ---------------------------------------------
+
+def _copa_do_estado(sid):
+    estado = _linhas("SELECT estado_json FROM simulacao WHERE id = ?", sid)[0]["estado_json"]
+    return json.loads(estado)["copa"]
+
+
+def test_jogo_novo_ja_tem_a_copa_com_os_classificados_de_inicio():
+    sid = temporada_service.iniciar(seed=3, clube_usuario="Arsenal", ligas=DUAS)
+    copa = _copa_do_estado(sid)
+    # a Premier pela tabela real de 23/24
+    assert copa["classificados"]["premier"][:3] == ["Manchester City", "Arsenal", "Liverpool"]
+    assert len(copa["classificados"]["taldo"]) == 8
+    assert all(j["vencedor"] is None for j in copa["fases"]["oitavas"])
+
+
+def test_so_a_taldo_nao_tem_copa():
+    sid = temporada_service.iniciar(seed=3, clube_usuario="Real Taldo")
+    assert _copa_do_estado(sid) is None
+
+
+def test_a_copa_anda_no_save_e_fica_guardada_no_fim():
+    sid = temporada_service.iniciar(seed=6, clube_usuario="Arsenal", ligas=DUAS)
+    for _ in range(8):
+        temporada_service.avancar(sid)
+    oitavas = _copa_do_estado(sid)["fases"]["oitavas"]
+    assert all(j["vencedor"] for j in oitavas)          # jogou depois da 8ª
+    assert all(j["vencedor"] is None for j in _copa_do_estado(sid)["fases"]["quartas"])
+
+    while temporada_service.avancar(sid)["concluida"] is False:
+        pass
+    copa = json.loads(_linhas("SELECT copa_json FROM simulacao WHERE id = ?", sid)[0]["copa_json"])
+    assert copa["fases"]["oitavas"] == oitavas          # a mesma de antes
+    assert copa["fases"]["final"][0]["vencedor"]
+
+
+def test_temporada_inteira_de_uma_vez_guarda_a_copa():
+    sid = simulacao_service.salvar_temporada(seed=4, clube_usuario="Liverpool", ligas=DUAS)
+    copa = json.loads(_linhas("SELECT copa_json FROM simulacao WHERE id = ?", sid)[0]["copa_json"])
+    assert copa["fases"]["final"][0]["vencedor"]
+
+
+def test_na_carreira_os_classificados_vem_da_tabela_anterior():
+    sid = simulacao_service.salvar_temporada(seed=4, clube_usuario="Liverpool", ligas=DUAS)
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+    tabela = _linhas(
+        "SELECT nome, liga FROM clube WHERE simulacao_id = ? ORDER BY posicao_final", sid
+    )
+    copa = _copa_do_estado(nova)
+    for liga in DUAS:
+        assert copa["classificados"][liga] == [c["nome"] for c in tabela if c["liga"] == liga][:8]

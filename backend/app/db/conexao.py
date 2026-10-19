@@ -63,6 +63,9 @@ _COLUNAS_NOVAS = {
         ("livres_json", "TEXT"),
         # ligas do save (v1.6), JSON; NULL = só a Taldo (saves antigos)
         ("ligas", "TEXT"),
+        # a copa entre as ligas no fim da temporada (v1.6), JSON: o
+        # estado_json é apagado ao concluir; NULL = sem copa
+        ("copa_json", "TEXT"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")
