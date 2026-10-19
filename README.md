@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 533 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 551 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -193,9 +193,10 @@ disciplina/pênaltis, estatísticas da partida). **v0.7 (Mercado), v0.8
 só, tela inicial, meta da diretoria e demissão) e v1.1 (Cara de jogo:
 escudos e camisas, tema de transmissão noturna, pré-jogo no campo e jogo ao
 vivo), v1.2 (Modo técnico: hub do clube, simulação interativa, planos de
-jogo e formação no meio do jogo) e v1.3 (Atributos e posições: posições
+jogo e formação no meio do jogo), v1.3 (Atributos e posições: posições
 específicas, formações desenhadas, caixa de entrada e atributos nos lances)
-concluídas** — ver as seções abaixo.
+e v1.4 (Torcida: crescimento, mando de campo, marketing, rival, fama e
+ídolos) concluídas** — ver as seções abaixo.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -531,7 +532,7 @@ Cada jogador tem uma posição de verdade e rende menos fora dela:
 
 ---
 
-# 📣 Torcida (v1.4 — próxima)
+# ✅ Torcida (v1.4) — Concluída
 
 A torcida cresce (ou encolhe) com a campanha e com as decisões do técnico,
 e o tamanho dela é o que enche a bilheteria:
@@ -559,12 +560,24 @@ e o tamanho dela é o que enche a bilheteria:
       mando). Uma por turno, com caixa para pagar; entra como despesa
       "Marketing" nas finanças e o setor manda a mensagem.
       API: `GET/POST /simulacoes/{id}/marketing`
-* [ ] Fama dos jogadores (cada jogador tem sua fama; craques famosos atraem torcida)
-* [ ] Contratar ídolos que a torcida ama (impacto na torcida e na bilheteria)
+* [x] Fama dos jogadores — de 0 a 100, é do jogador (vai com ele numa
+      transferência). No fim da temporada guarda 78% da anterior e soma
+      gols, assistências, melhores em campo, jogos, jogos sem sofrer gol
+      (goleiro) e o título; quem some do time é esquecido aos poucos. Os
+      craques veteranos já começam famosos. Jogador famoso vale até 30% a
+      mais no mercado. Aparece na página do jogador
+* [x] Ídolos — fama 60+ e 3+ temporadas no mesmo clube (o tempo de casa
+      zera na transferência; a liga fica com uns 15). Cada ídolo atrai
+      +0,5% de torcida no fim da temporada (até 3), o clube pede 30% a mais
+      para liberá-lo e vendê-lo, para qualquer clube, tira 3% da torcida
+      (somado à revolta do rival). Coroa dourada ao lado do nome, lista de
+      ídolos na página do clube, e o **marketing** avisa quando nasce um
+      ídolo e homenageia o que se aposenta
 * [x] Vender um jogador para o rival irrita a torcida — some 2% dela (3% se
       era titular, 5% se era o craque do elenco) e a torcida do rival cresce
       1%. A oferta do rival já mostra quanto a torcida vai encolher, e o
-      **marketing** manda "A torcida não perdoou" depois da venda
+      **marketing** manda "A torcida não perdoou" depois da venda. Tirar
+      um jogador do rival faz a nossa torcida crescer 1%
 
 ---
 
@@ -584,7 +597,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 533 testes (domain, db, repositories, services, api)
+│   └── tests/              # 551 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas
@@ -646,7 +659,8 @@ Criar um Football Manager totalmente jogável contendo:
 * ✅ Modo carreira
 * ✅ Temporadas infinitas
 * ✅ Versão jogável pelo navegador
-* ⏳ Torcida, vontade dos jogadores e disputa por contratações
+* ✅ Torcida, fama e ídolos
+* ⏳ Vontade dos jogadores e disputa por contratações
 
 ---
 
