@@ -75,9 +75,10 @@ def tirar_do_elenco(clube, jogador):
     clube.xi_preferido.discard(jogador)
 
 
-def transferir(jogador, vendedor, comprador, preco):
+def transferir(jogador, vendedor, comprador, preco, contrato=None):
     """Move `jogador` de `vendedor` para `comprador` pagando `preco`.
-    Levanta `TransferenciaInvalida` se alguma regra impedir."""
+    `contrato`: (anos, salário, multa) combinados com o jogador (v1.7); sem
+    ele, o padrão. Levanta `TransferenciaInvalida` se alguma regra impedir."""
 
     if jogador not in vendedor.jogadores:
         raise TransferenciaInvalida(f"{jogador.nome} não joga no {vendedor.nome}")
@@ -97,11 +98,9 @@ def transferir(jogador, vendedor, comprador, preco):
     jogador.temporadas_no_clube = 0
     jogador.a_venda = False   # a lista era do clube antigo (v1.7)
     # chega com contrato novo: o do clube antigo não vale no novo
-    jogador.assinar_contrato(
-        anos=CONTRATO_PADRAO_ANOS,
-        salario=jogador.salario_referencia(),
-        multa_rescisoria=None,
-    )
+    jogador.assinar_contrato(*(contrato or (
+        CONTRATO_PADRAO_ANOS, jogador.salario_referencia(), None,
+    )))
 
     comprador.lancar("despesa_compras", preco)
     vendedor.lancar("receita_vendas", preco)
@@ -118,9 +117,10 @@ def luvas(jogador):
     return _arredondar(jogador.valor_mercado() * FATOR_LUVAS)
 
 
-def contratar_livre(jogador, livres, clube):
+def contratar_livre(jogador, livres, clube, contrato=None):
     """Tira `jogador` da lista de `livres` e o põe no `clube`, que paga as
-    luvas. Devolve o valor das luvas. Levanta `TransferenciaInvalida` se
+    luvas. `contrato`: (anos, salário, multa) combinados (v1.7); sem ele, o
+    padrão. Devolve o valor das luvas. Levanta `TransferenciaInvalida` se
     alguma regra impedir."""
 
     if jogador not in livres:
@@ -134,11 +134,9 @@ def contratar_livre(jogador, livres, clube):
     clube.contratar_jogador(jogador)
     jogador.temporadas_no_clube = 0
     jogador.a_venda = False
-    jogador.assinar_contrato(
-        anos=CONTRATO_LIVRE_ANOS,
-        salario=jogador.salario_referencia(),
-        multa_rescisoria=None,
-    )
+    jogador.assinar_contrato(*(contrato or (
+        CONTRATO_LIVRE_ANOS, jogador.salario_referencia(), None,
+    )))
     clube.lancar("despesa_compras", valor)
     return valor
 

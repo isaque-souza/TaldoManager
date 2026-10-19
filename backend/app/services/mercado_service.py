@@ -5,10 +5,13 @@ rodadas para o técnico decidir. As regras ficam em `app.domain.mercado`;
 aqui é carregar o estado vivo, aplicar a negociação e regravar tudo
 (snapshot, clubes, jogadores, propostas e o histórico em `transferencia`).
 
-- comprar: `propor` → o clube vendedor aceita, contrapropõe ou recusa
+- comprar (v1.7, em duas etapas): `propor` → o clube vendedor aceita,
+  contrapropõe ou recusa; o aceite abre uma `negociacao` com o valor
+  travado e `propor_contrato` acerta salário, anos, multa e papel com o
+  jogador — só então a transferência acontece
 - vender: `ofertas` lista o que cada clube paga; `vender` aceita uma delas
-- livres (v1.6): `contratar_livre` contrata quem está sem clube, pagando só
-  as luvas
+- livres (v1.6): `contratar_livre` abre a negociação com quem está sem
+  clube (v1.7: só a etapa 2), pagando só as luvas
 - elenco (v1.7): `marcar_a_venda` põe/tira da lista de transferências e
   `dispensar` rescinde (a qualquer momento, sem depender da janela)
 """
@@ -17,12 +20,14 @@ import json
 import random
 
 from app.db.conexao import conectar
-from app.domain import caixa, fama, livres, mercado, papeis, torcida
+from app.domain import caixa, contrato, fama, livres, mercado, papeis, torcida
+from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
+from app.repositories import negociacao_repository as negociacao_repo
 from app.repositories import proposta_repository as proposta_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.repositories import transferencia_repository as transferencia_repo
@@ -102,10 +107,14 @@ class _Contexto:
         )
         return mapa
 
-    def efetivar(self, jogador_id, jogador, vendedor, comprador, preco):
-        """Faz a transferência e regrava tudo o que mudou."""
+    def efetivar(self, jogador_id, jogador, vendedor, comprador, preco,
+                 termos=None, papel=None):
+        """Faz a transferência e regrava tudo o que mudou. `termos` e
+        `papel`: o contrato combinado com o jogador (v1.7)."""
 
-        mercado.transferir(jogador, vendedor, comprador, preco)
+        mercado.transferir(jogador, vendedor, comprador, preco, termos)
+        if papel:
+            jogador.papel = papel
         mapa = self.gravar()
         transferencia_repo.inserir(
             self.conn, self.sim["id"], self.rodada, jogador_id,
@@ -235,6 +244,12 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
         }
         propostas = _propostas_por_jogador(ctx)
         aberta = mercado.janela_aberta(ctx.rodada)
+        negociacoes = [
+            _resumo(n)
+            for n in negociacao_repo.listar_da_janela(conn, simulacao_id, ctx.rodada)
+        ]
+        # a última de cada jogador (v1.7): aberta, fechada, desistiu...
+        por_nome = {n["jogador"]: n for n in negociacoes}
         fechada = None if aberta else "Janela de transferências fechada"
 
         elenco = []
@@ -276,6 +291,7 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
                         if ultima and ultima["resposta"] == "contraproposta"
                         else None
                     ),
+                    "negociacao": por_nome.get(j.nome),
                 })
         disponiveis.sort(key=lambda f: (-f["overall"], f["valor_mercado"]))
 
@@ -291,6 +307,7 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
                 **_ficha(j, None, None),
                 "luvas": luvas,
                 "bloqueio": fechada or mercado.motivo_entrada_bloqueada(alvo, luvas),
+                "negociacao": por_nome.get(j.nome),
             })
         livres.sort(key=lambda f: (-f["overall"], f["luvas"]))
 
@@ -307,6 +324,7 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
             "elenco": elenco,
             "disponiveis": disponiveis,
             "livres": livres,
+            "negociacoes": negociacoes,
             "transferencias": _historico(conn, simulacao_id),
         }
     finally:
@@ -397,6 +415,15 @@ def propor(simulacao_id, jogador_id, valor):
         if motivo:
             raise bloqueada(motivo)
 
+        # já há acordo (falta o contrato) ou ele desistiu nesta janela (v1.7)
+        neg = _negociacao_de(ctx, jogador.nome)
+        if neg and neg["status"] == "aberta":
+            raise TransferenciaInvalida(
+                f"Já há acordo com o {vendedor.nome}: falta o contrato com {jogador.nome}"
+            )
+        if neg and neg["status"] == "desistiu":
+            raise bloqueada(f"{jogador.nome} desistiu de vir nesta janela")
+
         feitas = _propostas_por_jogador(ctx).get(jogador_id, [])
         ultima = feitas[-1] if feitas else None
         aceitando_contra = (
@@ -425,19 +452,12 @@ def propor(simulacao_id, jogador_id, valor):
                 resposta.tipo,
                 resposta.valor if resposta.tipo == "contraproposta" else None,
             )
-            transferencia = None
+            # o aceite só trava o valor: a etapa 2 é o contrato (v1.7)
+            negociacao = None
             if resposta.fechou:
-                # a torcida de lá também sente perder um ídolo, ou ver o
-                # jogador ir para o rival (v1.4); a nossa comemora
-                antes = comprador.torcedores
-                if torcida.reagir_a_venda(vendedor, comprador, jogador) and                         comprador.torcedores != antes:
-                    mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
-                        caixa.tirado_do_rival(
-                            jogador, vendedor, antes, comprador.torcedores,
-                        )
-                    ])
-                transferencia = ctx.efetivar(
-                    jogador_id, jogador, vendedor, comprador, resposta.valor
+                negociacao = negociacao_repo.inserir(
+                    conn, simulacao_id, ctx.rodada, jogador.nome, resposta.valor,
+                    jogador_id=jogador_id, clube=vendedor.nome,
                 )
 
         return {
@@ -449,7 +469,7 @@ def propor(simulacao_id, jogador_id, valor):
                 resposta.valor if resposta.tipo == "contraproposta" else None
             ),
             "propostas_restantes": 0 if resposta.fechou else restantes,
-            "transferencia": transferencia,
+            "negociacao_id": negociacao,
         }
     finally:
         conn.close()
@@ -504,8 +524,9 @@ def vender(simulacao_id, jogador_id, clube):
 
 
 def contratar_livre(simulacao_id, nome):
-    """Contrata um jogador sem clube pagando as luvas (v1.6). None se a
-    simulação não existe ou ninguém com esse nome está livre."""
+    """Abre a negociação com um jogador sem clube (v1.6; v1.7: vai direto ao
+    contrato, com as luvas fixas). None se a simulação não existe ou ninguém
+    com esse nome está livre."""
 
     conn = conectar()
     try:
@@ -528,19 +549,237 @@ def contratar_livre(simulacao_id, nome):
                 ])
             raise TransferenciaInvalida(motivo)
 
-        luvas = mercado.contratar_livre(jogador, ctx.campeonato.livres, clube)
-        with conn:
-            ctx.gravar()
-            mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
-                caixa.contratacao_livre(jogador, luvas)
-            ])
+        neg = _negociacao_de(ctx, nome)
+        if neg and neg["status"] == "desistiu":
+            raise TransferenciaInvalida(f"{nome} desistiu de vir nesta janela")
+        if neg and neg["status"] == "aberta":
+            neg_id = neg["id"]
+        else:
+            with conn:
+                neg_id = negociacao_repo.inserir(
+                    conn, simulacao_id, ctx.rodada, nome, mercado.luvas(jogador),
+                )
         return {
-            "rodada": ctx.rodada,
-            "jogador": jogador.nome,
-            "luvas": luvas,
-            "salario": jogador.salario,
-            "contrato_anos": jogador.contrato_anos,
-            "caixa": clube.dinheiro,
+            "negociacao_id": neg_id,
+            "jogador": nome,
+            "clube": None,
+            "valor": mercado.luvas(jogador),
+        }
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# a etapa 2 (v1.7): o contrato com o jogador
+# ---------------------------------------------------------------------------
+
+def _negociacao_de(ctx, nome):
+    """A última negociação desta janela pelo jogador (ou None)."""
+    feitas = [
+        n for n in negociacao_repo.listar_da_janela(ctx.conn, ctx.sim["id"], ctx.rodada)
+        if n["jogador"] == nome
+    ]
+    return feitas[-1] if feitas else None
+
+
+def _partes(ctx, neg):
+    """(jogador, vendedor) de uma negociação aberta; vendedor None = livre.
+    Levanta `TransferenciaInvalida` se o jogador não está mais onde estava."""
+    if neg["clube"] is None:
+        jogador = next((j for j in ctx.campeonato.livres if j.nome == neg["jogador"]), None)
+        vendedor = None
+    else:
+        jogador, vendedor = ctx.jogador(neg["jogador_id"])
+        if vendedor is not None and vendedor.nome != neg["clube"]:
+            jogador = None
+    if jogador is None:
+        raise TransferenciaInvalida(f"{neg['jogador']} não está mais disponível")
+    return jogador, vendedor
+
+
+def _contraproposta(neg):
+    if neg["contra_salario"] is None:
+        return None
+    return {
+        "salario": neg["contra_salario"],
+        "anos": neg["contra_anos"],
+        "multa": neg["contra_multa"],
+        "papel": neg["contra_papel"],
+    }
+
+
+def _resumo(neg):
+    return {
+        "negociacao_id": neg["id"],
+        "jogador_id": neg["jogador_id"],
+        "jogador": neg["jogador"],
+        "clube": neg["clube"],
+        "valor": neg["valor"],
+        "status": neg["status"],
+        "tentativas_restantes": max(0, contrato.MAX_TENTATIVAS - neg["tentativas"]),
+        "contraproposta": _contraproposta(neg),
+    }
+
+
+def _buscar_negociacao(ctx, negociacao_id):
+    neg = negociacao_repo.buscar(ctx.conn, negociacao_id)
+    if neg is None or neg["simulacao_id"] != ctx.sim["id"]:
+        return None
+    return neg
+
+
+def ver_negociacao(simulacao_id, negociacao_id):
+    """Tudo para montar a proposta de contrato: o jogador, o que ganha hoje,
+    as opções e o papel que ele espera. O salário pedido NÃO é revelado (só
+    numa contraproposta). None se não existe."""
+
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        neg = _buscar_negociacao(ctx, negociacao_id)
+        if neg is None:
+            return None
+        dados = _resumo(neg)
+        if neg["status"] != "aberta":
+            return dados
+        jogador, vendedor = _partes(ctx, neg)
+        return {
+            **dados,
+            "idade": jogador.idade,
+            "overall": jogador.overall,
+            "funcao": jogador.funcao,
+            "salario_atual": jogador.salario if vendedor else None,
+            "salario_referencia": jogador.salario_referencia(),
+            "duracao_max": contrato.duracao_max(jogador),
+            "opcoes_multa": [
+                {"opcao": op, "valor": contrato.valor_multa(jogador, op)}
+                for op in contrato.MULTAS
+            ],
+            "papeis": [
+                p for p in papeis.PAPEIS
+                if papeis.motivo_papel_bloqueado(jogador, p) is None
+            ],
+            "papel_esperado": contrato.papel_esperado(ctx.alvo, jogador),
+            "clube_mais_fraco": (
+                vendedor is not None and contrato.clube_mais_fraco(ctx.alvo, vendedor)
+            ),
+        }
+    finally:
+        conn.close()
+
+
+def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=None):
+    """Etapa 2 (v1.7): o contrato oferecido ao jogador. Aceito, a
+    transferência acontece (o valor acertado vai ao clube; para um livre,
+    as luvas). Na 3ª recusa ele desiste e o acordo cai. None se a negociação
+    não existe."""
+
+    if salario <= 0:
+        raise ContratoInvalido("O salário precisa ser positivo")
+
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        neg = _buscar_negociacao(ctx, negociacao_id)
+        if neg is None:
+            return None
+        if neg["status"] != "aberta":
+            raise TransferenciaInvalida(f"A negociação por {neg['jogador']} já terminou")
+        ctx.exigir_janela()
+        jogador, vendedor = _partes(ctx, neg)
+        comprador = ctx.alvo
+
+        motivo = (
+            (vendedor and mercado.motivo_saida_bloqueada(vendedor, jogador))
+            or mercado.motivo_entrada_bloqueada(comprador, neg["valor"])
+        )
+        if motivo:
+            raise TransferenciaInvalida(motivo)
+        papel = papel or contrato.papel_esperado(comprador, jogador)
+        contrato.validar(jogador, anos, multa, papel)   # inválida não gasta tentativa
+
+        contra = _contraproposta(neg)
+        aceitando_contra = (
+            contra is not None
+            and (contra["anos"], contra["multa"], contra["papel"]) == (anos, multa, papel)
+            and salario >= contra["salario"]
+        )
+        if neg["tentativas"] >= contrato.MAX_TENTATIVAS and not aceitando_contra:
+            raise TransferenciaInvalida(
+                f"{jogador.nome} só aceita a contraproposta que fez"
+            )
+
+        resposta = contrato.avaliar_chegada(
+            jogador, comprador, vendedor, salario, anos, multa, papel
+        )
+        restantes = max(0, contrato.MAX_TENTATIVAS - neg["tentativas"] - 1)
+        if resposta.fechou:
+            status = "fechada"
+        elif resposta.tipo == "recusada" and not restantes:
+            status = "desistiu"
+        else:
+            status = "aberta"
+
+        with conn:
+            negociacao_repo.registrar_tentativa(
+                conn, negociacao_id, status,
+                (resposta.valor, anos, multa, papel)
+                if resposta.tipo == "contraproposta" else None,
+            )
+            transferencia = None
+            if resposta.fechou:
+                termos = (anos, resposta.valor, contrato.valor_multa(jogador, multa))
+                if vendedor is not None:
+                    # a torcida de lá sente perder um ídolo, ou ver o jogador
+                    # ir para o rival (v1.4); a nossa comemora
+                    antes = comprador.torcedores
+                    if torcida.reagir_a_venda(vendedor, comprador, jogador) and \
+                            comprador.torcedores != antes:
+                        mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                            caixa.tirado_do_rival(
+                                jogador, vendedor, antes, comprador.torcedores,
+                            )
+                        ])
+                    transferencia = ctx.efetivar(
+                        neg["jogador_id"], jogador, vendedor, comprador,
+                        neg["valor"], termos, papel,
+                    )
+                else:
+                    mercado.contratar_livre(
+                        jogador, ctx.campeonato.livres, comprador, termos
+                    )
+                    jogador.papel = papel
+                    ctx.gravar()
+            mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                caixa.resposta_contrato(
+                    jogador, vendedor, resposta, restantes, neg["valor"],
+                    desistiu=status == "desistiu",
+                )
+            ])
+
+        return {
+            "resposta": resposta.tipo,
+            "motivo": resposta.motivo,
+            "status": status,
+            "salario_pedido": (
+                resposta.valor if resposta.tipo == "contraproposta" else None
+            ),
+            "tentativas_restantes": restantes if status == "aberta" else 0,
+            "transferencia": transferencia,
+            "contrato": (
+                {
+                    "salario": jogador.salario,
+                    "contrato_anos": jogador.contrato_anos,
+                    "multa_rescisoria": jogador.multa_rescisoria,
+                    "papel": jogador.papel,
+                }
+                if resposta.fechou else None
+            ),
+            "caixa": comprador.dinheiro,
         }
     finally:
         conn.close()

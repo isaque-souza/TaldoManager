@@ -346,7 +346,19 @@ def test_fluxo_do_mercado():
                     json={"jogador_id": alvo["jogador_id"], "valor": alvo["valor_mercado"] * 3})
     assert r.status_code == 200
     assert r.json()["resposta"] in ("aceita", "multa")
+    neg_id = r.json()["negociacao_id"]
+
+    # etapa 2 (v1.7): o contrato com o jogador fecha a compra
+    neg = client.get(f"/simulacoes/{sid}/negociacoes/{neg_id}").json()
+    assert neg["status"] == "aberta" and neg["clube"] == alvo["clube"]
+    contrato = {"salario": 5 * neg["salario_referencia"] + 2 * neg["salario_atual"],
+                "anos": 1, "multa": "3x", "papel": neg["papel_esperado"]}
+    r = client.post(f"/simulacoes/{sid}/negociacoes/{neg_id}/contrato", json=contrato)
+    assert r.status_code == 200 and r.json()["status"] == "fechada"
     assert r.json()["transferencia"]["para_clube"] == "Real Taldo"
+    # negociação fechada não recebe outro contrato
+    assert client.post(f"/simulacoes/{sid}/negociacoes/{neg_id}/contrato",
+                       json=contrato).status_code == 400
 
     # o mesmo jogador de novo: agora é do seu elenco -> 400
     assert client.post(f"/simulacoes/{sid}/propostas",
@@ -374,7 +386,14 @@ def test_contratar_livre_pela_api():
     r = client.post(f"/simulacoes/{sid}/livres/contratar", json={"nome": livres[0]["nome"]})
     assert r.status_code == 200
     assert r.json()["jogador"] == livres[0]["nome"]
-    assert r.json()["luvas"] == livres[0]["luvas"]
+    assert r.json()["valor"] == livres[0]["luvas"]
+    neg_id = r.json()["negociacao_id"]
+    neg = client.get(f"/simulacoes/{sid}/negociacoes/{neg_id}").json()
+    assert neg["salario_atual"] is None   # livre não tem salário hoje
+    r = client.post(f"/simulacoes/{sid}/negociacoes/{neg_id}/contrato", json={
+        "salario": 5 * neg["salario_referencia"], "anos": 1, "multa": "3x",
+    })
+    assert r.json()["status"] == "fechada"
 
     # já contratado: não está mais livre -> 404
     assert client.post(f"/simulacoes/{sid}/livres/contratar",

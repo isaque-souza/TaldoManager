@@ -3,6 +3,7 @@ import pytest
 from app.db.conexao import conectar
 from app.services import carreira_service, simulacao_service, temporada_service
 from app.services.carreira_service import CarreiraInvalida
+from tests.negociar import fechar
 
 
 @pytest.fixture(autouse=True)
@@ -500,7 +501,7 @@ def test_livres_seguem_para_a_temporada_seguinte():
 
     sid = temporada_service.iniciar(seed=5, clube_usuario="Real Taldo")
     contratado = mercado_service.ver_mercado(sid)["livres"][0]["nome"]
-    mercado_service.contratar_livre(sid, contratado)
+    fechar(sid, mercado_service.contratar_livre(sid, contratado)["negociacao_id"])
     while temporada_service.avancar(sid)["concluida"] is False:
         pass
 
