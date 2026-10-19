@@ -6,7 +6,7 @@
 
 import { $, estado, navegarPara } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
-import { abrirSecaoRodada, carregarProximaRodada } from "./rodada.js";
+import { carregarProximaRodada } from "./rodada.js";
 import { avisoMercado, carregarMercado, mostrarOfertas, postarMercado } from "./mercado.js";
 import { abrirContrato, MULTA_ROTULO, PAPEL_ROTULO as PAPEL } from "./contratos.js";
 import { abrirJogador } from "./jogador.js";
@@ -116,6 +116,7 @@ function ficha(f) {
     </div>
     ${dispensa}
     ${venda ? "" : `<small class="bloqueio">${icone("cadeado")} Vender: ${f.bloqueio || "janela fechada"}</small>`}
+    <div id="m-ofertas"></div>
     <dl class="el-numeros">
       <div><dt>Jogos</dt><dd>${f.partidas}</dd></div>
       <div><dt>Gols</dt><dd>${f.gols}</dd></div>
@@ -204,10 +205,8 @@ function ligarAcoes(box, f) {
   const botao = (acao) => box.querySelector(`[data-el="${acao}"]`);
   botao("renovar").addEventListener("click", () => abrirContrato(f.jogador_id));
   botao("lista").addEventListener("click", () => marcarAVenda(f, !f.a_venda));
-  botao("ofertas")?.addEventListener("click", async () => {
-    abrirSecaoRodada("mercado");
-    await mostrarOfertas(f.jogador_id);
-  });
+  // as ofertas abrem na ficha (v1.7: vender fica só aqui)
+  botao("ofertas")?.addEventListener("click", () => mostrarOfertas(f.jogador_id));
   botao("pagina").addEventListener("click", () => navegarPara(() => abrirJogador(f.jogador_id)));
   botao("papel").addEventListener("change", (e) => definirPapel(f, e.target.value));
 

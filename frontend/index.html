@@ -200,7 +200,7 @@
           <small id="hub-tabela-info"></small>
         </button>
         <button class="hub-card" data-abrir="mercado">
-          <span class="hub-rotulo"><span data-icone="troca"></span> Mercado</span>
+          <span class="hub-rotulo"><span data-icone="troca"></span> Transferências</span>
           <strong id="hub-mercado"></strong>
           <small id="hub-mercado-info"></small>
         </button>
@@ -275,8 +275,11 @@
         <div id="r-confrontos"></div>
       </div>
 
+      <!-- Central de Transferências (v1.7): buscar, observados, negociações e
+           histórico; o contrato em negociação fica fora das abas -->
       <div data-painel="mercado" hidden>
-        <p id="r-mercado-msg"></p>
+        <p id="r-mercado-msg" aria-live="polite"></p>
+        <div id="m-negociacao"></div>
         <div id="r-mercado"></div>
       </div>
 

@@ -54,6 +54,10 @@ from app.api.schemas import (
     RespostaContrato,
     NovoPapel,
     PapelDefinido,
+    HistoricoTransferencias,
+    Observados,
+    NovoObservado,
+    ObservadoMarcado,
 )
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
@@ -66,6 +70,7 @@ from app.services import (
     marketing_service,
     mensagem_service,
     mercado_service,
+    observado_service,
     plano_service,
     simulacao_service,
     temporada_service,
@@ -305,6 +310,55 @@ def _erro_de_mercado(e):
     if isinstance(e, TemporadaConcluida):
         return HTTPException(status_code=409, detail=str(e))
     return _erro_de_valor(e)
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/historico-transferencias",
+    response_model=HistoricoTransferencias,
+    tags=["mercado"],
+)
+def obter_historico_transferencias(simulacao_id: int):
+    """Compras, vendas, livres e dispensas do seu clube na carreira inteira,
+    com o gasto e o arrecadado de cada temporada. Vale também com a
+    temporada concluída."""
+    dados = mercado_service.historico(simulacao_id)
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/observados",
+    response_model=Observados,
+    tags=["mercado"],
+)
+def obter_observados(simulacao_id: int):
+    """Os jogadores que você observa, com o que mudou desde que entraram na
+    lista e a ficha de compra de cada um."""
+    try:
+        dados = observado_service.ver(simulacao_id)
+    except TemporadaConcluida as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.put(
+    "/simulacoes/{simulacao_id}/observados",
+    response_model=ObservadoMarcado,
+    tags=["mercado"],
+)
+def marcar_observado(simulacao_id: int, novo: NovoObservado):
+    """Põe (`observar: true`) ou tira um jogador da lista, pelo nome. Não
+    depende da janela."""
+    try:
+        feito = observado_service.observar(simulacao_id, novo.nome, novo.observar)
+    except (TemporadaConcluida, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if feito is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return feito
 
 
 @router.post(

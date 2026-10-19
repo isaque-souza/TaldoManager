@@ -135,15 +135,18 @@ CREATE TABLE IF NOT EXISTS partida (
     publico                    INTEGER   -- pagantes (v1.5); NULL em saves antigos
 );
 
--- Transferências feitas numa temporada rodada a rodada (v0.7).
+-- Transferências feitas numa temporada rodada a rodada (v0.7). Desde a
+-- v1.7 também os livres contratados (sem clube de origem; valor = luvas) e
+-- as dispensas (sem clube de destino; valor = rescisão), para o histórico.
 CREATE TABLE IF NOT EXISTS transferencia (
     id            INTEGER PRIMARY KEY,
     simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
     rodada        INTEGER NOT NULL,   -- feita antes desta rodada
     jogador_id    INTEGER NOT NULL REFERENCES jogador(id) ON DELETE CASCADE,
-    de_clube_id   INTEGER NOT NULL REFERENCES clube(id) ON DELETE CASCADE,
-    para_clube_id INTEGER NOT NULL REFERENCES clube(id) ON DELETE CASCADE,
-    valor         INTEGER NOT NULL
+    de_clube_id   INTEGER REFERENCES clube(id) ON DELETE CASCADE,   -- NULL = livre
+    para_clube_id INTEGER REFERENCES clube(id) ON DELETE CASCADE,   -- NULL = dispensado
+    valor         INTEGER NOT NULL,
+    tipo          TEXT NOT NULL DEFAULT 'transferencia'   -- transferencia | livre | dispensa
 );
 
 -- Propostas de compra feitas pelo técnico (v0.7): contam o limite por
@@ -282,3 +285,18 @@ CREATE TABLE IF NOT EXISTS mensagem (
     criada_em     TEXT NOT NULL                 -- ISO 8601 (UTC)
 );
 CREATE INDEX IF NOT EXISTS ix_mensagem_simulacao ON mensagem(simulacao_id);
+
+-- Jogadores observados pelo técnico (v1.7), de qualquer clube ou livres:
+-- vão pelo nome (livres não têm id e os ids mudam a cada temporada) e seguem
+-- na virada. Guardam como ele estava quando entrou na lista.
+CREATE TABLE IF NOT EXISTS observado (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    nome          TEXT NOT NULL,
+    clube         TEXT,               -- onde estava; NULL = livre
+    overall       INTEGER NOT NULL,
+    valor         INTEGER NOT NULL,   -- valor de mercado
+    temporada     INTEGER NOT NULL,   -- desde quando (temporada da carreira)
+    rodada        INTEGER NOT NULL,
+    UNIQUE (simulacao_id, nome)
+);
