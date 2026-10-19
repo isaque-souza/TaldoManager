@@ -127,6 +127,28 @@ def contratacao_livre(jogador, luvas):
     )
 
 
+def dispensa(jogador, custo):
+    """Rescisão feita pelo técnico (v1.7)."""
+    paga = (f"Pagamos {_dinheiro(custo)} de rescisão, metade dos salários que "
+            f"o contrato ainda devia" if custo else "Sem contrato a pagar")
+    return _mensagem(
+        "Diretor de futebol", f"Dispensado: {jogador.nome}",
+        f"Rescindimos com {jogador.nome}. {paga}. Ele está sem clube e "
+        f"pode assinar com quem quiser.",
+    )
+
+
+def revolta_da_dispensa(jogador, antes, depois):
+    """Dispensa de um ídolo (v1.7): a torcida sente como uma venda."""
+    pct = f"{abs(depois / antes - 1) * 100:.0f}".replace(".", ",")
+    return _mensagem(
+        "Marketing", "A torcida não perdoou",
+        f"Mandar embora {jogador.nome}, um ídolo da casa, deixou a torcida de "
+        f"luto: perdemos {pct}% da torcida, de {_torcedores(antes)} para "
+        f"{_torcedores(depois)} torcedores.",
+    )
+
+
 def livre_bloqueado(jogador, motivo, caixa=None):
     """Nem deu para contratar o livre (elenco cheio, caixa para as luvas)."""
     temos = f" Hoje temos {_dinheiro(caixa)} em caixa." if caixa is not None else ""

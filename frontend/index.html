@@ -204,10 +204,10 @@
           <strong id="hub-mercado"></strong>
           <small id="hub-mercado-info"></small>
         </button>
-        <button class="hub-card" data-abrir="contratos">
-          <span class="hub-rotulo"><span data-icone="contrato"></span> Contratos</span>
-          <strong id="hub-contratos"></strong>
-          <small id="hub-contratos-info"></small>
+        <button class="hub-card" data-abrir="elenco">
+          <span class="hub-rotulo"><span data-icone="prancheta"></span> Elenco</span>
+          <strong id="hub-elenco"></strong>
+          <small id="hub-elenco-info"></small>
         </button>
         <button class="hub-card" data-abrir="marketing">
           <span class="hub-rotulo"><span data-icone="torcida"></span> Marketing</span>
@@ -280,10 +280,10 @@
         <div id="r-mercado"></div>
       </div>
 
-      <div data-painel="contratos" hidden>
-        <p id="r-contrato-msg"></p>
-        <div id="c-form"></div>
-        <div id="r-contratos"></div>
+      <!-- Central do Elenco (v1.7): a lista, a ficha e as ações de cada jogador -->
+      <div data-painel="elenco" hidden>
+        <p id="r-contrato-msg" aria-live="polite"></p>
+        <div id="el-central"></div>
       </div>
 
       <div data-painel="financas" hidden>

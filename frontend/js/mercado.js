@@ -3,7 +3,7 @@
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { abrirSecaoRodada, carregarProximaRodada, marcarHubMercado } from "./rodada.js";
-import { renderContratos } from "./contratos.js";
+import { renderElenco } from "./elenco.js";
 import { icone, seloIdolo } from "./icones.js";
 import { carregarCaixa } from "./caixa.js";
 import { destaques, linhaAtributos } from "./atributos.js";
@@ -13,8 +13,8 @@ import { posicaoDe, sigla } from "./posicoes.js";
 
 // a resposta do clube ao lado do mercado, com o caminho para a mensagem
 // completa do diretor de futebol (o que faltou, quantas tentativas sobram)
-function avisoMercado(html, ruim = false) {
-  const el = $("r-mercado-msg");
+export function avisoMercado(html, ruim = false, onde = "r-mercado-msg") {
+  const el = $(onde);
   el.innerHTML = `${html} <button class="link-caixa" type="button">${icone("email")} Ver na caixa de entrada</button>`;
   el.classList.toggle("ruim", ruim);
   el.querySelector(".link-caixa").addEventListener("click", () => abrirSecaoRodada("caixa"));
@@ -148,9 +148,13 @@ export function renderMercado(m) {
     ]);
   }
 
-  renderContratos(m.elenco);
-  const acabando = m.elenco.filter((f) => f.contrato_anos <= 1).length;
-  marcarHubMercado({ janelaAberta: m.janela_aberta, acabando });
+  renderElenco(m);
+  marcarHubMercado({
+    janelaAberta: m.janela_aberta,
+    total: m.elenco.length,
+    acabando: m.elenco.filter((f) => f.contrato_anos <= 1).length,
+    aVenda: m.elenco.filter((f) => f.a_venda).length,
+  });
 
   const box = $("r-mercado");
   box.innerHTML = html;
@@ -188,20 +192,21 @@ export function cliqueMercado(botao) {
   if (acao === "livre") return contratarLivre(botao.dataset.nome);
 }
 
-// POST com o motivo do 400 visível (o `pedir` genérico só mostra o status)
-export async function postarMercado(caminho, corpo, ocupadoTexto) {
+// POST com o motivo do 400 visível (o `pedir` genérico só mostra o status);
+// `onde` é o parágrafo do aviso (o do mercado ou o da Central do Elenco)
+export async function postarMercado(caminho, corpo, ocupadoTexto, { metodo = "POST", onde = "r-mercado-msg" } = {}) {
   limparAviso();
   ocupado(true, ocupadoTexto);
   try {
     const resp = await fetch(api() + caminho, {
-      method: "POST",
+      method: metodo,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(corpo),
     });
     const dados = await resp.json().catch(() => ({}));
     if (!resp.ok) {
       // ao lado do mercado (não só no topo da página): o motivo é o que faltou
-      avisoMercado(`${icone("nao")} Não deu: ${dados.detail || `HTTP ${resp.status}`}.`, true);
+      avisoMercado(`${icone("nao")} Não deu: ${dados.detail || `HTTP ${resp.status}`}.`, true, onde);
       carregarCaixa();
       return null;
     }

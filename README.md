@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 634 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 677 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -741,6 +741,40 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
             ligas, campeão, vice, artilheiro e MVP da carreira passam a ser
             os da liga do técnico (antes podia aparecer o 1º da outra liga);
             o título de jogador vale nas duas
+
+---
+
+# 🚧 Central de Transferências (v1.7) — Em andamento
+
+Mercado e elenco como no FIFA: uma central para decidir o que fazer com cada
+jogador e outra para buscar, negociar e acompanhar as negociações. As
+propostas seguem com resposta na hora; a contratação passa a ter duas
+etapas (o clube e depois o jogador):
+
+* [x] Central do Elenco — o card "Contratos" do hub vira **Elenco**: a lista
+      do elenco com abas por setor e "À venda", e a ficha do jogador ao lado
+      (camisa, números da temporada, atributos, contrato, fama). Na ficha:
+      renovar, pôr/tirar da **lista de transferências** (fica no save e segue
+      na virada), ver as ofertas (com a janela aberta), **dispensar** e abrir
+      a página completa (`js/elenco.js`)
+      - Dispensa a qualquer rodada: paga metade dos salários que o contrato
+        ainda deve (precisa ter caixa) e o jogador vai para os livres;
+        vale a trava do elenco mínimo, e dispensar um ídolo irrita a torcida
+        como vendê-lo. O dispensado mantém a linha na tabela `jogador`
+        (marcada `livre`): as estatísticas ficam, mas ele não volta ao clube
+        na virada
+      - API: `PUT /simulacoes/{id}/jogadores/{jid}/a-venda`,
+        `POST /simulacoes/{id}/jogadores/{jid}/dispensa`
+* [ ] Papel no elenco — titular, rotação, reserva ou promessa; quem joga
+      menos que o prometido reclama e depois pede para sair
+* [ ] Negociação em duas etapas — o valor com o clube, depois salário, anos,
+      multa e papel com o jogador
+* [ ] Central de Transferências — buscar nas duas ligas, observados,
+      negociações e histórico
+* [ ] Ofertas recebidas — a CPU faz propostas pelos jogadores à venda (e,
+      às vezes, pelos craques)
+* [ ] Empréstimos
+* [ ] Clubes da CPU negociam entre si
 
 ---
 

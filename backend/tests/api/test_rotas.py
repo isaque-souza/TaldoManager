@@ -381,6 +381,27 @@ def test_contratar_livre_pela_api():
                        json={"nome": livres[0]["nome"]}).status_code == 404
 
 
+def test_lista_de_transferencias_e_dispensa_pela_api():
+    sid = client.post(
+        "/simulacoes", json={"seed": 4, "clube": "Real Taldo", "modo": "rodada_a_rodada"}
+    ).json()["id"]
+    elenco = client.get(f"/simulacoes/{sid}/mercado").json()["elenco"]
+    meu = next(f for f in elenco if f["posicao"] != "Goleiro")
+    assert meu["rescisao"] is not None and meu["dispensa_bloqueada"] is None
+
+    r = client.put(f"/simulacoes/{sid}/jogadores/{meu['jogador_id']}/a-venda",
+                   json={"a_venda": True})
+    assert r.status_code == 200 and r.json()["a_venda"] is True
+
+    r = client.post(f"/simulacoes/{sid}/jogadores/{meu['jogador_id']}/dispensa")
+    assert r.status_code == 200 and r.json()["rescisao"] == meu["rescisao"]
+    # já não é do elenco: o id existe (a linha fica), mas não é dispensável
+    assert client.post(
+        f"/simulacoes/{sid}/jogadores/{meu['jogador_id']}/dispensa"
+    ).status_code == 404
+    assert client.post(f"/simulacoes/{sid}/jogadores/999999/dispensa").status_code == 404
+
+
 def test_mercado_de_temporada_concluida_da_409():
     sid = client.post("/simulacoes", json={"seed": 2}).json()["id"]
     assert client.get(f"/simulacoes/{sid}/mercado").status_code == 409

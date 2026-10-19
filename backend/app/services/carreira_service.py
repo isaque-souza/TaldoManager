@@ -100,8 +100,11 @@ def proxima_temporada(simulacao_id):
         clubes_finais = [
             dict(r) for r in clube_repo.listar_por_simulacao(conn, simulacao_id)
         ]
+        # sem os dispensados (v1.7): eles seguem nos livres
         jogadores_finais = [
-            dict(r) for r in jogador_repo.listar_por_simulacao(conn, simulacao_id)
+            dict(r) for r in jogador_repo.listar_por_simulacao(
+                conn, simulacao_id, com_livres=False
+            )
         ]
         # livres no fim da temporada (v1.6); antes deles, None = os da seed
         livres_finais = (

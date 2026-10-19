@@ -1,5 +1,7 @@
 """Acesso à tabela `jogador` (snapshot de um jogador dentro de uma simulação)."""
 
+import json
+
 CAMPOS = (
     "nome", "posicao", "idade", "overall", "partidas", "gols", "assistencias",
     "nota_media", "melhor_nota", "pior_nota", "melhor_em_campo",
@@ -7,7 +9,7 @@ CAMPOS = (
     "penaltis", "penaltis_perdidos", "faltas",
     "potencial", "contrato_anos", "valor_mercado", "salario",
     "multa_rescisoria", "numero", "funcao", "secundarias",
-    "fama", "temporadas_no_clube",
+    "fama", "temporadas_no_clube", "a_venda",
 )
 
 # campos que dados de antes da v1.3 (posição) e da v1.4 (fama) não trazem
@@ -16,6 +18,8 @@ _OPCIONAIS = ("funcao", "secundarias", "fama", "temporadas_no_clube")
 
 
 def _valor(j, campo):
+    if campo == "a_venda":   # v1.7; NOT NULL, então sem ela é 0
+        return int(bool(j.get(campo)))
     return j.get(campo) if campo in _OPCIONAIS else j[campo]
 
 
@@ -43,6 +47,8 @@ def atualizar(conn, simulacao_id, mapa_clubes, jogadores):
     UPDATE por (simulacao_id, nome) — e não por clube, porque com
     transferências o jogador muda de clube; o `clube_id` é regravado junto.
     Quem ainda não tem linha (um livre recém-contratado, v1.6) é inserido.
+    Quem tem linha e não está em `jogadores` foi dispensado (v1.7): fica
+    marcado como `livre` (e volta ao assinar de novo).
     Devolve o mesmo mapa {(clube, nome): id} que `inserir`, para ligar
     lances e atuações da rodada recém-jogada."""
 
@@ -52,7 +58,7 @@ def atualizar(conn, simulacao_id, mapa_clubes, jogadores):
         cur = conn.execute(
             f"""
             UPDATE jogador
-               SET clube_id = ?,
+               SET clube_id = ?, livre = 0,
                    {", ".join(f"{c} = ?" for c in CAMPOS if c != "nome")}
              WHERE simulacao_id = ? AND nome = ?
             """,
@@ -67,11 +73,20 @@ def atualizar(conn, simulacao_id, mapa_clubes, jogadores):
             novos.append(j)
     inserir(conn, simulacao_id, mapa_clubes, novos)
 
+    conn.execute(
+        """
+        UPDATE jogador SET livre = 1
+         WHERE simulacao_id = ?
+           AND nome NOT IN (SELECT value FROM json_each(?))
+        """,
+        (simulacao_id, json.dumps([j["nome"] for j in jogadores])),
+    )
+
     for r in conn.execute(
         """
         SELECT j.id, j.nome, c.nome AS clube
         FROM jogador j JOIN clube c ON c.id = j.clube_id
-        WHERE j.simulacao_id = ?
+        WHERE j.simulacao_id = ? AND j.livre = 0
         """,
         (simulacao_id,),
     ):
@@ -88,15 +103,20 @@ _SELECT = """
 """
 
 
-def listar_por_simulacao(conn, simulacao_id):
+def listar_por_simulacao(conn, simulacao_id, com_livres=True):
+    """Todos os jogadores da temporada. `com_livres=False` deixa de fora os
+    dispensados (v1.7): é o elenco de cada clube no fim dela."""
+    filtro = "" if com_livres else " AND j.livre = 0"
     return conn.execute(
-        _SELECT + " WHERE j.simulacao_id = ? ORDER BY j.id", (simulacao_id,)
+        _SELECT + " WHERE j.simulacao_id = ?" + filtro + " ORDER BY j.id",
+        (simulacao_id,),
     ).fetchall()
 
 
 def listar_por_clube(conn, clube_id):
+    """O elenco do clube (sem quem ele dispensou, v1.7)."""
     return conn.execute(
-        _SELECT + " WHERE j.clube_id = ? ORDER BY j.nota_media DESC",
+        _SELECT + " WHERE j.clube_id = ? AND j.livre = 0 ORDER BY j.nota_media DESC",
         (clube_id,),
     ).fetchall()
 

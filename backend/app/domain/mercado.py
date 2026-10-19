@@ -64,6 +64,14 @@ def motivo_entrada_bloqueada(clube, preco):
     return None
 
 
+def tirar_do_elenco(clube, jogador):
+    clube.jogadores.remove(jogador)
+    for lista in (clube.titulares, clube.reservas):
+        if jogador in lista:
+            lista.remove(jogador)
+    clube.xi_preferido.discard(jogador)
+
+
 def transferir(jogador, vendedor, comprador, preco):
     """Move `jogador` de `vendedor` para `comprador` pagando `preco`.
     Levanta `TransferenciaInvalida` se alguma regra impedir."""
@@ -80,14 +88,11 @@ def transferir(jogador, vendedor, comprador, preco):
     if motivo:
         raise TransferenciaInvalida(motivo)
 
-    vendedor.jogadores.remove(jogador)
-    for lista in (vendedor.titulares, vendedor.reservas):
-        if jogador in lista:
-            lista.remove(jogador)
-    vendedor.xi_preferido.discard(jogador)
+    tirar_do_elenco(vendedor, jogador)
     comprador.contratar_jogador(jogador)
     # a fama vem junto; a história no clube, não (v1.4)
     jogador.temporadas_no_clube = 0
+    jogador.a_venda = False   # a lista era do clube antigo (v1.7)
     # chega com contrato novo: o do clube antigo não vale no novo
     jogador.assinar_contrato(
         anos=CONTRATO_PADRAO_ANOS,
@@ -125,6 +130,7 @@ def contratar_livre(jogador, livres, clube):
     livres.remove(jogador)
     clube.contratar_jogador(jogador)
     jogador.temporadas_no_clube = 0
+    jogador.a_venda = False
     jogador.assinar_contrato(
         anos=CONTRATO_LIVRE_ANOS,
         salario=jogador.salario_referencia(),
@@ -132,6 +138,28 @@ def contratar_livre(jogador, livres, clube):
     )
     clube.lancar("despesa_compras", valor)
     return valor
+
+
+# --- dispensa (v1.7) ---------------------------------------------------------
+
+# rescindir custa metade dos salários que o contrato ainda deve
+FATOR_RESCISAO = 0.5
+
+
+def rescisao(jogador):
+    return round(jogador.salario * jogador.contrato_anos * FATOR_RESCISAO / 10_000) * 10_000
+
+
+def motivo_dispensa_bloqueada(clube, jogador):
+    """Por que `clube` não pode dispensar `jogador` (None = pode). Vale a
+    trava do elenco mínimo e é preciso ter caixa para a rescisão."""
+    motivo = motivo_saida_bloqueada(clube, jogador)
+    if motivo:
+        return motivo
+    custo = rescisao(jogador)
+    if clube.dinheiro < custo:
+        return f"{clube.nome} não tem caixa para pagar {custo:,} de rescisão".replace(",", ".")
+    return None
 
 
 # --- negociação -------------------------------------------------------------

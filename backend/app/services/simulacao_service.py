@@ -183,6 +183,7 @@ def _serializar_jogador(jogador, clube_nome):
         "numero": jogador.numero,
         "fama": jogador.fama,
         "temporadas_no_clube": jogador.temporadas_no_clube,
+        "a_venda": jogador.a_venda,
     }
 
 

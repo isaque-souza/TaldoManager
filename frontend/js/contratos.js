@@ -1,41 +1,13 @@
-// Contratos: lista do elenco e renovação.
+// Contratos: a renovação (aberta pela ficha da Central do Elenco, v1.7).
 
 import { $, estado, pedir } from "./nucleo.js";
-import { dinheiro, tabela } from "./tabelas.js";
+import { dinheiro } from "./tabelas.js";
 import { carregarMercado, postarMercado } from "./mercado.js";
 import { icone } from "./icones.js";
 
 // ---------- contratos ----------
 
 export const MULTA_ROTULO = { sem: "sem multa", "2x": "2× o valor", "3x": "3× o valor", "5x": "5× o valor" };
-
-export function renderContratos(elenco) {
-  const linhas = [...elenco]
-    .sort((a, b) => a.contrato_anos - b.contrato_anos || b.overall - a.overall)
-    .map((f) => ({
-      ...f,
-      contrato: `${f.contrato_anos} temp.${f.contrato_anos <= 1 ? ` <span class="chip chip-perto">acabando</span>` : ""}`,
-      sal: dinheiro(f.salario),
-      ref: f.salario_referencia > f.salario
-        ? `<span class="negativo" title="ganha menos que o mercado paga">${dinheiro(f.salario_referencia)}</span>`
-        : dinheiro(f.salario_referencia),
-      multa: f.multa_rescisoria ? dinheiro(f.multa_rescisoria) : "—",
-      acao: `<button class="transf secondary" data-contrato="${f.jogador_id}">Renovar</button>`,
-    }));
-  const box = $("r-contratos");
-  box.innerHTML =
-    `<p class="vazio">Renove a qualquer momento. O jogador pede um salário com base no de mercado, ` +
-    `mais se for titular ou o craque, e conforme a multa: <strong>sem multa</strong> ou multa alta ` +
-    `protegem você de propostas, mas ele cobra por isso.</p>` +
-    tabela(linhas, [
-      ["nome", "Jogador"], ["posicao", "Pos."], ["idade", "Idade"], ["overall", "OVR"],
-      ["contrato", "Contrato"], ["sal", "Salário"], ["ref", "Mercado paga"],
-      ["multa", "Multa"], ["acao", ""],
-    ]);
-  box.querySelectorAll("button[data-contrato]").forEach((b) =>
-    b.addEventListener("click", () => abrirContrato(Number(b.dataset.contrato)))
-  );
-}
 
 export async function abrirContrato(jogadorId) {
   const c = await pedir(`/simulacoes/${estado.simId}/jogadores/${jogadorId}/contrato`);
@@ -79,7 +51,8 @@ export async function abrirContrato(jogadorId) {
 
 export async function renovar(jogadorId, salario, anos, multa) {
   const r = await postarMercado(
-    `/simulacoes/${estado.simId}/renovacoes`, { jogador_id: jogadorId, salario, anos, multa }, "Conversando com o jogador…"
+    `/simulacoes/${estado.simId}/renovacoes`, { jogador_id: jogadorId, salario, anos, multa }, "Conversando com o jogador…",
+    { onde: "r-contrato-msg" }
   );
   if (!r) return;
   const sinal = icone({ aceita: "ok", contraproposta: "acordo", recusada: "nao" }[r.resposta]);

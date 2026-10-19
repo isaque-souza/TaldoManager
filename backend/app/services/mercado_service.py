@@ -9,13 +9,15 @@ aqui é carregar o estado vivo, aplicar a negociação e regravar tudo
 - vender: `ofertas` lista o que cada clube paga; `vender` aceita uma delas
 - livres (v1.6): `contratar_livre` contrata quem está sem clube, pagando só
   as luvas
+- elenco (v1.7): `marcar_a_venda` põe/tira da lista de transferências e
+  `dispensar` rescinde (a qualquer momento, sem depender da janela)
 """
 
 import json
 import random
 
 from app.db.conexao import conectar
-from app.domain import caixa, fama, mercado, torcida
+from app.domain import caixa, fama, livres, mercado, torcida
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import clube_repository as clube_repo
@@ -162,6 +164,13 @@ def _ficha(jogador, jogador_id, clube):
         "multa_rescisoria": jogador.multa_rescisoria,
         "fama": jogador.fama,
         "idolo": fama.idolo(jogador),
+        "a_venda": jogador.a_venda,
+        # a temporada até aqui (ficha da Central do Elenco, v1.7)
+        "numero": jogador.numero,
+        "partidas": jogador.partidas,
+        "gols": jogador.gols,
+        "assistencias": jogador.assistencias,
+        "nota_media": jogador.nota_media(),
     }
 
 
@@ -220,6 +229,8 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
                 **_ficha(j, ids[j.nome], alvo),
                 "bloqueio": bloqueio,
                 "ofertas": n_ofertas,
+                "rescisao": mercado.rescisao(j),
+                "dispensa_bloqueada": mercado.motivo_dispensa_bloqueada(alvo, j),
             })
 
         disponiveis = []
@@ -510,6 +521,74 @@ def contratar_livre(simulacao_id, nome):
             "luvas": luvas,
             "salario": jogador.salario,
             "contrato_anos": jogador.contrato_anos,
+            "caixa": clube.dinheiro,
+        }
+    finally:
+        conn.close()
+
+
+def _do_meu_elenco(ctx, jogador_id):
+    jogador, dono = ctx.jogador(jogador_id)
+    if jogador is None:
+        return None
+    if dono is not ctx.alvo:
+        raise TransferenciaInvalida(f"{jogador.nome} não é do seu elenco")
+    return jogador
+
+
+def marcar_a_venda(simulacao_id, jogador_id, a_venda):
+    """Põe (ou tira) um jogador do elenco dirigido na lista de
+    transferências (v1.7). None se a simulação ou o jogador não existem."""
+
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        jogador = _do_meu_elenco(ctx, jogador_id)
+        if jogador is None:
+            return None
+        jogador.a_venda = a_venda
+        with conn:
+            ctx.gravar()
+        return {"jogador_id": jogador_id, "jogador": jogador.nome, "a_venda": a_venda}
+    finally:
+        conn.close()
+
+
+def dispensar(simulacao_id, jogador_id):
+    """Rescinde com um jogador do elenco dirigido (v1.7): paga a rescisão e
+    ele vai para os livres. A qualquer momento, sem depender da janela. None
+    se a simulação ou o jogador não existem."""
+
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        jogador = _do_meu_elenco(ctx, jogador_id)
+        if jogador is None:
+            return None
+
+        clube = ctx.alvo
+        motivo = mercado.motivo_dispensa_bloqueada(clube, jogador)
+        if motivo:
+            raise TransferenciaInvalida(motivo)
+
+        # a torcida reage antes: a dispensa zera o tempo de casa (e o ídolo)
+        revolta = torcida.reagir_a_dispensa(clube, jogador)
+        custo = livres.dispensar(jogador, clube, ctx.campeonato.livres)
+        with conn:
+            ctx.gravar()
+            mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                caixa.dispensa(jogador, custo),
+                revolta and caixa.revolta_da_dispensa(jogador, *revolta),
+            ])
+        return {
+            "rodada": ctx.rodada,
+            "jogador_id": jogador_id,
+            "jogador": jogador.nome,
+            "rescisao": custo,
             "caixa": clube.dinheiro,
         }
     finally:

@@ -102,7 +102,14 @@ CREATE TABLE IF NOT EXISTS jogador (
     multa_rescisoria INTEGER,                    -- NULL = sem multa
     numero          INTEGER,                     -- camisa (v1.1); NULL em saves antigos
     funcao          TEXT,                        -- posição específica (v1.3); NULL em saves antigos
-    secundarias     TEXT                         -- JSON: posições secundárias (v1.3)
+    secundarias     TEXT,                        -- JSON: posições secundárias (v1.3)
+    fama            INTEGER,                     -- v1.4; NULL em saves antigos
+    temporadas_no_clube INTEGER,
+    a_venda         INTEGER NOT NULL DEFAULT 0,  -- na lista de transferências (v1.7)
+    -- dispensado no meio da temporada (v1.7): está nos livres, mas a linha
+    -- fica (lances e atuações apontam para ela); o clube_id é o do clube
+    -- por onde jogou
+    livre           INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS partida (
