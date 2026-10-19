@@ -1,0 +1,588 @@
+[
+    {
+        "nome": "Brennan Johnson",
+        "idade": 22,
+        "posicao": "Meio-Campo",
+        "overall": 82,
+        "potencial": 89,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 22,
+        "nacionalidade": "WAL"
+    },
+    {
+        "nome": "Oleksandr Zinchenko",
+        "idade": 27,
+        "posicao": "Defesa",
+        "overall": 81,
+        "potencial": 84,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ],
+        "numero": 35,
+        "nacionalidade": "UKR"
+    },
+    {
+        "nome": "Scott McTominay",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 80,
+        "potencial": 81,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 39,
+        "nacionalidade": "SCO"
+    },
+    {
+        "nome": "Calum Chambers",
+        "idade": 28,
+        "posicao": "Defesa",
+        "overall": 79,
+        "potencial": 80,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ],
+        "numero": 16,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Fábio Vieira",
+        "idade": 23,
+        "posicao": "Meio-Campo",
+        "overall": 79,
+        "potencial": 83,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 21,
+        "nacionalidade": "POR"
+    },
+    {
+        "nome": "James Hillson",
+        "idade": 22,
+        "posicao": "Goleiro",
+        "overall": 79,
+        "potencial": 82,
+        "funcao": "Goleiro",
+        "secundarias": [],
+        "numero": 54,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Joachim Andersen",
+        "idade": 27,
+        "posicao": "Defesa",
+        "overall": 79,
+        "potencial": 80,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ],
+        "numero": 16,
+        "nacionalidade": "DEN"
+    },
+    {
+        "nome": "Manor Solomon",
+        "idade": 24,
+        "posicao": "Atacante",
+        "overall": 79,
+        "potencial": 82,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante",
+            "Meia-atacante"
+        ],
+        "numero": 27,
+        "nacionalidade": "ISR"
+    },
+    {
+        "nome": "Sean Longstaff",
+        "idade": 26,
+        "posicao": "Meio-Campo",
+        "overall": 79,
+        "potencial": 79,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 36,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Boubacar Kamara",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 78,
+        "potencial": 86,
+        "funcao": "Lateral",
+        "secundarias": [],
+        "numero": 44,
+        "nacionalidade": "FRA"
+    },
+    {
+        "nome": "Clément Lenglet",
+        "idade": 28,
+        "posicao": "Defesa",
+        "overall": 78,
+        "potencial": 79,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 17,
+        "nacionalidade": "FRA"
+    },
+    {
+        "nome": "Nathan Carlyon",
+        "idade": 21,
+        "posicao": "Atacante",
+        "overall": 78,
+        "potencial": 80,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ],
+        "numero": 37,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Pape Matar Sarr",
+        "idade": 21,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 84,
+        "funcao": "Volante",
+        "secundarias": [],
+        "numero": 29,
+        "nacionalidade": "SEN"
+    },
+    {
+        "nome": "Rhys Williams",
+        "idade": 22,
+        "posicao": "Defesa",
+        "overall": 78,
+        "potencial": 80,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 46,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Rodrigo Bentancur",
+        "idade": 26,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 79,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 30,
+        "nacionalidade": "URU"
+    },
+    {
+        "nome": "Malo Gusto",
+        "idade": 20,
+        "posicao": "Defesa",
+        "overall": 77,
+        "potencial": 90,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 27,
+        "nacionalidade": "FRA"
+    },
+    {
+        "nome": "Rodrigo Vilca",
+        "idade": 24,
+        "posicao": "Meio-Campo",
+        "overall": 77,
+        "potencial": 84,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia central"
+        ],
+        "numero": 48,
+        "nacionalidade": "PER"
+    },
+    {
+        "nome": "Saša Lukić",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 77,
+        "potencial": 77,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 28,
+        "nacionalidade": "SRB"
+    },
+    {
+        "nome": "Tino Livramento",
+        "idade": 21,
+        "posicao": "Defesa",
+        "overall": 77,
+        "potencial": 85,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 21,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Will Brown",
+        "idade": 21,
+        "posicao": "Goleiro",
+        "overall": 77,
+        "potencial": 83,
+        "funcao": "Goleiro",
+        "secundarias": [],
+        "numero": 35,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Dan Burn",
+        "idade": 31,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 76,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 33,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Jaïro Riedewald",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 76,
+        "potencial": 78,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Ponta"
+        ],
+        "numero": 44,
+        "nacionalidade": "NED"
+    },
+    {
+        "nome": "Kaine Kesler Hayden",
+        "idade": 21,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 84,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 29,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Luizão",
+        "idade": 21,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 78,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ],
+        "numero": 37,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Mauro Bandeira",
+        "idade": 20,
+        "posicao": "Atacante",
+        "overall": 76,
+        "potencial": 91,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante",
+            "Meia-atacante"
+        ],
+        "numero": 40,
+        "nacionalidade": "POR"
+    },
+    {
+        "nome": "Nathan Ferguson",
+        "idade": 23,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 81,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 36,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Daiki Hashioka",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 77,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 27,
+        "nacionalidade": "JPN"
+    },
+    {
+        "nome": "Emerson Palmieri",
+        "idade": 29,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 76,
+        "funcao": "Lateral",
+        "secundarias": [],
+        "numero": 33,
+        "nacionalidade": "ITA"
+    },
+    {
+        "nome": "Jarrad Branthwaite",
+        "idade": 21,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 80,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ],
+        "numero": 32,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Max Aarons",
+        "idade": 23,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 78,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 37,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Mohamed Elneny",
+        "idade": 31,
+        "posicao": "Meio-Campo",
+        "overall": 75,
+        "potencial": 75,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia central"
+        ],
+        "numero": 25,
+        "nacionalidade": "EGY"
+    },
+    {
+        "nome": "Nayef Aguerd",
+        "idade": 27,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 77,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 27,
+        "nacionalidade": "MAR"
+    },
+    {
+        "nome": "Teddy Sharman-Lowe",
+        "idade": 20,
+        "posicao": "Goleiro",
+        "overall": 75,
+        "potencial": 87,
+        "funcao": "Goleiro",
+        "secundarias": [],
+        "numero": 38,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Wesley Fofana",
+        "idade": 23,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 81,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ],
+        "numero": 33,
+        "nacionalidade": "FRA"
+    },
+    {
+        "nome": "Alfie Doughty",
+        "idade": 24,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 76,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 45,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Antonee Robinson",
+        "idade": 26,
+        "posicao": "Defesa",
+        "overall": 74,
+        "potencial": 75,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 33,
+        "nacionalidade": "USA"
+    },
+    {
+        "nome": "Cesare Casadei",
+        "idade": 20,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 79,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Ponta",
+            "Volante"
+        ],
+        "numero": 31,
+        "nacionalidade": "ITA"
+    },
+    {
+        "nome": "Jonny Evans",
+        "idade": 35,
+        "posicao": "Defesa",
+        "overall": 74,
+        "potencial": 74,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 35,
+        "nacionalidade": "NIR"
+    },
+    {
+        "nome": "Joël Veltman",
+        "idade": 31,
+        "posicao": "Defesa",
+        "overall": 74,
+        "potencial": 74,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 34,
+        "nacionalidade": "NED"
+    },
+    {
+        "nome": "Keane Lewis-Potter",
+        "idade": 22,
+        "posicao": "Atacante",
+        "overall": 74,
+        "potencial": 80,
+        "funcao": "Ponta",
+        "secundarias": [],
+        "numero": 23,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Mark Gillespie",
+        "idade": 31,
+        "posicao": "Goleiro",
+        "overall": 74,
+        "potencial": 74,
+        "funcao": "Goleiro",
+        "secundarias": [],
+        "numero": 29,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Miguel Azeez",
+        "idade": 21,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 81,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 39,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Nathaniel Clyne",
+        "idade": 32,
+        "posicao": "Defesa",
+        "overall": 74,
+        "potencial": 74,
+        "funcao": "Lateral",
+        "secundarias": [],
+        "numero": 17,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Aaron Wan-Bissaka",
+        "idade": 26,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 73,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 29,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Ansu Fati",
+        "idade": 21,
+        "posicao": "Atacante",
+        "overall": 73,
+        "potencial": 80,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ],
+        "numero": 31,
+        "nacionalidade": "ESP"
+    },
+    {
+        "nome": "Lewis Hall",
+        "idade": 19,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 78,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Ponta"
+        ],
+        "numero": 20,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Mads Roerslev",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 80,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ],
+        "numero": 30,
+        "nacionalidade": "DEN"
+    },
+    {
+        "nome": "Toti Gomes",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 80,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 24,
+        "nacionalidade": "POR"
+    },
+    {
+        "nome": "Alfie Whiteman",
+        "idade": 25,
+        "posicao": "Goleiro",
+        "overall": 72,
+        "potencial": 72,
+        "funcao": "Goleiro",
+        "secundarias": [],
+        "numero": 41,
+        "nacionalidade": "ENG"
+    },
+    {
+        "nome": "Elliot Anderson",
+        "idade": 21,
+        "posicao": "Meio-Campo",
+        "overall": 72,
+        "potencial": 78,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 32,
+        "nacionalidade": "SCO"
+    }
+]

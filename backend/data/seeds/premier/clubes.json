@@ -1,0 +1,894 @@
+[
+    {
+        "id": 1,
+        "nome": "Manchester City",
+        "pais": "Inglaterra",
+        "dinheiro": 35000000,
+        "torcedores": 7000000,
+        "titulares": [
+            10001,
+            10002,
+            10003,
+            10004,
+            10005,
+            10006,
+            10007,
+            10008,
+            10009,
+            10010,
+            10011
+        ],
+        "reservas": [
+            10012,
+            10013,
+            10014,
+            10015,
+            10016,
+            10017,
+            10018,
+            10019,
+            10020,
+            10021,
+            10022,
+            10023
+        ],
+        "rivais": [
+            "Manchester United"
+        ],
+        "identidade": {
+            "cor_primaria": "#6CABDD",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "MCI"
+        },
+        "posicao_2023_24": 1
+    },
+    {
+        "id": 2,
+        "nome": "Arsenal",
+        "pais": "Inglaterra",
+        "dinheiro": 30000000,
+        "torcedores": 9000000,
+        "titulares": [
+            10024,
+            10025,
+            10026,
+            10027,
+            10028,
+            10029,
+            10030,
+            10031,
+            10032,
+            10033,
+            10034
+        ],
+        "reservas": [
+            10035,
+            10036,
+            10037,
+            10038,
+            10039,
+            10040,
+            10041,
+            10042,
+            10043,
+            10044,
+            10045,
+            10046
+        ],
+        "rivais": [
+            "Tottenham"
+        ],
+        "identidade": {
+            "cor_primaria": "#EF0107",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "ARS"
+        },
+        "posicao_2023_24": 2
+    },
+    {
+        "id": 3,
+        "nome": "Liverpool",
+        "pais": "Inglaterra",
+        "dinheiro": 32000000,
+        "torcedores": 11000000,
+        "titulares": [
+            10047,
+            10048,
+            10049,
+            10050,
+            10051,
+            10052,
+            10053,
+            10054,
+            10055,
+            10056,
+            10057
+        ],
+        "reservas": [
+            10058,
+            10059,
+            10060,
+            10061,
+            10062,
+            10063,
+            10064,
+            10065,
+            10066,
+            10067,
+            10068,
+            10069
+        ],
+        "rivais": [
+            "Everton",
+            "Manchester United"
+        ],
+        "identidade": {
+            "cor_primaria": "#C8102E",
+            "cor_secundaria": "#F6EB61",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "LIV"
+        },
+        "posicao_2023_24": 3
+    },
+    {
+        "id": 4,
+        "nome": "Aston Villa",
+        "pais": "Inglaterra",
+        "dinheiro": 18000000,
+        "torcedores": 2500000,
+        "titulares": [
+            10070,
+            10071,
+            10072,
+            10073,
+            10074,
+            10075,
+            10076,
+            10077,
+            10078,
+            10079,
+            10080
+        ],
+        "reservas": [
+            10081,
+            10082,
+            10083,
+            10084,
+            10085,
+            10086,
+            10087,
+            10088,
+            10089,
+            10090,
+            10091,
+            10092
+        ],
+        "rivais": [
+            "Wolves"
+        ],
+        "identidade": {
+            "cor_primaria": "#670E36",
+            "cor_secundaria": "#95BFE5",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "AVL"
+        },
+        "posicao_2023_24": 4
+    },
+    {
+        "id": 5,
+        "nome": "Tottenham",
+        "pais": "Inglaterra",
+        "dinheiro": 22000000,
+        "torcedores": 5000000,
+        "titulares": [
+            10093,
+            10094,
+            10095,
+            10096,
+            10097,
+            10098,
+            10099,
+            10100,
+            10101,
+            10102,
+            10103
+        ],
+        "reservas": [
+            10104,
+            10105,
+            10106,
+            10107,
+            10108,
+            10109,
+            10110,
+            10111,
+            10112,
+            10113,
+            10114,
+            10115
+        ],
+        "rivais": [
+            "Arsenal",
+            "Chelsea"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#132257",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "TOT"
+        },
+        "posicao_2023_24": 5
+    },
+    {
+        "id": 6,
+        "nome": "Chelsea",
+        "pais": "Inglaterra",
+        "dinheiro": 28000000,
+        "torcedores": 8000000,
+        "titulares": [
+            10116,
+            10117,
+            10118,
+            10119,
+            10120,
+            10121,
+            10122,
+            10123,
+            10124,
+            10125,
+            10126
+        ],
+        "reservas": [
+            10127,
+            10128,
+            10129,
+            10130,
+            10131,
+            10132,
+            10133,
+            10134,
+            10135,
+            10136,
+            10137,
+            10138
+        ],
+        "rivais": [
+            "Tottenham",
+            "West Ham"
+        ],
+        "identidade": {
+            "cor_primaria": "#034694",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "CHE"
+        },
+        "posicao_2023_24": 6
+    },
+    {
+        "id": 7,
+        "nome": "Newcastle",
+        "pais": "Inglaterra",
+        "dinheiro": 25000000,
+        "torcedores": 4000000,
+        "titulares": [
+            10139,
+            10140,
+            10141,
+            10142,
+            10143,
+            10144,
+            10145,
+            10146,
+            10147,
+            10148,
+            10149
+        ],
+        "reservas": [
+            10150,
+            10151,
+            10152,
+            10153,
+            10154,
+            10155,
+            10156,
+            10157,
+            10158,
+            10159,
+            10160,
+            10161
+        ],
+        "rivais": [],
+        "identidade": {
+            "cor_primaria": "#241F20",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "NEW"
+        },
+        "posicao_2023_24": 7
+    },
+    {
+        "id": 8,
+        "nome": "Manchester United",
+        "pais": "Inglaterra",
+        "dinheiro": 30000000,
+        "torcedores": 12000000,
+        "titulares": [
+            10162,
+            10163,
+            10164,
+            10165,
+            10166,
+            10167,
+            10168,
+            10169,
+            10170,
+            10171,
+            10172
+        ],
+        "reservas": [
+            10173,
+            10174,
+            10175,
+            10176,
+            10177,
+            10178,
+            10179,
+            10180,
+            10181,
+            10182,
+            10183,
+            10184
+        ],
+        "rivais": [
+            "Liverpool",
+            "Manchester City"
+        ],
+        "identidade": {
+            "cor_primaria": "#DA291C",
+            "cor_secundaria": "#000000",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "MUN"
+        },
+        "posicao_2023_24": 8
+    },
+    {
+        "id": 9,
+        "nome": "West Ham",
+        "pais": "Inglaterra",
+        "dinheiro": 14000000,
+        "torcedores": 2500000,
+        "titulares": [
+            10185,
+            10186,
+            10187,
+            10188,
+            10189,
+            10190,
+            10191,
+            10192,
+            10193,
+            10194,
+            10195
+        ],
+        "reservas": [
+            10196,
+            10197,
+            10198,
+            10199,
+            10200,
+            10201,
+            10202,
+            10203,
+            10204,
+            10205,
+            10206,
+            10207
+        ],
+        "rivais": [
+            "Chelsea"
+        ],
+        "identidade": {
+            "cor_primaria": "#7A263A",
+            "cor_secundaria": "#1BB1E7",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "WHU"
+        },
+        "posicao_2023_24": 9
+    },
+    {
+        "id": 10,
+        "nome": "Crystal Palace",
+        "pais": "Inglaterra",
+        "dinheiro": 8000000,
+        "torcedores": 1000000,
+        "titulares": [
+            10208,
+            10209,
+            10210,
+            10211,
+            10212,
+            10213,
+            10214,
+            10215,
+            10216,
+            10217,
+            10218
+        ],
+        "reservas": [
+            10219,
+            10220,
+            10221,
+            10222,
+            10223,
+            10224,
+            10225,
+            10226,
+            10227,
+            10228,
+            10229,
+            10230
+        ],
+        "rivais": [
+            "Brighton"
+        ],
+        "identidade": {
+            "cor_primaria": "#1B458F",
+            "cor_secundaria": "#C4122E",
+            "camisa": "listras",
+            "escudo": "moderno",
+            "sigla": "CRY"
+        },
+        "posicao_2023_24": 10
+    },
+    {
+        "id": 11,
+        "nome": "Brighton",
+        "pais": "Inglaterra",
+        "dinheiro": 12000000,
+        "torcedores": 1200000,
+        "titulares": [
+            10231,
+            10232,
+            10233,
+            10234,
+            10235,
+            10236,
+            10237,
+            10238,
+            10239,
+            10240,
+            10241
+        ],
+        "reservas": [
+            10242,
+            10243,
+            10244,
+            10245,
+            10246,
+            10247,
+            10248,
+            10249,
+            10250,
+            10251,
+            10252,
+            10253
+        ],
+        "rivais": [
+            "Crystal Palace"
+        ],
+        "identidade": {
+            "cor_primaria": "#0057B8",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "redondo",
+            "sigla": "BHA"
+        },
+        "posicao_2023_24": 11
+    },
+    {
+        "id": 12,
+        "nome": "Bournemouth",
+        "pais": "Inglaterra",
+        "dinheiro": 7000000,
+        "torcedores": 400000,
+        "titulares": [
+            10254,
+            10255,
+            10256,
+            10257,
+            10258,
+            10259,
+            10260,
+            10261,
+            10262,
+            10263,
+            10264
+        ],
+        "reservas": [
+            10265,
+            10266,
+            10267,
+            10268,
+            10269,
+            10270,
+            10271,
+            10272,
+            10273,
+            10274,
+            10275,
+            10276
+        ],
+        "rivais": [],
+        "identidade": {
+            "cor_primaria": "#DA291C",
+            "cor_secundaria": "#000000",
+            "camisa": "listras",
+            "escudo": "redondo",
+            "sigla": "BOU"
+        },
+        "posicao_2023_24": 12
+    },
+    {
+        "id": 13,
+        "nome": "Fulham",
+        "pais": "Inglaterra",
+        "dinheiro": 9000000,
+        "torcedores": 800000,
+        "titulares": [
+            10277,
+            10278,
+            10279,
+            10280,
+            10281,
+            10282,
+            10283,
+            10284,
+            10285,
+            10286,
+            10287
+        ],
+        "reservas": [
+            10288,
+            10289,
+            10290,
+            10291,
+            10292,
+            10293,
+            10294,
+            10295,
+            10296,
+            10297,
+            10298,
+            10299
+        ],
+        "rivais": [
+            "Brentford"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#000000",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "FUL"
+        },
+        "posicao_2023_24": 13
+    },
+    {
+        "id": 14,
+        "nome": "Wolves",
+        "pais": "Inglaterra",
+        "dinheiro": 9000000,
+        "torcedores": 1200000,
+        "titulares": [
+            10300,
+            10301,
+            10302,
+            10303,
+            10304,
+            10305,
+            10306,
+            10307,
+            10308,
+            10309,
+            10310
+        ],
+        "reservas": [
+            10311,
+            10312,
+            10313,
+            10314,
+            10315,
+            10316,
+            10317,
+            10318,
+            10319,
+            10320,
+            10321,
+            10322
+        ],
+        "rivais": [
+            "Aston Villa"
+        ],
+        "identidade": {
+            "cor_primaria": "#FDB913",
+            "cor_secundaria": "#231F20",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "WOL"
+        },
+        "posicao_2023_24": 14
+    },
+    {
+        "id": 15,
+        "nome": "Everton",
+        "pais": "Inglaterra",
+        "dinheiro": 8000000,
+        "torcedores": 3000000,
+        "titulares": [
+            10323,
+            10324,
+            10325,
+            10326,
+            10327,
+            10328,
+            10329,
+            10330,
+            10331,
+            10332,
+            10333
+        ],
+        "reservas": [
+            10334,
+            10335,
+            10336,
+            10337,
+            10338,
+            10339,
+            10340,
+            10341,
+            10342,
+            10343,
+            10344,
+            10345
+        ],
+        "rivais": [
+            "Liverpool"
+        ],
+        "identidade": {
+            "cor_primaria": "#003399",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "EVE"
+        },
+        "posicao_2023_24": 15
+    },
+    {
+        "id": 16,
+        "nome": "Brentford",
+        "pais": "Inglaterra",
+        "dinheiro": 8000000,
+        "torcedores": 500000,
+        "titulares": [
+            10346,
+            10347,
+            10348,
+            10349,
+            10350,
+            10351,
+            10352,
+            10353,
+            10354,
+            10355,
+            10356
+        ],
+        "reservas": [
+            10357,
+            10358,
+            10359,
+            10360,
+            10361,
+            10362,
+            10363,
+            10364,
+            10365,
+            10366,
+            10367,
+            10368
+        ],
+        "rivais": [
+            "Fulham"
+        ],
+        "identidade": {
+            "cor_primaria": "#E30613",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "redondo",
+            "sigla": "BRE"
+        },
+        "posicao_2023_24": 16
+    },
+    {
+        "id": 17,
+        "nome": "Nottingham Forest",
+        "pais": "Inglaterra",
+        "dinheiro": 7000000,
+        "torcedores": 1200000,
+        "titulares": [
+            10369,
+            10370,
+            10371,
+            10372,
+            10373,
+            10374,
+            10375,
+            10376,
+            10377,
+            10378,
+            10379
+        ],
+        "reservas": [
+            10380,
+            10381,
+            10382,
+            10383,
+            10384,
+            10385,
+            10386,
+            10387,
+            10388,
+            10389,
+            10390,
+            10391
+        ],
+        "rivais": [],
+        "identidade": {
+            "cor_primaria": "#DD0000",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "NFO"
+        },
+        "posicao_2023_24": 17
+    },
+    {
+        "id": 18,
+        "nome": "Luton Town",
+        "pais": "Inglaterra",
+        "dinheiro": 3000000,
+        "torcedores": 250000,
+        "titulares": [
+            10392,
+            10393,
+            10394,
+            10395,
+            10396,
+            10397,
+            10398,
+            10399,
+            10400,
+            10401,
+            10402
+        ],
+        "reservas": [
+            10403,
+            10404,
+            10405,
+            10406,
+            10407,
+            10408,
+            10409,
+            10410,
+            10411,
+            10412,
+            10413,
+            10414
+        ],
+        "rivais": [],
+        "identidade": {
+            "cor_primaria": "#F78F1E",
+            "cor_secundaria": "#002D62",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "LUT"
+        },
+        "posicao_2023_24": 18
+    },
+    {
+        "id": 19,
+        "nome": "Burnley",
+        "pais": "Inglaterra",
+        "dinheiro": 5000000,
+        "torcedores": 500000,
+        "titulares": [
+            10415,
+            10416,
+            10417,
+            10418,
+            10419,
+            10420,
+            10421,
+            10422,
+            10423,
+            10424,
+            10425
+        ],
+        "reservas": [
+            10426,
+            10427,
+            10428,
+            10429,
+            10430,
+            10431,
+            10432,
+            10433,
+            10434,
+            10435,
+            10436,
+            10437
+        ],
+        "rivais": [],
+        "identidade": {
+            "cor_primaria": "#6C1D45",
+            "cor_secundaria": "#99D6EA",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "BUR"
+        },
+        "posicao_2023_24": 19
+    },
+    {
+        "id": 20,
+        "nome": "Sheffield United",
+        "pais": "Inglaterra",
+        "dinheiro": 5000000,
+        "torcedores": 800000,
+        "titulares": [
+            10438,
+            10439,
+            10440,
+            10441,
+            10442,
+            10443,
+            10444,
+            10445,
+            10446,
+            10447,
+            10448
+        ],
+        "reservas": [
+            10449,
+            10450,
+            10451,
+            10452,
+            10453,
+            10454,
+            10455,
+            10456,
+            10457,
+            10458,
+            10459,
+            10460
+        ],
+        "rivais": [],
+        "identidade": {
+            "cor_primaria": "#EE2737",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "SHU"
+        },
+        "posicao_2023_24": 20
+    }
+]
