@@ -801,6 +801,20 @@ etapas (o clube e depois o jogador):
         `POST /simulacoes/{id}/negociacoes/{nid}/contrato`
 * [ ] Central de Transferências — buscar nas duas ligas, observados,
       negociações e histórico
+      - [x] backend — a ficha do mercado ganha a **liga** do clube e a
+            lista de compra vem também com a janela fechada (só a proposta
+            trava). **Observados**: até 25 jogadores de qualquer clube ou
+            livres, pelo nome; guardam o overall, o valor e o clube de quando
+            entraram na lista, avisam o que mudou (mudou de clube, ficou
+            livre, assinou, aposentou) e seguem na virada. **Histórico** da
+            carreira inteira: compras, vendas, livres contratados e
+            dispensas, com o gasto e o arrecadado por temporada — a
+            `transferencia` ganha `tipo` e os clubes opcionais (a migração
+            recria a tabela, porque o SQLite não tira um NOT NULL)
+      - API: `GET /simulacoes/{id}/observados`,
+        `PUT /simulacoes/{id}/observados` `{nome, observar}`,
+        `GET /simulacoes/{id}/historico-transferencias`
+      - [ ] tela
 * [ ] Ofertas recebidas — a CPU faz propostas pelos jogadores à venda (e,
       às vezes, pelos craques)
 * [ ] Empréstimos

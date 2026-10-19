@@ -154,3 +154,45 @@ def test_migracao_adiciona_stats_avancadas_a_partida(tmp_path, monkeypatch):
         assert linha["finalizacoes_gol_visitante"] == 0
     finally:
         conn.close()
+
+
+def test_migracao_refaz_a_transferencia_com_tipo_e_clubes_opcionais(tmp_path, monkeypatch):
+    """v1.7: livres e dispensas entram no histórico, sem um dos clubes."""
+    import sqlite3
+
+    caminho = tmp_path / "antiga_transferencia.db"
+    monkeypatch.setenv("TALDO_DB", str(caminho))
+
+    velho = sqlite3.connect(caminho)
+    velho.executescript(
+        """
+        CREATE TABLE transferencia (
+            id INTEGER PRIMARY KEY, simulacao_id INTEGER NOT NULL,
+            rodada INTEGER NOT NULL, jogador_id INTEGER NOT NULL,
+            de_clube_id INTEGER NOT NULL, para_clube_id INTEGER NOT NULL,
+            valor INTEGER NOT NULL);
+        INSERT INTO transferencia VALUES (7, 1, 1, 10, 2, 3, 5000000);
+        """
+    )
+    velho.commit()
+    velho.close()
+
+    init_db()
+    init_db()  # idempotente: a segunda vez não refaz
+
+    conn = conectar()
+    try:
+        colunas = {
+            r["name"]: r for r in conn.execute("PRAGMA table_info(transferencia)")
+        }
+        assert "tipo" in colunas
+        assert colunas["de_clube_id"]["notnull"] == 0
+        assert colunas["para_clube_id"]["notnull"] == 0
+        linha = conn.execute("SELECT * FROM transferencia").fetchone()
+        assert (linha["id"], linha["valor"], linha["tipo"]) == (7, 5000000, "transferencia")
+        tabelas = {
+            r["name"] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")
+        }
+        assert "transferencia_antiga" not in tabelas
+    finally:
+        conn.close()

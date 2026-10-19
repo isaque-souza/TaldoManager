@@ -25,6 +25,7 @@ from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import movimento_repository as movimento_repo
+from app.repositories import observado_repository as observado_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import copa_service, plano_service, simulacao_service
@@ -221,6 +222,8 @@ def proxima_temporada(simulacao_id):
             ])
             # os planos de jogo seguem para a temporada nova (v1.2)
             plano_service.copiar(conn, simulacao_id, nova_id, alvo)
+            # e os observados do técnico (v1.7)
+            observado_repo.copiar(conn, simulacao_id, nova_id)
 
         return {
             "simulacao_id": nova_id,

@@ -763,6 +763,7 @@ class FichaMercado(BaseModel):
     jogador_id: int | None = None          # livres (v1.6) não têm id: vão pelo nome
     nome: str
     clube: str | None = None               # None = sem clube (v1.6)
+    liga: str | None = None                # liga do clube (v1.7); None = livre
     posicao: str
     funcao: str | None = None              # v1.3
     atributos: dict[str, int] = {}         # v1.3
@@ -802,16 +803,75 @@ class FichaMercado(BaseModel):
     # só nos livres (v1.6): o bônus de assinatura, no lugar da transferência
     luvas: int | None = None
     negociacao: "NegociacaoResumo | None" = None   # v1.7: a desta janela
+    observado: bool = False              # na lista de observados (v1.7)
 
 
 class TransferenciaFeita(BaseModel):
+    temporada: int = 1
     rodada: int
+    # transferencia | livre (sem clube de origem; valor = luvas) |
+    # dispensa (sem clube de destino; valor = rescisão) — v1.7
+    tipo: str = "transferencia"
     jogador_id: int
     jogador: str
     posicao: str
-    de_clube: str
-    para_clube: str
+    de_clube: str | None = None
+    para_clube: str | None = None
     valor: int
+
+
+class MovimentoTecnico(TransferenciaFeita):
+    """Uma movimentação do clube dirigido (v1.7), do ponto de vista dele."""
+    tipo: Literal["compra", "venda", "livre", "dispensa"]
+
+
+class SaldoTransferencias(BaseModel):
+    gasto: int                           # compras + luvas + rescisões
+    arrecadado: int                      # vendas
+    saldo: int
+
+
+class SaldoTemporada(SaldoTransferencias):
+    temporada: int
+
+
+class HistoricoTransferencias(BaseModel):
+    """O histórico do técnico na carreira inteira (v1.7)."""
+    clube_usuario: str | None = None
+    temporada_atual: int
+    movimentos: list[MovimentoTecnico]
+    temporadas: list[SaldoTemporada]
+    total: SaldoTransferencias
+
+
+class Observado(BaseModel):
+    """Um jogador na lista de observados (v1.7)."""
+    nome: str
+    situacao: Literal["clube", "livre", "no_elenco", "aposentado"]
+    desde_temporada: int
+    desde_rodada: int
+    clube_inicial: str | None = None     # onde estava ao entrar; None = livre
+    overall_inicial: int
+    valor_inicial: int
+    avisos: list[str] = []
+    jogador: FichaMercado | None = None  # None = aposentou
+
+
+class Observados(BaseModel):
+    limite: int
+    observados: list[Observado]
+
+
+class NovoObservado(BaseModel):
+    nome: str
+    observar: bool = True
+
+
+class ObservadoMarcado(BaseModel):
+    nome: str
+    observado: bool
+    total: int
+    limite: int
 
 
 class Mercado(BaseModel):
@@ -819,6 +879,7 @@ class Mercado(BaseModel):
     janela_aberta: bool
     janelas: list[int]
     clube_usuario: str
+    liga_usuario: str | None = None        # v1.7
     rivais: list[str]
     caixa: int
     elenco_min: int

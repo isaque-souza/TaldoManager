@@ -28,6 +28,7 @@ from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import negociacao_repository as negociacao_repo
+from app.repositories import observado_repository as observado_repo
 from app.repositories import proposta_repository as proposta_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.repositories import transferencia_repository as transferencia_repo
@@ -162,6 +163,7 @@ def _ficha(jogador, jogador_id, clube):
         "jogador_id": jogador_id,
         "nome": jogador.nome,
         "clube": clube.nome if clube else None,
+        "liga": clube.liga if clube else None,
         "posicao": jogador.posicao,
         "funcao": jogador.funcao,
         "atributos": jogador.atributos,
@@ -201,19 +203,85 @@ def _papel(jogador):
     }
 
 
+def _movimento(r):
+    return {
+        "temporada": r["temporada"],
+        "rodada": r["rodada"],
+        "tipo": r["tipo"],
+        "jogador_id": r["jogador_id"],
+        "jogador": r["jogador"],
+        "posicao": r["posicao"],
+        "de_clube": r["de_clube"],
+        "para_clube": r["para_clube"],
+        "valor": r["valor"],
+    }
+
+
 def _historico(conn, simulacao_id):
     return [
-        {
-            "rodada": r["rodada"],
-            "jogador_id": r["jogador_id"],
-            "jogador": r["jogador"],
-            "posicao": r["posicao"],
-            "de_clube": r["de_clube"],
-            "para_clube": r["para_clube"],
-            "valor": r["valor"],
-        }
+        _movimento(r)
         for r in transferencia_repo.listar_por_simulacao(conn, simulacao_id)
     ]
+
+
+def _lado(r, clube):
+    """O movimento do ponto de vista do clube dirigido: compra, venda,
+    livre (contratado) ou dispensa; None se ele não está envolvido."""
+    if r["tipo"] == "transferencia":
+        if r["para_clube"] == clube:
+            return "compra"
+        if r["de_clube"] == clube:
+            return "venda"
+        return None
+    if r["tipo"] == "livre":
+        return "livre" if r["para_clube"] == clube else None
+    return "dispensa" if r["de_clube"] == clube else None
+
+
+def historico(simulacao_id):
+    """As movimentações do técnico (v1.7): compras, vendas, livres e
+    dispensas do clube dirigido em todas as temporadas da carreira (num save
+    avulso, só nesta), com o gasto e o arrecadado de cada temporada. Lê só
+    as tabelas: vale também para temporadas concluídas. None se a simulação
+    não existe."""
+
+    conn = conectar()
+    try:
+        sim = simulacao_repo.buscar(conn, simulacao_id)
+        if sim is None:
+            return None
+        clube = sim["clube_usuario"]
+        linhas = (
+            transferencia_repo.listar_por_carreira(conn, sim["carreira_id"])
+            if sim["carreira_id"] is not None
+            else transferencia_repo.listar_por_simulacao(conn, simulacao_id)
+        )
+    finally:
+        conn.close()
+
+    movimentos, por_temporada = [], {}
+    for r in linhas:
+        lado = _lado(r, clube)
+        if lado is None:
+            continue
+        movimentos.append({**_movimento(r), "tipo": lado})
+        t = por_temporada.setdefault(
+            r["temporada"], {"temporada": r["temporada"], "gasto": 0, "arrecadado": 0}
+        )
+        t["arrecadado" if lado == "venda" else "gasto"] += r["valor"]
+
+    temporadas = sorted(por_temporada.values(), key=lambda t: -t["temporada"])
+    for t in temporadas:
+        t["saldo"] = t["arrecadado"] - t["gasto"]
+    gasto = sum(t["gasto"] for t in temporadas)
+    arrecadado = sum(t["arrecadado"] for t in temporadas)
+    return {
+        "clube_usuario": clube,
+        "temporada_atual": sim["temporada"],
+        "movimentos": movimentos,
+        "temporadas": temporadas,
+        "total": {"gasto": gasto, "arrecadado": arrecadado, "saldo": arrecadado - gasto},
+    }
 
 
 def _propostas_por_jogador(ctx):
@@ -222,6 +290,64 @@ def _propostas_por_jogador(ctx):
     for p in proposta_repo.listar_da_janela(ctx.conn, ctx.sim["id"], ctx.rodada):
         por_jogador.setdefault(p["jogador_id"], []).append(p)
     return por_jogador
+
+
+class _Janela:
+    """O que a lista de compra precisa saber da janela atual: os ids dos
+    jogadores, as propostas e negociações feitas, se está fechada e quem o
+    técnico observa (v1.7)."""
+
+    def __init__(self, ctx):
+        conn, sid = ctx.conn, ctx.sim["id"]
+        self.ids = {
+            r["nome"]: r["id"] for r in jogador_repo.listar_por_simulacao(conn, sid)
+        }
+        self.propostas = _propostas_por_jogador(ctx)
+        self.negociacoes = [
+            _resumo(n) for n in negociacao_repo.listar_da_janela(conn, sid, ctx.rodada)
+        ]
+        # a última de cada jogador (v1.7): aberta, fechada, desistiu...
+        self.por_nome = {n["jogador"]: n for n in self.negociacoes}
+        self.aberta = mercado.janela_aberta(ctx.rodada)
+        self.fechada = None if self.aberta else "Janela de transferências fechada"
+        self.observados = {r["nome"] for r in observado_repo.listar(conn, sid)}
+
+
+def _ficha_de_compra(ctx, janela, j, clube):
+    """Um jogador de outro clube na lista de compra: o motivo de bloqueio e
+    as propostas que ainda dá para fazer."""
+    alvo = ctx.alvo
+    feitas = janela.propostas.get(janela.ids[j.nome], [])
+    ultima = feitas[-1] if feitas else None
+    bloqueio = janela.fechada or mercado.motivo_saida_bloqueada(clube, j)
+    if bloqueio is None and len(alvo.jogadores) >= mercado.ELENCO_MAX:
+        bloqueio = f"Seu elenco já tem {mercado.ELENCO_MAX} jogadores"
+    return {
+        **_ficha(j, janela.ids[j.nome], clube),
+        "bloqueio": bloqueio,
+        "rival": mercado.sao_rivais(alvo, clube),
+        "propostas_restantes": max(0, mercado.MAX_PROPOSTAS - len(feitas)),
+        "contraproposta": (
+            ultima["valor_pedido"]
+            if ultima and ultima["resposta"] == "contraproposta"
+            else None
+        ),
+        "negociacao": janela.por_nome.get(j.nome),
+        "observado": j.nome in janela.observados,
+    }
+
+
+def _ficha_de_livre(ctx, janela, j):
+    """Um jogador sem clube: não tem linha na tabela `jogador` (nem id), vai
+    pelo nome."""
+    luvas = mercado.luvas(j)
+    return {
+        **_ficha(j, None, None),
+        "luvas": luvas,
+        "bloqueio": janela.fechada or mercado.motivo_entrada_bloqueada(ctx.alvo, luvas),
+        "negociacao": janela.por_nome.get(j.nome),
+        "observado": j.nome in janela.observados,
+    }
 
 
 def ver_mercado(simulacao_id, posicao=None, valor_max=None):
@@ -238,19 +364,8 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
 
         alvo = ctx.alvo
         clubes = ctx.campeonato.clubes
-        ids = {
-            r["nome"]: r["id"]
-            for r in jogador_repo.listar_por_simulacao(conn, simulacao_id)
-        }
-        propostas = _propostas_por_jogador(ctx)
-        aberta = mercado.janela_aberta(ctx.rodada)
-        negociacoes = [
-            _resumo(n)
-            for n in negociacao_repo.listar_da_janela(conn, simulacao_id, ctx.rodada)
-        ]
-        # a última de cada jogador (v1.7): aberta, fechada, desistiu...
-        por_nome = {n["jogador"]: n for n in negociacoes}
-        fechada = None if aberta else "Janela de transferências fechada"
+        janela = _Janela(ctx)
+        ids, aberta, fechada = janela.ids, janela.aberta, janela.fechada
 
         elenco = []
         for j in sorted(alvo.jogadores, key=lambda j: -j.overall):
@@ -276,39 +391,16 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
                     continue
                 if valor_max is not None and j.valor_mercado() > valor_max:
                     continue
-                feitas = propostas.get(ids[j.nome], [])
-                ultima = feitas[-1] if feitas else None
-                bloqueio = fechada or mercado.motivo_saida_bloqueada(clube, j)
-                if bloqueio is None and len(alvo.jogadores) >= mercado.ELENCO_MAX:
-                    bloqueio = f"Seu elenco já tem {mercado.ELENCO_MAX} jogadores"
-                disponiveis.append({
-                    **_ficha(j, ids[j.nome], clube),
-                    "bloqueio": bloqueio,
-                    "rival": mercado.sao_rivais(alvo, clube),
-                    "propostas_restantes": max(0, mercado.MAX_PROPOSTAS - len(feitas)),
-                    "contraproposta": (
-                        ultima["valor_pedido"]
-                        if ultima and ultima["resposta"] == "contraproposta"
-                        else None
-                    ),
-                    "negociacao": por_nome.get(j.nome),
-                })
+                disponiveis.append(_ficha_de_compra(ctx, janela, j, clube))
         disponiveis.sort(key=lambda f: (-f["overall"], f["valor_mercado"]))
 
-        # sem clube não têm linha na tabela `jogador` (nem id): vão pelo nome
         livres = []
         for j in ctx.campeonato.livres:
             if posicao and j.posicao != posicao:
                 continue
             if valor_max is not None and j.valor_mercado() > valor_max:
                 continue
-            luvas = mercado.luvas(j)
-            livres.append({
-                **_ficha(j, None, None),
-                "luvas": luvas,
-                "bloqueio": fechada or mercado.motivo_entrada_bloqueada(alvo, luvas),
-                "negociacao": por_nome.get(j.nome),
-            })
+            livres.append(_ficha_de_livre(ctx, janela, j))
         livres.sort(key=lambda f: (-f["overall"], f["luvas"]))
 
         return {
@@ -316,6 +408,7 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
             "janela_aberta": aberta,
             "janelas": list(mercado.JANELAS),
             "clube_usuario": alvo.nome,
+            "liga_usuario": alvo.liga,
             "rivais": sorted(alvo.rivais),
             "caixa": alvo.dinheiro,
             "elenco_min": mercado.ELENCO_MIN,
@@ -324,7 +417,7 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
             "elenco": elenco,
             "disponiveis": disponiveis,
             "livres": livres,
-            "negociacoes": negociacoes,
+            "negociacoes": janela.negociacoes,
             "transferencias": _historico(conn, simulacao_id),
         }
     finally:
@@ -754,7 +847,13 @@ def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=Non
                         jogador, ctx.campeonato.livres, comprador, termos
                     )
                     jogador.papel = papel
-                    ctx.gravar()
+                    mapa = ctx.gravar()
+                    # no histórico (v1.7): sem clube de origem, valor = luvas
+                    transferencia_repo.inserir(
+                        conn, simulacao_id, ctx.rodada,
+                        jogador_repo.buscar_por_nome(conn, simulacao_id, jogador.nome)["id"],
+                        None, mapa[comprador.nome], neg["valor"], tipo="livre",
+                    )
             mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
                 caixa.resposta_contrato(
                     jogador, vendedor, resposta, restantes, neg["valor"],
@@ -838,7 +937,12 @@ def dispensar(simulacao_id, jogador_id):
         revolta = torcida.reagir_a_dispensa(clube, jogador)
         custo = livres.dispensar(jogador, clube, ctx.campeonato.livres)
         with conn:
-            ctx.gravar()
+            mapa = ctx.gravar()
+            # no histórico (v1.7): sem clube de destino, valor = rescisão
+            transferencia_repo.inserir(
+                conn, simulacao_id, ctx.rodada, jogador_id,
+                mapa[clube.nome], None, custo, tipo="dispensa",
+            )
             mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
                 caixa.dispensa(jogador, custo),
                 revolta and caixa.revolta_da_dispensa(jogador, *revolta),

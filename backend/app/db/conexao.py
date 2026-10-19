@@ -1,5 +1,6 @@
 """Conexão com o SQLite e criação do schema."""
 
+import re
 import sqlite3
 from pathlib import Path
 
@@ -133,7 +134,39 @@ _COLUNAS_NOVAS = {
 }
 
 
+def _refazer_transferencia(conn):
+    """v1.7: a `transferencia` ganha `tipo` e os clubes passam a ser
+    opcionais (livres e dispensas). O SQLite não tira o NOT NULL de uma
+    coluna: a tabela é recriada com o CREATE do schema.sql e as linhas de
+    antes são copiadas (todas compras e vendas)."""
+
+    colunas = {r["name"] for r in conn.execute("PRAGMA table_info(transferencia)")}
+    if "tipo" in colunas:
+        return
+    create = re.search(
+        r"CREATE TABLE IF NOT EXISTS transferencia \(.*?\n\);",
+        _SCHEMA.read_text(encoding="utf-8"), re.S,
+    ).group(0)
+    campos = "id, simulacao_id, rodada, jogador_id, de_clube_id, para_clube_id, valor"
+    # a receita do SQLite para recriar tabela: chaves desligadas durante a
+    # cópia (o PRAGMA não vale dentro de transação, daí o commit antes de
+    # religar)
+    conn.commit()
+    conn.execute("PRAGMA foreign_keys = OFF")
+    try:
+        conn.execute("ALTER TABLE transferencia RENAME TO transferencia_antiga")
+        conn.execute(create)
+        conn.execute(
+            f"INSERT INTO transferencia ({campos}) SELECT {campos} FROM transferencia_antiga"
+        )
+        conn.execute("DROP TABLE transferencia_antiga")
+        conn.commit()
+    finally:
+        conn.execute("PRAGMA foreign_keys = ON")
+
+
 def _migrar(conn):
+    _refazer_transferencia(conn)
     for tabela, colunas in _COLUNAS_NOVAS.items():
         existentes = {
             r["name"] for r in conn.execute(f"PRAGMA table_info({tabela})")
