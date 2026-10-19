@@ -8,7 +8,8 @@ import { $, estado, navegarPara } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { carregarProximaRodada } from "./rodada.js";
 import {
-  acoesOferta, avisoMercado, carregarMercado, detalheOferta, ligarBotoesMercado, postarMercado,
+  acoesOferta, avisoMercado, blocoEmprestado, carregarMercado, detalheOferta, ligarBotoesMercado,
+  postarMercado,
 } from "./mercado.js";
 import { abrirContrato, MULTA_ROTULO, PAPEL_ROTULO as PAPEL } from "./contratos.js";
 import { abrirJogador } from "./jogador.js";
@@ -56,6 +57,7 @@ function situacaoDe(nome) {
 function selos(f, { acabando = true } = {}) {
   return [
     f.idolo ? seloIdolo() : "",
+    f.emprestimo ? `<span class="chip" title="Emprestado pelo ${f.emprestimo.de_clube}">Emprestado</span>` : "",
     f.humor === "quer_sair" ? `<span class="chip chip-longe">Quer sair</span>`
       : f.humor === "incomodado" ? `<span class="chip chip-perto">Incomodado</span>` : "",
     f.a_venda ? `<span class="chip">À venda</span>` : "",
@@ -108,17 +110,23 @@ function ficha(f) {
       </div>
     </header>
     ${blocoPapel(f)}
-    <div class="el-acoes">
-      <button type="button" data-el="renovar">${icone("contrato")} Renovar</button>
-      <button type="button" class="secondary" data-el="lista">
-        ${f.a_venda ? "Tirar da lista" : "Pôr na lista de transferências"}</button>
-      <button type="button" class="secondary outline" data-el="dispensar"${f.dispensa_bloqueada ? " disabled" : ""}>
-        ${icone("saiu")} Dispensar (${dinheiro(f.rescisao)})</button>
-      <button type="button" class="secondary outline" data-el="pagina">Página completa</button>
-    </div>
-    ${dispensa}
-    ${venda ? "" : `<small class="bloqueio">${icone("cadeado")} Vender: ${f.bloqueio || "janela fechada"}</small>`}
-    ${blocoOfertas(f)}
+    ${f.emprestimo
+      // emprestado (v1.7): o contrato é do clube de origem
+      ? `${blocoEmprestado(f, mercado.rodada)}
+        <div class="el-acoes">
+          <button type="button" class="secondary outline" data-el="pagina">Página completa</button>
+        </div>`
+      : `<div class="el-acoes">
+          <button type="button" data-el="renovar">${icone("contrato")} Renovar</button>
+          <button type="button" class="secondary" data-el="lista">
+            ${f.a_venda ? "Tirar da lista" : "Pôr na lista de transferências"}</button>
+          <button type="button" class="secondary outline" data-el="dispensar"${f.dispensa_bloqueada ? " disabled" : ""}>
+            ${icone("saiu")} Dispensar (${dinheiro(f.rescisao)})</button>
+          <button type="button" class="secondary outline" data-el="pagina">Página completa</button>
+        </div>
+        ${dispensa}
+        ${venda ? "" : `<small class="bloqueio">${icone("cadeado")} Vender: ${f.bloqueio || "janela fechada"}</small>`}
+        ${blocoOfertas(f)}`}
     <dl class="el-numeros">
       <div><dt>Jogos</dt><dd>${f.partidas}</dd></div>
       <div><dt>Gols</dt><dd>${f.gols}</dd></div>
@@ -200,7 +208,9 @@ function desenhar() {
   const abas = FILTROS.map(([v, rotulo]) =>
     `<button type="button" data-setor="${v}" class="${v === filtro.setor ? "ativa" : ""}">` +
     `${rotulo} <small>${conta(v)}</small></button>`).join("");
-  const folha = m.elenco.reduce((t, f) => t + f.salario, 0);
+  const folha = m.elenco.reduce(
+    (t, f) => t + (f.emprestimo ? Math.round(f.salario * f.emprestimo.parte_salario / 100) : f.salario), 0,
+  );
   const sel = m.elenco.find((f) => f.jogador_id === filtro.selecionado);
 
   const box = $("el-central");
@@ -229,12 +239,13 @@ function desenhar() {
 
 function ligarAcoes(box, f) {
   const botao = (acao) => box.querySelector(`[data-el="${acao}"]`);
-  botao("renovar").addEventListener("click", () => abrirContrato(f.jogador_id));
-  botao("lista").addEventListener("click", () => marcarAVenda(f, !f.a_venda));
-  // aceitar, recusar e pedir mais nas ofertas da CPU (v1.7)
+  // aceitar, recusar e pedir mais nas ofertas da CPU; a opção de compra (v1.7)
   ligarBotoesMercado(box.querySelector(".el-ficha"));
   botao("pagina").addEventListener("click", () => navegarPara(() => abrirJogador(f.jogador_id)));
   botao("papel").addEventListener("change", (e) => definirPapel(f, e.target.value));
+  if (f.emprestimo) return;   // o contrato é do clube de origem
+  botao("renovar").addEventListener("click", () => abrirContrato(f.jogador_id));
+  botao("lista").addEventListener("click", () => marcarAVenda(f, !f.a_venda));
 
   // dispensar pede dois cliques, como propor e vender (sem confirm())
   const dispensar = botao("dispensar");

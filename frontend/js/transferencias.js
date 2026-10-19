@@ -8,7 +8,8 @@
 import { $, estado, navegarPara, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import {
-  acaoCompra, acaoLivre, acoesOferta, detalheOferta, ligarBotoesMercado, postarMercado, STATUS_NEG,
+  acaoCompra, acaoEmprestimo, acaoLivre, acoesOferta, detalheOferta, DURACAO_EMP, ligarBotoesMercado,
+  postarMercado, STATUS_NEG,
 } from "./mercado.js";
 import { MULTA_ROTULO } from "./contratos.js";
 import { abrirJogador } from "./jogador.js";
@@ -33,6 +34,7 @@ const TETOS = [["", "qualquer"], ["1000000", "até 1 mi"], ["5000000", "até 5 m
 const TIPO_MOV = {
   compra: ["chip-perto", "Compra"], venda: ["chip-batida", "Venda"],
   livre: ["", "Livre"], dispensa: ["chip-longe", "Dispensa"],
+  emprestimo: ["chip-perto", "Empréstimo"], cedido: ["", "Cedido"],
 };
 
 const tela = { aba: "buscar", selecionado: null, temporada: "" };   // selecionado: o nome
@@ -148,6 +150,7 @@ function ficha(f, o = null) {
       ${f.jogador_id ? `<button type="button" class="secondary outline" data-pagina="${f.jogador_id}">Página completa</button>` : ""}
     </div>
     <div class="tr-compra">${proposta}</div>
+    ${livre || f.clube === mercado.clube_usuario ? "" : acaoEmprestimo(f)}
     <dl class="el-numeros">
       <div><dt>Jogos</dt><dd>${f.partidas}</dd></div>
       <div><dt>Gols</dt><dd>${f.gols}</dd></div>
@@ -288,7 +291,8 @@ function abaNegociacoes() {
   if (!m.janela_aberta) {
     const prox = m.janelas.find((r) => r > m.rodada);
     return `<p class="vazio">${icone("cadeado")} Janela fechada: as negociações voltam
-      ${prox ? `antes da rodada ${prox}` : "na próxima temporada"}. Até lá, busque e observe.</p>`;
+      ${prox ? `antes da rodada ${prox}` : "na próxima temporada"}. Até lá, busque e observe.</p>` +
+      tabelaEmprestimos(m);
   }
   const { propostas } = pendentes(m);
   const STATUS_OFERTA = {
@@ -326,6 +330,21 @@ function abaNegociacoes() {
           ["situacao", "Resposta"], ["acao", ""]])
     : `<p class="vazio">Nenhuma proposta recusada ou com contraproposta nesta janela.</p>`;
 
+  // pedidos de empréstimo com contraproposta ou recusados (v1.7)
+  const pedidos = m.disponiveis.filter((f) =>
+    f.pedir_emprestado && f.pedir_emprestado.propostas_restantes < m.max_propostas);
+  if (pedidos.length) {
+    html += `<h3 class="secao">Pedidos de empréstimo</h3>`;
+    html += tabela(pedidos.map((f) => ({
+      jogador: f.nome,
+      clube_fmt: clubeFmt(f),
+      feitos: `${m.max_propostas - f.pedir_emprestado.propostas_restantes} de ${m.max_propostas}`,
+      situacao: f.pedir_emprestado.contraproposta
+        ? `<span class="chip chip-perto">Pede ${dinheiro(f.pedir_emprestado.contraproposta.taxa)}</span>`
+        : `<span class="chip chip-longe">Recusado</span>`,
+    })), [["jogador", "Jogador"], ["clube_fmt", "Clube"], ["feitos", "Pedidos"], ["situacao", "Resposta"]]);
+  }
+
   html += `<h3 class="secao">Contratos com o jogador</h3>`;
   html += m.negociacoes.length
     ? tabela(m.negociacoes.map((n) => ({
@@ -341,7 +360,23 @@ function abaNegociacoes() {
           ["status_fmt", "Situação"], ["acao", ""]])
     : `<p class="vazio">Quando um clube aceita a proposta (ou um livre topa conversar), o contrato aparece
       aqui. O acordo cai se a rodada for jogada sem ele assinar.</p>`;
-  return html;
+  return html + tabelaEmprestimos(m);
+}
+
+// os empréstimos da temporada (v1.7): os ativos, com a opção de compra
+function tabelaEmprestimos(m) {
+  if (!m.emprestimos.length) return "";
+  const STATUS = { ativo: ["chip-perto", "No elenco"], encerrado: ["", "Voltou"], comprado: ["chip-batida", "Comprado"] };
+  return `<h3 class="secao">Empréstimos da temporada</h3>` + tabela(m.emprestimos.map((e) => ({
+    jogador: e.jogador,
+    de: e.de_clube,
+    ate: `${DURACAO_EMP[e.duracao]} (R${e.volta - 1})`,
+    custo: `${dinheiro(e.taxa)} + ${e.parte_salario}% do salário`,
+    situacao: `<span class="chip ${STATUS[e.status][0]}">${STATUS[e.status][1]}</span>`,
+    acao: e.status === "ativo" && e.opcao_compra
+      ? `<button class="transf" data-acao="opcao" data-emprestimo="${e.emprestimo_id}">Comprar (${dinheiro(e.opcao_compra)})</button>`
+      : "",
+  })), [["jogador", "Jogador"], ["de", "De"], ["ate", "Até"], ["custo", "Custo"], ["situacao", "Situação"], ["acao", ""]]);
 }
 
 function abaHistorico() {
@@ -352,13 +387,13 @@ function abaHistorico() {
   const h = historico;
   if (!h.movimentos.length) {
     return `<p class="vazio">Nenhuma movimentação ainda: compras, vendas, livres contratados e dispensas
-      aparecem aqui, temporada a temporada.</p>`;
+      aparecem aqui, temporada a temporada (empréstimos também).</p>`;
   }
   const varias = h.temporadas.length > 1;
   const t = tela.temporada && h.temporadas.find((x) => String(x.temporada) === tela.temporada);
   const resumo = t || h.total;
   const movs = h.movimentos.filter((mv) => !t || mv.temporada === t.temporada);
-  const sinal = (mv) => (mv.tipo === "venda" ? "+" : "−");
+  const sinal = (mv) => (["venda", "cedido"].includes(mv.tipo) ? "+" : "−");
   const linhas = movs.map((mv) => ({
     quando: `${varias ? `${mv.temporada}ª · ` : ""}${mv.rodada === 1 ? "pré-temporada" : `antes da R${mv.rodada}`}`,
     tipo_fmt: `<span class="chip ${TIPO_MOV[mv.tipo][0]}">${TIPO_MOV[mv.tipo][1]}</span>`,
@@ -377,7 +412,7 @@ function abaHistorico() {
       <div><dt>Arrecadado</dt><dd>${dinheiro(resumo.arrecadado)}</dd></div>
       <div><dt>Saldo</dt><dd class="${resumo.saldo < 0 ? "negativo" : "sobe"}">${resumo.saldo < 0 ? "−" : "+"}${dinheiro(Math.abs(resumo.saldo))}</dd></div>
     </dl>
-    <small class="bloqueio">Gasto = compras, luvas dos livres e rescisões; arrecadado = vendas.</small>
+    <small class="bloqueio">Gasto = compras, luvas dos livres, rescisões e taxas de empréstimo; arrecadado = vendas.</small>
     ${tabela(linhas, [
       ["quando", "Quando"], ["tipo_fmt", "Tipo"], ["jogador", "Jogador"], ["posicao", "Pos."],
       ["de", "De"], ["para", "Para"], ["valor_fmt", "Valor"],
