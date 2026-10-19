@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
+from tests.negociar import oferecer
 
 client = TestClient(app)
 
@@ -364,14 +365,19 @@ def test_fluxo_do_mercado():
     assert client.post(f"/simulacoes/{sid}/propostas",
                        json={"jogador_id": alvo["jogador_id"], "valor": 1}).status_code == 400
 
-    # venda: lista de ofertas e aceite
+    # venda (v1.7): a oferta da CPU e o aceite
     meu = next(f for f in corpo["elenco"] if f["bloqueio"] is None)
+    clube = next(f["clube"] for f in corpo["disponiveis"] if not f["rival"])
+    oid = oferecer(sid, meu["jogador_id"], clube, 1_000_000, teto=1_100_000)
     ofertas = client.get(f"/simulacoes/{sid}/jogadores/{meu['jogador_id']}/ofertas")
     assert ofertas.status_code == 200
-    clube = ofertas.json()["ofertas"][0]["clube"]
-    venda = client.post(f"/simulacoes/{sid}/vendas",
-                        json={"jogador_id": meu["jogador_id"], "clube": clube})
+    assert oid in [o["oferta_id"] for o in ofertas.json()["ofertas"]]
+    assert client.post(f"/simulacoes/{sid}/ofertas/{oid}/contraproposta",
+                       json={"valor": 500_000}).status_code == 400
+    venda = client.post(f"/simulacoes/{sid}/ofertas/{oid}/aceitar")
     assert venda.status_code == 200 and venda.json()["para_clube"] == clube
+    assert client.post(f"/simulacoes/{sid}/ofertas/{oid}/recusar").status_code == 400
+    assert client.post(f"/simulacoes/{sid}/ofertas/999999/aceitar").status_code == 404
 
     assert client.get("/simulacoes/999999/mercado").status_code == 404
 

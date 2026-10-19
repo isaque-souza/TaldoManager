@@ -286,6 +286,23 @@ CREATE TABLE IF NOT EXISTS mensagem (
 );
 CREATE INDEX IF NOT EXISTS ix_mensagem_simulacao ON mensagem(simulacao_id);
 
+-- Ofertas da CPU pelos jogadores do técnico (v1.7): chegam quando a janela
+-- abre (ou quando ele põe alguém na lista) e valem até a rodada ser jogada.
+CREATE TABLE IF NOT EXISTS oferta_recebida (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    rodada        INTEGER NOT NULL,   -- a janela (antes desta rodada)
+    jogador_id    INTEGER NOT NULL REFERENCES jogador(id) ON DELETE CASCADE,
+    clube         TEXT NOT NULL,      -- quem oferece
+    valor         INTEGER NOT NULL,
+    teto          INTEGER NOT NULL,   -- até quanto aceita na contraproposta (escondido)
+    espontanea    INTEGER NOT NULL DEFAULT 0,   -- assédio: ele não estava à venda
+    status        TEXT NOT NULL DEFAULT 'aberta',
+                  -- aberta | aceita | recusada | retirada | expirada
+    pedido        INTEGER             -- a contraproposta do técnico, se houve
+);
+CREATE INDEX IF NOT EXISTS ix_oferta_simulacao ON oferta_recebida(simulacao_id);
+
 -- Jogadores observados pelo técnico (v1.7), de qualquer clube ou livres:
 -- vão pelo nome (livres não têm id e os ids mudam a cada temporada) e seguem
 -- na virada. Guardam como ele estava quando entrou na lista.

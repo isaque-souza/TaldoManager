@@ -10,7 +10,7 @@ from app.domain.mercado import TransferenciaInvalida
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import mercado_service, simulacao_service, temporada_service
 from app.services.temporada_service import TemporadaConcluida
-from tests.negociar import fechar
+from tests.negociar import fechar, oferecer
 
 
 def _iniciar(seed=11, clube="Real Taldo"):
@@ -138,28 +138,44 @@ def test_proposta_acima_do_caixa_nao_gasta_tentativa():
     assert ficha["propostas_restantes"] == mercado.MAX_PROPOSTAS
 
 
+def _comprador(m, rival=False):
+    """Um clube de fora para a oferta de teste (o rival, se pedido)."""
+    return next(f["clube"] for f in m["disponiveis"] if f["rival"] == rival)
+
+
 def test_venda_aceita_a_oferta_escolhida():
     sid, clube = _iniciar()
     m = mercado_service.ver_mercado(sid)
     vendido = next(f for f in m["elenco"] if f["bloqueio"] is None)
+    comprador = _comprador(m)
+    menor = oferecer(sid, vendido["jogador_id"], comprador, 1_000_000)
+    oferecer(sid, vendido["jogador_id"], _comprador(m, rival=True), 2_000_000)
 
-    lista = mercado_service.ofertas(sid, vendido["jogador_id"])
-    assert lista["ofertas"]
-    valores = [o["valor"] for o in lista["ofertas"]]
-    assert valores == sorted(valores, reverse=True)
+    lista = mercado_service.ofertas(sid, vendido["jogador_id"])["ofertas"]
+    valores = [o["valor"] for o in lista if o["status"] == "aberta"]
+    assert valores[:2] == [2_000_000, 1_000_000] or sorted(valores, reverse=True) == valores
 
-    escolhida = lista["ofertas"][-1]   # não precisa ser a maior
-    feita = mercado_service.vender(sid, vendido["jogador_id"], escolhida["clube"])
-    assert feita["para_clube"] == escolhida["clube"]
-    assert feita["valor"] == escolhida["valor"]
-    assert feita["caixa"] == m["caixa"] + escolhida["valor"]
+    feita = mercado_service.aceitar_oferta(sid, menor)   # não precisa ser a maior
+    assert feita["para_clube"] == comprador
+    assert feita["valor"] == 1_000_000
+    assert feita["caixa"] == m["caixa"] + 1_000_000
+    # as outras ofertas por ele caem
+    status = {o["oferta_id"]: o["status"]
+              for o in mercado_service.ver_mercado(sid)["ofertas_recebidas"]
+              if o["jogador_id"] == vendido["jogador_id"]}
+    assert status[menor] == "aceita"
+    assert set(status.values()) <= {"aceita", "retirada"}
 
 
-def test_venda_para_clube_sem_oferta_e_recusada():
+def test_oferta_ja_respondida_nao_fecha_de_novo():
     sid, _ = _iniciar()
-    vendido = mercado_service.ver_mercado(sid)["elenco"][0]
-    with pytest.raises(TransferenciaInvalida, match="não tem oferta"):
-        mercado_service.vender(sid, vendido["jogador_id"], "Clube Inventado")
+    m = mercado_service.ver_mercado(sid)
+    vendido = m["elenco"][-1]
+    oid = oferecer(sid, vendido["jogador_id"], _comprador(m), 1_000_000)
+    assert mercado_service.recusar_oferta(sid, oid)["status"] == "recusada"
+    with pytest.raises(TransferenciaInvalida, match="não está mais de pé"):
+        mercado_service.aceitar_oferta(sid, oid)
+    assert mercado_service.aceitar_oferta(sid, 999_999) is None
 
 
 def test_janela_fecha_depois_da_rodada_1():
@@ -233,19 +249,15 @@ def test_vender_para_o_rival_irrita_a_torcida():
     sid, clube = _iniciar()
     m = mercado_service.ver_mercado(sid)
     antes = _torcidas(sid)
-    for f in m["elenco"]:
-        if f["bloqueio"] is not None:
-            continue
-        lista = mercado_service.ofertas(sid, f["jogador_id"])
-        rival = next((o for o in lista["ofertas"] if o["rival"]), None)
-        if rival:
-            break
-    else:
-        pytest.skip("o rival não fez oferta por ninguém")
-    assert rival["revolta_torcida"] < 0
-    assert all(o["revolta_torcida"] is None for o in lista["ofertas"] if not o["rival"])
+    f = next(f for f in m["elenco"] if f["bloqueio"] is None and not f["idolo"])
+    oid = oferecer(sid, f["jogador_id"], _comprador(m, rival=True), 1_000_000)
+    oferecer(sid, f["jogador_id"], _comprador(m), 1_000_000)
+    lista = mercado_service.ofertas(sid, f["jogador_id"])["ofertas"]
+    rival = next(o for o in lista if o["oferta_id"] == oid)
+    assert rival["rival"] and rival["revolta_torcida"] < 0
+    assert all(o["revolta_torcida"] is None for o in lista if not o["rival"])
 
-    mercado_service.vender(sid, f["jogador_id"], rival["clube"])
+    mercado_service.aceitar_oferta(sid, oid)
 
     depois = _torcidas(sid)
     assert depois[clube] == round(antes[clube] * (1 + rival["revolta_torcida"] / 100))
@@ -265,13 +277,9 @@ def test_vender_para_outro_clube_nao_mexe_na_torcida():
     m = mercado_service.ver_mercado(sid)
     antes = _torcidas(sid)
     # ídolo é outra história (v1.4): ver o teste abaixo
-    vendido, oferta = next(
-        (f, o)
-        for f in m["elenco"] if f["bloqueio"] is None and not f["idolo"]
-        for o in mercado_service.ofertas(sid, f["jogador_id"])["ofertas"]
-        if not o["rival"]
-    )
-    mercado_service.vender(sid, vendido["jogador_id"], oferta["clube"])
+    vendido = next(f for f in m["elenco"] if f["bloqueio"] is None and not f["idolo"])
+    oid = oferecer(sid, vendido["jogador_id"], _comprador(m), 1_000_000)
+    mercado_service.aceitar_oferta(sid, oid)
     assert _torcidas(sid)[clube] == antes[clube]
 
 
@@ -283,12 +291,13 @@ def test_vender_idolo_revolta_a_torcida_e_avisa():
         (f for f in m["elenco"] if f["bloqueio"] is None and f["idolo"]), None
     )
     assert idolo is not None, "o clube da seed precisa ter um ídolo vendável"
+    oid = oferecer(sid, idolo["jogador_id"], _comprador(m), 1_000_000)
     oferta = next(
         o for o in mercado_service.ofertas(sid, idolo["jogador_id"])["ofertas"]
-        if not o["rival"]
+        if o["oferta_id"] == oid
     )
     assert oferta["revolta_torcida"] == round(100 * torcida.VENDA_IDOLO, 1)
-    mercado_service.vender(sid, idolo["jogador_id"], oferta["clube"])
+    mercado_service.aceitar_oferta(sid, oid)
     assert _torcidas(sid)[clube] == round(antes[clube] * (1 + torcida.VENDA_IDOLO))
 
 

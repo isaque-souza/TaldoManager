@@ -17,7 +17,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, copa, fama, posicoes
+from app.domain import caixa, copa, fama, mercado, posicoes
 from app.domain.temporada import (
     livres_para_json, restaurar_estado, snapshot_estado,
 )
@@ -26,10 +26,11 @@ from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import negociacao_repository as negociacao_repo
+from app.repositories import oferta_repository as oferta_repo
 from app.repositories import lance_repository as lance_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import copa_service, simulacao_service
+from app.services import copa_service, oferta_service, simulacao_service
 from scripts.data_loader import (
     LIGA_PADRAO, carregar_campeonato, carregar_campeonato_do_save,
 )
@@ -145,6 +146,8 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
             mensagem_repo.inserir(conn, sim_id, None, [
                 copa_service.mensagem_de_inicio(campeonato, clube_usuario),
             ])
+            # a janela da pré-temporada abre: a CPU faz ofertas (v1.7)
+            oferta_service.abrir_janela(conn, sim_id, 1, campeonato, clube_usuario, None)
         return sim_id
     finally:
         conn.close()
@@ -451,7 +454,15 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             # acordos com clubes sem contrato acertado caem com a rodada (v1.7)
             expiradas = negociacao_repo.expirar_abertas(conn, simulacao_id, rodada_jogada)
             mensagens.append(caixa.acordos_expirados([n["jogador"] for n in expiradas]))
+            # e as ofertas da CPU que o técnico não respondeu (v1.7)
+            oferta_repo.expirar_abertas(conn, simulacao_id, rodada_jogada)
             mensagem_repo.inserir(conn, simulacao_id, rodada_jogada, mensagens)
+            # a janela do meio da temporada abre: a CPU faz ofertas (v1.7)
+            if not concluida and mercado.janela_aberta(campeonato.rodada):
+                oferta_service.abrir_janela(
+                    conn, simulacao_id, campeonato.rodada, campeonato,
+                    clube_usuario, rodada_jogada,
+                )
             if ao_vivo:
                 simulacao_repo.definir_ao_vivo(conn, simulacao_id, None)
 

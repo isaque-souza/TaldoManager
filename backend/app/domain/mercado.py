@@ -11,8 +11,8 @@ Negociação (v0.7, passo 4):
   rivalidade) e
   responde à proposta: aceita, contrapropõe ou recusa. Se o jogador tem multa
   rescisória e a proposta a cobre, o clube não pode recusar.
-- VENDA: cada clube que pode pagar faz uma oferta, mais alta se o jogador
-  seria titular lá; o técnico escolhe qual aceitar.
+- VENDA (v1.7): a CPU faz as ofertas, com sorteio próprio — ver
+  `app.domain.ofertas`.
 
 Tudo determinístico (sem `random`): não mexe na sorte da temporada.
 """
@@ -174,7 +174,8 @@ FATOR_ENDIVIDADO = 0.85        # caixa negativo: o clube precisa vender
 FAIXA_CONTRAPROPOSTA = 0.85    # proposta >= 85% do pedido vira contraproposta
 MAX_PROPOSTAS = 3              # por jogador, por janela
 
-OFERTA_TITULAR = 1.15          # comprador paga mais por quem seria titular
+# ofertas da CPU (app.domain.ofertas): paga mais por quem seria titular
+OFERTA_TITULAR = 1.15
 OFERTA_BANCO = 0.85
 
 
@@ -277,30 +278,3 @@ def avaliar_proposta(jogador, vendedor, comprador, valor):
         "recusada", pedido,
         f"O {vendedor.nome} achou a proposta baixa demais{rival}",
     )
-
-
-@dataclass
-class Oferta:
-    clube: object
-    valor: int
-    titular: bool
-    rival: bool
-
-
-def ofertas(jogador, vendedor, clubes):
-    """Ofertas dos outros clubes pelo jogador, da maior para a menor. Cada
-    clube paga mais se o jogador seria titular lá; só oferta quem pode pagar
-    e tem vaga no elenco."""
-
-    lista = []
-    for clube in clubes:
-        if clube is vendedor:
-            continue
-        titular = seria_titular(clube, jogador)
-        valor = _arredondar(
-            jogador.valor_mercado() * (OFERTA_TITULAR if titular else OFERTA_BANCO)
-        )
-        if motivo_entrada_bloqueada(clube, valor) is None:
-            lista.append(Oferta(clube, valor, titular, sao_rivais(vendedor, clube)))
-    lista.sort(key=lambda o: (-o.valor, o.clube.nome))
-    return lista

@@ -8,7 +8,7 @@ from app.services import (
     carreira_service, mercado_service, observado_service, temporada_service,
 )
 from scripts.data_loader import TODAS_AS_LIGAS
-from tests.negociar import fechar
+from tests.negociar import fechar, oferecer
 
 CLUBE = "Real Taldo"
 
@@ -185,8 +185,11 @@ def test_historico_tem_compra_venda_livre_e_dispensa_com_o_saldo():
     vendido = next(
         f for f in mercado_service.ver_mercado(sid)["elenco"] if f["bloqueio"] is None
     )
-    oferta = mercado_service.ofertas(sid, vendido["jogador_id"])["ofertas"][0]
-    mercado_service.vender(sid, vendido["jogador_id"], oferta["clube"])
+    comprador = next(f["clube"] for f in m["disponiveis"] if not f["rival"])
+    oferta = {"clube": comprador, "valor": 1_000_000}
+    mercado_service.aceitar_oferta(
+        sid, oferecer(sid, vendido["jogador_id"], comprador, oferta["valor"])
+    )
 
     h = mercado_service.historico(sid)
     por_tipo = {mv["tipo"]: mv for mv in h["movimentos"]}

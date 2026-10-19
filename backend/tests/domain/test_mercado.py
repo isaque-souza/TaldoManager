@@ -165,32 +165,6 @@ def test_seria_titular_compara_com_o_elenco_do_comprador():
     assert not mercado.seria_titular(c, Jogador("Fraco", 25, "Atacante", 60))
 
 
-def test_ofertas_pagam_mais_quando_seria_titular_e_marcam_rival():
-    vendedor = _clube("A")
-    vendedor.rivais = {"Rival"}
-    bom = Jogador("Bom", 25, "Atacante", 80)
-    vendedor.contratar_jogador(bom)
-    fraco_no_ataque = _clube("Fraco")
-    for j in fraco_no_ataque.jogadores:
-        if j.posicao == "Atacante":
-            j.overall = 60
-    forte_no_ataque = _clube("Forte")
-    for j in forte_no_ataque.jogadores:
-        if j.posicao == "Atacante":
-            j.overall = 90
-    rival = _clube("Rival")
-    pobre = _clube("Pobre", dinheiro=10)
-
-    lista = mercado.ofertas(bom, vendedor, [vendedor, fraco_no_ataque, forte_no_ataque, rival, pobre])
-    por_clube = {o.clube.nome: o for o in lista}
-
-    assert "Pobre" not in por_clube                   # não pode pagar
-    assert por_clube["Fraco"].titular and not por_clube["Forte"].titular
-    assert por_clube["Fraco"].valor > por_clube["Forte"].valor
-    assert por_clube["Rival"].rival
-    assert lista[0].valor >= lista[-1].valor          # maior primeiro
-
-
 # --- jogadores livres (v1.6) ------------------------------------------------
 
 def test_contratar_livre_paga_so_as_luvas():

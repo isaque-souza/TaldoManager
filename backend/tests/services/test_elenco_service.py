@@ -51,7 +51,10 @@ def test_lista_de_transferencias_fica_gravada_e_segue_nas_rodadas():
     assert alvo["a_venda"] is False
 
     r = mercado_service.marcar_a_venda(sid, alvo["jogador_id"], True)
-    assert r == {"jogador_id": alvo["jogador_id"], "jogador": alvo["nome"], "a_venda": True}
+    assert {k: r[k] for k in ("jogador_id", "jogador", "a_venda")} == {
+        "jogador_id": alvo["jogador_id"], "jogador": alvo["nome"], "a_venda": True,
+    }
+    assert r["ofertas"] >= 0   # com a janela aberta, a CPU já olhou (v1.7)
 
     temporada_service.avancar(sid)
     elenco = {f["nome"]: f for f in mercado_service.ver_mercado(sid)["elenco"]}

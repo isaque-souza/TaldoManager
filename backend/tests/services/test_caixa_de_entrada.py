@@ -14,6 +14,14 @@ from tests.negociar import fechar
 client = TestClient(app)
 
 
+@pytest.fixture(autouse=True)
+def sem_assedio(monkeypatch):
+    """O assédio da pré-temporada (v1.7) traria uma mensagem a mais: estes
+    testes contam as outras."""
+    from app.domain import ofertas
+    monkeypatch.setattr(ofertas, "CHANCE_ASSEDIO", 0.0)
+
+
 def _iniciar(clube="Real Taldo", seed=11):
     return temporada_service.iniciar(seed=seed, clube_usuario=clube)
 

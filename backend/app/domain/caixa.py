@@ -177,6 +177,48 @@ def contratacao_livre(jogador, luvas):
     )
 
 
+def ofertas_pela_lista(por_jogador):
+    """As ofertas da CPU pelos jogadores à venda (v1.7): `por_jogador` é uma
+    lista de (jogador, [OfertaCpu]). Quem ficou sem oferta também aparece."""
+    if not por_jogador:
+        return None
+    linhas = []
+    for jogador, lista in por_jogador:
+        if lista:
+            clubes = ", ".join(f"{o.clube.nome} ({_dinheiro(o.valor)})" for o in lista)
+            linhas.append(f"{jogador.nome}: {clubes}.")
+        else:
+            linhas.append(f"{jogador.nome}: ninguém se interessou por enquanto.")
+    total = sum(len(lista) for _, lista in por_jogador)
+    return _mensagem(
+        "Diretor de futebol",
+        f"{total} oferta{'s' if total != 1 else ''} pela lista de transferências",
+        "Os clubes viram quem está à venda. " + " ".join(linhas) +
+        " Dá para aceitar, recusar ou pedir mais uma vez; elas valem até a "
+        "próxima rodada.",
+    )
+
+
+def assedio(jogador, oferta):
+    """Um clube mais forte quer um dos nossos melhores (v1.7)."""
+    return _mensagem(
+        "Diretor de futebol", f"O {oferta.clube.nome} quer {jogador.nome}",
+        f"Sem estar à venda, {jogador.nome} recebeu uma oferta de "
+        f"{_dinheiro(oferta.valor)} do {oferta.clube.nome} — "
+        f"{_dinheiro(jogador.valor_mercado())} é o valor de mercado dele. A "
+        "decisão é sua; a oferta vale até a próxima rodada.",
+    )
+
+
+def oferta_retirada(jogador, clube, pedido):
+    """O clube não topou a contraproposta do técnico (v1.7)."""
+    return _mensagem(
+        "Diretor de futebol", f"O {clube} desistiu de {jogador}",
+        f"Pedimos {_dinheiro(pedido)} por {jogador} e o {clube} achou demais: "
+        "retirou a oferta.",
+    )
+
+
 def dispensa(jogador, custo):
     """Rescisão feita pelo técnico (v1.7)."""
     paga = (f"Pagamos {_dinheiro(custo)} de rescisão, metade dos salários que "

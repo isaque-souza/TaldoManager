@@ -874,6 +874,23 @@ class ObservadoMarcado(BaseModel):
     limite: int
 
 
+class OfertaRecebida(BaseModel):
+    """Uma oferta da CPU por um jogador do técnico (v1.7)."""
+    oferta_id: int
+    jogador_id: int
+    jogador: str
+    clube: str
+    valor: int
+    status: Literal["aberta", "aceita", "recusada", "retirada", "expirada"]
+    espontanea: bool = False             # assédio: ele não estava à venda
+    pedido: int | None = None            # a contraproposta do técnico
+    rival: bool = False
+    # só enquanto está aberta
+    seria_titular: bool | None = None
+    valor_mercado: int | None = None
+    revolta_torcida: float | None = None   # % da torcida que vai embora (v1.4)
+
+
 class Mercado(BaseModel):
     rodada: int
     janela_aberta: bool
@@ -889,6 +906,7 @@ class Mercado(BaseModel):
     disponiveis: list[FichaMercado]
     livres: list[FichaMercado] = []        # sem clube (v1.6)
     negociacoes: list[NegociacaoResumo] = []   # desta janela (v1.7)
+    ofertas_recebidas: list[OfertaRecebida] = []   # da CPU, nesta janela (v1.7)
     transferencias: list[TransferenciaFeita]
 
 
@@ -900,6 +918,7 @@ class ListaTransferencia(BaseModel):
     jogador_id: int
     jogador: str
     a_venda: bool
+    ofertas: int = 0                     # as que chegaram na hora (v1.7)
 
 
 class NovoPapel(BaseModel):
@@ -957,26 +976,32 @@ class RespostaProposta(BaseModel):
     negociacao_id: int | None = None
 
 
-class OfertaClube(BaseModel):
-    clube: str
-    valor: int
-    seria_titular: bool
-    rival: bool
-    revolta_torcida: float | None = None   # % da torcida que vai embora (v1.4)
-
-
 class OfertasJogador(BaseModel):
     jogador_id: int
     jogador: str
     valor_mercado: int
     idolo: bool = False                  # v1.4: vender ídolo revolta a torcida
+    a_venda: bool = False
     bloqueio: str | None = None
-    ofertas: list[OfertaClube]
+    ofertas: list[OfertaRecebida]
 
 
-class NovaVenda(BaseModel):
-    jogador_id: int
-    clube: str                           # o clube cuja oferta foi aceita
+class NovaContrapropostaOferta(BaseModel):
+    valor: int = Field(gt=0)
+
+
+class OfertaRecusada(BaseModel):
+    oferta_id: int
+    jogador: str
+    clube: str
+    status: Literal["recusada"]
+
+
+class RespostaContrapropostaOferta(BaseModel):
+    """O clube aceitou o pedido (a venda fechou) ou retirou a oferta."""
+    resposta: Literal["aceita", "retirada"]
+    transferencia: TransferenciaResultado | None = None
+    caixa: int
 
 
 # --- renovação de contrato (v0.7) ---

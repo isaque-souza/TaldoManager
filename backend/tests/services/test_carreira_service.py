@@ -3,7 +3,7 @@ import pytest
 from app.db.conexao import conectar
 from app.services import carreira_service, simulacao_service, temporada_service
 from app.services.carreira_service import CarreiraInvalida
-from tests.negociar import fechar
+from tests.negociar import fechar, oferecer
 
 
 @pytest.fixture(autouse=True)
@@ -392,10 +392,10 @@ def test_jovem_da_base_pode_ser_renovado_e_vendido():
     r = contrato_service.renovar(nova, ficha["jogador_id"], pedido, 5, "3x")
     assert r["resposta"] == "aceita"
 
-    ofertas = mercado_service.ofertas(nova, ficha["jogador_id"])["ofertas"]
-    if ofertas:   # um jovem fraco pode não ter comprador
-        feita = mercado_service.vender(nova, ficha["jogador_id"], ofertas[0]["clube"])
-        assert feita["para_clube"] == ofertas[0]["clube"]
+    comprador = mercado_service.ver_mercado(nova)["disponiveis"][0]["clube"]
+    oid = oferecer(nova, ficha["jogador_id"], comprador, 100_000)
+    feita = mercado_service.aceitar_oferta(nova, oid)
+    assert feita["para_clube"] == comprador
 
     temporada_service.avancar(nova)
     assert meu_jovem in _jogadores(nova)

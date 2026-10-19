@@ -9,7 +9,9 @@ aqui é carregar o estado vivo, aplicar a negociação e regravar tudo
   contrapropõe ou recusa; o aceite abre uma `negociacao` com o valor
   travado e `propor_contrato` acerta salário, anos, multa e papel com o
   jogador — só então a transferência acontece
-- vender: `ofertas` lista o que cada clube paga; `vender` aceita uma delas
+- vender (v1.7): a CPU faz ofertas (`oferta_service`); o técnico aceita,
+  recusa ou contrapropõe (`aceitar_oferta`, `recusar_oferta`,
+  `contrapropor_oferta`); `ofertas` lista as de um jogador
 - livres (v1.6): `contratar_livre` abre a negociação com quem está sem
   clube (v1.7: só a etapa 2), pagando só as luvas
 - elenco (v1.7): `marcar_a_venda` põe/tira da lista de transferências e
@@ -20,7 +22,8 @@ import json
 import random
 
 from app.db.conexao import conectar
-from app.domain import caixa, contrato, fama, livres, mercado, papeis, torcida
+from app.domain import caixa, contrato, fama, livres, mercado, ofertas as ofertas_cpu
+from app.domain import papeis, torcida
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
@@ -29,10 +32,11 @@ from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import negociacao_repository as negociacao_repo
 from app.repositories import observado_repository as observado_repo
+from app.repositories import oferta_repository as oferta_repo
 from app.repositories import proposta_repository as proposta_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.repositories import transferencia_repository as transferencia_repo
-from app.services import simulacao_service
+from app.services import oferta_service, simulacao_service
 from app.services.temporada_service import (
     TemporadaConcluida, exigir_sem_transmissao,
 )
@@ -367,15 +371,16 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
         janela = _Janela(ctx)
         ids, aberta, fechada = janela.ids, janela.aberta, janela.fechada
 
+        recebidas = _ofertas_da_janela(ctx)
         elenco = []
         for j in sorted(alvo.jogadores, key=lambda j: -j.overall):
-            n_ofertas = len(mercado.ofertas(j, alvo, clubes)) if aberta else 0
-            bloqueio = fechada or mercado.motivo_saida_bloqueada(alvo, j)
-            if bloqueio is None and n_ofertas == 0:
-                bloqueio = "Nenhum clube tem caixa para comprar"
+            n_ofertas = sum(
+                1 for o in recebidas
+                if o["jogador_id"] == ids[j.nome] and o["status"] == "aberta"
+            )
             elenco.append({
                 **_ficha(j, ids[j.nome], alvo),
-                "bloqueio": bloqueio,
+                "bloqueio": fechada or mercado.motivo_saida_bloqueada(alvo, j),
                 "ofertas": n_ofertas,
                 "rescisao": mercado.rescisao(j),
                 "dispensa_bloqueada": mercado.motivo_dispensa_bloqueada(alvo, j),
@@ -418,15 +423,57 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
             "disponiveis": disponiveis,
             "livres": livres,
             "negociacoes": janela.negociacoes,
+            "ofertas_recebidas": recebidas,
             "transferencias": _historico(conn, simulacao_id),
         }
     finally:
         conn.close()
 
 
+def _oferta(ctx, r):
+    """Uma oferta recebida como a tela mostra. Enquanto está aberta, diz se
+    ele seria titular lá e quanto da torcida iria embora (rival, ídolo)."""
+    clube = next((c for c in ctx.campeonato.clubes if c.nome == r["clube"]), None)
+    jogador = next((j for j in ctx.alvo.jogadores if j.nome == r["jogador"]), None)
+    visao = {
+        "oferta_id": r["id"],
+        "jogador_id": r["jogador_id"],
+        "jogador": r["jogador"],
+        "clube": r["clube"],
+        "valor": r["valor"],
+        "status": r["status"],
+        "espontanea": bool(r["espontanea"]),
+        "pedido": r["pedido"],
+        "rival": clube is not None and mercado.sao_rivais(ctx.alvo, clube),
+        "seria_titular": None,
+        "revolta_torcida": None,
+        "valor_mercado": None,
+    }
+    if r["status"] == "aberta" and clube is not None and jogador is not None:
+        visao["seria_titular"] = mercado.seria_titular(clube, jogador)
+        visao["valor_mercado"] = jogador.valor_mercado()
+        # quanto da torcida vai embora (%, negativo): venda ao rival ou de
+        # um ídolo (v1.4)
+        visao["revolta_torcida"] = round(
+            100 * torcida.revolta_da_venda(ctx.alvo, clube, jogador), 1
+        ) or None
+    return visao
+
+
+def _ofertas_da_janela(ctx):
+    """As ofertas da CPU nesta janela (v1.7); fora da janela, nenhuma."""
+    if not mercado.janela_aberta(ctx.rodada):
+        return []
+    return [
+        _oferta(ctx, r)
+        for r in oferta_repo.listar_da_janela(ctx.conn, ctx.sim["id"], ctx.rodada)
+    ]
+
+
 def ofertas(simulacao_id, jogador_id):
-    """O que cada clube paga por um jogador do elenco dirigido. None se a
-    simulação ou o jogador não existem."""
+    """As ofertas recebidas por um jogador do elenco dirigido nesta janela
+    (v1.7: quem oferece é a CPU). None se a simulação ou o jogador não
+    existem."""
 
     conn = conectar()
     try:
@@ -445,21 +492,9 @@ def ofertas(simulacao_id, jogador_id):
             "jogador": jogador.nome,
             "valor_mercado": jogador.valor_mercado(),
             "idolo": fama.idolo(jogador),
+            "a_venda": jogador.a_venda,
             "bloqueio": mercado.motivo_saida_bloqueada(ctx.alvo, jogador),
-            "ofertas": [
-                {
-                    "clube": o.clube.nome,
-                    "valor": o.valor,
-                    "seria_titular": o.titular,
-                    "rival": o.rival,
-                    # quanto da torcida vai embora (%, negativo): venda ao
-                    # rival ou de um ídolo (v1.4)
-                    "revolta_torcida": round(100 * torcida.revolta_da_venda(
-                        ctx.alvo, o.clube, jogador,
-                    ), 1) or None,
-                }
-                for o in mercado.ofertas(jogador, ctx.alvo, ctx.campeonato.clubes)
-            ],
+            "ofertas": [o for o in _ofertas_da_janela(ctx) if o["jogador_id"] == jogador_id],
         }
     finally:
         conn.close()
@@ -568,50 +603,116 @@ def propor(simulacao_id, jogador_id, valor):
         conn.close()
 
 
-def vender(simulacao_id, jogador_id, clube):
-    """Aceita a oferta do `clube` por um jogador do elenco dirigido. A oferta
-    é recalculada aqui — o cliente nunca define o preço. None se a simulação
-    ou o jogador não existem."""
+def _oferta_de_pe(ctx, oferta_id):
+    """(linha, jogador, clube comprador) de uma oferta aberta desta janela.
+    None se ela não é desta simulação."""
+    r = oferta_repo.buscar(ctx.conn, oferta_id)
+    if r is None or r["simulacao_id"] != ctx.sim["id"]:
+        return None
+    ctx.exigir_janela()
+    if r["rodada"] != ctx.rodada or r["status"] != "aberta":
+        raise TransferenciaInvalida("Esta oferta não está mais de pé")
+    jogador, dono = ctx.jogador(r["jogador_id"])
+    if jogador is None or dono is not ctx.alvo:
+        raise TransferenciaInvalida(f"{r['jogador']} não é mais do seu elenco")
+    clube = next(c for c in ctx.campeonato.clubes if c.nome == r["clube"])
+    return r, jogador, clube
+
+
+def _vender(ctx, r, jogador, clube, valor, pedido=None):
+    """Fecha a venda por uma oferta (ou pela contraproposta aceita). Se o
+    comprador não pode mais pagar, a oferta cai."""
+
+    alvo = ctx.alvo
+    motivo = mercado.motivo_saida_bloqueada(alvo, jogador)
+    if motivo:
+        raise TransferenciaInvalida(motivo)
+    if mercado.motivo_entrada_bloqueada(clube, valor):
+        with ctx.conn:
+            oferta_repo.responder(ctx.conn, r["id"], "retirada", pedido)
+        raise TransferenciaInvalida(f"O {clube.nome} não tem mais como pagar e retirou a oferta")
+
+    # a torcida reage antes da transferência: o peso do jogador é medido no
+    # elenco de onde ele sai (v1.4)
+    idolo = fama.idolo(jogador)
+    rival = mercado.sao_rivais(alvo, clube)
+    revolta = torcida.reagir_a_venda(alvo, clube, jogador)
+    with ctx.conn:
+        oferta_repo.responder(ctx.conn, r["id"], "aceita", pedido)
+        oferta_repo.retirar_do_jogador(ctx.conn, ctx.sim["id"], ctx.rodada, r["jogador_id"])
+        mensagem_repo.inserir(ctx.conn, ctx.sim["id"], ctx.rodada, [
+            caixa.venda(jogador, clube, valor),
+            revolta and caixa.revolta_da_torcida(
+                jogador, clube, *revolta, rival=rival, idolo=idolo,
+            ),
+        ])
+        return ctx.efetivar(r["jogador_id"], jogador, alvo, clube, valor)
+
+
+def aceitar_oferta(simulacao_id, oferta_id):
+    """Aceita uma oferta da CPU: a venda acontece na hora. None se a
+    simulação ou a oferta não existem."""
 
     conn = conectar()
     try:
         ctx = _carregar(conn, simulacao_id)
         if ctx is None:
             return None
-        ctx.exigir_janela()
-        jogador, dono = ctx.jogador(jogador_id)
-        if jogador is None:
+        achada = _oferta_de_pe(ctx, oferta_id)
+        if achada is None:
             return None
-        if dono is not ctx.alvo:
-            raise TransferenciaInvalida(f"{jogador.nome} não é do seu elenco")
+        r, jogador, clube = achada
+        return _vender(ctx, r, jogador, clube, r["valor"])
+    finally:
+        conn.close()
 
-        oferta = next(
-            (
-                o for o in mercado.ofertas(jogador, ctx.alvo, ctx.campeonato.clubes)
-                if o.clube.nome == clube
-            ),
-            None,
-        )
-        if oferta is None:
-            raise TransferenciaInvalida(
-                f"O {clube} não tem oferta por {jogador.nome}"
-            )
 
-        # a torcida reage antes da transferência: o peso do jogador é medido
-        # no elenco de onde ele sai (v1.4)
-        idolo = fama.idolo(jogador)
-        revolta = torcida.reagir_a_venda(ctx.alvo, oferta.clube, jogador)
+def recusar_oferta(simulacao_id, oferta_id):
+    """Recusa uma oferta da CPU. None se a simulação ou a oferta não
+    existem."""
+
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        achada = _oferta_de_pe(ctx, oferta_id)
+        if achada is None:
+            return None
+        r, _, _ = achada
         with conn:
+            oferta_repo.responder(conn, oferta_id, "recusada")
+        return {"oferta_id": oferta_id, "jogador": r["jogador"], "clube": r["clube"],
+                "status": "recusada"}
+    finally:
+        conn.close()
+
+
+def contrapropor_oferta(simulacao_id, oferta_id, valor):
+    """Pede mais por uma oferta, uma vez só: o clube aceita (a venda fecha
+    pelo pedido) ou retira a oferta. None se a simulação ou a oferta não
+    existem."""
+
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        achada = _oferta_de_pe(ctx, oferta_id)
+        if achada is None:
+            return None
+        r, jogador, clube = achada
+        resposta = ofertas_cpu.responder_contraproposta(r["valor"], r["teto"], valor)
+        if resposta == "aceita":
+            transferencia = _vender(ctx, r, jogador, clube, valor, pedido=valor)
+            return {"resposta": "aceita", "transferencia": transferencia,
+                    "caixa": ctx.alvo.dinheiro}
+        with conn:
+            oferta_repo.responder(conn, oferta_id, "retirada", valor)
             mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
-                caixa.venda(jogador, oferta.clube, oferta.valor),
-                revolta and caixa.revolta_da_torcida(
-                    jogador, oferta.clube, *revolta,
-                    rival=oferta.rival, idolo=idolo,
-                ),
+                caixa.oferta_retirada(r["jogador"], r["clube"], valor),
             ])
-            return ctx.efetivar(
-                jogador_id, jogador, ctx.alvo, oferta.clube, oferta.valor
-            )
+        return {"resposta": "retirada", "transferencia": None, "caixa": ctx.alvo.dinheiro}
     finally:
         conn.close()
 
@@ -909,9 +1010,17 @@ def marcar_a_venda(simulacao_id, jogador_id, a_venda):
         if jogador is None:
             return None
         jogador.a_venda = a_venda
+        novas = []
         with conn:
             ctx.gravar()
-        return {"jogador_id": jogador_id, "jogador": jogador.nome, "a_venda": a_venda}
+            # com a janela aberta, a CPU olha na hora (v1.7)
+            if a_venda and mercado.janela_aberta(ctx.rodada):
+                novas = oferta_service.ao_listar(
+                    conn, simulacao_id, ctx.rodada, ctx.campeonato, ctx.alvo,
+                    jogador, jogador_id,
+                )
+        return {"jogador_id": jogador_id, "jogador": jogador.nome, "a_venda": a_venda,
+                "ofertas": len(novas)}
     finally:
         conn.close()
 
@@ -945,6 +1054,7 @@ def dispensar(simulacao_id, jogador_id):
                 conn, simulacao_id, ctx.rodada, jogador_id,
                 mapa[clube.nome], None, custo, tipo="dispensa",
             )
+            oferta_repo.retirar_do_jogador(conn, simulacao_id, ctx.rodada, jogador_id)
             mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
                 caixa.dispensa(jogador, custo),
                 revolta and caixa.revolta_da_dispensa(jogador, *revolta),
