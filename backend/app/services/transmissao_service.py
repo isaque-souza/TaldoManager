@@ -35,7 +35,7 @@ from app.services.temporada_service import (
     TemporadaConcluida, _achar_clube, _confronto_do_clube, _escalacao,
     decisoes_ao_vivo, transmissao_ativa,
 )
-from scripts.data_loader import carregar_campeonato
+from scripts.data_loader import carregar_campeonato_do_save
 
 TIPOS_GOL = ("gol", "penalti")
 
@@ -49,7 +49,7 @@ class TransmissaoInvalida(Exception):
 # ---------------------------------------------------------------------------
 
 def _restaurado(sim):
-    campeonato = carregar_campeonato()
+    campeonato = carregar_campeonato_do_save(sim)
     restaurar_estado(campeonato, json.loads(sim["estado_json"]))
     return campeonato
 

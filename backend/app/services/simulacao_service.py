@@ -28,7 +28,9 @@ from app.repositories import lance_repository as lance_repo
 from app.repositories import movimento_repository as movimento_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from scripts.data_loader import carregar_campeonato
+from scripts.data_loader import (
+    LIGA_PADRAO, TODAS_AS_LIGAS, carregar_campeonato,
+)
 
 NOME_CAMPEONATO = "Taldo"
 
@@ -95,6 +97,15 @@ def validar_posicionamento(clube, posicionamento):
     return {"formacao": formacao, "nomes": nomes}
 
 
+def liga_do_tecnico(campeonato, clube_usuario):
+    """A liga do clube dirigido (v1.6) — a do "campeão" do save. Sem clube,
+    a primeira."""
+    return next(
+        (c.liga for c in campeonato.clubes if c.nome == clube_usuario),
+        campeonato.ligas[0],
+    )
+
+
 def meta_inicial(campeonato, clube_usuario):
     """Meta da diretoria fixada no início da temporada, a partir do ranking
     de força dos elencos de agora: {meta_posicao, ranking_forca}, ou {} sem
@@ -102,7 +113,9 @@ def meta_inicial(campeonato, clube_usuario):
     """
     if not clube_usuario:
         return {}
-    ranking = diretoria.ranking_de_forca(campeonato.clubes)[clube_usuario]
+    # a força é comparada com a da própria liga (v1.6)
+    liga = liga_do_tecnico(campeonato, clube_usuario)
+    ranking = diretoria.ranking_de_forca(campeonato.clubes_da_liga(liga))[clube_usuario]
     return {
         "meta_posicao": diretoria.meta_da_temporada(ranking),
         "ranking_forca": ranking,
@@ -110,13 +123,13 @@ def meta_inicial(campeonato, clube_usuario):
 
 
 def _rodar(seed, clube_usuario=None, tatica="equilibrado",
-           formacao=None, xi_preferido=None):
+           formacao=None, xi_preferido=None, ligas=LIGA_PADRAO):
     if seed is not None:
         random.seed(seed)
     else:
         random.seed()
 
-    campeonato = carregar_campeonato()
+    campeonato = carregar_campeonato(ligas)
 
     if clube_usuario is not None:
         alvo = next(
@@ -174,8 +187,12 @@ def _serializar_jogador(jogador, clube_nome):
 
 def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
                 formacao=None, xi_preferido=None):
-    classificacao = campeonato.classificacao()
-    posicao = {c.nome: i for i, c in enumerate(classificacao, start=1)}
+    # posição na tabela da própria liga (v1.6)
+    posicao = {
+        c.nome: i
+        for liga in campeonato.ligas
+        for i, c in enumerate(campeonato.classificacao(liga), start=1)
+    }
 
     clubes = []
     jogadores = []
@@ -186,6 +203,7 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
             "nome": clube.nome,
             "pais": clube.pais,
             "posicao_final": posicao[clube.nome],
+            "liga": clube.liga,
             "pontos": clube.pontos,
             "jogos": jogos,
             "vitorias": clube.vitorias,
@@ -215,7 +233,7 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
 
     return {
         "seed": seed,
-        "campeao": classificacao[0].nome,
+        "campeao": campeonato.classificacao(liga_do_tecnico(campeonato, clube_usuario))[0].nome,
         "rodadas": len(campeonato.calendario),
         "clube_usuario": clube_usuario,
         "tatica": tatica,
@@ -463,7 +481,8 @@ def _montar_visao(cru):
 # API pública do serviço
 # ---------------------------------------------------------------------------
 
-def _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido):
+def _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido,
+                ligas=LIGA_PADRAO):
     """Roda e serializa. As escolhas do técnico (tática/formação/XI) só
     valem quando há um `clube_usuario`."""
     if clube_usuario:
@@ -472,7 +491,7 @@ def _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido):
     else:
         tatica_ef = formacao_ef = xi_ef = None
 
-    campeonato = _rodar(seed, clube_usuario, tatica, formacao, xi_preferido)
+    campeonato = _rodar(seed, clube_usuario, tatica, formacao, xi_preferido, ligas)
     return _serializar(
         campeonato, seed, clube_usuario, tatica_ef, formacao_ef, xi_ef
     )
@@ -487,12 +506,13 @@ def simular_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
 
 
 def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
-                     formacao=None, xi_preferido=None):
-    """Roda a temporada, grava no banco e devolve o id da simulação."""
-    cru = _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido)
+                     formacao=None, xi_preferido=None, ligas=LIGA_PADRAO):
+    """Roda a temporada, grava no banco e devolve o id da simulação.
+    `ligas` (v1.6): as que rodam juntas — sem dizer, só a Taldo."""
+    cru = _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido, ligas)
     # a seed não muda: o campeonato recém-carregado é o do início (e o
     # clube já foi validado por _visao_crua)
-    meta = meta_inicial(carregar_campeonato(), clube_usuario)
+    meta = meta_inicial(carregar_campeonato(ligas), clube_usuario)
 
     conn = conectar()
     try:
@@ -511,6 +531,7 @@ def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
                     if cru["xi_preferido"]
                     else None
                 ),
+                ligas=ligas if tuple(ligas) != LIGA_PADRAO else None,
                 **meta,
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
@@ -597,17 +618,20 @@ def _fim_de_carreira(conn, sim, cargo):
     }
 
 
-def listar_clubes():
+def listar_clubes(ligas=LIGA_PADRAO):
     """Os clubes do seed (para o usuário escolher qual dirigir), com a
-    força do elenco, a posição no ranking de força e a meta que a
-    diretoria daria."""
-    campeonato = carregar_campeonato()
-    ranking = diretoria.ranking_de_forca(campeonato.clubes)
+    força do elenco, a posição no ranking de força da liga dele (v1.6) e a
+    meta que a diretoria daria."""
+    campeonato = carregar_campeonato(ligas)
+    ranking = {}
+    for liga in campeonato.ligas:
+        ranking.update(diretoria.ranking_de_forca(campeonato.clubes_da_liga(liga)))
     clubes = []
     for c in campeonato.clubes:
         meta = diretoria.meta_da_temporada(ranking[c.nome])
         clubes.append({
             "nome": c.nome,
+            "liga": c.liga,
             "pais": c.pais,
             "forca": diretoria.forca_do_elenco(c),
             "ranking_forca": ranking[c.nome],
@@ -621,8 +645,9 @@ def listar_clubes():
 
 
 def elenco_do_clube(nome):
-    """Clube do seed + elenco (para montar a escalação). None se não existir."""
-    campeonato = carregar_campeonato()
+    """Clube do seed + elenco (para montar a escalação), de qualquer liga.
+    None se não existir."""
+    campeonato = carregar_campeonato(TODAS_AS_LIGAS)
     clube = next((c for c in campeonato.clubes if c.nome == nome), None)
     if clube is None:
         return None

@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 612 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 618 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -668,8 +668,13 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
             liga, só a Taldo (tudo como antes). Calibrado: Taldo 2,81 gols
             por jogo e mandante 46%; Premier 2,77 e 48% (campeões: Liverpool,
             City, Arsenal); a temporada com as duas leva ~1,4 s
-      - [ ] banco e serviços (`simulacao.ligas`, `clube.liga`, meta por liga,
-            virada da carreira)
+      - [x] banco e serviços — `simulacao.ligas` (JSON; vazio = só a Taldo,
+            os saves antigos) e `clube.liga`; todo lugar que restaura um save
+            carrega as ligas dele (`carregar_campeonato_do_save`); `iniciar`
+            e `salvar_temporada` recebem `ligas`; posição final, meta e
+            ranking de força são da liga do clube; o campeão do save é o da
+            liga do técnico; a carreira segue com as ligas da temporada
+            anterior e a lista de livres cresce com elas (50 por liga)
       - [ ] API (clubes por liga, tabela de cada liga)
 * [ ] Várias ligas na tela (escolher liga, tabelas e mercado entre ligas)
 * [ ] Copa entre as ligas (futuro)
@@ -692,7 +697,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 612 testes (domain, db, repositories, services, api)
+│   └── tests/              # 618 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

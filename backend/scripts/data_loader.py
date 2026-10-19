@@ -14,6 +14,13 @@ LIGAS = {
     "premier": ("Premier League", SEEDS_DIR / "premier"),
 }
 LIGA_PADRAO = ("taldo",)   # saves de antes da v1.6
+TODAS_AS_LIGAS = tuple(LIGAS)   # todo jogo novo (v1.6)
+
+
+def ligas_do_save(sim):
+    """As ligas de uma simulação (linha da tabela `simulacao`); saves de
+    antes da v1.6 (NULL) só têm a Taldo."""
+    return tuple(json.loads(sim["ligas"])) if sim["ligas"] else LIGA_PADRAO
 
 
 def carregar_jogadores(liga="taldo"):
@@ -132,3 +139,8 @@ def carregar_campeonato(ligas=LIGA_PADRAO):
     )
     campeonato.livres = sem_clube
     return campeonato
+
+
+def carregar_campeonato_do_save(sim):
+    """O campeonato com as ligas do save, pronto para `restaurar_estado`."""
+    return carregar_campeonato(ligas_do_save(sim))
