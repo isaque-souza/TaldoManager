@@ -88,13 +88,41 @@ def carregar_clubes(jogadores):
     return clubes
 
 
+def carregar_livres():
+    """Os jogadores sem clube do começo da temporada (v1.6). Sem contrato:
+    quem contrata define (mercado.contratar_livre)."""
+
+    caminho = SEEDS_DIR / "livres.json"
+    if not caminho.exists():
+        return []
+    with open(caminho, encoding="utf-8") as arquivo:
+        dados = json.load(arquivo)
+
+    return [
+        Jogador(
+            j["nome"],
+            j["idade"],
+            j["posicao"],
+            j["overall"],
+            potencial=j["potencial"],
+            contrato_anos=0,
+            funcao=j["funcao"],
+            secundarias=j["secundarias"],
+            fama=fama.inicial(j["nome"], j["idade"], j["overall"])[0],
+        )
+        for j in dados
+    ]
+
+
 def carregar_campeonato():
 
     jogadores = carregar_jogadores()
 
     clubes = carregar_clubes(jogadores)
 
-    return Campeonato(
+    campeonato = Campeonato(
         "Taldo",
         clubes
     )
+    campeonato.livres = carregar_livres()
+    return campeonato

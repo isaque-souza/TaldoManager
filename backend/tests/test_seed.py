@@ -87,3 +87,17 @@ def test_rivais_nao_tem_a_mesma_cor_principal():
     for c in clubes:
         for rival in c.get("rivais", []):
             assert cor[c["nome"]] != cor[rival], (c["nome"], rival)
+
+
+def test_livres_da_seed():
+    """v1.6: 50 sem clube, com goleiros, e nenhum nome repetido da liga."""
+    from scripts.data_loader import carregar_livres
+
+    livres = carregar_livres()
+    nomes_liga = {j.nome for j in carregar_jogadores().values()}
+
+    assert len(livres) == 50
+    assert len({j.nome for j in livres}) == 50
+    assert not nomes_liga & {j.nome for j in livres}
+    assert sum(1 for j in livres if j.posicao == "Goleiro") >= 3
+    assert all(j.contrato_anos == 0 for j in livres)

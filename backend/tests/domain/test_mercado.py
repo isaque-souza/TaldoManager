@@ -189,3 +189,42 @@ def test_ofertas_pagam_mais_quando_seria_titular_e_marcam_rival():
     assert por_clube["Fraco"].valor > por_clube["Forte"].valor
     assert por_clube["Rival"].rival
     assert lista[0].valor >= lista[-1].valor          # maior primeiro
+
+
+# --- jogadores livres (v1.6) ------------------------------------------------
+
+def test_contratar_livre_paga_so_as_luvas():
+    clube = _clube("A")
+    livre = Jogador("Sem Clube", 31, "Goleiro", 74, contrato_anos=0)
+    livres = [livre]
+    luvas = mercado.luvas(livre)
+
+    pago = mercado.contratar_livre(livre, livres, clube)
+
+    assert pago == luvas == round(livre.valor_mercado() * 0.10 / 10_000) * 10_000
+    assert livres == [] and livre in clube.jogadores
+    assert clube.dinheiro == 50_000_000 - luvas
+    assert clube.despesa_compras == luvas
+    assert livre.contrato_anos == mercado.CONTRATO_LIVRE_ANOS
+    assert livre.salario == livre.salario_referencia()
+    assert livre.multa_rescisoria is None
+
+
+def test_contratar_livre_respeita_elenco_cheio_e_caixa():
+    cheio = _clube("A")
+    for i in range(mercado.ELENCO_MAX - len(cheio.jogadores)):
+        cheio.contratar_jogador(Jogador(f"Extra {i}", 25, "Defesa", 70))
+    livre = Jogador("Sem Clube", 25, "Atacante", 80, contrato_anos=0)
+    with pytest.raises(TransferenciaInvalida):
+        mercado.contratar_livre(livre, [livre], cheio)
+
+    pobre = _clube("B", dinheiro=0)
+    with pytest.raises(TransferenciaInvalida):
+        mercado.contratar_livre(livre, [livre], pobre)
+
+
+def test_so_contrata_quem_esta_livre():
+    clube = _clube("A")
+    outro = Jogador("Com Clube", 25, "Atacante", 80)
+    with pytest.raises(TransferenciaInvalida):
+        mercado.contratar_livre(outro, [], clube)

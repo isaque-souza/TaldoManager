@@ -285,3 +285,67 @@ def test_vender_idolo_revolta_a_torcida_e_avisa():
     assert oferta["revolta_torcida"] == round(100 * torcida.VENDA_IDOLO, 1)
     mercado_service.vender(sid, idolo["jogador_id"], oferta["clube"])
     assert _torcidas(sid)[clube] == round(antes[clube] * (1 + torcida.VENDA_IDOLO))
+
+
+# --- jogadores livres (v1.6) ------------------------------------------------
+
+def test_mercado_lista_os_livres_com_as_luvas():
+    sid, _ = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    assert len(m["livres"]) == 50
+    assert any(f["posicao"] == "Goleiro" for f in m["livres"])
+    for f in m["livres"]:
+        assert f["clube"] is None and f["jogador_id"] is None
+        assert f["luvas"] == max(10_000, round(f["valor_mercado"] * mercado.FATOR_LUVAS / 10_000) * 10_000)
+        assert f["bloqueio"] is None
+
+
+def test_contratar_livre_paga_as_luvas_e_entra_no_elenco():
+    sid, clube = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    goleiro = next(f for f in m["livres"] if f["posicao"] == "Goleiro")
+
+    feita = mercado_service.contratar_livre(sid, goleiro["nome"])
+
+    assert feita["luvas"] == goleiro["luvas"]
+    assert feita["caixa"] == m["caixa"] - goleiro["luvas"]
+    assert feita["contrato_anos"] == mercado.CONTRATO_LIVRE_ANOS
+    depois = mercado_service.ver_mercado(sid)
+    assert goleiro["nome"] in {f["nome"] for f in depois["elenco"]}
+    assert goleiro["nome"] not in {f["nome"] for f in depois["livres"]}
+    assert len(depois["livres"]) == 49
+    # entrou na tabela `jogador` com id, como qualquer um do elenco
+    novo = next(f for f in depois["elenco"] if f["nome"] == goleiro["nome"])
+    assert novo["jogador_id"] is not None and novo["clube"] == clube
+
+
+def test_livre_contratado_joga_e_continua_no_elenco_depois_da_rodada():
+    sid, clube = _iniciar()
+    nome = mercado_service.ver_mercado(sid)["livres"][0]["nome"]
+    mercado_service.contratar_livre(sid, nome)
+
+    temporada_service.avancar(sid)
+
+    m = mercado_service.ver_mercado(sid)
+    assert nome in {f["nome"] for f in m["elenco"]}
+    assert nome not in {f["nome"] for f in m["livres"]}
+
+
+def test_contratar_livre_so_com_a_janela_aberta():
+    sid, _ = _iniciar()
+    nome = mercado_service.ver_mercado(sid)["livres"][0]["nome"]
+    temporada_service.avancar(sid)
+    with pytest.raises(TransferenciaInvalida):
+        mercado_service.contratar_livre(sid, nome)
+
+
+def test_contratar_livre_inexistente_e_none():
+    sid, _ = _iniciar()
+    assert mercado_service.contratar_livre(sid, "Ninguém da Silva") is None
+
+
+def test_contratar_livre_nao_mexe_na_sorte_da_temporada():
+    sid, _ = _iniciar()
+    antes = _rng(sid)
+    mercado_service.contratar_livre(sid, mercado_service.ver_mercado(sid)["livres"][0]["nome"])
+    assert _rng(sid) == antes

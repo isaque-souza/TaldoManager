@@ -7,6 +7,8 @@ aqui é carregar o estado vivo, aplicar a negociação e regravar tudo
 
 - comprar: `propor` → o clube vendedor aceita, contrapropõe ou recusa
 - vender: `ofertas` lista o que cada clube paga; `vender` aceita uma delas
+- livres (v1.6): `contratar_livre` contrata quem está sem clube, pagando só
+  as luvas
 """
 
 import json
@@ -146,7 +148,7 @@ def _ficha(jogador, jogador_id, clube):
     return {
         "jogador_id": jogador_id,
         "nome": jogador.nome,
-        "clube": clube.nome,
+        "clube": clube.nome if clube else None,
         "posicao": jogador.posicao,
         "funcao": jogador.funcao,
         "atributos": jogador.atributos,
@@ -247,6 +249,21 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
                 })
         disponiveis.sort(key=lambda f: (-f["overall"], f["valor_mercado"]))
 
+        # sem clube não têm linha na tabela `jogador` (nem id): vão pelo nome
+        livres = []
+        for j in ctx.campeonato.livres:
+            if posicao and j.posicao != posicao:
+                continue
+            if valor_max is not None and j.valor_mercado() > valor_max:
+                continue
+            luvas = mercado.luvas(j)
+            livres.append({
+                **_ficha(j, None, None),
+                "luvas": luvas,
+                "bloqueio": fechada or mercado.motivo_entrada_bloqueada(alvo, luvas),
+            })
+        livres.sort(key=lambda f: (-f["overall"], f["luvas"]))
+
         return {
             "rodada": ctx.rodada,
             "janela_aberta": aberta,
@@ -259,6 +276,7 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
             "max_propostas": mercado.MAX_PROPOSTAS,
             "elenco": elenco,
             "disponiveis": disponiveis,
+            "livres": livres,
             "transferencias": _historico(conn, simulacao_id),
         }
     finally:
@@ -451,5 +469,48 @@ def vender(simulacao_id, jogador_id, clube):
             return ctx.efetivar(
                 jogador_id, jogador, ctx.alvo, oferta.clube, oferta.valor
             )
+    finally:
+        conn.close()
+
+
+def contratar_livre(simulacao_id, nome):
+    """Contrata um jogador sem clube pagando as luvas (v1.6). None se a
+    simulação não existe ou ninguém com esse nome está livre."""
+
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        ctx.exigir_janela()
+        jogador = next(
+            (j for j in ctx.campeonato.livres if j.nome == nome), None
+        )
+        if jogador is None:
+            return None
+
+        clube = ctx.alvo
+        motivo = mercado.motivo_entrada_bloqueada(clube, mercado.luvas(jogador))
+        if motivo:
+            with conn:
+                mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                    caixa.livre_bloqueado(jogador, motivo, clube.dinheiro)
+                ])
+            raise TransferenciaInvalida(motivo)
+
+        luvas = mercado.contratar_livre(jogador, ctx.campeonato.livres, clube)
+        with conn:
+            ctx.gravar()
+            mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                caixa.contratacao_livre(jogador, luvas)
+            ])
+        return {
+            "rodada": ctx.rodada,
+            "jogador": jogador.nome,
+            "luvas": luvas,
+            "salario": jogador.salario,
+            "contrato_anos": jogador.contrato_anos,
+            "caixa": clube.dinheiro,
+        }
     finally:
         conn.close()

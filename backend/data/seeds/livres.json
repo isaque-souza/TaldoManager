@@ -1,0 +1,497 @@
+[
+    {
+        "nome": "Leonardo Garcia",
+        "idade": 27,
+        "posicao": "Atacante",
+        "overall": 76,
+        "potencial": 79,
+        "funcao": "Segundo atacante",
+        "secundarias": [
+            "Centroavante",
+            "Meia-atacante"
+        ]
+    },
+    {
+        "nome": "Francesco Fernandez",
+        "idade": 32,
+        "posicao": "Goleiro",
+        "overall": 76,
+        "potencial": 76,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Rodrigo Bianchi",
+        "idade": 29,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 75,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "nome": "Marco Fernandez",
+        "idade": 26,
+        "posicao": "Meio-Campo",
+        "overall": 70,
+        "potencial": 71,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia central",
+            "Zagueiro"
+        ]
+    },
+    {
+        "nome": "Gabriel Rodriguez",
+        "idade": 20,
+        "posicao": "Meio-Campo",
+        "overall": 62,
+        "potencial": 79,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "nome": "Noah Martin",
+        "idade": 27,
+        "posicao": "Atacante",
+        "overall": 72,
+        "potencial": 75,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ]
+    },
+    {
+        "nome": "Enzo Ferreira",
+        "idade": 19,
+        "posicao": "Defesa",
+        "overall": 58,
+        "potencial": 75,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia central"
+        ]
+    },
+    {
+        "nome": "Lucas Rodriguez",
+        "idade": 33,
+        "posicao": "Meio-Campo",
+        "overall": 80,
+        "potencial": 80,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Ponta"
+        ]
+    },
+    {
+        "nome": "Pierre Ferreira",
+        "idade": 29,
+        "posicao": "Atacante",
+        "overall": 67,
+        "potencial": 71,
+        "funcao": "Centroavante",
+        "secundarias": []
+    },
+    {
+        "nome": "Harry Costa",
+        "idade": 25,
+        "posicao": "Meio-Campo",
+        "overall": 67,
+        "potencial": 68,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "nome": "Liam Ferreira",
+        "idade": 29,
+        "posicao": "Defesa",
+        "overall": 65,
+        "potencial": 69,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Gustavo Lima",
+        "idade": 28,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 75,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "nome": "Diego Fernandez",
+        "idade": 26,
+        "posicao": "Defesa",
+        "overall": 74,
+        "potencial": 77,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "nome": "Thiago Taylor",
+        "idade": 17,
+        "posicao": "Goleiro",
+        "overall": 62,
+        "potencial": 70,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Caio Lima",
+        "idade": 28,
+        "posicao": "Atacante",
+        "overall": 76,
+        "potencial": 79,
+        "funcao": "Segundo atacante",
+        "secundarias": []
+    },
+    {
+        "nome": "Lucas Garcia",
+        "idade": 31,
+        "posicao": "Defesa",
+        "overall": 78,
+        "potencial": 78,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
+    },
+    {
+        "nome": "Alejandro Rodriguez",
+        "idade": 31,
+        "posicao": "Defesa",
+        "overall": 70,
+        "potencial": 70,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
+    },
+    {
+        "nome": "Vinicius Souza",
+        "idade": 20,
+        "posicao": "Atacante",
+        "overall": 63,
+        "potencial": 72,
+        "funcao": "Centroavante",
+        "secundarias": []
+    },
+    {
+        "nome": "Enzo Fernandez",
+        "idade": 20,
+        "posicao": "Defesa",
+        "overall": 64,
+        "potencial": 84,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Miguel Garcia",
+        "idade": 26,
+        "posicao": "Goleiro",
+        "overall": 67,
+        "potencial": 68,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Giovanni Mendes",
+        "idade": 35,
+        "posicao": "Meio-Campo",
+        "overall": 72,
+        "potencial": 72,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "nome": "Oliver Costa",
+        "idade": 21,
+        "posicao": "Atacante",
+        "overall": 61,
+        "potencial": 69,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante",
+            "Lateral"
+        ]
+    },
+    {
+        "nome": "Louis Dubois",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 70,
+        "potencial": 70,
+        "funcao": "Volante",
+        "secundarias": []
+    },
+    {
+        "nome": "Pedro Rodriguez",
+        "idade": 29,
+        "posicao": "Atacante",
+        "overall": 72,
+        "potencial": 73,
+        "funcao": "Centroavante",
+        "secundarias": []
+    },
+    {
+        "nome": "Gustavo Rocha",
+        "idade": 24,
+        "posicao": "Goleiro",
+        "overall": 65,
+        "potencial": 67,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Francesco Dubois",
+        "idade": 29,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 78,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ]
+    },
+    {
+        "nome": "Gabriel Santos",
+        "idade": 21,
+        "posicao": "Meio-Campo",
+        "overall": 61,
+        "potencial": 70,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "nome": "Pierre Santos",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 76,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Zagueiro"
+        ]
+    },
+    {
+        "nome": "Vinicius Rocha",
+        "idade": 35,
+        "posicao": "Defesa",
+        "overall": 79,
+        "potencial": 79,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "nome": "Antoine Araujo",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 65,
+        "potencial": 67,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
+    },
+    {
+        "nome": "Gustavo Pereira",
+        "idade": 28,
+        "posicao": "Defesa",
+        "overall": 66,
+        "potencial": 70,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Marco Araujo",
+        "idade": 20,
+        "posicao": "Atacante",
+        "overall": 61,
+        "potencial": 71,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ]
+    },
+    {
+        "nome": "André Pereira",
+        "idade": 23,
+        "posicao": "Atacante",
+        "overall": 67,
+        "potencial": 67,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
+    },
+    {
+        "nome": "Harry Fernandez",
+        "idade": 33,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 75,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Gabriel Ferreira",
+        "idade": 25,
+        "posicao": "Meio-Campo",
+        "overall": 72,
+        "potencial": 73,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Meia-atacante",
+            "Ponta"
+        ]
+    },
+    {
+        "nome": "Noah Ferreira",
+        "idade": 33,
+        "posicao": "Goleiro",
+        "overall": 73,
+        "potencial": 73,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Pablo Ribeiro",
+        "idade": 17,
+        "posicao": "Atacante",
+        "overall": 60,
+        "potencial": 79,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "nome": "Juan Lima",
+        "idade": 21,
+        "posicao": "Goleiro",
+        "overall": 65,
+        "potencial": 80,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Matheus Costa",
+        "idade": 17,
+        "posicao": "Defesa",
+        "overall": 68,
+        "potencial": 76,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia central"
+        ]
+    },
+    {
+        "nome": "Lucas Moretti",
+        "idade": 34,
+        "posicao": "Atacante",
+        "overall": 73,
+        "potencial": 73,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ]
+    },
+    {
+        "nome": "Diego Garcia",
+        "idade": 30,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 73,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Louis Wilson",
+        "idade": 33,
+        "posicao": "Atacante",
+        "overall": 77,
+        "potencial": 77,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Segundo atacante"
+        ]
+    },
+    {
+        "nome": "João Martin",
+        "idade": 31,
+        "posicao": "Meio-Campo",
+        "overall": 71,
+        "potencial": 71,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "nome": "Oliver Brown",
+        "idade": 23,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 77,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Volante"
+        ]
+    },
+    {
+        "nome": "André Martins",
+        "idade": 26,
+        "posicao": "Atacante",
+        "overall": 74,
+        "potencial": 78,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "nome": "Jack Oliveira",
+        "idade": 33,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 78,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Meia-atacante",
+            "Ponta"
+        ]
+    },
+    {
+        "nome": "Luca Walker",
+        "idade": 30,
+        "posicao": "Goleiro",
+        "overall": 78,
+        "potencial": 78,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "nome": "Giovanni Moretti",
+        "idade": 19,
+        "posicao": "Meio-Campo",
+        "overall": 63,
+        "potencial": 79,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "nome": "Bruno Santos",
+        "idade": 33,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 78,
+        "funcao": "Volante",
+        "secundarias": [
+            "Zagueiro"
+        ]
+    },
+    {
+        "nome": "Pablo Rossi",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 66,
+        "potencial": 69,
+        "funcao": "Volante",
+        "secundarias": []
+    }
+]

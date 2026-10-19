@@ -91,6 +91,11 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
             clube.capacidade = final["capacidade"]
             clube.ingresso = final.get("ingresso") or "normal"
 
+    # livres (v1.6): por enquanto cada temporada recomeça com os da seed,
+    # menos quem já foi contratado
+    na_liga = {j.nome for c in campeonato.clubes for j in c.jogadores}
+    campeonato.livres = [j for j in campeonato.livres if j.nome not in na_liga]
+
     return campeonato
 
 

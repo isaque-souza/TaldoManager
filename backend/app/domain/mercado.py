@@ -99,6 +99,41 @@ def transferir(jogador, vendedor, comprador, preco):
     vendedor.lancar("receita_vendas", preco)
 
 
+# --- jogadores livres (v1.6) -------------------------------------------------
+
+# sem clube não há transferência: paga-se só as luvas, um bônus de assinatura
+FATOR_LUVAS = 0.10
+CONTRATO_LIVRE_ANOS = 2
+
+
+def luvas(jogador):
+    return _arredondar(jogador.valor_mercado() * FATOR_LUVAS)
+
+
+def contratar_livre(jogador, livres, clube):
+    """Tira `jogador` da lista de `livres` e o põe no `clube`, que paga as
+    luvas. Devolve o valor das luvas. Levanta `TransferenciaInvalida` se
+    alguma regra impedir."""
+
+    if jogador not in livres:
+        raise TransferenciaInvalida(f"{jogador.nome} não está livre")
+    valor = luvas(jogador)
+    motivo = motivo_entrada_bloqueada(clube, valor)
+    if motivo:
+        raise TransferenciaInvalida(motivo)
+
+    livres.remove(jogador)
+    clube.contratar_jogador(jogador)
+    jogador.temporadas_no_clube = 0
+    jogador.assinar_contrato(
+        anos=CONTRATO_LIVRE_ANOS,
+        salario=jogador.salario_referencia(),
+        multa_rescisoria=None,
+    )
+    clube.lancar("despesa_compras", valor)
+    return valor
+
+
 # --- negociação -------------------------------------------------------------
 
 FATOR_TITULAR = 1.3            # titular do vendedor custa mais
