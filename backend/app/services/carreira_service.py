@@ -10,7 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, estadio, fama, historico, livres
+from app.domain import caixa, copa, estadio, fama, historico, livres
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -155,6 +155,9 @@ def proxima_temporada(simulacao_id):
             obras = estadio.cpu_amplia(
                 campeonato, _lotados(conn, simulacao_id, clubes_finais), clube_usuario,
             )
+
+            # a copa (v1.6): os 8 melhores de cada liga na temporada que acabou
+            campeonato.iniciar_copa(copa.classificados_pela_tabela(clubes_finais))
 
             # o técnico mantém tática, formação e XI — menos quem saiu do
             # clube. Com planos de jogo (v1.2), a temporada começa no padrão.

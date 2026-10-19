@@ -718,8 +718,12 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
             Calibrado em 12 temporadas: a liga igual (2,79 gols por jogo;
             mandante 46%); na copa 2,65 gols por jogo, 21% nos pênaltis,
             títulos 6 × 6 entre as ligas
-      - [ ] save e carreira (a copa no snapshot; classificados pela
-            temporada anterior)
+      - [x] save e carreira — todo jogo novo com as duas ligas já nasce
+            com a copa: a Premier classifica pela tabela real de 23/24
+            (`posicao_2023_24`), a Taldo pelo ranking de força; na carreira,
+            os 8 primeiros de cada liga na temporada anterior. A copa vai no
+            snapshot (saves sem ela, ou só com a Taldo, seguem sem) e, quando
+            a temporada acaba, fica em `simulacao.copa_json`
       - [ ] API e tela (chaveamento e o jogo do seu clube)
       - [ ] histórico (campeões da copa na carreira)
 

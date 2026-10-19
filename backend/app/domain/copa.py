@@ -13,7 +13,7 @@ O estado é um dict JSON (`para_dict` / `de_dict`), para ir no snapshot.
 
 import random
 
-from . import financas
+from . import diretoria, financas
 from .estadio import publico
 from .partida import Partida
 
@@ -45,6 +45,29 @@ FICA_DA_COPA = {"energia", "rodadas_lesao"}
 
 # disputa de pênaltis
 COBRANCAS = 5
+
+
+def classificados_de_inicio(campeonato):
+    """Os classificados de um jogo novo: {liga: [nomes do 1º ao 8º]}. A
+    liga com tabela do ano anterior (Premier 23/24) usa a posição nela; a
+    outra, o ranking de força dos elencos."""
+    classificados = {}
+    for liga in campeonato.ligas:
+        clubes = campeonato.clubes_da_liga(liga)
+        forca = diretoria.ranking_de_forca(clubes)
+        ordem = sorted(clubes, key=lambda c: (c.posicao_anterior or 99, forca[c.nome]))
+        classificados[liga] = [c.nome for c in ordem][:VAGAS_POR_LIGA]
+    return classificados
+
+
+def classificados_pela_tabela(clubes_finais):
+    """Os classificados pela tabela da temporada anterior (carreira):
+    `clubes_finais` são as linhas da tabela `clube` (nome, liga,
+    posicao_final)."""
+    classificados = {}
+    for c in sorted(clubes_finais, key=lambda c: c["posicao_final"]):
+        classificados.setdefault(c["liga"], []).append(c["nome"])
+    return {l: n[:VAGAS_POR_LIGA] for l, n in classificados.items()}
 
 
 class Copa:

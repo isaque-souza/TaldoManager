@@ -167,3 +167,33 @@ def test_a_fase_seguinte_e_montada_ao_terminar_a_anterior():
     assert all(j["vencedor"] is None for j in quartas)
     # jogar de novo a mesma fase não faz nada
     assert _quieto(c.jogar_fase, "oitavas", {cl.nome: cl for cl in camp.clubes}) == []
+
+
+def test_snapshot_leva_a_copa_e_save_antigo_fica_sem():
+    from app.domain.temporada import restaurar_estado, snapshot_estado
+
+    random.seed(4)
+    camp = carregar_campeonato(DUAS)
+    camp.iniciar_copa(copa.classificados_de_inicio(camp))
+    for _ in range(8):
+        _quieto(camp.jogar_rodada)
+    blob = json.loads(json.dumps(snapshot_estado(camp)))
+
+    volta = carregar_campeonato(DUAS)
+    restaurar_estado(volta, blob)
+    assert volta.copa.para_dict() == camp.copa.para_dict()
+
+    del blob["copa"]
+    antigo = carregar_campeonato(DUAS)
+    restaurar_estado(antigo, blob)
+    assert antigo.copa is None
+
+
+def test_classificados_de_inicio_premier_pela_tabela_real_taldo_pela_forca():
+    from app.domain import diretoria
+
+    camp = carregar_campeonato(DUAS)
+    c = copa.classificados_de_inicio(camp)
+    assert c["premier"][:4] == ["Manchester City", "Arsenal", "Liverpool", "Aston Villa"]
+    forca = diretoria.ranking_de_forca(camp.clubes_da_liga("taldo"))
+    assert [forca[n] for n in c["taldo"]] == list(range(1, 9))

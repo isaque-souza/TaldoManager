@@ -95,6 +95,8 @@ def carregar_clubes(jogadores, liga="taldo"):
 
         clube.rivais = set(c.get("rivais", []))
         clube.liga = liga
+        # posição na liga real do ano anterior (Premier 23/24), para a copa
+        clube.posicao_anterior = c.get("posicao_2023_24")
         # cores, escudo e camisa (v1.1) — só visual, o motor não usa
         clube.identidade = c.get("identidade")
 

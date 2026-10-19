@@ -16,7 +16,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import atributos, diretoria, fama, posicoes
+from app.domain import atributos, copa, diretoria, fama, posicoes
 from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
@@ -130,6 +130,7 @@ def _rodar(seed, clube_usuario=None, tatica="equilibrado",
         random.seed()
 
     campeonato = carregar_campeonato(ligas)
+    campeonato.iniciar_copa(copa.classificados_de_inicio(campeonato))
 
     if clube_usuario is not None:
         alvo = next(
@@ -246,6 +247,8 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
         "clubes": clubes,
         "jogadores": jogadores,
         "partidas": list(campeonato.partidas_jogadas),
+        # a copa entre as ligas (v1.6); None = sem copa
+        "copa": campeonato.copa.para_dict() if campeonato.copa else None,
     }
 
 
@@ -580,6 +583,10 @@ def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
             atuacao_repo.inserir(
                 conn, partida_ids, mapa, mapa_jog, cru["partidas"]
             )
+            if cru["copa"]:
+                simulacao_repo.definir_copa(
+                    conn, sim_id, json.dumps(cru["copa"], ensure_ascii=False)
+                )
         return sim_id
     finally:
         conn.close()
