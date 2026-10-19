@@ -1,7 +1,7 @@
 import random
 
 from . import copa as copa_
-from . import estadio, fama, financas, papeis, torcida
+from . import emprestimo, estadio, fama, financas, papeis, torcida
 from .partida import Partida
 
 
@@ -23,6 +23,7 @@ class Campeonato:
         self.historico = []
         self.partidas_jogadas = []
         self.partida_usuario = None   # a do técnico na última rodada
+        self.devolvidos = []          # empréstimos que acabaram na última (v1.7)
         self.versao_calendario = self.CALENDARIO_ATUAL
         self.calendario = self.gerar_calendario()
         self.recordes = {
@@ -101,6 +102,10 @@ class Campeonato:
             papeis.checar(next(c for c in self.clubes if c.nome == clube_usuario))
 
         self.rodada += 1
+
+        # empréstimos que acabaram (v1.7): voltam antes da próxima rodada
+        # (ou do fim da temporada)
+        self.devolvidos = emprestimo.devolver_vencidos(self.clubes, self.rodada)
 
         if self.rodada > len(self.calendario):
             for liga in self.ligas:

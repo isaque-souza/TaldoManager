@@ -124,6 +124,7 @@ def checar(clube):
             jogador.humor = HUMORES[min(i + 1, len(HUMORES) - 1)]
         else:
             jogador.humor = HUMORES[max(i - 1, 0)]
-        if jogador.humor == QUER_SAIR:
+        # emprestado (v1.7): a lista é do clube de origem
+        if jogador.humor == QUER_SAIR and not jogador.emprestimo:
             jogador.a_venda = True
 

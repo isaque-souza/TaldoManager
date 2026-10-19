@@ -41,6 +41,8 @@ _JOGADOR_CAMPOS = (
     "fama", "temporadas_no_clube",
     # lista de transferências e papel no elenco (v1.7)
     "a_venda", "papel", "humor", "titularidades", "jogos_disponivel",
+    # empréstimo (v1.7): volta ao clube de origem quando acaba
+    "emprestimo",
 )
 
 # campos acumulados de Clube (penalidade_expulsao é zerada a cada jogo)

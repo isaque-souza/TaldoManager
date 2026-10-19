@@ -16,18 +16,21 @@ aqui é carregar o estado vivo, aplicar a negociação e regravar tudo
   clube (v1.7: só a etapa 2), pagando só as luvas
 - elenco (v1.7): `marcar_a_venda` põe/tira da lista de transferências e
   `dispensar` rescinde (a qualquer momento, sem depender da janela)
+- empréstimos (v1.7): pedir e exercer a opção ficam no `emprestimo_service`;
+  aqui, o que a lista de compra mostra deles e a etapa 2 da opção de compra
 """
 
 import json
 import random
 
 from app.db.conexao import conectar
-from app.domain import caixa, contrato, fama, livres, mercado, ofertas as ofertas_cpu
+from app.domain import caixa, contrato, emprestimo, fama, livres, mercado, ofertas as ofertas_cpu
 from app.domain import papeis, torcida
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import clube_repository as clube_repo
+from app.repositories import emprestimo_repository as emprestimo_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import negociacao_repository as negociacao_repo
@@ -188,6 +191,21 @@ def _ficha(jogador, jogador_id, clube):
         "gols": jogador.gols,
         "assistencias": jogador.assistencias,
         "nota_media": jogador.nota_media(),
+        # emprestado por outro clube (v1.7)
+        "emprestimo": _emprestado(jogador),
+    }
+
+
+def _emprestado(jogador):
+    e = jogador.emprestimo
+    if not e:
+        return None
+    return {
+        "emprestimo_id": e["id"],
+        "de_clube": e["de"],
+        "volta": e["volta"],
+        "parte_salario": e["parte"],
+        "opcao_compra": e["opcao"],
     }
 
 
@@ -239,6 +257,11 @@ def _lado(r, clube):
         return None
     if r["tipo"] == "livre":
         return "livre" if r["para_clube"] == clube else None
+    if r["tipo"] == "emprestimo":
+        # a taxa (v1.7): quem recebe paga
+        if r["para_clube"] == clube:
+            return "emprestimo"
+        return "cedido" if r["de_clube"] == clube else None
     return "dispensa" if r["de_clube"] == clube else None
 
 
@@ -272,7 +295,7 @@ def historico(simulacao_id):
         t = por_temporada.setdefault(
             r["temporada"], {"temporada": r["temporada"], "gasto": 0, "arrecadado": 0}
         )
-        t["arrecadado" if lado == "venda" else "gasto"] += r["valor"]
+        t["arrecadado" if lado in ("venda", "cedido") else "gasto"] += r["valor"]
 
     temporadas = sorted(por_temporada.values(), key=lambda t: -t["temporada"])
     for t in temporadas:
@@ -315,6 +338,11 @@ class _Janela:
         self.aberta = mercado.janela_aberta(ctx.rodada)
         self.fechada = None if self.aberta else "Janela de transferências fechada"
         self.observados = {r["nome"] for r in observado_repo.listar(conn, sid)}
+        # pedidos de empréstimo desta janela (v1.7), por jogador
+        self.pedidos = {}
+        for p in emprestimo_repo.listar_pedidos_da_janela(conn, sid, ctx.rodada):
+            self.pedidos.setdefault(p["jogador_id"], []).append(p)
+        self.total_rodadas = len(ctx.campeonato.calendario)
 
 
 def _ficha_de_compra(ctx, janela, j, clube):
@@ -338,6 +366,46 @@ def _ficha_de_compra(ctx, janela, j, clube):
         ),
         "negociacao": janela.por_nome.get(j.nome),
         "observado": j.nome in janela.observados,
+        "pedir_emprestado": _pedido_de_emprestimo(ctx, janela, j, clube),
+    }
+
+
+def _pedido_de_emprestimo(ctx, janela, j, clube):
+    """O que a ficha precisa para pedir o jogador emprestado (v1.7): se o
+    clube empresta, as durações desta janela com a taxa de partida (sem os
+    fatores escondidos), o preço da opção de compra e a última
+    contraproposta."""
+    alvo, rodada, total = ctx.alvo, ctx.rodada, janela.total_rodadas
+    feitos = janela.pedidos.get(janela.ids[j.nome], [])
+    ultimo = feitos[-1] if feitos else None
+    bloqueio = janela.fechada or emprestimo.motivo_nao_empresta(j, clube, alvo)
+    if bloqueio is None and len(alvo.jogadores) >= mercado.ELENCO_MAX:
+        bloqueio = f"Seu elenco já tem {mercado.ELENCO_MAX} jogadores"
+    return {
+        "bloqueio": bloqueio,
+        "duracoes": [
+            {
+                "duracao": d,
+                "volta": emprestimo.volta(d, total),
+                "taxas": {
+                    str(p): emprestimo.taxa_base(j, rodada, d, total, p)
+                    for p in emprestimo.PARTES_SALARIO
+                },
+            }
+            for d in emprestimo.duracoes(rodada)
+        ],
+        "opcao_compra": emprestimo.preco_opcao(j, clube, alvo),
+        "propostas_restantes": max(0, mercado.MAX_PROPOSTAS - len(feitos)),
+        "contraproposta": (
+            {
+                "duracao": ultimo["duracao"],
+                "parte_salario": ultimo["parte_salario"],
+                "opcao": bool(ultimo["opcao"]),
+                "taxa": ultimo["taxa_pedida"],
+            }
+            if ultimo and ultimo["resposta"] == "contraproposta"
+            else None
+        ),
     }
 
 
@@ -425,9 +493,21 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
             "negociacoes": janela.negociacoes,
             "ofertas_recebidas": recebidas,
             "transferencias": _historico(conn, simulacao_id),
+            "emprestimos": _emprestimos(ctx),
+            "partes_salario": list(emprestimo.PARTES_SALARIO),
         }
     finally:
         conn.close()
+
+
+def _emprestimos(ctx):
+    """Os empréstimos da temporada (v1.7), os ativos primeiro."""
+    from app.services.emprestimo_service import visao   # evita import circular
+    lista = [
+        visao(r, ctx.rodada)
+        for r in emprestimo_repo.listar_por_simulacao(ctx.conn, ctx.sim["id"])
+    ]
+    return sorted(lista, key=lambda e: (e["status"] != "ativo", -e["emprestimo_id"]))
 
 
 def _oferta(ctx, r):
@@ -782,6 +862,15 @@ def _partes(ctx, neg):
     if neg["clube"] is None:
         jogador = next((j for j in ctx.campeonato.livres if j.nome == neg["jogador"]), None)
         vendedor = None
+    elif neg["emprestimo_id"]:
+        # a opção de compra de um empréstimo (v1.7): ele está aqui, emprestado
+        jogador, dono = ctx.jogador(neg["jogador_id"])
+        vendedor = None
+        if (jogador is not None and dono is ctx.alvo and jogador.emprestimo
+                and jogador.emprestimo["id"] == neg["emprestimo_id"]):
+            vendedor = next(c for c in ctx.campeonato.clubes if c.nome == neg["clube"])
+        else:
+            jogador = None
     else:
         jogador, vendedor = ctx.jogador(neg["jogador_id"])
         if vendedor is not None and vendedor.nome != neg["clube"]:
@@ -812,6 +901,7 @@ def _resumo(neg):
         "status": neg["status"],
         "tentativas_restantes": max(0, contrato.MAX_TENTATIVAS - neg["tentativas"]),
         "contraproposta": _contraproposta(neg),
+        "opcao_compra": neg["emprestimo_id"] is not None,   # v1.7
     }
 
 
@@ -884,9 +974,15 @@ def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=Non
             return None
         if neg["status"] != "aberta":
             raise TransferenciaInvalida(f"A negociação por {neg['jogador']} já terminou")
-        ctx.exigir_janela()
+        opcao = neg["emprestimo_id"] is not None
+        if not opcao:
+            ctx.exigir_janela()   # a opção de compra é cláusula (v1.7)
         jogador, vendedor = _partes(ctx, neg)
         comprador = ctx.alvo
+        if opcao:
+            # o empréstimo acaba aqui (só vale se ele assinar: nada é gravado
+            # sem o contrato): a compra parte do elenco de origem
+            emprestimo.devolver(jogador, comprador, vendedor)
 
         motivo = (
             (vendedor and mercado.motivo_saida_bloqueada(vendedor, jogador))
@@ -929,6 +1025,8 @@ def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=Non
             if resposta.fechou:
                 # contratado sai sozinho da lista de observados (v1.7)
                 observado_repo.remover(conn, simulacao_id, jogador.nome)
+                if opcao:
+                    emprestimo_repo.marcar_comprado(conn, neg["emprestimo_id"])
                 termos = (anos, resposta.valor, contrato.valor_multa(jogador, multa))
                 if vendedor is not None:
                     # a torcida de lá sente perder um ídolo, ou ver o jogador
@@ -1009,6 +1107,10 @@ def marcar_a_venda(simulacao_id, jogador_id, a_venda):
         jogador = _do_meu_elenco(ctx, jogador_id)
         if jogador is None:
             return None
+        if a_venda and jogador.emprestimo:
+            raise TransferenciaInvalida(
+                f"{jogador.nome} está emprestado pelo {jogador.emprestimo['de']}"
+            )
         jogador.a_venda = a_venda
         novas = []
         with conn:

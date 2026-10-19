@@ -17,7 +17,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, copa, fama, mercado, posicoes
+from app.domain import caixa, copa, emprestimo, fama, mercado, posicoes
 from app.domain.temporada import (
     livres_para_json, restaurar_estado, snapshot_estado,
 )
@@ -393,6 +393,16 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
         with redirect_stdout(io.StringIO()):
             campeonato.jogar_rodada(clube_usuario, decisoes)
         mensagens = caixa.depois_da_rodada(antes, caixa.foto_do_elenco(alvo), adversario)
+        # empréstimos (v1.7): quem voltou ao clube de origem e, faltando
+        # poucas rodadas, o aviso da opção de compra
+        mensagens.append(caixa.emprestimos_encerrados([
+            (j.nome, cedente.nome) for j, tomador, cedente in campeonato.devolvidos
+            if tomador is alvo
+        ]))
+        for j in alvo.jogadores:
+            e = j.emprestimo
+            if e and e["opcao"] and e["volta"] - campeonato.rodada == emprestimo.AVISO_OPCAO:
+                mensagens.append(caixa.emprestimo_acabando(j, emprestimo.AVISO_OPCAO))
         mensagens.append(
             copa_service.mensagem_da_rodada(campeonato, rodada_jogada, clube_usuario)
         )
