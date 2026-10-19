@@ -72,7 +72,7 @@ def snapshot_estado(campeonato):
         # o elenco entra no snapshot porque transferências mudam quem joga
         # onde; sem isso, cada jogador voltaria para o clube da seed
         dados["elenco"] = [j.nome for j in clube.jogadores]
-        dados["jogadores"] = {j.nome: _campos(j) for j in clube.jogadores}
+        dados["jogadores"] = {j.nome: campos_jogador(j) for j in clube.jogadores}
         clubes[clube.nome] = dados
 
     return {
@@ -80,11 +80,11 @@ def snapshot_estado(campeonato):
         "rng": [rng[0], list(rng[1]), rng[2]],
         "clubes": clubes,
         # quem está sem clube (v1.6): também muda (contratações)
-        "livres": {j.nome: _campos(j) for j in campeonato.livres},
+        "livres": livres_para_json(campeonato),
     }
 
 
-def _campos(jogador):
+def campos_jogador(jogador):
     """O que o snapshot guarda de um jogador. `posicao` (e a específica,
     v1.3) vai junto para recriar quem não está na seed (base, v0.8)."""
     return {
@@ -146,18 +146,29 @@ def restaurar_estado(campeonato, blob):
     # livres (v1.6). Snapshots de antes deles ficam com os da seed, menos
     # quem tiver o nome de alguém da liga (um jovem da base, na carreira)
     if "livres" in blob:
-        livres = []
-        for nome, campos in blob["livres"].items():
-            jogador = criar_jogador(nome, campos)
-            for c in _JOGADOR_CAMPOS:
-                setattr(jogador, c, campos.get(c, getattr(jogador, c)))
-            livres.append(jogador)
-        campeonato.livres = livres
+        campeonato.livres = restaurar_livres(blob["livres"])
     else:
         na_liga = {j.nome for c in campeonato.clubes for j in c.jogadores}
         campeonato.livres = [
             j for j in campeonato.livres if j.nome not in na_liga
         ]
+
+
+def livres_para_json(campeonato):
+    """Os livres como no snapshot: {nome: campos}. Também é o que fica
+    guardado quando a temporada termina (`simulacao.livres_json`)."""
+    return {j.nome: campos_jogador(j) for j in campeonato.livres}
+
+
+def restaurar_livres(dados):
+    """O inverso de `livres_para_json`: a lista de `Jogador`."""
+    livres = []
+    for nome, campos in dados.items():
+        jogador = criar_jogador(nome, campos)
+        for c in _JOGADOR_CAMPOS:
+            setattr(jogador, c, campos.get(c, getattr(jogador, c)))
+        livres.append(jogador)
+    return livres
 
 
 def criar_jogador(nome, campos):

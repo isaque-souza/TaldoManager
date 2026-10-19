@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 591 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 599 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -623,7 +623,7 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       reservas do clube (`scripts/ampliar_elencos.py`). A base passa a
       completar o elenco até 23. Calibração mantida (2,8 gols por jogo,
       mandante vence ~47%)
-* [ ] Jogadores livres — 50 sem clube no começo da temporada
+* [x] Jogadores livres — 50 sem clube no começo da temporada
       (`scripts/gerar_livres.py` → `data/seeds/livres.json`: veteranos,
       jogadores no auge e jovens, na faixa dos reservas da liga, com
       goleiros). Sem transferência: o clube paga só as **luvas** (10% do
@@ -635,8 +635,16 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       - [x] backend (seed, save, mercado e rota)
       - [x] tela — no mercado, "Jogadores: sem clube" troca a lista de
             compra pelos livres, com as luvas e o botão "Contratar por…"
-      - [ ] carreira (livres envelhecem; dispensados viram livres; a CPU
-            contrata livres)
+      - [x] carreira — a lista segue de temporada em temporada
+            (`simulacao.livres_json`, gravado quando a temporada acaba). Na
+            virada os livres envelhecem (sem jogar, caem) e se aposentam;
+            quem não renova e não acha clube **fica sem clube** em vez de
+            deixar a liga; clubes da CPU com elenco abaixo de 23 contratam o
+            melhor livre da posição carente se ele render mais que um jovem
+            da base (sem luvas, como quem chega de graça na virada); no fim
+            a lista volta a 50 com livres novos (`app/domain/livres.py`) e é
+            cortada em 70. Em 8 temporadas a liga fica como sem livres
+            (overall 77,0, idade 26,1)
 * [ ] Importador da Premier League 2023/24 (OpenFootball, CC0) — overall
       por fórmula + ajuste manual das estrelas
 * [ ] Várias ligas no banco e no motor
@@ -661,7 +669,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 591 testes (domain, db, repositories, services, api)
+│   └── tests/              # 599 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

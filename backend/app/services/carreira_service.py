@@ -10,7 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, fama, historico
+from app.domain import caixa, fama, historico, livres
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -19,7 +19,7 @@ from app.domain.carreira import (
     resolver_contratos,
     seed_da_temporada,
 )
-from app.domain.temporada import snapshot_estado
+from app.domain.temporada import restaurar_livres, snapshot_estado
 from app.repositories import carreira_repository as carreira_repo
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
@@ -27,7 +27,9 @@ from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import movimento_repository as movimento_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import plano_service, simulacao_service
-from scripts.data_loader import carregar_campeonato, carregar_jogadores
+from scripts.data_loader import (
+    carregar_campeonato, carregar_jogadores, carregar_livres,
+)
 
 
 class CarreiraInvalida(Exception):
@@ -36,8 +38,10 @@ class CarreiraInvalida(Exception):
 
 
 def _nomes_usados(conn, carreira_id):
-    """Seed + todos que já jogaram em alguma temporada da carreira."""
+    """Seed (com os livres, v1.6) + todos que já jogaram em alguma
+    temporada da carreira."""
     seed = {j.nome for j in carregar_jogadores().values()}
+    seed |= {j.nome for j in carregar_livres()}
     rows = conn.execute(
         "SELECT DISTINCT j.nome FROM jogador j"
         " JOIN simulacao s ON s.id = j.simulacao_id"
@@ -82,6 +86,11 @@ def proxima_temporada(simulacao_id):
         jogadores_finais = [
             dict(r) for r in jogador_repo.listar_por_simulacao(conn, simulacao_id)
         ]
+        # livres no fim da temporada (v1.6); antes deles, None = os da seed
+        livres_finais = (
+            restaurar_livres(json.loads(sim["livres_json"]))
+            if sim["livres_json"] else None
+        )
 
         with conn:
             carreira_id = sim["carreira_id"]
@@ -104,7 +113,9 @@ def proxima_temporada(simulacao_id):
                 random.seed()
 
             campeonato = carregar_campeonato()
-            preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais)
+            preparar_nova_temporada(
+                campeonato, clubes_finais, jogadores_finais, livres_finais
+            )
             envelhecer(campeonato, jogadores_finais, random)
             # os ídolos de antes da virada: quem se aposentar ganha homenagem
             idolos = {
@@ -114,10 +125,14 @@ def proxima_temporada(simulacao_id):
             # aposentadoria antes dos contratos: quem vai parar não renova
             movimentos = aposentar(campeonato, random)
             movimentos += resolver_contratos(campeonato, clube_usuario)
+            # a CPU olha os livres antes da base (v1.6)
+            movimentos += livres.cpu_contrata(campeonato, clube_usuario, random)
             # a base repõe quem saiu; nomes não se repetem na carreira
-            movimentos += subir_jovens(
-                campeonato, _nomes_usados(conn, carreira_id), random
-            )
+            usados = _nomes_usados(conn, carreira_id) | {
+                j.nome for j in campeonato.livres
+            }
+            movimentos += subir_jovens(campeonato, usados, random)
+            livres.completar(campeonato, usados, random)
 
             # o técnico mantém tática, formação e XI — menos quem saiu do
             # clube. Com planos de jogo (v1.2), a temporada começa no padrão.

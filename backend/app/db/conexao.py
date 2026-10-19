@@ -58,6 +58,9 @@ _COLUNAS_NOVAS = {
         ("ao_vivo_json", "TEXT"),
         # plano de jogo carregado para a próxima partida (v1.2)
         ("plano_em_uso", "INTEGER"),
+        # livres no fim da temporada (v1.6), JSON: o estado_json é apagado
+        # ao concluir e a virada da carreira precisa deles
+        ("livres_json", "TEXT"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")
