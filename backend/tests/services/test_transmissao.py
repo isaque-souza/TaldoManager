@@ -235,3 +235,137 @@ def test_transmissao_traz_o_desenho_de_cada_formacao():
     # os titulares do apito já vêm no lugar do desenho
     meu = _meu_time(t)
     assert all(j["x"] is not None and j["rotulo"] for j in meu["titulares"])
+
+
+# --- a pausa (v1.7): trocar de posição, confirmar tudo junto, desfazer -------
+
+def _dois_de_linha(sid, minuto):
+    foto = transmissao_service.estado(sid, minuto)
+    meu = next(c for c in foto["clubes"] if c["clube"] == foto_clube(sid))
+    linha = [j for j in meu["em_campo"] if j["posicao"] != "Goleiro"]
+    zag = next(j for j in linha if j["posicao"] == "Defesa")
+    ata = next(j for j in linha if j["posicao"] == "Atacante")
+    return meu, zag, ata
+
+
+def foto_clube(sid):
+    return transmissao_service.atual(sid)["clube_usuario"]
+
+
+def _em_campo(sid, minuto, nome):
+    foto = transmissao_service.estado(sid, minuto)
+    meu = next(c for c in foto["clubes"] if c["clube"] == foto_clube(sid))
+    return next((j for j in meu["em_campo"] if j["nome"] == nome), None)
+
+
+def test_troca_de_posicao_inverte_as_vagas():
+    sid, _ = _iniciada()
+    _, zag, ata = _dois_de_linha(sid, 30)
+    t = transmissao_service.pausa(sid, 31, [{"posicoes": [zag["nome"], ata["nome"]]}])
+    assert t["decisoes"][-1]["posicoes"] == [zag["nome"], ata["nome"]]
+
+    depois = _em_campo(sid, 31, zag["nome"])
+    assert depois["vaga"] == ata["vaga"] and depois["slot"] == ata["slot"]
+    assert _em_campo(sid, 31, ata["nome"])["vaga"] == zag["vaga"]
+    # improvisado rende menos
+    assert depois["overall_vaga"] < zag["overall_vaga"]
+
+
+def test_goleiro_nao_troca_de_posicao():
+    sid, _ = _iniciada()
+    foto = transmissao_service.estado(sid, 10)
+    meu = next(c for c in foto["clubes"] if c["clube"] == foto_clube(sid))
+    gol = next(j for j in meu["em_campo"] if j["posicao"] == "Goleiro")
+    outro = next(j for j in meu["em_campo"] if j["posicao"] != "Goleiro")
+    with pytest.raises(TransmissaoInvalida, match="goleiro fica no gol"):
+        transmissao_service.pausa(sid, 11, [{"posicoes": [gol["nome"], outro["nome"]]}])
+
+
+def test_pausa_confirma_tudo_junto_e_lista_vazia_desfaz():
+    sid, t = _iniciada()
+    sai, entra = _troca_valida(t)
+    feita = transmissao_service.pausa(sid, 46, [
+        {"tatica": "ofensivo"}, {"sai": sai, "entra": entra},
+    ])
+    assert [d.get("tatica") or d.get("entra") for d in feita["decisoes"]] == ["ofensivo", entra]
+
+    # confirmar de novo na mesma pausa troca as marcadas (sem duplicar)
+    so_tatica = transmissao_service.pausa(sid, 46, [{"tatica": "defensivo"}])
+    assert [d["minuto"] for d in so_tatica["decisoes"]] == [46]
+
+    desfeita = transmissao_service.pausa(sid, 46, [])
+    assert desfeita["decisoes"] == []
+    assert desfeita["minutos"] == t["minutos"]   # a partida volta a ser a de antes
+
+
+def test_pausa_nao_desfaz_o_que_ja_foi_jogado():
+    sid, t = _iniciada()
+    transmissao_service.pausa(sid, 20, [{"tatica": "ofensivo"}])
+    with pytest.raises(TransmissaoInvalida, match="não volta no tempo"):
+        transmissao_service.pausa(sid, 10, [])
+
+
+def test_mudancas_da_pausa_sao_validadas_em_ordem():
+    sid, t = _iniciada()
+    sai, entra = _troca_valida(t)
+    # depois de sair, ele não está mais em campo para trocar de posição
+    with pytest.raises(TransmissaoInvalida, match="não está em campo"):
+        transmissao_service.pausa(sid, 46, [
+            {"sai": sai, "entra": entra}, {"posicoes": [sai, entra]},
+        ])
+    # quem entra já pode trocar de posição na mesma pausa
+    _, zag, _ = _dois_de_linha(sid, 45)
+    outro = zag["nome"] if zag["nome"] != sai else None
+    if outro:
+        transmissao_service.pausa(sid, 46, [
+            {"sai": sai, "entra": entra}, {"posicoes": [entra, outro]},
+        ])
+
+
+def test_troca_de_posicao_e_substituicao_na_mesma_pausa():
+    """O atacante vai à zaga e sai para um zagueiro do banco, que fica na
+    vaga da zaga; o zagueiro que estava lá vai para o ataque."""
+    sid, t = _iniciada()
+    meu, zag, ata = _dois_de_linha(sid, 30)
+    zag_banco = next(
+        (j for j in meu["banco"] if j["posicao"] == "Defesa" and j["disponivel"]), None
+    )
+    if zag_banco is None:
+        pytest.skip("sem zagueiro no banco nesta seed")
+
+    t = transmissao_service.pausa(sid, 31, [
+        {"posicoes": [zag["nome"], ata["nome"]]},          # o atacante vai à zaga
+        {"sai": ata["nome"], "entra": zag_banco["nome"]},  # e sai para o zagueiro
+    ])
+    entrou = _em_campo(sid, 31, zag_banco["nome"])
+    assert entrou["vaga"] == zag["vaga"]
+    assert _em_campo(sid, 31, zag["nome"])["vaga"] == ata["vaga"]
+
+    # e vale na rodada gravada
+    res = temporada_service.avancar(sid)
+    minha = _minha_partida(res)
+    det = simulacao_service.detalhe_partida(sid, minha["partida_id"])
+    assert any(e["tipo"] == "substituicao" and e["minuto"] == 31 for e in det["eventos"])
+
+
+def test_expulso_pode_mudar_de_vaga_mas_nao_sai():
+    """Com um zagueiro expulso, o buraco dele vai para o ataque e um zagueiro
+    do banco entra na zaga, no lugar do atacante."""
+    from types import SimpleNamespace
+
+    def j(nome, posicao, vaga, slot, expulso=False):
+        return {"nome": nome, "posicao": posicao, "vaga": vaga, "slot": slot, "expulso": expulso}
+
+    foto = {"clubes": [{
+        "clube": "Meu",
+        "substituicoes_restantes": 5,
+        "em_campo": [j("Gol", "Goleiro", "Goleiro", 0), j("Zag", "Defesa", "Zagueiro", 1, True),
+                     j("Ata", "Atacante", "Centroavante", 9)],
+        "banco": [{"nome": "Zag2", "posicao": "Defesa", "disponivel": True}],
+    }]}
+    p = SimpleNamespace(estado_capturado=foto, max_substituicoes=5)
+    validar = transmissao_service._validar
+    assert validar(p, "Meu", [{"sai": "Zag", "entra": "Zag2"}]).endswith("não pode ser substituído")
+    assert validar(p, "Meu", [
+        {"posicoes": ["Zag", "Ata"]}, {"sai": "Ata", "entra": "Zag2"},
+    ]) is None
