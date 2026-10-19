@@ -1,5 +1,6 @@
 import random
 
+from . import copa as copa_
 from . import estadio, fama, financas, torcida
 from .partida import Partida
 
@@ -12,6 +13,7 @@ class Campeonato:
         # jogados na mesma rodada; a ordem é a dos clubes
         self.ligas = list(dict.fromkeys(c.liga for c in clubes))
         self.livres = []              # jogadores sem clube (v1.6)
+        self.copa = None              # copa entre as ligas (v1.6), se houver
         self.rodada = 1
         self.historico = []
         self.partidas_jogadas = []
@@ -82,6 +84,8 @@ class Campeonato:
         for clube in self.clubes:
             estadio.avancar_obra(clube)
 
+        self.jogar_copa()
+
         self.rodada += 1
 
         if self.rodada > len(self.calendario):
@@ -95,6 +99,22 @@ class Campeonato:
         for clube in self.clubes:
             clube.historico_caixa.append(clube.dinheiro)
             
+    def jogar_copa(self):
+        """A fase da copa no meio da semana, se esta rodada tiver uma.
+        Devolve os jogos jogados ([] se não teve)."""
+        if self.copa is None:
+            return []
+        fase = self.copa.fase_da_rodada(self.rodada)
+        if fase is None:
+            return []
+        return self.copa.jogar_fase(fase, {c.nome: c for c in self.clubes})
+
+    def iniciar_copa(self, classificados):
+        """Monta a copa com {liga: [nomes do 1º ao 8º]}. Só com duas
+        ligas; com uma, fica sem copa."""
+        self.copa = copa_.Copa(classificados) if len(self.ligas) == 2 else None
+        return self.copa
+
     def mostrar_cabecalho(self):
 
         print(f"\n{'=' * 40}")

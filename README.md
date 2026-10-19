@@ -701,7 +701,27 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       League; na temporada, abas para ver a tabela, os rankings e os
       gráficos de cada liga; na rodada, os jogos da sua liga primeiro e os
       da outra recolhidos (`js/ligas.js`); o mercado já lista as duas
-* [ ] Copa entre as ligas (futuro)
+* [ ] Copa entre as ligas — 16 clubes (os 8 melhores de cada liga), em
+      mata-mata de jogo único no meio da semana, depois das rodadas 8, 17,
+      26 e 35 da liga (o calendário de 38 rodadas não muda). Oitavas sempre
+      Taldo × Premier, cruzadas (1º de uma × 8º da outra); o 1º de cada liga
+      só encontra o da outra na final. Joga em casa quem foi melhor na liga
+      (e fica com a bilheteria); empate vai para os **pênaltis** (5
+      cobranças alternadas e depois uma a uma; cobra quem terminou em
+      campo, dos melhores finalizadores para o goleiro). Prêmio por
+      vitória: 500 mil nas oitavas, 1 mi nas quartas, 2 mi na semi, 4 mi
+      na final (o campeão leva 7,5 mi)
+      - [x] motor (`app/domain/copa.py`) — o jogo da copa é uma `Partida`
+            comum; uma foto dos números de clubes e jogadores antes do
+            apito volta no fim, menos o cansaço e as lesões novas: gols,
+            cartões, suspensões, notas e pontos da liga não veem a copa.
+            Calibrado em 12 temporadas: a liga igual (2,79 gols por jogo;
+            mandante 46%); na copa 2,65 gols por jogo, 21% nos pênaltis,
+            títulos 6 × 6 entre as ligas
+      - [ ] save e carreira (a copa no snapshot; classificados pela
+            temporada anterior)
+      - [ ] API e tela (chaveamento e o jogo do seu clube)
+      - [ ] histórico (campeões da copa na carreira)
 
 ---
 
