@@ -20,7 +20,8 @@ function avisoMercado(html, ruim = false) {
   el.querySelector(".link-caixa").addEventListener("click", () => abrirSecaoRodada("caixa"));
 }
 
-export const mercadoFiltro = { posicao: "", valor_max: "" };
+// origem: "clubes" (de outros clubes) ou "livres" (sem clube, v1.6)
+export const mercadoFiltro = { posicao: "", valor_max: "", origem: "clubes" };
 export const MERCADO_LIMITE = 40;   // linhas da lista de compra
 
 export async function carregarMercado() {
@@ -49,6 +50,13 @@ export function acaoCompra(f) {
     `<input type="number" min="10000" step="10000" value="${sugestao}" data-proposta="${f.jogador_id}">` +
     `<button class="transf" data-acao="propor" data-id="${f.jogador_id}">Propor</button>` +
     `<small class="bloqueio">${f.propostas_restantes} restante${f.propostas_restantes === 1 ? "" : "s"}</small></span>`;
+}
+
+// livre (v1.6): sem negociação — assina pagando as luvas
+function acaoLivre(f) {
+  if (f.bloqueio) return bloqueado(f.bloqueio);
+  return `<button class="transf" data-acao="livre" data-nome="${f.nome}">` +
+    `Contratar por ${dinheiro(f.luvas)}</button>`;
 }
 
 export function acaoVenda(f) {
@@ -86,25 +94,40 @@ export function renderMercado(m) {
     const pos = ["", "Goleiro", "Defesa", "Meio-Campo", "Atacante"];
     const tetos = [["", "qualquer"], ["1000000", "até 1 mi"], ["5000000", "até 5 mi"],
                    ["10000000", "até 10 mi"], ["20000000", "até 20 mi"]];
-    html += `<p class="vazio">Faça uma proposta: o clube aceita, pede mais (contraproposta) ou recusa.
+    const livres = mercadoFiltro.origem === "livres";
+    html += livres
+      ? `<p class="vazio">Jogadores <strong>sem clube</strong>: não há transferência nem negociação. O clube paga
+      só as <strong>luvas</strong> (um bônus de assinatura) e o salário, com contrato de 2 temporadas.</p>`
+      : `<p class="vazio">Faça uma proposta: o clube aceita, pede mais (contraproposta) ou recusa.
       Até ${m.max_propostas} propostas por jogador em cada janela. Cobrindo a <strong>multa rescisória</strong>,
       o clube não pode recusar. Do rival (${icone("rival")}), tudo sai mais caro.</p>`;
+    const origens = [["clubes", "de outros clubes"], ["livres", `sem clube (${m.livres.length})`]];
     html += `<div class="mercado-filtros">
+      <label>Jogadores <select id="m-origem">${origens.map(([v, r]) =>
+        `<option value="${v}"${v === mercadoFiltro.origem ? " selected" : ""}>${r}</option>`).join("")}</select></label>
       <label>Posição <select id="m-posicao">${pos.map((p) =>
         `<option value="${p}"${p === mercadoFiltro.posicao ? " selected" : ""}>${p || "todas"}</option>`).join("")}</select></label>
       <label>Valor <select id="m-valor">${tetos.map(([v, r]) =>
         `<option value="${v}"${v === mercadoFiltro.valor_max ? " selected" : ""}>${r}</option>`).join("")}</select></label>
     </div>`;
 
-    const lista = m.disponiveis.slice(0, MERCADO_LIMITE)
-      .map((f) => ({ ...linhaMercado(f), acao: acaoCompra(f) }));
-    html += tabela(lista, [
-      ["nome", "Jogador"], ["clube_fmt", "Clube"], ["posicao", "Pos."], ["idade", "Idade"],
-      ["overall", "OVR"], ["atributos_fmt", "Destaques"], ["pot", "Pot."], ["valor", "Valor"], ["multa", "Multa"],
-      ["sal", "Salário"], ["acao", "Proposta"],
-    ]);
-    if (m.disponiveis.length > MERCADO_LIMITE) {
-      html += `<p class="vazio">Mostrando os ${MERCADO_LIMITE} melhores de ${m.disponiveis.length} — use os filtros.</p>`;
+    const fonte = livres ? m.livres : m.disponiveis;
+    const lista = fonte.slice(0, MERCADO_LIMITE).map((f) => livres
+      ? { ...linhaMercado(f), luvas_fmt: dinheiro(f.luvas), acao: acaoLivre(f) }
+      : { ...linhaMercado(f), acao: acaoCompra(f) });
+    html += livres
+      ? tabela(lista, [
+        ["nome", "Jogador"], ["posicao", "Pos."], ["idade", "Idade"], ["overall", "OVR"],
+        ["atributos_fmt", "Destaques"], ["pot", "Pot."], ["valor", "Valor"], ["luvas_fmt", "Luvas"],
+        ["sal", "Salário"], ["acao", ""],
+      ])
+      : tabela(lista, [
+        ["nome", "Jogador"], ["clube_fmt", "Clube"], ["posicao", "Pos."], ["idade", "Idade"],
+        ["overall", "OVR"], ["atributos_fmt", "Destaques"], ["pot", "Pot."], ["valor", "Valor"], ["multa", "Multa"],
+        ["sal", "Salário"], ["acao", "Proposta"],
+      ]);
+    if (fonte.length > MERCADO_LIMITE) {
+      html += `<p class="vazio">Mostrando os ${MERCADO_LIMITE} melhores de ${fonte.length} — use os filtros.</p>`;
     }
 
     html += `<h5>Vender do seu elenco</h5><div id="m-ofertas"></div>`;
@@ -132,6 +155,7 @@ export function renderMercado(m) {
   const box = $("r-mercado");
   box.innerHTML = html;
   if (!m.janela_aberta) return;
+  $("m-origem").addEventListener("change", (e) => { mercadoFiltro.origem = e.target.value; carregarMercado(); });
   $("m-posicao").addEventListener("change", (e) => { mercadoFiltro.posicao = e.target.value; carregarMercado(); });
   $("m-valor").addEventListener("change", (e) => { mercadoFiltro.valor_max = e.target.value; carregarMercado(); });
   ligarBotoesMercado(box);
@@ -161,6 +185,7 @@ export function cliqueMercado(botao) {
     return propor(id, valor);
   }
   if (acao === "vender") return vender(id, botao.dataset.clube);
+  if (acao === "livre") return contratarLivre(botao.dataset.nome);
 }
 
 // POST com o motivo do 400 visível (o `pedir` genérico só mostra o status)
@@ -234,6 +259,19 @@ export async function vender(jogadorId, clube) {
   );
   if (!t) return carregarMercado();
   avisoMercado(`${icone("ok")} ${t.jogador} vendido ao ${t.para_clube} por ${dinheiro(t.valor)}.`);
+  carregarCaixa();
+  await carregarProximaRodada();   // elenco e escalação mudaram
+}
+
+export async function contratarLivre(nome) {
+  const r = await postarMercado(
+    `/simulacoes/${estado.simId}/livres/contratar`, { nome }, "Assinando o contrato…"
+  );
+  if (!r) return carregarMercado();
+  avisoMercado(
+    `${icone("assinou")} ${r.jogador} assinou por ${r.contrato_anos} temporadas — ` +
+    `luvas de ${dinheiro(r.luvas)}, salário de ${dinheiro(r.salario)}.`
+  );
   carregarCaixa();
   await carregarProximaRodada();   // elenco e escalação mudaram
 }
