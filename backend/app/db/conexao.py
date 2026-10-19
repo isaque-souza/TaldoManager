@@ -123,6 +123,10 @@ _COLUNAS_NOVAS = {
     "plano": (("posicionamento", "TEXT"),),
     # papel prometido na renovação (v1.7)
     "renovacao": (("papel", "TEXT"),),
+    # opção de compra de um empréstimo (v1.7)
+    "negociacao": (
+        ("emprestimo_id", "INTEGER REFERENCES emprestimo(id) ON DELETE CASCADE"),
+    ),
     "partida": (
         ("finalizacoes_gol_mandante", "INTEGER NOT NULL DEFAULT 0"),
         ("finalizacoes_gol_visitante", "INTEGER NOT NULL DEFAULT 0"),

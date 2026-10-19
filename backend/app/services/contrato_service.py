@@ -98,6 +98,12 @@ def renovar(simulacao_id, jogador_id, salario, anos, multa, papel=None):
         jogador = _do_meu_elenco(ctx, jogador_id)
         if jogador is None:
             return None
+        if jogador.emprestimo:
+            # o contrato é com o clube de origem (v1.7)
+            raise ContratoInvalido(
+                f"{jogador.nome} está emprestado: o contrato é com o "
+                f"{jogador.emprestimo['de']}"
+            )
         papel = papel or jogador.papel
         contrato.validar(jogador, anos, multa, papel)   # inválida não gasta tentativa
 

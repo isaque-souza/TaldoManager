@@ -61,6 +61,9 @@ from app.api.schemas import (
     Observados,
     NovoObservado,
     ObservadoMarcado,
+    NovoEmprestimo,
+    RespostaEmprestimo,
+    OpcaoExercida,
 )
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
@@ -68,6 +71,7 @@ from app.services import (
     carreira_service,
     contrato_service,
     copa_service,
+    emprestimo_service,
     escalacao_service,
     estadio_service,
     marketing_service,
@@ -381,6 +385,45 @@ def fazer_proposta(simulacao_id: int, proposta: NovaProposta):
     if resposta is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
     return resposta
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/emprestimos",
+    response_model=RespostaEmprestimo,
+    tags=["mercado"],
+)
+def pedir_emprestimo(simulacao_id: int, pedido: NovoEmprestimo):
+    """Pede um jogador de outro clube emprestado (v1.7): duração, parte do
+    salário que você paga, taxa e se quer a opção de compra. O clube aceita
+    (ele chega na hora), contrapropõe ou recusa."""
+    try:
+        resposta = emprestimo_service.pedir(
+            simulacao_id, pedido.jogador_id, pedido.duracao, pedido.parte_salario,
+            pedido.taxa, pedido.opcao,
+        )
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if resposta is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return resposta
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/emprestimos/{emprestimo_id}/opcao",
+    response_model=OpcaoExercida,
+    tags=["mercado"],
+)
+def exercer_opcao(simulacao_id: int, emprestimo_id: int):
+    """Exerce a opção de compra de um empréstimo (em qualquer rodada): o
+    valor fica travado e falta o contrato com o jogador
+    (`/negociacoes/{id}/contrato`)."""
+    try:
+        feito = emprestimo_service.exercer_opcao(simulacao_id, emprestimo_id)
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if feito is None:
+        raise HTTPException(status_code=404, detail="Simulação ou empréstimo não encontrado")
+    return feito
 
 
 @router.post(

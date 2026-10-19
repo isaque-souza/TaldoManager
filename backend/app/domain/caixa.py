@@ -159,6 +159,76 @@ def negociacao_bloqueada(jogador, vendedor, motivo, caixa=None):
     )
 
 
+# --- empréstimos (v1.7) ------------------------------------------------------
+
+def _ate(duracao):
+    return "a virada do turno" if duracao == "turno" else "o fim da temporada"
+
+
+def resposta_emprestimo(jogador, cedente, taxa, duracao, parte, resposta, restantes):
+    """O diretor de futebol conta a resposta a um pedido de empréstimo."""
+    alvo = f"{jogador.nome} ({jogador.funcao}, {jogador.overall})"
+    termos = f"até {_ate(duracao)}, pagando {parte}% do salário"
+    if resposta.fechou:
+        return None   # quem fecha manda a mensagem do empréstimo feito
+    tentativas = (
+        f" Ainda dá para fazer mais {restantes} {'pedido' if restantes == 1 else 'pedidos'} "
+        "nesta janela."
+        if restantes else " Eles encerraram as conversas por ele nesta janela."
+    )
+    if resposta.tipo == "contraproposta":
+        return _mensagem(
+            "Diretor de futebol", f"Contraproposta pelo empréstimo de {jogador.nome}",
+            f"Pedimos {alvo} emprestado ({termos}) com uma taxa de "
+            f"{_dinheiro(taxa)}. O {cedente.nome} topa, mas quer "
+            f"{_dinheiro(resposta.valor)}. Bancar mais do salário baixa a "
+            f"taxa.{tentativas}",
+        )
+    return _mensagem(
+        "Diretor de futebol", f"Empréstimo recusado: {jogador.nome}",
+        f"Pedimos {alvo} emprestado ({termos}) com uma taxa de "
+        f"{_dinheiro(taxa)} e o {cedente.nome} achou baixo demais.{tentativas}",
+    )
+
+
+def emprestimo_feito(jogador, cedente, taxa, duracao, parte, opcao=None):
+    opcao_txt = (
+        f" Temos a opção de comprá-lo por {_dinheiro(opcao)} enquanto ele "
+        "estiver aqui, em qualquer rodada."
+        if opcao else ""
+    )
+    return _mensagem(
+        "Diretor de futebol", f"Emprestado: {jogador.nome}",
+        f"{jogador.nome} ({jogador.funcao}, {jogador.overall}) chegou "
+        f"emprestado pelo {cedente.nome} até {_ate(duracao)}. Pagamos "
+        f"{_dinheiro(taxa)} de taxa e {parte}% do salário "
+        f"({_dinheiro(round(jogador.salario * parte / 100))} por temporada); o "
+        f"contrato continua com eles.{opcao_txt}",
+    )
+
+
+def emprestimo_acabando(jogador, rodadas):
+    """Faltam poucas rodadas e há opção de compra."""
+    e = jogador.emprestimo
+    return _mensagem(
+        "Diretor de futebol", f"O empréstimo de {jogador.nome} está acabando",
+        f"{jogador.nome} volta ao {e['de']} em {_rodadas(rodadas)}. Se quisermos "
+        f"ficar com ele, a opção de compra é de {_dinheiro(e['opcao'])} (depois "
+        "falta só o contrato com ele).",
+    )
+
+
+def emprestimos_encerrados(nomes_e_clubes):
+    """Quem voltou ao clube de origem depois da rodada."""
+    if not nomes_e_clubes:
+        return None
+    lista = ", ".join(f"{n} ao {c}" for n, c in nomes_e_clubes)
+    return _mensagem(
+        "Diretor de futebol", "Fim de empréstimo",
+        f"O empréstimo acabou e voltaram: {lista}.",
+    )
+
+
 def venda(jogador, comprador, valor):
     return _mensagem(
         "Diretor de futebol", f"Vendido: {jogador.nome}",

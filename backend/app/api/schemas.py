@@ -725,6 +725,7 @@ class NegociacaoResumo(BaseModel):
     status: Literal["aberta", "fechada", "desistiu", "expirada"]
     tentativas_restantes: int
     contraproposta: ContraContratoChegada | None = None
+    opcao_compra: bool = False          # exercendo a opção de um empréstimo (v1.7)
 
 
 class NegociacaoDetalhe(NegociacaoResumo):
@@ -757,6 +758,82 @@ class RespostaContrato(BaseModel):
     transferencia: "TransferenciaResultado | None" = None
     contrato: "ContratoNovo | None" = None
     caixa: int
+
+
+# --- empréstimos (v1.7) ---
+
+DuracaoEmprestimo = Literal["turno", "temporada"]
+
+
+class EmprestadoAqui(BaseModel):
+    """O jogador está no elenco emprestado por outro clube (v1.7)."""
+    emprestimo_id: int | None = None
+    de_clube: str
+    volta: int                           # volta antes desta rodada
+    parte_salario: int                   # % do salário que pagamos
+    opcao_compra: int | None = None      # preço fixo; None = sem opção
+
+
+class DuracaoPossivel(BaseModel):
+    duracao: DuracaoEmprestimo
+    volta: int
+    taxas: dict[str, int]                # taxa de partida por % do salário
+
+
+class ContraEmprestimo(BaseModel):
+    duracao: DuracaoEmprestimo
+    parte_salario: int
+    opcao: bool
+    taxa: int
+
+
+class PedidoEmprestimoFicha(BaseModel):
+    """O que dá para pedir emprestado por um jogador de outro clube."""
+    bloqueio: str | None = None
+    duracoes: list[DuracaoPossivel] = []
+    opcao_compra: int
+    propostas_restantes: int
+    contraproposta: ContraEmprestimo | None = None
+
+
+class Emprestimo(BaseModel):
+    emprestimo_id: int
+    rodada: int
+    jogador_id: int
+    jogador: str
+    de_clube: str
+    para_clube: str
+    duracao: DuracaoEmprestimo
+    volta: int
+    parte_salario: int
+    taxa: int
+    opcao_compra: int | None = None
+    status: Literal["ativo", "encerrado", "comprado"]
+
+
+class NovoEmprestimo(BaseModel):
+    jogador_id: int
+    duracao: DuracaoEmprestimo
+    parte_salario: int
+    taxa: int
+    opcao: bool = False
+
+
+class RespostaEmprestimo(BaseModel):
+    resposta: Literal["aceita", "contraproposta", "recusada"]
+    motivo: str
+    taxa_pedida: int | None = None       # só na contraproposta
+    propostas_restantes: int
+    emprestimo: Emprestimo | None = None
+    caixa: int
+
+
+class OpcaoExercida(BaseModel):
+    """A opção de compra trava o valor: falta o contrato com o jogador."""
+    negociacao_id: int
+    jogador: str
+    clube: str
+    valor: int
 
 
 class FichaMercado(BaseModel):
@@ -804,6 +881,8 @@ class FichaMercado(BaseModel):
     luvas: int | None = None
     negociacao: "NegociacaoResumo | None" = None   # v1.7: a desta janela
     observado: bool = False              # na lista de observados (v1.7)
+    emprestimo: EmprestadoAqui | None = None        # v1.7: veio emprestado
+    pedir_emprestado: PedidoEmprestimoFicha | None = None   # só de outros clubes
 
 
 class TransferenciaFeita(BaseModel):
@@ -822,7 +901,7 @@ class TransferenciaFeita(BaseModel):
 
 class MovimentoTecnico(TransferenciaFeita):
     """Uma movimentação do clube dirigido (v1.7), do ponto de vista dele."""
-    tipo: Literal["compra", "venda", "livre", "dispensa"]
+    tipo: Literal["compra", "venda", "livre", "dispensa", "emprestimo", "cedido"]
 
 
 class SaldoTransferencias(BaseModel):
@@ -908,6 +987,8 @@ class Mercado(BaseModel):
     negociacoes: list[NegociacaoResumo] = []   # desta janela (v1.7)
     ofertas_recebidas: list[OfertaRecebida] = []   # da CPU, nesta janela (v1.7)
     transferencias: list[TransferenciaFeita]
+    emprestimos: list[Emprestimo] = []     # da temporada (v1.7)
+    partes_salario: list[int] = []
 
 
 class NovaListaTransferencia(BaseModel):

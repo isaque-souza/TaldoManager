@@ -47,6 +47,9 @@ def _goleiros(clube):
 def motivo_saida_bloqueada(clube, jogador):
     """Por que `clube` não pode abrir mão de `jogador` (None = pode)."""
 
+    if jogador.emprestimo:
+        # o contrato é com o clube de origem (v1.7): não vende nem dispensa
+        return f"{jogador.nome} está emprestado pelo {jogador.emprestimo['de']}"
     if len(clube.jogadores) <= ELENCO_MIN:
         return f"{clube.nome} ficaria com menos de {ELENCO_MIN} jogadores"
     if jogador.posicao == "Goleiro" and _goleiros(clube) <= GOLEIROS_MIN:

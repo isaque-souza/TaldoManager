@@ -1,7 +1,8 @@
 // Mercado de transferências: propostas de compra (em duas etapas, v1.7: o
 // valor com o clube e depois o contrato com o jogador) e ofertas de venda.
 // As telas ficam na Central de Transferências (transferencias.js) e na
-// Central do Elenco (elenco.js); aqui ficam as ações.
+// Central do Elenco (elenco.js); aqui ficam as ações — também as dos
+// empréstimos (pedir um jogador emprestado e exercer a opção de compra).
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
@@ -75,6 +76,105 @@ export function acaoLivre(f) {
     `Negociar (luvas ${dinheiro(f.luvas)})</button>`;
 }
 
+// ---------- empréstimos (v1.7) ----------
+
+export const DURACAO_EMP = { turno: "até a virada do turno", temporada: "até o fim da temporada" };
+
+// o pedido de empréstimo na ficha de compra: duração, parte do salário, taxa
+// (sugerida pelo servidor, sem os fatores escondidos) e a opção de compra
+export function acaoEmprestimo(f) {
+  const p = f.pedir_emprestado;
+  if (!p) return "";
+  const titulo = `<h4 class="secao">${icone("acordo")} Empréstimo</h4>`;
+  if (p.bloqueio) return `<div class="tr-emprestimo">${titulo}${bloqueado(p.bloqueio)}</div>`;
+  const c = p.contraproposta;
+  const aceitar = c
+    ? `<button class="transf" data-acao="emprestar" data-id="${f.jogador_id}" data-valor="${c.taxa}"
+        data-duracao="${c.duracao}" data-parte="${c.parte_salario}" data-opcao="${c.opcao ? 1 : 0}">
+        Aceitar ${dinheiro(c.taxa)}</button>`
+    : "";
+  if (!p.propostas_restantes) {
+    return `<div class="tr-emprestimo">${titulo}${aceitar || bloqueado("Conversas encerradas nesta janela")}</div>`;
+  }
+  const d0 = c ? c.duracao : p.duracoes[0].duracao;
+  const p0 = c ? c.parte_salario : 75;
+  const taxas = Object.fromEntries(p.duracoes.map((d) => [d.duracao, d.taxas]));
+  const taxa = c ? c.taxa : taxas[d0][String(p0)];
+  return `<div class="tr-emprestimo" data-taxas='${JSON.stringify(taxas)}'>
+    ${titulo}
+    <div class="mercado-filtros">
+      <label>Duração <select data-emp="duracao">${p.duracoes.map((d) =>
+        `<option value="${d.duracao}"${d.duracao === d0 ? " selected" : ""}>${{ turno: "Meia temporada", temporada: "Temporada toda" }[d.duracao]} (até R${d.volta - 1})</option>`
+      ).join("")}</select></label>
+      <label>Você paga <select data-emp="parte">${[50, 75, 100].map((v) =>
+        `<option value="${v}"${v === p0 ? " selected" : ""}>${v}% do salário</option>`).join("")}</select></label>
+      <label>Taxa <input type="number" min="10000" step="10000" value="${taxa}" data-emp="taxa"></label>
+      <label class="tr-opcao"><input type="checkbox" data-emp="opcao"${c?.opcao ? " checked" : ""}>
+        Opção de compra por ${dinheiro(p.opcao_compra)}</label>
+    </div>
+    <span class="proposta">${aceitar}
+      <button class="transf" data-acao="emprestar" data-id="${f.jogador_id}">Pedir emprestado</button>
+      <small class="bloqueio">${p.propostas_restantes} pedido${p.propostas_restantes === 1 ? "" : "s"} restante${p.propostas_restantes === 1 ? "" : "s"} ·
+        bancar mais do salário baixa a taxa · o contrato continua com o clube dele</small></span>
+  </div>`;
+}
+
+// emprestado por outro clube (na Central do Elenco): até quando e a opção
+export function blocoEmprestado(f, rodada) {
+  const e = f.emprestimo;
+  if (!e) return "";
+  const faltam = e.volta - rodada;
+  return `<div class="el-emprestado">
+    <p>${icone("acordo")} <b>Emprestado pelo ${e.de_clube}</b> · fica até a rodada ${e.volta - 1}
+      (mais ${faltam} rodada${faltam === 1 ? "" : "s"}) · você paga ${e.parte_salario}% do salário.
+      O contrato é com o ${e.de_clube}: não renova, não vai à lista nem é dispensado.</p>
+    ${e.opcao_compra
+      ? `<button class="transf" data-acao="opcao" data-emprestimo="${e.emprestimo_id}">
+          ${icone("contrato")} Exercer a opção de compra (${dinheiro(e.opcao_compra)})</button>
+        <small class="bloqueio">Vale em qualquer rodada; depois falta o contrato com ele.</small>`
+      : `<small class="bloqueio">Sem opção de compra.</small>`}
+  </div>`;
+}
+
+// a taxa sugerida acompanha a duração e a parte do salário escolhidas
+function ligarEmprestimo(container) {
+  container.querySelectorAll(".tr-emprestimo[data-taxas]").forEach((box) => {
+    const taxas = JSON.parse(box.dataset.taxas);
+    const campo = (k) => box.querySelector(`[data-emp="${k}"]`);
+    const sugerir = () => { campo("taxa").value = taxas[campo("duracao").value][campo("parte").value]; };
+    campo("duracao").addEventListener("change", sugerir);
+    campo("parte").addEventListener("change", sugerir);
+  });
+}
+
+async function pedirEmprestimo(jogadorId, corpo) {
+  const r = await postarMercado(
+    `/simulacoes/${estado.simId}/emprestimos`, { jogador_id: jogadorId, ...corpo }, "Pedindo o empréstimo…"
+  );
+  if (!r) return carregarMercado();
+  const sinal = icone({ aceita: "ok", contraproposta: "acordo", recusada: "nao" }[r.resposta]);
+  let msg = `${sinal} ${r.motivo}`;
+  if (r.resposta === "contraproposta") msg += ` — pede ${dinheiro(r.taxa_pedida)} de taxa`;
+  msg += ".";
+  if (r.emprestimo) msg += ` ${r.emprestimo.jogador} já está no elenco, ${DURACAO_EMP[r.emprestimo.duracao]}.`;
+  avisoMercado(msg, r.resposta === "recusada");
+  carregarCaixa();
+  if (r.emprestimo) return carregarProximaRodada();   // elenco e escalação mudaram
+  await carregarMercado();
+}
+
+async function exercerOpcao(emprestimoId, onde) {
+  const r = await postarMercado(
+    `/simulacoes/${estado.simId}/emprestimos/${emprestimoId}/opcao`, {}, "Exercendo a opção…", { onde }
+  );
+  if (!r) return;
+  // o contrato fica na Central de Transferências
+  abrirSecaoRodada("mercado");
+  avisoMercado(`${icone("acordo")} Opção exercida: ${dinheiro(r.valor)} ao ${r.clube}. Agora acerte o contrato com ${r.jogador}.`);
+  await carregarMercado();
+  await abrirNegociacao(r.negociacao_id);
+}
+
 export const STATUS_NEG = {
   aberta: ["chip-perto", "Falta o contrato"], fechada: ["chip-batida", "Contratado"],
   desistiu: ["chip-longe", "Desistiu"], expirada: ["", "Expirou"],
@@ -98,6 +198,7 @@ export function ligarBotoesMercado(container) {
   container.querySelectorAll("button.transf").forEach((b) =>
     b.addEventListener("click", () => cliqueMercado(b))
   );
+  ligarEmprestimo(container);
 }
 
 // propor, aceitar, recusar e contrapropor pedem dois cliques (sem
@@ -118,6 +219,21 @@ export function cliqueMercado(botao) {
     return propor(id, valor);
   }
   if (acao === "livre") return contratarLivre(botao.dataset.nome);
+  if (acao === "emprestar") {
+    // aceitar a contraproposta repete os termos dela; senão, os do formulário
+    const box = botao.closest(".tr-emprestimo");
+    const campo = (k) => box.querySelector(`[data-emp="${k}"]`);
+    const corpo = botao.dataset.valor
+      ? { duracao: botao.dataset.duracao, parte_salario: Number(botao.dataset.parte),
+          taxa: Number(botao.dataset.valor), opcao: botao.dataset.opcao === "1" }
+      : { duracao: campo("duracao").value, parte_salario: Number(campo("parte").value),
+          taxa: Number(campo("taxa").value), opcao: campo("opcao").checked };
+    return pedirEmprestimo(id, corpo);
+  }
+  if (acao === "opcao") {
+    const onde = botao.closest('[data-painel="elenco"]') ? "r-contrato-msg" : "r-mercado-msg";
+    return exercerOpcao(Number(botao.dataset.emprestimo), onde);
+  }
   // ofertas da CPU (v1.7): o aviso sai no painel onde o botão está
   const oferta = Number(botao.dataset.oferta);
   const onde = botao.closest('[data-painel="elenco"]') ? "r-contrato-msg" : "r-mercado-msg";
@@ -192,9 +308,11 @@ export async function abrirNegociacao(negId) {
   const multas = d.opcoes_multa.map((o) => `<option value="${o.opcao}"${o.opcao === multaSel ? " selected" : ""}>` +
     `${MULTA_ROTULO[o.opcao]}${o.valor ? ` (${dinheiro(o.valor)})` : ""}</option>`).join("");
   const papeis = d.papeis.map((p) => `<option value="${p}"${p === papelSel ? " selected" : ""}>${PAPEL_ROTULO[p]}</option>`).join("");
-  const origem = d.clube
-    ? `acordo com o ${d.clube} por ${dinheiro(d.valor)}`
-    : `sem clube · luvas de ${dinheiro(d.valor)}`;
+  const origem = d.opcao_compra
+    ? `opção de compra: ${dinheiro(d.valor)} ao ${d.clube}`
+    : d.clube
+      ? `acordo com o ${d.clube} por ${dinheiro(d.valor)}`
+      : `sem clube · luvas de ${dinheiro(d.valor)}`;
   const dicas = [
     d.salario_atual != null ? `hoje ganha ${dinheiro(d.salario_atual)} e não aceita menos` : null,
     `o mercado paga ${dinheiro(d.salario_referencia)} a esse overall`,

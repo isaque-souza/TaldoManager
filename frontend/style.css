@@ -1311,3 +1311,16 @@ p.el-ofertas { font-size: .88rem; }
 .el-oferta > small { display: block; color: var(--texto-2); margin-bottom: .35rem; }
 .el-oferta .proposta input { width: 7.5rem; }
 .el-ofertas > small.bloqueio { display: block; }
+
+/* empréstimos (v1.7): o pedido na ficha de compra e o aviso no elenco */
+.tr-emprestimo { margin: .4rem 0 .8rem; padding-top: .6rem; border-top: 1px solid var(--linha); }
+.tr-emprestimo .mercado-filtros { margin-bottom: .4rem; flex-direction: column; align-items: stretch; }
+#r-mercado .tr-emprestimo .mercado-filtros label { justify-content: space-between; }
+.tr-emprestimo select, .tr-emprestimo input[type=number] { flex: 0 1 12rem; min-width: 0; margin: 0; }
+.tr-emprestimo input[type=number] { height: auto; padding: .3rem .6rem; font-size: .9rem; }
+.tr-opcao { display: flex; align-items: center; gap: .4rem; }
+.tr-opcao input { margin: 0; }
+#r-mercado .tr-emprestimo .mercado-filtros .tr-opcao { justify-content: flex-start; }
+.el-emprestado { margin: .4rem 0 .8rem; padding: .7rem .8rem; border: 1px solid var(--linha); border-radius: 6px; background: var(--superficie-2); }
+.el-emprestado p { margin: 0 0 .5rem; font-size: .9rem; }
+.el-emprestado button { width: auto; margin: 0 .6rem .2rem 0; }

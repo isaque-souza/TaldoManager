@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS transferencia (
     de_clube_id   INTEGER REFERENCES clube(id) ON DELETE CASCADE,   -- NULL = livre
     para_clube_id INTEGER REFERENCES clube(id) ON DELETE CASCADE,   -- NULL = dispensado
     valor         INTEGER NOT NULL,
-    tipo          TEXT NOT NULL DEFAULT 'transferencia'   -- transferencia | livre | dispensa
+    tipo          TEXT NOT NULL DEFAULT 'transferencia'   -- transferencia | livre | dispensa | emprestimo
 );
 
 -- Propostas de compra feitas pelo técnico (v0.7): contam o limite por
@@ -177,7 +177,10 @@ CREATE TABLE IF NOT EXISTS negociacao (
     contra_salario INTEGER,           -- última contraproposta do jogador
     contra_anos   INTEGER,
     contra_multa  TEXT,
-    contra_papel  TEXT
+    contra_papel  TEXT,
+    -- opção de compra de um empréstimo (v1.7): o valor é o da cláusula e a
+    -- etapa 2 não depende da janela
+    emprestimo_id INTEGER REFERENCES emprestimo(id) ON DELETE CASCADE
 );
 
 -- Campanhas de marketing do técnico (v1.4): uma por turno.
@@ -316,4 +319,39 @@ CREATE TABLE IF NOT EXISTS observado (
     temporada     INTEGER NOT NULL,   -- desde quando (temporada da carreira)
     rodada        INTEGER NOT NULL,
     UNIQUE (simulacao_id, nome)
+);
+
+-- Empréstimos (v1.7): quem recebe paga a taxa e uma parte do salário; o
+-- jogador volta ao clube de origem antes da rodada `volta`. O estado vivo
+-- fica no snapshot (`Jogador.emprestimo`); aqui, o registro de cada um.
+CREATE TABLE IF NOT EXISTS emprestimo (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    rodada        INTEGER NOT NULL,   -- a janela em que foi feito
+    jogador_id    INTEGER NOT NULL REFERENCES jogador(id) ON DELETE CASCADE,
+    jogador       TEXT NOT NULL,
+    de_clube      TEXT NOT NULL,
+    para_clube    TEXT NOT NULL,
+    duracao       TEXT NOT NULL,      -- turno | temporada
+    volta         INTEGER NOT NULL,   -- volta antes desta rodada
+    parte_salario INTEGER NOT NULL,   -- % que quem recebe paga
+    taxa          INTEGER NOT NULL,
+    opcao_compra  INTEGER,            -- preço fixo; NULL = sem opção
+    comprado      INTEGER NOT NULL DEFAULT 0   -- a opção foi exercida
+);
+CREATE INDEX IF NOT EXISTS ix_emprestimo_simulacao ON emprestimo(simulacao_id);
+
+-- Pedidos de empréstimo do técnico (v1.7): como as propostas de compra,
+-- contam o limite por janela e guardam a última contraproposta.
+CREATE TABLE IF NOT EXISTS pedido_emprestimo (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    rodada        INTEGER NOT NULL,
+    jogador_id    INTEGER NOT NULL REFERENCES jogador(id) ON DELETE CASCADE,
+    duracao       TEXT NOT NULL,
+    parte_salario INTEGER NOT NULL,
+    opcao         INTEGER NOT NULL DEFAULT 0,
+    taxa          INTEGER NOT NULL,
+    resposta      TEXT NOT NULL,      -- aceita | contraproposta | recusada
+    taxa_pedida   INTEGER             -- só nas contrapropostas
 );

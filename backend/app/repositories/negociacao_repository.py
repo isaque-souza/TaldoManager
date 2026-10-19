@@ -1,14 +1,16 @@
 """Acesso à tabela `negociacao` (contratações do técnico em duas etapas, v1.7)."""
 
 
-def inserir(conn, simulacao_id, rodada, jogador, valor, jogador_id=None, clube=None):
+def inserir(conn, simulacao_id, rodada, jogador, valor, jogador_id=None, clube=None,
+            emprestimo_id=None):
     cur = conn.execute(
         """
         INSERT INTO negociacao
-            (simulacao_id, rodada, jogador_id, jogador, clube, valor, status)
-        VALUES (?, ?, ?, ?, ?, ?, 'aberta')
+            (simulacao_id, rodada, jogador_id, jogador, clube, valor, status,
+             emprestimo_id)
+        VALUES (?, ?, ?, ?, ?, ?, 'aberta', ?)
         """,
-        (simulacao_id, rodada, jogador_id, jogador, clube, valor),
+        (simulacao_id, rodada, jogador_id, jogador, clube, valor, emprestimo_id),
     )
     return cur.lastrowid
 

@@ -13,7 +13,7 @@ do caixa reconstruível a partir das partidas salvas.
 As constantes ficam juntas para facilitar o balanceamento.
 """
 
-from app.domain import estadio
+from app.domain import emprestimo, estadio
 
 COTA_TV_TEMPORADA = 1_500_000      # igual para todos, dividida pelas rodadas
 BILHETERIA_POR_TORCEDOR = 0.02     # por jogo em casa, sem estádio registrado
@@ -33,14 +33,27 @@ def bilheteria(clube, publico=None):
     return round(clube.torcedores * BILHETERIA_POR_TORCEDOR)
 
 
-def folha_salarial(clube):
+def folha_salarial(clube, cedidos=0):
     """Soma dos salários do elenco atual, por temporada. Calculada na hora:
-    quando o elenco mudar (transferências), a folha acompanha."""
-    return sum(j.salario for j in clube.jogadores)
+    quando o elenco mudar (transferências), a folha acompanha. De quem veio
+    emprestado entra só a parte combinada; `cedidos` é o que o clube ainda
+    paga pelos que emprestou (v1.7)."""
+    return sum(emprestimo.salario_do_tomador(j) for j in clube.jogadores) + cedidos
 
 
-def salarios_rodada(clube, total_rodadas):
-    return round(folha_salarial(clube) / total_rodadas)
+def salarios_cedidos(clubes):
+    """{clube de origem: o que ainda paga pelos emprestados}, por temporada."""
+    cedidos = {}
+    for clube in clubes:
+        for j in clube.jogadores:
+            if j.emprestimo:
+                de = j.emprestimo["de"]
+                cedidos[de] = cedidos.get(de, 0) + emprestimo.salario_do_cedente(j)
+    return cedidos
+
+
+def salarios_rodada(clube, total_rodadas, cedidos=0):
+    return round(folha_salarial(clube, cedidos) / total_rodadas)
 
 
 def premiacao(posicao):
@@ -54,6 +67,7 @@ def processar_rodada(confrontos, total_rodadas, publicos=None):
 
     tv = cota_tv_rodada(total_rodadas)
     publicos = publicos or {}
+    cedidos = salarios_cedidos([c for par in confrontos for c in par])
 
     for mandante, visitante in confrontos:
         mandante.lancar(
@@ -63,7 +77,9 @@ def processar_rodada(confrontos, total_rodadas, publicos=None):
             mandante.lancar("despesa_estadio", estadio.manutencao(mandante))
         for clube in (mandante, visitante):
             clube.lancar("receita_tv", tv)
-            clube.lancar("despesa_salarios", salarios_rodada(clube, total_rodadas))
+            clube.lancar("despesa_salarios", salarios_rodada(
+                clube, total_rodadas, cedidos.get(clube.nome, 0),
+            ))
 
 
 def pagar_premiacao(classificacao):
