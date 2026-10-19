@@ -27,7 +27,7 @@ from contextlib import redirect_stdout
 from app.db.conexao import conectar
 from app.domain import posicoes
 from app.domain.clube import Clube
-from app.domain.partida import motivo_goleiro
+from app.domain.partida import motivo_goleiro, motivo_troca_de_posicao
 from app.domain.temporada import restaurar_estado
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import escalacao_service
@@ -242,22 +242,90 @@ def estado(simulacao_id, minuto):
         conn.close()
 
 
-def decidir(simulacao_id, minuto, tatica=None, sai=None, entra=None, formacao=None):
-    """Mudança do técnico valendo a partir de `minuto`: nova tática, nova
-    formação ou uma substituição (`sai` por `entra`) — uma por vez.
-    Devolve a transmissão refeita."""
-
-    troca = sai is not None or entra is not None
-    if [tatica is not None, formacao is not None, troca].count(True) != 1:
+def _mudanca(clube, minuto, m):
+    """Uma mudança da pausa vira decisão do motor. `m` tem uma só destas:
+    `tatica`, `formacao`, `sai`+`entra` (substituição) ou `posicoes` (dois
+    jogadores em campo trocam de vaga, v1.7)."""
+    troca = m.get("sai") is not None or m.get("entra") is not None
+    posicoes_ = m.get("posicoes")
+    tipos = [m.get("tatica") is not None, m.get("formacao") is not None, troca,
+             posicoes_ is not None]
+    if tipos.count(True) != 1:
         raise TransmissaoInvalida(
-            "Mande uma mudança por vez: tática, formação ou substituição (sai e entra)"
+            "Cada mudança é uma coisa só: tática, formação, substituição ou troca de posição"
         )
-    if tatica is not None and tatica not in Clube.TATICAS:
-        raise TransmissaoInvalida(f"Tática desconhecida: {tatica!r}")
-    if formacao is not None and formacao not in Clube.FORMACOES:
-        raise TransmissaoInvalida(f"Formação desconhecida: {formacao!r}")
-    if troca and not (sai and entra):
-        raise TransmissaoInvalida("A substituição precisa de quem sai e de quem entra")
+    if m.get("tatica") is not None:
+        if m["tatica"] not in Clube.TATICAS:
+            raise TransmissaoInvalida(f"Tática desconhecida: {m['tatica']!r}")
+        return {"minuto": minuto, "clube": clube, "tatica": m["tatica"]}
+    if m.get("formacao") is not None:
+        if m["formacao"] not in Clube.FORMACOES:
+            raise TransmissaoInvalida(f"Formação desconhecida: {m['formacao']!r}")
+        return {"minuto": minuto, "clube": clube, "formacao": m["formacao"]}
+    if troca:
+        if not (m.get("sai") and m.get("entra")):
+            raise TransmissaoInvalida("A substituição precisa de quem sai e de quem entra")
+        return {"minuto": minuto, "clube": clube, "sai": m["sai"], "entra": m["entra"]}
+    if len(posicoes_) != 2 or posicoes_[0] == posicoes_[1]:
+        raise TransmissaoInvalida("A troca de posição é entre dois jogadores em campo")
+    return {"minuto": minuto, "clube": clube, "posicoes": list(posicoes_)}
+
+
+def _validar(partida, clube, novas):
+    """Confere as mudanças da pausa, em ordem, contra a foto do fim do minuto
+    anterior (o time como o técnico o vê). Devolve o motivo da primeira que
+    não cabe, ou None."""
+
+    foto = partida.estado_capturado
+    time = next(c for c in foto["clubes"] if c["clube"] == clube)
+    em_campo = {j["nome"]: dict(j) for j in time["em_campo"]}
+    banco = {j["nome"]: j for j in time["banco"]}
+    restantes = time["substituicoes_restantes"]
+
+    for d in novas:
+        if "posicoes" in d:
+            a, b = d["posicoes"]
+            for nome in (a, b):
+                if nome not in em_campo:
+                    return f"{nome} não está em campo"
+            motivo = motivo_troca_de_posicao(
+                em_campo[a]["posicao"], em_campo[a]["vaga"],
+                em_campo[b]["posicao"], em_campo[b]["vaga"],
+            )
+            if motivo:
+                return motivo
+            for chave in ("vaga", "slot"):
+                em_campo[a][chave], em_campo[b][chave] = em_campo[b][chave], em_campo[a][chave]
+        elif "sai" in d:
+            sai, entra = d["sai"], d["entra"]
+            if restantes <= 0:
+                return f"As {partida.max_substituicoes} substituições já foram feitas"
+            if sai not in em_campo:
+                return f"{sai} não está em campo"
+            if em_campo[sai]["expulso"]:
+                return f"{sai} foi expulso e não pode ser substituído"
+            if entra not in banco:
+                return f"{entra} não está no banco"
+            if not banco[entra]["disponivel"]:
+                return f"{entra} já saiu e não pode voltar"
+            motivo = motivo_goleiro(em_campo[sai]["posicao"], banco[entra]["posicao"])
+            if motivo:
+                return motivo
+            saindo = em_campo.pop(sai)
+            em_campo[entra] = {
+                **banco.pop(entra), "vaga": saindo["vaga"], "slot": saindo.get("slot"),
+                "expulso": False,
+            }
+            restantes -= 1
+    return None
+
+
+def pausa(simulacao_id, minuto, mudancas):
+    """As mudanças da pausa valendo a partir de `minuto` (v1.7), todas de
+    uma vez e na ordem: substituem as que já estavam marcadas para esse
+    minuto. Lista vazia desfaz todas. O que já foi jogado não muda: o minuto
+    não pode vir antes da última decisão de outra pausa. Devolve a
+    transmissão refeita."""
 
     conn = conectar()
     try:
@@ -266,29 +334,25 @@ def decidir(simulacao_id, minuto, tatica=None, sai=None, entra=None, formacao=No
             return None
         if not transmissao_ativa(sim):
             raise TransmissaoInvalida("Nenhuma partida em andamento")
-        decisoes = decisoes_ao_vivo(sim)
-        if decisoes and minuto < decisoes[-1]["minuto"]:
-            raise TransmissaoInvalida("A partida não volta no tempo")
         if minuto < 1:
             raise TransmissaoInvalida("A decisão vale a partir do minuto 1")
+        anteriores = [d for d in decisoes_ao_vivo(sim) if d["minuto"] != minuto]
+        if anteriores and minuto < anteriores[-1]["minuto"]:
+            raise TransmissaoInvalida("A partida não volta no tempo")
 
-        # o time como está no fim do minuto anterior: a decisão cabe?
-        campeonato, _ = _simular(sim, decisoes, capturar_em=minuto - 1)
+        clube = sim["clube_usuario"]
+        novas = [_mudanca(clube, minuto, m) for m in mudancas]
+
+        # o time como está no fim do minuto anterior: as mudanças cabem?
+        campeonato, _ = _simular(sim, anteriores, capturar_em=minuto - 1)
         p = campeonato.partida_usuario
         if minuto > 90 + p.acrescimos:
             raise TransmissaoInvalida("A partida já acabou")
-        clube = sim["clube_usuario"]
-        if tatica is not None:
-            nova = {"minuto": minuto, "clube": clube, "tatica": tatica}
-        elif formacao is not None:
-            nova = {"minuto": minuto, "clube": clube, "formacao": formacao}
-        else:
-            nova = {"minuto": minuto, "clube": clube, "sai": sai, "entra": entra}
-            motivo = _motivo_troca(p, minuto - 1, decisoes, clube, sai, entra)
-            if motivo:
-                raise TransmissaoInvalida(motivo)
+        motivo = _validar(p, clube, novas)
+        if motivo:
+            raise TransmissaoInvalida(motivo)
 
-        decisoes = decisoes + [nova]
+        decisoes = anteriores + novas
         with conn:
             simulacao_repo.definir_ao_vivo(
                 conn, simulacao_id,
@@ -300,29 +364,30 @@ def decidir(simulacao_id, minuto, tatica=None, sai=None, entra=None, formacao=No
         conn.close()
 
 
-def _motivo_troca(partida, minuto_foto, decisoes, clube, sai, entra):
-    """Valida a troca contra a foto do fim do minuto anterior. Trocas já
-    marcadas para o MESMO minuto ainda não aparecem na foto, então entram
-    na conta à parte."""
+def decidir(simulacao_id, minuto, tatica=None, sai=None, entra=None, formacao=None,
+            posicoes=None):
+    """Uma mudança a mais valendo a partir de `minuto` (tática, formação,
+    substituição ou troca de posição), somada às já marcadas para ele.
+    Devolve a transmissão refeita."""
 
-    foto = partida.estado_capturado
-    time = next(c for c in foto["clubes"] if c["clube"] == clube)
-    mesmas = [d for d in decisoes if d["minuto"] == minuto_foto + 1 and "sai" in d]
+    nova = {"tatica": tatica, "formacao": formacao, "sai": sai, "entra": entra,
+            "posicoes": posicoes}
+    _mudanca(None, minuto, nova)   # valida o formato antes de abrir o banco
 
-    em_campo = {j["nome"]: j for j in time["em_campo"]}
-    banco = {j["nome"]: j for j in time["banco"]}
-    for d in mesmas:
-        em_campo.pop(d["sai"], None)
-        banco.pop(d["entra"], None)
-
-    if time["substituicoes_restantes"] - len(mesmas) <= 0:
-        return f"As {partida.max_substituicoes} substituições já foram feitas"
-    if sai not in em_campo:
-        return f"{sai} não está em campo"
-    if em_campo[sai]["expulso"]:
-        return f"{sai} foi expulso e não pode ser substituído"
-    if entra not in banco:
-        return f"{entra} não está no banco"
-    if not banco[entra]["disponivel"]:
-        return f"{entra} já saiu e não pode voltar"
-    return motivo_goleiro(em_campo[sai]["posicao"], banco[entra]["posicao"])
+    conn = conectar()
+    try:
+        sim = _sim_em_andamento(conn, simulacao_id)
+        if sim is None:
+            return None
+        if not transmissao_ativa(sim):
+            raise TransmissaoInvalida("Nenhuma partida em andamento")
+        decisoes = decisoes_ao_vivo(sim)
+    finally:
+        conn.close()
+    if decisoes and minuto < decisoes[-1]["minuto"]:
+        raise TransmissaoInvalida("A partida não volta no tempo")
+    marcadas = [
+        {k: v for k, v in d.items() if k not in ("minuto", "clube")}
+        for d in decisoes if d["minuto"] == minuto
+    ]
+    return pausa(simulacao_id, minuto, marcadas + [nova])

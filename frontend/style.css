@@ -1053,12 +1053,10 @@ button.hub-card:hover, button.hub-card:focus-visible {
 .av-painel-topo span { color: var(--texto-2); font-size: .88rem; }
 .av-painel-topo button { width: auto; margin: 0 0 0 auto; padding: .5rem 1.1rem; }
 .av-tatica { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
-.av-tatica-rotulo, .av-trocas h4 {
+.av-tatica-rotulo {
   font-family: var(--fonte-tarja); font-weight: 700; font-size: .8rem;
   text-transform: uppercase; letter-spacing: .1em; color: var(--texto-2); margin: 0;
 }
-.av-trocas h4 { margin-bottom: .4rem; }
-.av-trocas h4 small { text-transform: none; letter-spacing: 0; font-family: var(--fonte-texto); font-weight: 400; margin-left: .3rem; }
 .av-tatica [role="group"] { display: inline-flex; }
 .av-tatica button { width: auto; margin: 0; border-radius: 0; padding: .4rem .9rem; }
 .av-tatica button:first-child { border-radius: 4px 0 0 4px; }
@@ -1068,41 +1066,72 @@ button.hub-card:hover, button.hub-card:focus-visible {
 .av-formacao { display: inline-flex; align-items: center; gap: .6rem; margin: 0 0 0 auto; }
 .av-formacao select { width: auto; margin: 0; padding-top: .35rem; padding-bottom: .35rem; }
 @media (max-width: 640px) { .av-formacao { margin-left: 0; } }
-.av-trocas { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.av-trocas ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .25rem; }
-.av-trocas li { list-style: none; margin: 0; }
-.av-jog {
-  display: grid; grid-template-columns: 1.6rem 1fr auto auto 3.2rem 2.2rem; align-items: center; gap: .5rem;
-  width: 100%; margin: 0; padding: .4rem .55rem; text-align: left;
-  font-family: var(--fonte-texto); font-size: .86rem; text-transform: none; letter-spacing: 0; font-weight: 400;
-  color: var(--texto); background: var(--superficie-2); border: 1px solid transparent; border-radius: 4px;
-}
-.av-jog:hover:not(:disabled), .av-jog:focus-visible { border-color: var(--linha-forte); background: var(--superficie-2); color: var(--texto); }
-.av-jog:disabled { opacity: .5; cursor: not-allowed; }
-.av-jog.escolhido { border-color: var(--refletor); box-shadow: inset 0 0 0 1px var(--refletor); }
-.av-jog.combina:not(.escolhido) { border-color: color-mix(in srgb, var(--gramado-claro) 50%, transparent); }
-.av-jog.saindo, .av-jog.entrando { opacity: .75; border-style: dashed; border-color: var(--ambar); }
-.av-num { font-family: var(--fonte-tarja); font-weight: 800; color: var(--texto-2); text-align: right; }
-.av-nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.av-nome small { color: var(--ambar); margin-left: .25rem; }
-.av-pos { color: var(--texto-2); font-family: var(--fonte-tarja); letter-spacing: .06em; }
-.av-ovr { font-family: var(--fonte-tarja); font-weight: 700; }
-.av-cartoes { display: inline-flex; min-width: 8px; }
 .av-energia { height: 5px; background: var(--linha); border-radius: 3px; overflow: hidden; }
 .av-energia i { display: block; height: 100%; background: var(--gramado-claro); }
 .av-energia.media i { background: var(--ambar); }
 .av-energia.baixa i { background: var(--ao-vivo); }
-.av-nota {
-  font-family: var(--fonte-tarja); font-weight: 800; text-align: center; border-radius: 2px;
-  padding: .05rem 0; background: var(--linha); font-variant-numeric: tabular-nums;
-}
-.av-nota.boa { background: var(--gramado); color: #fff; }
-.av-nota.ruim { background: color-mix(in srgb, var(--ao-vivo) 70%, var(--linha)); color: #fff; }
 .av-painel-acoes { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin: 0; }
 .av-painel-acoes button { width: auto; margin: 0; }
 .av-painel-msg { color: var(--texto-2); font-size: .88rem; }
 .av-painel-msg.erro { color: var(--texto-alerta); }
 #av-stats { margin-bottom: 1rem; }
+
+/* gerenciar time (v1.7, no estilo do FIFA 15): o campo, a ficha e o banco */
+.av-painel > * { min-width: 0; }   /* a fila de reservas rola, o painel não estoura */
+.gt-grade { display: grid; grid-template-columns: minmax(0, 26rem) minmax(0, 1fr); gap: 1.2rem; align-items: start; }
+@media (max-width: 760px) { .gt-grade { grid-template-columns: 1fr; } }
+.gt-campo {
+  position: relative; aspect-ratio: 68 / 80; width: 100%; max-width: 26rem; margin: 0 auto; border-radius: 6px; overflow: hidden;
+  background: repeating-linear-gradient(180deg, #1f6b3a 0 10%, #237541 10% 20%);
+  border: 1px solid color-mix(in srgb, var(--gramado-claro) 35%, var(--linha));
+}
+.gt-marcas { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: rgba(255,255,255,.35); stroke-width: .4; }
+.gt-jog {
+  position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 1px;
+  width: 4.6rem; margin: 0; padding: .15rem .1rem; background: transparent; border: 2px solid transparent;
+  border-radius: 6px; color: #fff; font-family: var(--fonte-texto); text-transform: none; letter-spacing: 0;
+  transition: left .25s ease, top .25s ease, border-color .15s;
+}
+.gt-jog:hover, .gt-jog:focus-visible { background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.4); }
+.gt-jog.escolhido { border-color: var(--refletor); background: rgba(0,0,0,.3); }
+.gt-jog.expulso { opacity: .55; }
+.gt-jog.expulso .camisa { filter: grayscale(1); }
+.gt-jog.novo .camisa { outline: 2px dashed var(--ambar); outline-offset: 2px; border-radius: 4px; }
+.gt-jog .camisa { display: block; }
+.gt-ovr { font-family: var(--fonte-tarja); font-weight: 800; font-size: .95rem; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.gt-ovr.perde, .gt-pos.perde { color: var(--ambar); }
+.gt-nome {
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: .74rem; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,.7);
+  display: inline-flex; align-items: center; gap: 3px;
+}
+.gt-pos { font-family: var(--fonte-tarja); font-size: .66rem; letter-spacing: .06em; color: rgba(255,255,255,.8); }
+.gt-jog .av-energia { width: 2.6rem; }
+.gt-lado { display: grid; gap: .7rem; }
+.gt-ficha { padding: .8rem; border: 1px solid var(--linha); border-radius: 6px; background: var(--superficie-2); }
+.gt-ficha header { display: flex; gap: .7rem; align-items: center; margin-bottom: .5rem; }
+.gt-ficha header div { display: grid; }
+.gt-ficha header small { color: var(--texto-2); }
+.gt-ficha .atributos { margin: 0 0 .4rem; }
+.gt-dica { margin: 0; color: var(--texto-2); font-size: .86rem; }
+.gt-pendentes { margin: 0; padding-left: 1.2rem; display: grid; gap: .3rem; font-size: .88rem; }
+.gt-pendentes li { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.gt-pendentes button { width: auto; margin: 0; padding: .15rem .45rem; line-height: 1; }
+.gt-banco h4 small { text-transform: none; letter-spacing: 0; font-family: var(--fonte-texto); font-weight: 400; margin-left: .3rem; }
+.gt-reservas { display: flex; gap: .5rem; overflow-x: auto; padding: .4rem 0 .2rem; }
+.gt-res {
+  flex: 0 0 6.6rem; display: grid; justify-items: center; gap: 2px; margin: 0; padding: .45rem .3rem;
+  background: var(--superficie-2); border: 1px solid var(--linha); border-radius: 6px;
+  color: var(--texto); font-family: var(--fonte-texto); text-transform: none; letter-spacing: 0;
+}
+.gt-res .gt-nome { text-shadow: none; font-size: .78rem; }
+.gt-res .gt-pos { color: var(--texto-2); }
+.gt-res .gt-ovr { text-shadow: none; }
+.gt-res .av-energia { width: 3.2rem; }
+.gt-res:hover:not(:disabled), .gt-res:focus-visible { border-color: var(--linha-forte); color: var(--texto); background: var(--superficie-2); }
+.gt-res.escolhido { border-color: var(--refletor); box-shadow: inset 0 0 0 1px var(--refletor); }
+.gt-res.combina:not(.escolhido) { border-color: color-mix(in srgb, var(--gramado-claro) 60%, transparent); }
+.gt-res:disabled { opacity: .45; cursor: not-allowed; }
 
 @media (max-width: 640px) {
   .placar-tv > * { padding: .45rem .55rem; }
@@ -1112,8 +1141,6 @@ button.hub-card:hover, button.hub-card:focus-visible {
   .pt-relogio { font-size: 1.3rem; }
   .av-corpo { grid-template-columns: 1fr; }
   .narracao { max-height: 20rem; }
-  .av-trocas { grid-template-columns: 1fr; }
-  .av-jog { grid-template-columns: 1.4rem 1fr auto auto 2.4rem 2rem; gap: .35rem; }
   .sim-nome { font-size: .68rem; }
 }
 @media (prefers-reduced-motion: reduce) {
