@@ -62,8 +62,8 @@ export function renderSecaoRodada() {
 export function marcarHubMercado({ janelaAberta, total, acabando, aVenda }) {
   $("hub-mercado").textContent = janelaAberta ? "Janela aberta" : "Janela fechada";
   $("hub-mercado-info").innerHTML = janelaAberta
-    ? `<span class="luz-aberta" aria-hidden="true"></span> compre e venda jogadores`
-    : `${icone("cadeado")} só veja o elenco e as transferências`;
+    ? `<span class="luz-aberta" aria-hidden="true"></span> busque, negocie e acompanhe`
+    : `${icone("cadeado")} busque e observe jogadores`;
   $("hub-elenco").textContent = acabando
     ? `${acabando} ${acabando === 1 ? "contrato acaba" : "contratos acabam"}`
     : `${total} jogadores`;

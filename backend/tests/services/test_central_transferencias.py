@@ -128,20 +128,17 @@ def test_lista_tem_limite_e_nao_aceita_o_proprio_elenco_nem_quem_nao_existe():
     assert observado_service.observar(sid, "Ninguém Com Este Nome") is None
 
 
-def test_observado_contratado_aparece_como_do_seu_elenco():
+def test_observado_contratado_sai_sozinho_da_lista():
     sid = _iniciar()
     m = mercado_service.ver_mercado(sid)
-    alvo, livre = _compravel(m), m["livres"][0]
-    observado_service.observar(sid, alvo["nome"])
-    observado_service.observar(sid, livre["nome"])
+    alvo, livre, outro = _compravel(m), m["livres"][0], m["livres"][1]
+    for nome in (alvo["nome"], livre["nome"], outro["nome"]):
+        observado_service.observar(sid, nome)
 
     _comprar(sid, alvo)
     fechar(sid, mercado_service.contratar_livre(sid, livre["nome"])["negociacao_id"])
 
-    for o in observado_service.ver(sid)["observados"]:
-        assert o["situacao"] == "no_elenco"
-        assert o["avisos"] == ["Já é do seu elenco"]
-        assert o["jogador"]["clube"] == CLUBE
+    assert [o["nome"] for o in observado_service.ver(sid)["observados"]] == [outro["nome"]]
 
 
 def test_observados_seguem_na_virada(cargo_garantido):

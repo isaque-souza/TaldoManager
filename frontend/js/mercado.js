@@ -1,15 +1,16 @@
 // Mercado de transferências: propostas de compra (em duas etapas, v1.7: o
 // valor com o clube e depois o contrato com o jogador) e ofertas de venda.
+// As telas ficam na Central de Transferências (transferencias.js) e na
+// Central do Elenco (elenco.js); aqui ficam as ações.
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { abrirSecaoRodada, carregarProximaRodada, marcarHubMercado } from "./rodada.js";
 import { renderElenco } from "./elenco.js";
+import { renderTransferencias } from "./transferencias.js";
 import { MULTA_ROTULO, PAPEL_ROTULO } from "./contratos.js";
-import { icone, seloIdolo } from "./icones.js";
+import { icone } from "./icones.js";
 import { carregarCaixa } from "./caixa.js";
-import { destaques, linhaAtributos } from "./atributos.js";
-import { posicaoDe, sigla } from "./posicoes.js";
 
 // ---------- mercado de transferências ----------
 
@@ -22,16 +23,13 @@ export function avisoMercado(html, ruim = false, onde = "r-mercado-msg") {
   el.querySelector(".link-caixa").addEventListener("click", () => abrirSecaoRodada("caixa"));
 }
 
-// origem: "clubes" (de outros clubes) ou "livres" (sem clube, v1.6)
-export const mercadoFiltro = { posicao: "", valor_max: "", origem: "clubes" };
-export const MERCADO_LIMITE = 40;   // linhas da lista de compra
-
 export async function carregarMercado() {
-  const q = new URLSearchParams();
-  if (mercadoFiltro.posicao) q.set("posicao", mercadoFiltro.posicao);
-  if (mercadoFiltro.valor_max) q.set("valor_max", mercadoFiltro.valor_max);
-  const m = await pedir(`/simulacoes/${estado.simId}/mercado?${q}`);
-  if (m) renderMercado(m);
+  // os filtros da busca rodam no navegador (v1.7): o mercado vem inteiro
+  const [m, obs] = await Promise.all([
+    pedir(`/simulacoes/${estado.simId}/mercado`),
+    pedir(`/simulacoes/${estado.simId}/observados`),
+  ]);
+  if (m) renderMercado(m, obs);
 }
 
 export const bloqueado = (motivo) =>
@@ -68,8 +66,8 @@ export function acaoCompra(f) {
     `<small class="bloqueio">${f.propostas_restantes} restante${f.propostas_restantes === 1 ? "" : "s"}</small></span>`;
 }
 
-// livre (v1.6): sem negociação — assina pagando as luvas
-function acaoLivre(f) {
+// livre (v1.6): sem negociação com clube — assina pagando as luvas
+export function acaoLivre(f) {
   const negociando = acaoNegociacao(f);
   if (negociando) return negociando;
   if (f.bloqueio) return bloqueado(f.bloqueio);
@@ -77,138 +75,22 @@ function acaoLivre(f) {
     `Negociar (luvas ${dinheiro(f.luvas)})</button>`;
 }
 
-const STATUS_NEG = {
+export const STATUS_NEG = {
   aberta: ["chip-perto", "Falta o contrato"], fechada: ["chip-batida", "Contratado"],
   desistiu: ["chip-longe", "Desistiu"], expirada: ["", "Expirou"],
 };
 
-// as negociações da janela (v1.7), no topo do mercado
-function blocoNegociacoes(m) {
-  if (!m.negociacoes.length) return "";
-  const linhas = m.negociacoes.map((n) => ({
-    jogador: n.jogador,
-    de: n.clube || "sem clube",
-    valor_fmt: n.clube ? dinheiro(n.valor) : `${dinheiro(n.valor)} (luvas)`,
-    status_fmt: `<span class="chip ${STATUS_NEG[n.status][0]}">${STATUS_NEG[n.status][1]}</span>`,
-    acao: n.status === "aberta"
-      ? `<button class="transf" data-acao="negociacao" data-neg="${n.negociacao_id}">Acertar contrato</button> ` +
-        `<small class="bloqueio">${n.tentativas_restantes} tentativa${n.tentativas_restantes === 1 ? "" : "s"}</small>`
-      : "",
-  }));
-  return `<h5>Negociações desta janela</h5>` + tabela(linhas, [
-    ["jogador", "Jogador"], ["de", "De"], ["valor_fmt", "Valor acertado"],
-    ["status_fmt", "Situação"], ["acao", ""],
-  ]);
-}
-
-export function acaoVenda(f) {
-  if (f.bloqueio) return bloqueado(f.bloqueio);
-  return `<button class="transf secondary" data-acao="ofertas" data-id="${f.jogador_id}">` +
-    `Ver ${f.ofertas} oferta${f.ofertas === 1 ? "" : "s"}</button>`;
-}
-
-export function linhaMercado(f) {
-  return {
-    ...f,
-    nome: f.idolo ? `${f.nome}&nbsp;${seloIdolo()}` : f.nome,
-    posicao: sigla(posicaoDe(f)),
-    // os dois melhores atributos; todos na dica (v1.3)
-    atributos_fmt: `<span title="${linhaAtributos(f.atributos)}">${destaques(f.atributos)}</span>`,
-    clube_fmt: f.rival ? `${icone("rival", "rival")} ${f.clube}` : f.clube,
-    valor: dinheiro(f.valor_mercado),
-    sal: dinheiro(f.salario),
-    multa: f.multa_rescisoria ? dinheiro(f.multa_rescisoria) : "—",
-    pot: f.potencial > f.overall ? `${f.potencial} ↑` : f.potencial,
-  };
-}
-
-export function renderMercado(m) {
-  const prox = m.janelas.find((r) => r > m.rodada);
-  const status = m.janela_aberta
-    ? `<span class="luz-aberta"></span> Janela aberta`
-    : `${icone("cadeado")} Janela fechada — ${prox ? `reabre antes da rodada ${prox}` : "só na próxima temporada"}`;
-  const rivais = m.rivais.length ? ` · ${icone("rival")} rival: ${m.rivais.join(", ")}` : "";
-  let html =
-    `<p>${status} · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${dinheiro(m.caixa)}</strong> · ` +
-    `elenco ${m.elenco.length} (mín. ${m.elenco_min}, máx. ${m.elenco_max})${rivais}</p>`;
-
-  html += `<div id="m-negociacao"></div>`;
-  if (m.janela_aberta) html += blocoNegociacoes(m);
-
-  if (m.janela_aberta) {
-    const pos = ["", "Goleiro", "Defesa", "Meio-Campo", "Atacante"];
-    const tetos = [["", "qualquer"], ["1000000", "até 1 mi"], ["5000000", "até 5 mi"],
-                   ["10000000", "até 10 mi"], ["20000000", "até 20 mi"]];
-    const livres = mercadoFiltro.origem === "livres";
-    html += livres
-      ? `<p class="vazio">Jogadores <strong>sem clube</strong>: não há transferência nem negociação. O clube paga
-      só as <strong>luvas</strong> (um bônus de assinatura) e o salário, com contrato de 2 temporadas.</p>`
-      : `<p class="vazio">Contratar tem duas etapas. <strong>1.</strong> Proposta ao clube: ele aceita, pede mais
-      (contraproposta) ou recusa — até ${m.max_propostas} propostas por jogador em cada janela; cobrindo a
-      <strong>multa rescisória</strong>, o clube não pode recusar, e do rival (${icone("rival")}) tudo sai mais caro.
-      <strong>2.</strong> Contrato com o jogador (salário, anos, multa e papel), antes de jogar a rodada.</p>`;
-    const origens = [["clubes", "de outros clubes"], ["livres", `sem clube (${m.livres.length})`]];
-    html += `<div class="mercado-filtros">
-      <label>Jogadores <select id="m-origem">${origens.map(([v, r]) =>
-        `<option value="${v}"${v === mercadoFiltro.origem ? " selected" : ""}>${r}</option>`).join("")}</select></label>
-      <label>Posição <select id="m-posicao">${pos.map((p) =>
-        `<option value="${p}"${p === mercadoFiltro.posicao ? " selected" : ""}>${p || "todas"}</option>`).join("")}</select></label>
-      <label>Valor <select id="m-valor">${tetos.map(([v, r]) =>
-        `<option value="${v}"${v === mercadoFiltro.valor_max ? " selected" : ""}>${r}</option>`).join("")}</select></label>
-    </div>`;
-
-    const fonte = livres ? m.livres : m.disponiveis;
-    const lista = fonte.slice(0, MERCADO_LIMITE).map((f) => livres
-      ? { ...linhaMercado(f), luvas_fmt: dinheiro(f.luvas), acao: acaoLivre(f) }
-      : { ...linhaMercado(f), acao: acaoCompra(f) });
-    html += livres
-      ? tabela(lista, [
-        ["nome", "Jogador"], ["posicao", "Pos."], ["idade", "Idade"], ["overall", "OVR"],
-        ["atributos_fmt", "Destaques"], ["pot", "Pot."], ["valor", "Valor"], ["luvas_fmt", "Luvas"],
-        ["sal", "Salário"], ["acao", ""],
-      ])
-      : tabela(lista, [
-        ["nome", "Jogador"], ["clube_fmt", "Clube"], ["posicao", "Pos."], ["idade", "Idade"],
-        ["overall", "OVR"], ["atributos_fmt", "Destaques"], ["pot", "Pot."], ["valor", "Valor"], ["multa", "Multa"],
-        ["sal", "Salário"], ["acao", "Proposta"],
-      ]);
-    if (fonte.length > MERCADO_LIMITE) {
-      html += `<p class="vazio">Mostrando os ${MERCADO_LIMITE} melhores de ${fonte.length} — use os filtros.</p>`;
-    }
-
-    html += `<h5>Vender do seu elenco</h5><div id="m-ofertas"></div>`;
-    html += tabela(m.elenco.map((f) => ({ ...linhaMercado(f), acao: acaoVenda(f) })), [
-      ["nome", "Jogador"], ["posicao", "Pos."], ["idade", "Idade"], ["overall", "OVR"],
-      ["atributos_fmt", "Destaques"], ["valor", "Valor"], ["multa", "Multa"], ["sal", "Salário"], ["acao", ""],
-    ]);
-  }
-
-  if (m.transferencias.length) {
-    html += `<h5>Transferências desta temporada</h5>`;
-    html += tabela(m.transferencias.map((t) => ({
-      ...t, valor_fmt: dinheiro(t.valor),
-      rodada_fmt: t.rodada === 1 ? "pré-temporada" : `antes da R${t.rodada}`,
-    })), [
-      ["rodada_fmt", "Quando"], ["jogador", "Jogador"], ["posicao", "Pos."],
-      ["de_clube", "De"], ["para_clube", "Para"], ["valor_fmt", "Valor"],
-    ]);
-  }
-
+// o mercado alimenta a Central do Elenco, a Central de Transferências (v1.7)
+// e os cards do hub
+export function renderMercado(m, observados) {
   renderElenco(m);
+  renderTransferencias(m, observados);
   marcarHubMercado({
     janelaAberta: m.janela_aberta,
     total: m.elenco.length,
     acabando: m.elenco.filter((f) => f.contrato_anos <= 1).length,
     aVenda: m.elenco.filter((f) => f.a_venda).length,
   });
-
-  const box = $("r-mercado");
-  box.innerHTML = html;
-  if (!m.janela_aberta) return;
-  $("m-origem").addEventListener("change", (e) => { mercadoFiltro.origem = e.target.value; carregarMercado(); });
-  $("m-posicao").addEventListener("change", (e) => { mercadoFiltro.posicao = e.target.value; carregarMercado(); });
-  $("m-valor").addEventListener("change", (e) => { mercadoFiltro.valor_max = e.target.value; carregarMercado(); });
-  ligarBotoesMercado(box);
 }
 
 export function ligarBotoesMercado(container) {
@@ -289,7 +171,8 @@ export async function abrirNegociacao(negId) {
   const d = await pedir(`/simulacoes/${estado.simId}/negociacoes/${negId}`);
   if (!d) return;
   const box = $("m-negociacao");
-  if (d.status !== "aberta") { box.innerHTML = ""; return; }
+  if (d.status !== "aberta") { box.innerHTML = ""; delete box.dataset.neg; return; }
+  box.dataset.neg = negId;   // a Central fecha o formulário quando ela acabar
   const contra = d.contraproposta;
   // sugestão: a contraproposta, ou o ponto de partida do servidor
   const salario = contra ? contra.salario : d.salario_sugerido;
@@ -325,7 +208,7 @@ export async function abrirNegociacao(negId) {
     <small class="bloqueio">${dicas} · ${d.tentativas_restantes} tentativa${d.tentativas_restantes === 1 ? "" : "s"};
       na última recusa ele desiste · jogar a rodada sem contrato desfaz o acordo</small>
   </article>`;
-  $("n-fechar").addEventListener("click", () => { box.innerHTML = ""; });
+  $("n-fechar").addEventListener("click", () => { box.innerHTML = ""; delete box.dataset.neg; });
   const enviar = $("n-enviar");
   enviar.addEventListener("click", () => {
     if (enviar.dataset.confirmar !== "1") {   // dois cliques, como no resto do mercado
@@ -386,10 +269,12 @@ export async function mostrarOfertas(jogadorId) {
 
 export async function vender(jogadorId, clube) {
   const t = await postarMercado(
-    `/simulacoes/${estado.simId}/vendas`, { jogador_id: jogadorId, clube }, "Fechando a venda…"
+    `/simulacoes/${estado.simId}/vendas`, { jogador_id: jogadorId, clube }, "Fechando a venda…",
+    { onde: "r-contrato-msg" }
   );
   if (!t) return carregarMercado();
-  avisoMercado(`${icone("ok")} ${t.jogador} vendido ao ${t.para_clube} por ${dinheiro(t.valor)}.`);
+  avisoMercado(`${icone("ok")} ${t.jogador} vendido ao ${t.para_clube} por ${dinheiro(t.valor)}.`,
+    false, "r-contrato-msg");
   carregarCaixa();
   await carregarProximaRodada();   // elenco e escalação mudaram
 }

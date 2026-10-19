@@ -799,8 +799,16 @@ etapas (o clube e depois o jogador):
       - API: `negociacao_id` na resposta de `POST /propostas` e de
         `POST /livres/contratar`; `GET /simulacoes/{id}/negociacoes/{nid}`,
         `POST /simulacoes/{id}/negociacoes/{nid}/contrato`
-* [ ] Central de Transferências — buscar nas duas ligas, observados,
-      negociações e histórico
+* [x] Central de Transferências — o card "Mercado" do hub vira
+      **Transferências**, com quatro abas: **Buscar** (filtros de liga,
+      clube, posição, idade, OVR e potencial mínimos, valor e origem, rodando
+      no navegador; a ficha ao lado com observar, a proposta e a página
+      completa), **Observados** (o que mudou no OVR, no valor e no clube
+      desde que cada um entrou na lista), **Negociações** (propostas recusadas
+      ou com contraproposta e os contratos pendentes, com selo no topo) e
+      **Histórico** (a carreira inteira ou uma temporada, com gasto,
+      arrecadado e saldo). Vender fica na Central do Elenco: as ofertas abrem
+      na ficha do jogador (`js/transferencias.js`)
       - [x] backend — a ficha do mercado ganha a **liga** do clube e a
             lista de compra vem também com a janela fechada (só a proposta
             trava). **Observados**: até 25 jogadores de qualquer clube ou
@@ -814,7 +822,7 @@ etapas (o clube e depois o jogador):
       - API: `GET /simulacoes/{id}/observados`,
         `PUT /simulacoes/{id}/observados` `{nome, observar}`,
         `GET /simulacoes/{id}/historico-transferencias`
-      - [ ] tela
+      - Quem é contratado sai sozinho dos observados
 * [ ] Ofertas recebidas — a CPU faz propostas pelos jogadores à venda (e,
       às vezes, pelos craques)
 * [ ] Empréstimos

@@ -826,6 +826,8 @@ def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=Non
             )
             transferencia = None
             if resposta.fechou:
+                # contratado sai sozinho da lista de observados (v1.7)
+                observado_repo.remover(conn, simulacao_id, jogador.nome)
                 termos = (anos, resposta.valor, contrato.valor_multa(jogador, multa))
                 if vendedor is not None:
                     # a torcida de lá sente perder um ídolo, ou ver o jogador
