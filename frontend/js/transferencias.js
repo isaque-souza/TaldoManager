@@ -1,12 +1,15 @@
 // Central de Transferências (v1.7): buscar nas duas ligas (os filtros rodam
 // aqui, sobre o mercado inteiro), os observados, as negociações da janela e
 // o histórico da carreira. Fora da janela dá para buscar e observar; só a
-// proposta trava. As ações (propor, contratar, o contrato) ficam em
-// mercado.js; vender fica na Central do Elenco.
+// proposta trava. As ações (propor, contratar, o contrato, responder às
+// ofertas da CPU) ficam em mercado.js; as ofertas aparecem também na ficha do
+// jogador, na Central do Elenco.
 
 import { $, estado, navegarPara, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
-import { acaoCompra, acaoLivre, ligarBotoesMercado, postarMercado, STATUS_NEG } from "./mercado.js";
+import {
+  acaoCompra, acaoLivre, acoesOferta, detalheOferta, ligarBotoesMercado, postarMercado, STATUS_NEG,
+} from "./mercado.js";
 import { MULTA_ROTULO } from "./contratos.js";
 import { abrirJogador } from "./jogador.js";
 import { icone, seloIdolo } from "./icones.js";
@@ -273,7 +276,11 @@ function pendentes(m) {
   const propostas = m.disponiveis.filter((f) =>
     f.propostas_restantes < m.max_propostas && !f.negociacao);
   const contratos = m.negociacoes.filter((n) => n.status === "aberta").length;
-  return { propostas, alerta: contratos + propostas.filter((f) => f.contraproposta).length };
+  const ofertas = (m.ofertas_recebidas || []).filter((o) => o.status === "aberta");
+  return {
+    propostas, ofertas,
+    alerta: contratos + ofertas.length + propostas.filter((f) => f.contraproposta).length,
+  };
 }
 
 function abaNegociacoes() {
@@ -284,7 +291,28 @@ function abaNegociacoes() {
       ${prox ? `antes da rodada ${prox}` : "na próxima temporada"}. Até lá, busque e observe.</p>`;
   }
   const { propostas } = pendentes(m);
-  let html = `<h3 class="secao">Propostas aos clubes</h3>`;
+  const STATUS_OFERTA = {
+    aberta: ["chip-perto", "Esperando você"], aceita: ["chip-batida", "Vendido"],
+    recusada: ["", "Recusada"], retirada: ["chip-longe", "Retirada"], expirada: ["", "Expirou"],
+  };
+  // as ofertas da CPU pelos seus jogadores (v1.7): as abertas primeiro
+  const ofertas = [...m.ofertas_recebidas].sort((a, b) =>
+    (a.status === "aberta" ? 0 : 1) - (b.status === "aberta" ? 0 : 1));
+  let html = `<h3 class="secao">Ofertas pelos seus jogadores</h3>`;
+  html += ofertas.length
+    ? tabela(ofertas.map((o) => ({
+      jogador: o.jogador + (o.espontanea ? ` <span class="chip chip-perto" title="Ele não estava à venda">Assédio</span>` : ""),
+      clube_fmt: `${o.rival ? `${icone("rival", "rival")} ` : ""}${o.clube}`,
+      valor_fmt: `${dinheiro(o.valor)}${o.pedido ? ` <small class="bloqueio">pedimos ${dinheiro(o.pedido)}</small>` : ""}`,
+      detalhe: `<small>${detalheOferta(o)}</small>`,
+      situacao: `<span class="chip ${STATUS_OFERTA[o.status][0]}">${STATUS_OFERTA[o.status][1]}</span>`,
+      acao: o.status === "aberta" ? acoesOferta(o) : "",
+    })), [["jogador", "Jogador"], ["clube_fmt", "Clube"], ["valor_fmt", "Oferta"], ["detalhe", ""],
+          ["situacao", "Situação"], ["acao", ""]])
+    : `<p class="vazio">Nenhuma oferta nesta janela. Ponha jogadores na lista de transferências (na Central
+      do Elenco) e os clubes olham na hora.</p>`;
+
+  html += `<h3 class="secao">Propostas aos clubes</h3>`;
   html += propostas.length
     ? tabela(propostas.map((f) => ({
       jogador: f.nome,

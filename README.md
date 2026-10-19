@@ -823,8 +823,11 @@ etapas (o clube e depois o jogador):
         `PUT /simulacoes/{id}/observados` `{nome, observar}`,
         `GET /simulacoes/{id}/historico-transferencias`
       - Quem é contratado sai sozinho dos observados
-* [ ] Ofertas recebidas — a CPU faz propostas pelos jogadores à venda (e,
-      às vezes, pelos craques)
+* [x] Ofertas recebidas — a CPU faz propostas pelos jogadores à venda (e,
+      às vezes, pelos craques). Na Central do Elenco, o selo "N ofertas", a
+      aba "Com ofertas" e as ofertas na ficha (aceitar, recusar ou pedir
+      mais); na Central de Transferências, a aba Negociações lista todas da
+      janela; o card Elenco do hub avisa enquanto houver oferta esperando
       - [x] backend — o "balcão" (toda oferta pronta, de todo clube) sai: as
             ofertas chegam quando a janela abre (pré-temporada e depois da
             rodada 19) e na hora em que o técnico põe alguém na lista com a
@@ -842,7 +845,7 @@ etapas (o clube e depois o jogador):
         `GET /simulacoes/{id}/jogadores/{jid}/ofertas` (as recebidas);
         `POST /simulacoes/{id}/ofertas/{oid}/aceitar`, `/recusar`,
         `/contraproposta` `{valor}` — sai `POST /vendas`
-      - [ ] tela
+      - [x] tela
 * [ ] Empréstimos
 * [ ] Clubes da CPU negociam entre si
 
