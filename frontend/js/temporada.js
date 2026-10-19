@@ -8,6 +8,7 @@ import { abrirCarreira, renderVirada } from "./carreira.js";
 import { renderFimDeCarreira, renderMeta } from "./diretoria.js";
 import { comEscudo } from "./identidade.js";
 import { cartao, icone } from "./icones.js";
+import { abasLiga, nomeLiga, verLiga } from "./ligas.js";
 
 // ---------- visão temporada ----------
 
@@ -155,6 +156,14 @@ export function mostrarTemporada() {
   const emAndamento = estado.temporada.estado === "em_andamento";
   $("temporada-voltar").hidden = !emAndamento;
 
+  // uma liga por vez (v1.6): abas quando o save tem mais de uma
+  const ligas = $("temporada-ligas");
+  ligas.innerHTML = abasLiga(estado.temporada.ligas, estado.temporada.liga);
+  ligas.hidden = !ligas.innerHTML;
+  ligas.querySelectorAll("[data-liga]").forEach((b) =>
+    b.addEventListener("click", () => verLiga(b.dataset.liga, mostrarTemporada))
+  );
+
   const campeao = estado.temporada.classificacao[0];
   const nomeCampeao = emAndamento ? campeao.clube : estado.temporada.campeao;
   $("campeao").innerHTML = comEscudo(
@@ -174,8 +183,12 @@ export function mostrarTemporada() {
   const meu = estado.temporada.clube_usuario;
   const resumo = $("meu-resumo");
   resumo.hidden = !meu;
-  if (meu) {
-    const c = estado.temporada.classificacao.find((x) => x.clube === meu);
+  const c = meu && estado.temporada.classificacao.find((x) => x.clube === meu);
+  if (meu && !c) {
+    // vendo a outra liga: o clube do técnico não está nesta tabela
+    resumo.innerHTML = `${icone("voce")} Você dirige <strong>${meu}</strong>, que joga em outra liga. ` +
+      `Esta é a ${nomeLiga(estado.temporada.liga)}.`;
+  } else if (meu) {
     const form = estado.temporada.formacao ? `, ${estado.temporada.formacao}` : "";
     const verbo = emAndamento ? "está em" : "terminou em";
     resumo.innerHTML =
@@ -232,4 +245,12 @@ async function continuarCarreira() {
   if (criada) await carregarLista(criada.simulacao_id);
 }
 
-$("temporada-voltar").addEventListener("click", voltarUm);
+$("temporada-voltar").addEventListener("click", async () => {
+  // a rodada usa a visão da liga do técnico (v1.6): se outra estava na
+  // tela, volta para a dele
+  if ((estado.temporada.ligas || []).length > 1) {
+    const dados = await pedir(`/simulacoes/${estado.simId}`);
+    if (dados) estado.temporada = dados;
+  }
+  voltarUm();
+});

@@ -16,6 +16,7 @@ import { posicaoDe } from "./posicoes.js";
 import { carregarCaixa } from "./caixa.js";
 import { carregarMarketing } from "./marketing.js";
 import { carregarEstadio } from "./estadio.js";
+import { porLiga } from "./ligas.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -182,10 +183,12 @@ export function renderRodadaAntes() {
     c.mandante === info.clube_usuario || c.visitante === info.clube_usuario
       ? "eu"
       : "";
-  $("r-confrontos").innerHTML = tabela(
-    info.confrontos,
-    [["mandante", "Mandante"], ["visitante", "Visitante"]],
-    marcarEu
+  // as duas ligas jogam a mesma rodada (v1.6): a do técnico primeiro
+  const ligaDe = (lista, meu) =>
+    lista.find((c) => c.mandante === meu || c.visitante === meu)?.liga;
+  $("r-confrontos").innerHTML = porLiga(
+    info.confrontos, ligaDe(info.confrontos, info.clube_usuario),
+    (lista) => tabela(lista, [["mandante", "Mandante"], ["visitante", "Visitante"]], marcarEu)
   );
 
   $("r-jogar").innerHTML = info.transmissao_ativa
@@ -223,14 +226,16 @@ export function renderRodadaDepois() {
     mandante: r.mandante,
     placar: `${r.gols_mandante} x ${r.gols_visitante}`,
     visitante: r.visitante,
+    liga: r.liga,
   }));
   const marcarEu = (r) =>
     r.mandante === meu || r.visitante === meu ? "eu" : "";
-  $("r-resultados").innerHTML = tabela(
-    linhas,
+  const minha = linhas.find((r) => r.mandante === meu || r.visitante === meu)?.liga;
+  $("r-resultados").innerHTML = porLiga(linhas, minha, (lista) => tabela(
+    lista,
     [["mandante", "Mandante"], ["placar", "Placar"], ["visitante", "Visitante"]],
     marcarEu
-  );
+  ));
   ligarLinks($("r-resultados"));
 
   $("r-classificacao").innerHTML = tabela(

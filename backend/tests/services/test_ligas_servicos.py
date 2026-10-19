@@ -88,3 +88,13 @@ def test_save_antigo_continua_so_com_a_taldo():
     sid = temporada_service.iniciar(seed=3, clube_usuario="Real Taldo")
     assert _linhas("SELECT ligas FROM simulacao WHERE id = ?", sid)[0]["ligas"] is None
     assert len(mercado_service.ver_mercado(sid)["livres"]) == 50
+
+
+def test_outros_jogos_ao_vivo_sao_da_liga_do_tecnico():
+    sid = temporada_service.iniciar(seed=3, clube_usuario="Arsenal", ligas=DUAS)
+    temporada_service.avancar(sid)
+
+    jogos = simulacao_service.ao_vivo(sid, 1)["partidas"]
+    premier = {c["nome"] for c in simulacao_service.listar_clubes(DUAS) if c["liga"] == "premier"}
+    assert len(jogos) == 10
+    assert all(j["mandante"] in premier for j in jogos)
