@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 599 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 607 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -645,8 +645,19 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
             a lista volta a 50 com livres novos (`app/domain/livres.py`) e é
             cortada em 70. Em 8 temporadas a liga fica como sem livres
             (overall 77,0, idade 26,1)
-* [ ] Importador da Premier League 2023/24 (OpenFootball, CC0) — overall
-      por fórmula + ajuste manual das estrelas
+* [x] Importador da Premier League 2023/24 — os elencos e os 380 jogos do
+      [OpenFootball](https://github.com/openfootball/england) (domínio
+      público, CC0) ficam em `data/fontes/openfootball/premier-2023-24/`
+      (`scripts/baixar_openfootball.py`); `scripts/importar_premier.py` lê do
+      disco e gera `data/seeds/premier/` (20 clubes de 23, 50 livres) no
+      formato da Taldo, sempre igual. O corte para 23 prefere o time
+      principal (camisa até 40 ou 22+ anos); o overall vem da posição na
+      tabela de 23/24 (calculada dos jogos), da camisa e da idade, com teto;
+      `data/fontes/estrelas-premier.json` corrige à mão ~60 estrelas
+      (Haaland 91, Salah 89, Saka 86...). Cores, caixa, torcida e clássicos
+      numa tabela do importador. Nomes iguais aos da Taldo ganham a
+      nacionalidade ("João Gomes (BRA)"). XI de ~73 (Sheffield) a ~87 (City).
+      Ainda não aparece no jogo: é o próximo passo
 * [ ] Várias ligas no banco e no motor
 * [ ] Várias ligas na tela (escolher liga, tabelas e mercado entre ligas)
 * [ ] Copa entre as ligas (futuro)
@@ -669,7 +680,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 599 testes (domain, db, repositories, services, api)
+│   └── tests/              # 607 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas
