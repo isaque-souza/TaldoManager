@@ -63,7 +63,9 @@ CREATE TABLE IF NOT EXISTS clube (
     torcedores         INTEGER NOT NULL DEFAULT 0,
     torcedores_inicial INTEGER NOT NULL DEFAULT 0,
     despesa_marketing  INTEGER NOT NULL DEFAULT 0,  -- campanhas (v1.4)
-    torcedores_base    INTEGER NOT NULL DEFAULT 0   -- tamanho natural (v1.4)
+    torcedores_base    INTEGER NOT NULL DEFAULT 0,  -- tamanho natural (v1.4)
+    capacidade         INTEGER NOT NULL DEFAULT 0,  -- lugares no estádio (v1.5)
+    ingresso           TEXT NOT NULL DEFAULT 'normal'  -- popular | normal | premium
 );
 
 CREATE TABLE IF NOT EXISTS jogador (
@@ -113,7 +115,8 @@ CREATE TABLE IF NOT EXISTS partida (
     finalizacoes_gol_visitante INTEGER NOT NULL DEFAULT 0,
     escanteios_mandante        INTEGER NOT NULL DEFAULT 0,
     escanteios_visitante       INTEGER NOT NULL DEFAULT 0,
-    acrescimos                 INTEGER   -- minutos de acréscimo (v1.1); NULL em saves antigos
+    acrescimos                 INTEGER,  -- minutos de acréscimo (v1.1); NULL em saves antigos
+    publico                    INTEGER   -- pagantes (v1.5); NULL em saves antigos
 );
 
 -- Transferências feitas numa temporada rodada a rodada (v0.7).

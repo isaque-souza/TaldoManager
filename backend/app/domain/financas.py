@@ -1,7 +1,8 @@
 """Regras financeiras dos clubes (v0.7).
 
 Toda rodada cada clube recebe a cota de TV e paga a folha salarial; o
-mandante ainda fica com a bilheteria. No fim da temporada sai a premiação
+mandante ainda fica com a bilheteria (público × ingresso, v1.5; ver
+`app.domain.estadio`). No fim da temporada sai a premiação
 pela posição final.
 
 Tudo aqui é determinístico, de propósito: nada de `random`. Se as finanças
@@ -12,8 +13,10 @@ do caixa reconstruível a partir das partidas salvas.
 As constantes ficam juntas para facilitar o balanceamento.
 """
 
+from app.domain import estadio
+
 COTA_TV_TEMPORADA = 1_500_000      # igual para todos, dividida pelas rodadas
-BILHETERIA_POR_TORCEDOR = 0.02     # por jogo em casa
+BILHETERIA_POR_TORCEDOR = 0.02     # por jogo em casa, sem estádio registrado
 PREMIO_CAMPEAO = 10_000_000
 PREMIO_DEGRAU = 500_000            # quanto o prêmio cai a cada posição
 
@@ -22,7 +25,11 @@ def cota_tv_rodada(total_rodadas):
     return round(COTA_TV_TEMPORADA / total_rodadas)
 
 
-def bilheteria(clube):
+def bilheteria(clube, publico=None):
+    """Com público (clube com estádio), pagantes × ingresso; sem, pela
+    torcida inteira, como antes da v1.5."""
+    if publico:
+        return estadio.bilheteria(clube, publico)
     return round(clube.torcedores * BILHETERIA_POR_TORCEDOR)
 
 
@@ -40,14 +47,18 @@ def premiacao(posicao):
     return max(PREMIO_DEGRAU, PREMIO_CAMPEAO - (posicao - 1) * PREMIO_DEGRAU)
 
 
-def processar_rodada(confrontos, total_rodadas):
+def processar_rodada(confrontos, total_rodadas, publicos=None):
     """Lança as receitas e despesas de uma rodada. `confrontos` é a lista de
-    pares (mandante, visitante) do calendário."""
+    pares (mandante, visitante) do calendário; `publicos`, os pagantes de
+    cada mandante ({nome: público}, v1.5)."""
 
     tv = cota_tv_rodada(total_rodadas)
+    publicos = publicos or {}
 
     for mandante, visitante in confrontos:
-        mandante.lancar("receita_bilheteria", bilheteria(mandante))
+        mandante.lancar(
+            "receita_bilheteria", bilheteria(mandante, publicos.get(mandante.nome))
+        )
         for clube in (mandante, visitante):
             clube.lancar("receita_tv", tv)
             clube.lancar("despesa_salarios", salarios_rodada(clube, total_rodadas))

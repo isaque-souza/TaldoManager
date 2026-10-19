@@ -5,7 +5,11 @@ CAMPOS = (
     "finalizacoes_mandante", "finalizacoes_visitante",
     "finalizacoes_gol_mandante", "finalizacoes_gol_visitante",
     "escanteios_mandante", "escanteios_visitante", "acrescimos",
+    "publico",
 )
+
+# campos que partidas de antes não trazem (ficam NULL)
+_OPCIONAIS = ("publico",)
 
 
 def inserir(conn, simulacao_id, mapa_clubes, partidas):
@@ -26,7 +30,7 @@ def inserir(conn, simulacao_id, mapa_clubes, partidas):
                 simulacao_id,
                 mapa_clubes[p["mandante"]],
                 mapa_clubes[p["visitante"]],
-                *(p[c] for c in CAMPOS),
+                *(p.get(c) if c in _OPCIONAIS else p[c] for c in CAMPOS),
             ),
         )
         ids.append(cur.lastrowid)

@@ -38,6 +38,8 @@ from app.api.schemas import (
     TransferenciaResultado,
     MomentoPartida,
     Marketing,
+    Estadio,
+    NovoIngresso,
     NovaCampanha,
     Transmissao,
 )
@@ -47,6 +49,7 @@ from app.services import (
     carreira_service,
     contrato_service,
     escalacao_service,
+    estadio_service,
     marketing_service,
     mensagem_service,
     mercado_service,
@@ -56,6 +59,7 @@ from app.services import (
     transmissao_service,
 )
 from app.services.carreira_service import CarreiraInvalida
+from app.services.estadio_service import IngressoInvalido
 from app.services.marketing_service import CampanhaInvalida
 from app.services.plano_service import PlanoInvalido
 from app.services.temporada_service import PartidaEmAndamento, TemporadaConcluida
@@ -396,6 +400,40 @@ def fazer_campanha(simulacao_id: int, campanha: NovaCampanha):
     try:
         dados = marketing_service.lancar(simulacao_id, campanha.tipo)
     except (TemporadaConcluida, PartidaEmAndamento, CampanhaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/estadio",
+    response_model=Estadio,
+    tags=["estadio"],
+)
+def ver_estadio(simulacao_id: int):
+    """Estádio do clube dirigido: capacidade, faixas do ingresso (com
+    público e receita estimados) e o público da temporada."""
+    try:
+        dados = estadio_service.ver(simulacao_id)
+    except TemporadaConcluida as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/estadio/ingresso",
+    response_model=Estadio,
+    tags=["estadio"],
+)
+def trocar_ingresso(simulacao_id: int, ingresso: NovoIngresso):
+    """Troca a faixa do ingresso (popular, normal ou premium); vale a
+    partir do próximo jogo em casa."""
+    try:
+        dados = estadio_service.definir_ingresso(simulacao_id, ingresso.faixa)
+    except (TemporadaConcluida, PartidaEmAndamento, IngressoInvalido) as e:
         raise _erro_de_mercado(e) from e
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")

@@ -15,6 +15,7 @@ import { jogarAoVivo } from "./aovivo.js";
 import { posicaoDe } from "./posicoes.js";
 import { carregarCaixa } from "./caixa.js";
 import { carregarMarketing } from "./marketing.js";
+import { carregarEstadio } from "./estadio.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -35,7 +36,7 @@ export async function carregarProximaRodada() {
 
 // ---------- hub do clube (tela "antes da rodada") ----------
 // A página inicial do clube é um menu de cards; cada card abre uma seção
-// (partida, mercado, contratos, marketing, finanças) e "← Menu do clube" volta.
+// (partida, mercado, contratos, marketing, estádio, finanças) e "← Menu do clube" volta.
 
 // "hub" ou a seção aberta
 export function abrirSecaoRodada(secao) {
@@ -199,6 +200,7 @@ export function renderRodadaAntes() {
   carregarMercado();
   carregarCaixa();
   carregarMarketing();
+  carregarEstadio();
   if (estado.abaRodada === "financas") carregarFinancasRodada();
 }
 

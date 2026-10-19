@@ -1,6 +1,6 @@
 import random
 
-from . import fama, financas, torcida
+from . import estadio, fama, financas, torcida
 from .partida import Partida
 
 
@@ -41,9 +41,14 @@ class Campeonato:
         semente = random.getrandbits(64) if clube_usuario else None
         self.partida_usuario = None
 
+        publicos = {}
         for clube1, clube2 in rodada_atual:
 
             partida = Partida(clube1, clube2)
+            # o público é decidido antes do apito (v1.5): empurra o mandante
+            # e vira a bilheteria dele
+            partida.publico = estadio.publico(clube1, clube2)
+            publicos[clube1.nome] = partida.publico
 
             if clube_usuario in (clube1.nome, clube2.nome):
                 partida.decisoes = decisoes or []
@@ -68,7 +73,7 @@ class Campeonato:
 
             self.atualizar_recordes(partida)
 
-        financas.processar_rodada(rodada_atual, len(self.calendario))
+        financas.processar_rodada(rodada_atual, len(self.calendario), publicos)
 
         self.rodada += 1
 
@@ -126,6 +131,7 @@ class Campeonato:
             "escanteios_mandante": partida.escanteios_c1,
             "escanteios_visitante": partida.escanteios_c2,
             "acrescimos": partida.acrescimos,
+            "publico": partida.publico,
             "eventos": partida.resumo_eventos(),
             "atuacoes": partida.resumo_escalacao(),
         })

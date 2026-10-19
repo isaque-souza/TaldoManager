@@ -1,6 +1,6 @@
 import random
 
-from app.domain import torcida
+from app.domain import estadio, torcida
 
 
 class Partida:
@@ -17,6 +17,9 @@ class Partida:
         self.gols_c1 = 0
         self.gols_c2 = 0
         self.eventos = []
+        # pagantes (v1.5): definido pelo Campeonato antes do jogo; None =
+        # sem estádio, o mando vem da torcida
+        self.publico = None
         self.posse_c1 = 50
         self.posse_c2 = 50
         self.finalizacoes_c1 = 0
@@ -1624,12 +1627,16 @@ class Partida:
     def forca_em_campo(self, clube):
         """Força do time neste momento: média de overall do XI ajustada por
         fadiga e expulsões (Clube.calcular_forca), mais o mando de campo se
-        for o mandante — maior quanto maior a torcida dele."""
+        for o mandante — maior quanto mais gente no estádio (v1.5; sem
+        estádio, pela torcida)."""
 
         forca = clube.calcular_forca()
 
         if clube is self.clube1:
-            forca += torcida.mando_de_campo(clube.torcedores)
+            if self.publico:
+                forca += estadio.mando_de_campo(self.publico)
+            else:
+                forca += torcida.mando_de_campo(clube.torcedores)
 
         return forca
 

@@ -50,6 +50,8 @@ _CLUBE_CAMPOS = (
     "despesa_marketing",
     # torcida (v1.4): cresce e encolhe com a campanha
     "torcedores", "torcedores_inicial", "torcedores_base",
+    # estádio (v1.5)
+    "capacidade", "ingresso",
 )
 
 

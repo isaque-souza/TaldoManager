@@ -6,7 +6,7 @@ Só saves "em andamento": uma campanha por turno, com caixa para pagar.
 """
 
 from app.db.conexao import conectar
-from app.domain import caixa, torcida
+from app.domain import caixa, estadio, torcida
 from app.repositories import campanha_repository as campanha_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.services.mercado_service import _carregar
@@ -28,7 +28,8 @@ def _visao(ctx, feitas):
     return {
         "torcedores": clube.torcedores,
         "torcedores_inicial": clube.torcedores_inicial,
-        "mando_de_campo": round(torcida.mando_de_campo(clube.torcedores), 2),
+        # o mando vem do público (v1.5): o de um jogo comum em casa
+        "mando_de_campo": round(estadio.mando_de_campo(estadio.publico_tipico(clube)), 2),
         "caixa": clube.dinheiro,
         "turno": torcida.turno(ctx.rodada, total),
         "disponivel": no_turno < torcida.CAMPANHAS_POR_TURNO,

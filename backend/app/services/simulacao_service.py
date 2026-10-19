@@ -206,6 +206,8 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
             "torcedores_inicial": clube.torcedores_inicial,
             "despesa_marketing": clube.despesa_marketing,
             "torcedores_base": clube.torcedores_base,
+            "capacidade": clube.capacidade,
+            "ingresso": clube.ingresso,
         })
 
         for jogador in clube.jogadores:
@@ -905,6 +907,7 @@ def detalhe_partida(simulacao_id, partida_id):
             "escanteios_mandante": p["escanteios_mandante"],
             "escanteios_visitante": p["escanteios_visitante"],
             "acrescimos": p["acrescimos"],
+            "publico": p["publico"],
         }
 
         return {
