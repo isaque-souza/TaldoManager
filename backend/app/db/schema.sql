@@ -65,7 +65,12 @@ CREATE TABLE IF NOT EXISTS clube (
     despesa_marketing  INTEGER NOT NULL DEFAULT 0,  -- campanhas (v1.4)
     torcedores_base    INTEGER NOT NULL DEFAULT 0,  -- tamanho natural (v1.4)
     capacidade         INTEGER NOT NULL DEFAULT 0,  -- lugares no estádio (v1.5)
-    ingresso           TEXT NOT NULL DEFAULT 'normal'  -- popular | normal | premium
+    ingresso           TEXT NOT NULL DEFAULT 'normal',  -- popular | normal | premium
+    -- ampliação (v1.5): obra em andamento (0 = nenhuma) e lugares já feitos
+    obra_lugares       INTEGER NOT NULL DEFAULT 0,
+    obra_rodadas       INTEGER NOT NULL DEFAULT 0,   -- quantas faltam
+    lugares_ampliados  INTEGER NOT NULL DEFAULT 0,
+    despesa_estadio    INTEGER NOT NULL DEFAULT 0    -- obras + manutenção
 );
 
 CREATE TABLE IF NOT EXISTS jogador (

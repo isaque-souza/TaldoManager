@@ -161,3 +161,79 @@ def motivo_faixa_invalida(faixa):
     if faixa not in FAIXAS:
         return "Faixa de ingresso desconhecida"
     return None
+
+
+# ampliação (v1.5): obras pagas à vista, uma por vez. O custo por lugar é o
+# preço normal do ingresso vezes `jogos` (por isso a obra se paga no mesmo
+# tempo em qualquer clube: ~3,5 temporadas de 19 jogos com o lugar novo
+# ocupado). Obra maior sai mais barata por lugar, mas demora mais. Cada
+# rodada jogada desconta 1 do prazo; a obra que não acabar na temporada
+# segue na próxima
+OBRAS = {
+    "pequena": {
+        "nome": "Anel provisório",
+        "descricao": "Arquibancada tubular atrás do gol.",
+        "lugares": 5_000, "rodadas": 10, "jogos": 70,
+    },
+    "media": {
+        "nome": "Novo setor",
+        "descricao": "Um setor inteiro de arquibancada.",
+        "lugares": 10_000, "rodadas": 19, "jogos": 65,
+    },
+    "grande": {
+        "nome": "Segundo anel",
+        "descricao": "Um anel novo em volta do estádio.",
+        "lugares": 20_000, "rodadas": 38, "jogos": 60,
+    },
+}
+OBRA_CUSTO_MINIMO = 50_000
+
+# manutenção, só dos lugares ampliados (os de origem já estão na conta da
+# calibração): fração do preço normal por lugar, a cada jogo em casa
+MANUTENCAO_POR_LUGAR = 0.15
+
+
+def custo_da_obra(tipo, torcedores):
+    o = OBRAS[tipo]
+    return max(OBRA_CUSTO_MINIMO,
+               int(round(o["lugares"] * preco_normal(torcedores) * o["jogos"], -3)))
+
+
+def motivo_obra_bloqueada(clube, tipo):
+    if tipo not in OBRAS:
+        return "Obra desconhecida"
+    if clube.obra_lugares:
+        return "Já há uma obra em andamento"
+    if clube.dinheiro < custo_da_obra(tipo, clube.torcedores):
+        return "Não há caixa para essa obra"
+    return None
+
+
+def iniciar_obra(clube, tipo):
+    """Cobra a obra e põe no canteiro. Devolve o custo."""
+    custo = custo_da_obra(tipo, clube.torcedores)
+    clube.lancar("despesa_estadio", custo)
+    clube.obra_lugares = OBRAS[tipo]["lugares"]
+    clube.obra_rodadas = OBRAS[tipo]["rodadas"]
+    return custo
+
+
+def avancar_obra(clube):
+    """Uma rodada a menos no canteiro. Na última, os lugares entram no
+    estádio. Devolve os lugares entregues (0 se a obra não acabou)."""
+    if not clube.obra_lugares:
+        return 0
+    clube.obra_rodadas -= 1
+    if clube.obra_rodadas > 0:
+        return 0
+    lugares = clube.obra_lugares
+    clube.capacidade += lugares
+    clube.lugares_ampliados += lugares
+    clube.obra_lugares = clube.obra_rodadas = 0
+    return lugares
+
+
+def manutencao(clube):
+    """Custo de manter os lugares ampliados, por jogo em casa."""
+    return round(clube.lugares_ampliados * preco_normal(clube.torcedores)
+                 * MANUTENCAO_POR_LUGAR)

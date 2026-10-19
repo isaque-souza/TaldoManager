@@ -41,6 +41,7 @@ from app.api.schemas import (
     MomentoPartida,
     Marketing,
     Estadio,
+    NovaObra,
     NovoIngresso,
     NovaCampanha,
     Transmissao,
@@ -61,7 +62,7 @@ from app.services import (
     transmissao_service,
 )
 from app.services.carreira_service import CarreiraInvalida
-from app.services.estadio_service import IngressoInvalido
+from app.services.estadio_service import IngressoInvalido, ObraInvalida
 from app.services.marketing_service import CampanhaInvalida
 from app.services.plano_service import PlanoInvalido
 from app.services.temporada_service import PartidaEmAndamento, TemporadaConcluida
@@ -458,6 +459,23 @@ def trocar_ingresso(simulacao_id: int, ingresso: NovoIngresso):
     try:
         dados = estadio_service.definir_ingresso(simulacao_id, ingresso.faixa)
     except (TemporadaConcluida, PartidaEmAndamento, IngressoInvalido) as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/estadio/obra",
+    response_model=Estadio,
+    tags=["estadio"],
+)
+def ampliar_estadio(simulacao_id: int, obra: NovaObra):
+    """Começa uma ampliação (pequena, média ou grande), paga à vista; uma
+    por vez. Fica pronta depois do prazo, em rodadas jogadas."""
+    try:
+        dados = estadio_service.iniciar_obra(simulacao_id, obra.tipo)
+    except (TemporadaConcluida, PartidaEmAndamento, ObraInvalida) as e:
         raise _erro_de_mercado(e) from e
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")

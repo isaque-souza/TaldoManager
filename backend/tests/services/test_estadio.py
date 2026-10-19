@@ -12,8 +12,10 @@ from app.domain.clube import Clube
 from app.domain.partida import Partida
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.main import app
-from app.services import estadio_service, simulacao_service, temporada_service
-from app.services.estadio_service import IngressoInvalido
+from app.services import (
+    estadio_service, mensagem_service, simulacao_service, temporada_service,
+)
+from app.services.estadio_service import IngressoInvalido, ObraInvalida
 from app.services.temporada_service import TemporadaConcluida
 from scripts.data_loader import carregar_campeonato
 
@@ -223,3 +225,157 @@ def test_rotas_do_estadio():
     assert r.status_code == 400 and "desconhecida" in r.json()["detail"]
 
     assert client.get("/simulacoes/99999/estadio").status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# ampliação
+# ---------------------------------------------------------------------------
+
+def test_custo_da_obra_segue_o_preco_do_ingresso():
+    # a obra se paga no mesmo número de jogos lotados em qualquer clube
+    for tipo, o in estadio.OBRAS.items():
+        jogos = [
+            estadio.custo_da_obra(tipo, t) / (o["lugares"] * estadio.preco_normal(t))
+            for t in (500_000, 3_000_000, 12_000_000)
+        ]
+        assert jogos == pytest.approx([o["jogos"]] * 3, rel=0.01)
+    # obra maior: mais cara no total, mais barata por lugar
+    custo = {t: estadio.custo_da_obra(t, 3_000_000) for t in estadio.OBRAS}
+    assert custo["pequena"] < custo["media"] < custo["grande"]
+    assert (custo["grande"] / 20_000 < custo["media"] / 10_000
+            < custo["pequena"] / 5_000)
+
+
+def test_obra_bloqueada():
+    casa = _clube()
+    assert estadio.motivo_obra_bloqueada(casa, "gigante") == "Obra desconhecida"
+    casa.dinheiro = 0
+    assert "caixa" in estadio.motivo_obra_bloqueada(casa, "pequena")
+    casa.dinheiro = 10**9
+    assert estadio.motivo_obra_bloqueada(casa, "pequena") is None
+    estadio.iniciar_obra(casa, "pequena")
+    assert "andamento" in estadio.motivo_obra_bloqueada(casa, "media")
+
+
+def test_obra_paga_a_vista_e_fica_pronta_no_prazo():
+    casa = _clube(capacidade=30_000)
+    custo = estadio.iniciar_obra(casa, "pequena")
+    assert casa.dinheiro == 10_000_000 - custo
+    assert casa.despesa_estadio == custo
+
+    for _ in range(estadio.OBRAS["pequena"]["rodadas"] - 1):
+        assert estadio.avancar_obra(casa) == 0
+    assert casa.capacidade == 30_000           # ainda no canteiro
+    assert estadio.avancar_obra(casa) == 5_000
+    assert casa.capacidade == 35_000 and casa.lugares_ampliados == 5_000
+    assert (casa.obra_lugares, casa.obra_rodadas) == (0, 0)
+    assert estadio.avancar_obra(casa) == 0     # sem obra, nada muda
+
+
+def test_manutencao_so_dos_lugares_ampliados():
+    casa, fora = _clube(capacidade=30_000), _clube("Fora")
+    assert estadio.manutencao(casa) == 0
+    financas.processar_rodada([(casa, fora)], 38)
+    assert casa.despesa_estadio == 0
+
+    casa.lugares_ampliados = 10_000
+    esperado = round(10_000 * estadio.preco_normal(casa.torcedores)
+                     * estadio.MANUTENCAO_POR_LUGAR)
+    assert estadio.manutencao(casa) == esperado
+    financas.processar_rodada([(casa, fora)], 38)
+    assert casa.despesa_estadio == esperado
+    financas.processar_rodada([(fora, casa)], 38)   # fora de casa não paga
+    assert casa.despesa_estadio == esperado
+
+
+def test_obra_anda_a_cada_rodada_jogada():
+    random.seed(5)
+    camp = carregar_campeonato()
+    clube = camp.clubes[0]
+    clube.dinheiro = 10**9
+    capacidade = clube.capacidade
+    estadio.iniciar_obra(clube, "pequena")
+    with redirect_stdout(io.StringIO()):
+        for _ in range(estadio.OBRAS["pequena"]["rodadas"]):
+            camp.jogar_rodada()
+    assert clube.capacidade == capacidade + 5_000
+    assert clube.obra_lugares == 0
+
+
+def test_snapshot_guarda_a_obra():
+    camp = carregar_campeonato()
+    c = camp.clubes[0]
+    c.obra_lugares, c.obra_rodadas, c.lugares_ampliados, c.despesa_estadio = (
+        10_000, 7, 5_000, 123
+    )
+    blob = snapshot_estado(camp)
+    estado = random.getstate()
+    try:
+        novo = carregar_campeonato()
+        restaurar_estado(novo, blob)
+    finally:
+        random.setstate(estado)
+    n = novo.clubes[0]
+    assert (n.obra_lugares, n.obra_rodadas, n.lugares_ampliados, n.despesa_estadio) == (
+        10_000, 7, 5_000, 123
+    )
+
+
+def test_obra_segue_na_temporada_seguinte():
+    from app.domain.carreira import preparar_nova_temporada
+
+    camp = carregar_campeonato()
+    finais = [{
+        "nome": c.nome, "dinheiro": c.dinheiro, "torcedores": c.torcedores,
+        "capacidade": c.capacidade + 5_000, "ingresso": "normal",
+        "obra_lugares": 20_000, "obra_rodadas": 12, "lugares_ampliados": 5_000,
+    } for c in camp.clubes]
+    jogadores = [{
+        "nome": j.nome, "clube": c.nome, "idade": j.idade, "overall": j.overall,
+        "potencial": j.potencial, "salario": j.salario,
+        "contrato_anos": j.contrato_anos, "multa_rescisoria": j.multa_rescisoria,
+    } for c in camp.clubes for j in c.jogadores]
+    novo = preparar_nova_temporada(carregar_campeonato(), finais, jogadores)
+    c = novo.clubes[0]
+    assert (c.obra_lugares, c.obra_rodadas, c.lugares_ampliados) == (20_000, 12, 5_000)
+    assert c.despesa_estadio == 0              # a despesa é da temporada
+
+
+def test_iniciar_obra_pelo_servico():
+    sid = _iniciar()
+    e = estadio_service.ver(sid)
+    assert [o["tipo"] for o in e["obras"]] == list(estadio.OBRAS)
+    assert e["obra"] is None and e["lugares_ampliados"] == 0
+    capacidade, caixa = e["capacidade"], e["caixa"]
+    custo = e["obras"][0]["custo"]
+
+    e = estadio_service.iniciar_obra(sid, "pequena")
+    assert e["caixa"] == caixa - custo
+    assert e["obra"] == {"tipo": "pequena", "nome": estadio.OBRAS["pequena"]["nome"],
+                         "lugares": 5_000, "rodadas": 10, "faltam": 10}
+    assert all(o["bloqueio"] for o in e["obras"])
+    with pytest.raises(ObraInvalida):
+        estadio_service.iniciar_obra(sid, "media")
+
+    for _ in range(10):
+        temporada_service.avancar(sid)
+    e = estadio_service.ver(sid)
+    assert e["obra"] is None
+    assert e["capacidade"] == capacidade + 5_000
+    assert e["lugares_ampliados"] == 5_000 and e["manutencao"] > 0
+
+    assuntos = [m["assunto"] for m in mensagem_service.listar(sid)["mensagens"]]
+    assert "Obra concluída" in assuntos
+    assert any("obra começou" in a for a in assuntos)
+
+
+def test_rota_da_obra():
+    sid = _iniciar()
+    r = client.post(f"/simulacoes/{sid}/estadio/obra", json={"tipo": "media"})
+    assert r.status_code == 200 and r.json()["obra"]["faltam"] == 19
+
+    r = client.post(f"/simulacoes/{sid}/estadio/obra", json={"tipo": "pequena"})
+    assert r.status_code == 400 and "andamento" in r.json()["detail"]
+
+    r = client.post(f"/simulacoes/{sid}/estadio/obra", json={"tipo": "gigante"})
+    assert r.status_code == 400

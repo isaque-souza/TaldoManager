@@ -378,12 +378,17 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
         # para a caixa de entrada: o elenco antes da rodada (v1.3)
         antes = caixa.foto_do_elenco(alvo)
         idolos_antes = {j.nome for j in fama.idolos(alvo)}
+        capacidade_antes = alvo.capacidade
         adversario, _ = _confronto_do_clube(
             campeonato.calendario[rodada_jogada - 1], alvo.nome
         )
         with redirect_stdout(io.StringIO()):
             campeonato.jogar_rodada(clube_usuario, decisoes)
         mensagens = caixa.depois_da_rodada(antes, caixa.foto_do_elenco(alvo), adversario)
+        if alvo.capacidade > capacidade_antes:
+            mensagens.append(caixa.obra_concluida(
+                alvo.capacidade - capacidade_antes, alvo.capacidade,
+            ))
 
         novas = [
             p for p in campeonato.partidas_jogadas

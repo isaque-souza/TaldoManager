@@ -52,6 +52,7 @@ _CLUBE_CAMPOS = (
     "torcedores", "torcedores_inicial", "torcedores_base",
     # estádio (v1.5)
     "capacidade", "ingresso",
+    "obra_lugares", "obra_rodadas", "lugares_ampliados", "despesa_estadio",
 )
 
 

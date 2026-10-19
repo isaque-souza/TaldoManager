@@ -79,6 +79,9 @@ class Campeonato:
 
         financas.processar_rodada(rodada_atual, len(self.calendario), publicos)
 
+        for clube in self.clubes:
+            estadio.avancar_obra(clube)
+
         self.rodada += 1
 
         if self.rodada > len(self.calendario):
