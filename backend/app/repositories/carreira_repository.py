@@ -19,7 +19,8 @@ def listar_temporadas(conn, carreira_id):
     """As simulações da carreira, da temporada 1 em diante."""
     return conn.execute(
         """
-        SELECT id, temporada, seed, campeao, estado, rodada_atual, rodadas
+        SELECT id, temporada, seed, campeao, estado, rodada_atual, rodadas,
+               copa_json
         FROM simulacao
         WHERE carreira_id = ?
         ORDER BY temporada

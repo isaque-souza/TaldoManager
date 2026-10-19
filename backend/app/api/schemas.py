@@ -234,6 +234,10 @@ class TemporadaDaCarreira(BaseModel):
     artilheiro: DestaqueTemporada | None = None
     mvp: DestaqueTemporada | None = None
     posicao_usuario: int | None = None
+    # copa entre as ligas (v1.6): o campeão e até onde o técnico foi
+    # ("campeao", a fase em que caiu, ou None se não entrou)
+    campeao_copa: str | None = None
+    copa_usuario: str | None = None
     estado: str
     rodada_atual: int | None = None
 
@@ -254,6 +258,7 @@ class TotalCarreira(BaseModel):
     gols: int
     assistencias: int
     titulos: int
+    copas: int = 0                       # copa entre as ligas (v1.6)
     artilharias: int
     mvps: int
     pico_overall: int
@@ -281,6 +286,7 @@ class CarreiraDetalhe(BaseModel):
     criada_em: str
     temporadas: list[TemporadaDaCarreira]
     titulos: list[TituloClube]
+    titulos_copa: list[TituloClube] = []   # copa entre as ligas (v1.6)
     lideres: LideresCarreira
     hall_da_fama: list[Lenda]
 

@@ -197,3 +197,21 @@ def test_classificados_de_inicio_premier_pela_tabela_real_taldo_pela_forca():
     assert c["premier"][:4] == ["Manchester City", "Arsenal", "Liverpool", "Aston Villa"]
     forca = diretoria.ranking_de_forca(camp.clubes_da_liga("taldo"))
     assert [forca[n] for n in c["taldo"]] == list(range(1, 9))
+
+
+def test_ate_onde_cada_clube_foi(temporada_com_copa):
+    camp, _, _ = temporada_com_copa
+    dados = camp.copa.para_dict()
+    campeao = copa.campeao_de(dados)
+    assert copa.ate_onde(dados, campeao) == "campeao"
+    vice = next(n for n in (dados["fases"]["final"][0]["mandante"],
+                            dados["fases"]["final"][0]["visitante"]) if n != campeao)
+    assert copa.ate_onde(dados, vice) == "final"
+    caiu_nas_oitavas = next(j for j in dados["fases"]["oitavas"])
+    perdedor = ({caiu_nas_oitavas["mandante"], caiu_nas_oitavas["visitante"]}
+                - {caiu_nas_oitavas["vencedor"]}).pop()
+    assert copa.ate_onde(dados, perdedor) == "oitavas"
+    fora = next(c.nome for c in camp.clubes
+                if not any(c.nome in n for n in dados["classificados"].values()))
+    assert copa.ate_onde(dados, fora) is None
+    assert copa.ate_onde(None, campeao) is None and copa.campeao_de(None) is None
