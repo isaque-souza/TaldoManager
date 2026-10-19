@@ -8,7 +8,7 @@ import { $, estado, navegarPara } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { carregarProximaRodada } from "./rodada.js";
 import {
-  acoesOferta, avisoMercado, blocoEmprestado, carregarMercado, detalheOferta, ligarBotoesMercado,
+  acoesOferta, avisoMercado, blocoEmprestado, blocoEmprestar, carregarMercado, detalheOferta, ligarBotoesMercado,
   postarMercado,
 } from "./mercado.js";
 import { abrirContrato, MULTA_ROTULO, PAPEL_ROTULO as PAPEL } from "./contratos.js";
@@ -126,7 +126,8 @@ function ficha(f) {
         </div>
         ${dispensa}
         ${venda ? "" : `<small class="bloqueio">${icone("cadeado")} Vender: ${f.bloqueio || "janela fechada"}</small>`}
-        ${blocoOfertas(f)}`}
+        ${blocoOfertas(f)}
+        ${blocoEmprestar(f)}`}
     <dl class="el-numeros">
       <div><dt>Jogos</dt><dd>${f.partidas}</dd></div>
       <div><dt>Gols</dt><dd>${f.gols}</dd></div>
@@ -208,15 +209,19 @@ function desenhar() {
   const abas = FILTROS.map(([v, rotulo]) =>
     `<button type="button" data-setor="${v}" class="${v === filtro.setor ? "ativa" : ""}">` +
     `${rotulo} <small>${conta(v)}</small></button>`).join("");
+  // a folha (v1.7): do emprestado aqui, a nossa parte; dos nossos lá fora, o resto
+  const fora = m.disponiveis.filter((f) => f.emprestimo?.de_clube === m.clube_usuario);
   const folha = m.elenco.reduce(
     (t, f) => t + (f.emprestimo ? Math.round(f.salario * f.emprestimo.parte_salario / 100) : f.salario), 0,
-  );
+  ) + fora.reduce((t, f) => t + f.salario - Math.round(f.salario * f.emprestimo.parte_salario / 100), 0);
   const sel = m.elenco.find((f) => f.jogador_id === filtro.selecionado);
 
   const box = $("el-central");
   box.innerHTML = `
     <p>${m.elenco.length} jogadores (mín. ${m.elenco_min}, máx. ${m.elenco_max}) ·
       folha ${dinheiro(folha)}/temp. · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${dinheiro(m.caixa)}</strong></p>
+    ${fora.length ? `<p class="el-fora">${icone("acordo")} Emprestados: ${fora.map((f) =>
+      `${f.nome} (${f.clube}, até a rodada ${f.emprestimo.volta - 1})`).join(", ")}</p>` : ""}
     <nav class="abas el-abas">${abas}</nav>
     <div class="el-grade">
       <div class="el-lista">${lista()}</div>

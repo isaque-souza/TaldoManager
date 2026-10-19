@@ -3,6 +3,8 @@
 from fastapi import APIRouter, HTTPException, Query, Response
 
 from app.api.schemas import (
+    CessaoFeita,
+    NovaCessao,
     CaixaDeEntrada,
     CarreiraDetalhe,
     ClubeComElenco,
@@ -406,6 +408,25 @@ def pedir_emprestimo(simulacao_id: int, pedido: NovoEmprestimo):
     if resposta is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
     return resposta
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/emprestimos/ceder",
+    response_model=CessaoFeita,
+    tags=["mercado"],
+)
+def ceder_emprestado(simulacao_id: int, pedido: NovaCessao):
+    """Empresta um jogador do seu elenco a um clube interessado (v1.7), nos
+    termos que ele ofereceu na ficha (`emprestar`)."""
+    try:
+        feito = emprestimo_service.ceder(
+            simulacao_id, pedido.jogador_id, pedido.clube, pedido.duracao,
+        )
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if feito is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return feito
 
 
 @router.post(

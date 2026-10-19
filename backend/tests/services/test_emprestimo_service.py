@@ -182,3 +182,62 @@ def test_aviso_da_opcao_antes_do_fim(monkeypatch):
     _pedir_alto(sid, f, duracao="turno", opcao=True)
     _jogar(sid, 19 - emprestimo.AVISO_OPCAO)
     assert f"O empréstimo de {f['nome']} está acabando" in _assuntos(sid)
+
+
+# --- o técnico empresta os dele (parte 2) ---
+
+def _cedivel(m):
+    """Um jogador do elenco com clube interessado na temporada toda."""
+    for f in sorted(m["elenco"], key=lambda f: f["overall"]):
+        e = f["emprestar"]
+        if e and not e["bloqueio"]:
+            d = next(d for d in e["duracoes"] if d["duracao"] == "temporada")
+            if d["propostas"]:
+                return f, d["propostas"][0]
+    raise AssertionError("ninguém quer ninguém")
+
+
+def test_emprestar_um_jogador_do_tecnico():
+    sid = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    f, proposta = _cedivel(m)
+    caixa_antes = m["caixa"]
+
+    feito = emprestimo_service.ceder(sid, f["jogador_id"], proposta["clube"], "temporada")
+    e = feito["emprestimo"]
+    assert e["de_clube"] == CLUBE and e["para_clube"] == proposta["clube"]
+    assert e["parte_salario"] == proposta["parte_salario"] and e["status"] == "ativo"
+    assert feito["caixa"] == caixa_antes + proposta["taxa"]
+
+    m = mercado_service.ver_mercado(sid)
+    assert all(x["nome"] != f["nome"] for x in m["elenco"])
+    cedido = next(x for x in m["disponiveis"] if x["nome"] == f["nome"])
+    assert "emprestado" in cedido["bloqueio"]
+    h = mercado_service.historico(sid)
+    assert [mv["tipo"] for mv in h["movimentos"]] == ["cedido"]
+    assert h["total"]["arrecadado"] == proposta["taxa"]
+    assert "Emprestamos: " + f["nome"] in _assuntos(sid)
+
+
+def test_quem_nao_quer_nao_leva():
+    sid = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    f, _ = _cedivel(m)
+    with pytest.raises(TransferenciaInvalida, match="não está interessado"):
+        emprestimo_service.ceder(sid, f["jogador_id"], "Clube Inexistente", "temporada")
+
+
+def test_o_cedido_volta_na_virada_do_turno():
+    sid = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    f = p = None
+    for x in sorted(m["elenco"], key=lambda x: x["overall"]):
+        e = x["emprestar"]
+        if e and not e["bloqueio"] and e["duracoes"][0]["propostas"]:
+            f, p = x, e["duracoes"][0]["propostas"][0]
+            break
+    emprestimo_service.ceder(sid, f["jogador_id"], p["clube"], "turno")
+    _jogar(sid, 19)
+    volta, _ = _no_elenco(sid, f["nome"])
+    assert volta is not None and volta["emprestimo"] is None
+    assert "Voltaram de empréstimo" in _assuntos(sid)

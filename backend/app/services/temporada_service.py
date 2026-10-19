@@ -399,6 +399,9 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             (j.nome, cedente.nome) for j, tomador, cedente in campeonato.devolvidos
             if tomador is alvo
         ]))
+        de_volta = [(j.nome, tomador.nome) for j, tomador, cedente in campeonato.devolvidos
+                    if cedente is alvo]
+        mensagens.append(caixa.emprestados_de_volta(de_volta))
         for j in alvo.jogadores:
             e = j.emprestimo
             if e and e["opcao"] and e["volta"] - campeonato.rodada == emprestimo.AVISO_OPCAO:
@@ -458,6 +461,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             mapa_jog = jogador_repo.atualizar(
                 conn, simulacao_id, mapa, cru["jogadores"]
             )
+            # quem voltou de empréstimo no fim da rodada jogou por quem o
+            # tinha emprestado (v1.7): os lances dele são de lá
+            for j, tomador, cedente in campeonato.devolvidos:
+                mapa_jog[(tomador.nome, j.nome)] = mapa_jog[(cedente.nome, j.nome)]
             partida_ids = partida_repo.inserir(conn, simulacao_id, mapa, novas)
             lance_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
             atuacao_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)

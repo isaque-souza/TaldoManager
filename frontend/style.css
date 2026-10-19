@@ -1324,3 +1324,10 @@ p.el-ofertas { font-size: .88rem; }
 .el-emprestado { margin: .4rem 0 .8rem; padding: .7rem .8rem; border: 1px solid var(--linha); border-radius: 6px; background: var(--superficie-2); }
 .el-emprestado p { margin: 0 0 .5rem; font-size: .9rem; }
 .el-emprestado button { width: auto; margin: 0 .6rem .2rem 0; }
+.el-emprestar { margin: .4rem 0 .8rem; }
+.el-emprestar ul { list-style: none; margin: 0 0 .5rem; padding: 0; }
+.el-emprestar li { display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  padding: .35rem 0; border-bottom: 1px solid var(--linha); font-size: .9rem; }
+.el-emprestar li button { width: auto; margin: 0; padding: .25rem .7rem; font-size: .8rem; }
+.el-emprestar-dur { margin: .3rem 0 .1rem; font-size: .85rem; color: var(--texto-2); }
+.el-fora { font-size: .9rem; color: var(--texto-2); }

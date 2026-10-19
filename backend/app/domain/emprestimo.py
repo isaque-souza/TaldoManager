@@ -1,7 +1,7 @@
 """Empréstimos (v1.7, passo 6).
 
-Regras puras, sem banco. Por enquanto o técnico pega emprestado da CPU
-(emprestar os dele é o passo seguinte):
+Regras puras, sem banco. O técnico pega emprestado da CPU e também
+empresta os dele (`propostas_de_cessao`):
 
 - DURAÇÃO: na pré-temporada, até a virada do turno (19 rodadas) ou a
   temporada inteira; na janela da virada do turno, até o fim. Ele volta
@@ -13,6 +13,11 @@ Regras puras, sem banco. Por enquanto o técnico pega emprestado da CPU
 - QUEM O CLUBE EMPRESTA: quem não é titular nem ídolo lá, e nunca para o
   rival. A taxa pedida fica escondida, como nas compras: a resposta é
   aceita, contraproposta (revela o pedido) ou recusa.
+- EMPRESTAR OS DO TÉCNICO: ele escolhe a duração e vê até 3 clubes
+  interessados (os que precisam da posição e podem pagar), cada um com a
+  parte do salário que banca (conforme o caixa) e a taxa — cheia se ele
+  seria titular lá, menor se não. Ídolo não sai, nem para o rival; a CPU
+  não pede opção de compra.
 - OPÇÃO DE COMPRA (opcional): um preço fixo, acima do que o clube pediria
   numa venda. Enquanto o empréstimo dura, o técnico pode exercê-la a
   qualquer rodada (é cláusula, não depende da janela): o valor fica
@@ -24,7 +29,9 @@ continua sendo o do clube de origem (não renova, não vai à lista, não é
 dispensado). Tudo determinístico (sem `random`).
 """
 
-from app.domain import fama, mercado
+from dataclasses import dataclass
+
+from app.domain import fama, mercado, ofertas
 
 TURNO = "turno"           # até a virada do turno
 TEMPORADA = "temporada"   # até o fim da temporada
@@ -40,6 +47,10 @@ FATOR_ENDIVIDADO = 1.2           # o clube de origem precisa do dinheiro
 FATOR_OPCAO = 1.25               # opção de compra sobre o preço de venda
 TAXA_MINIMA = 10_000
 AVISO_OPCAO = 3                  # rodadas antes do fim: o aviso da opção
+# a CPU pedindo os do técnico
+MAX_INTERESSADOS = 3
+FATOR_BANCO_LA = 0.8             # não seria titular lá: paga menos taxa
+CAIXA_PARA_PARTE = ((20, 100), (8, 75))   # caixa ≥ N salários → banca P%
 
 
 class EmprestimoInvalido(mercado.TransferenciaInvalida):
@@ -64,16 +75,17 @@ def _fracao(rodada, duracao, total_rodadas):
     return (volta(duracao, total_rodadas) - rodada) / total_rodadas
 
 
-def motivo_nao_empresta(jogador, cedente, tomador):
+def motivo_nao_empresta(jogador, cedente, tomador, pelo_tecnico=False):
     """Por que o `cedente` não empresta o jogador ao `tomador` (None =
-    empresta)."""
+    empresta). `pelo_tecnico`: quem empresta é o técnico, que decide se
+    abre mão de um titular."""
     if jogador.emprestimo:
         return f"{jogador.nome} já está emprestado"
     if mercado.sao_rivais(cedente, tomador):
         return f"O {cedente.nome} não empresta para o rival"
     if fama.idolo(jogador):
         return f"O {cedente.nome} não empresta um ídolo da torcida"
-    if mercado.seria_titular(cedente, jogador):
+    if not pelo_tecnico and mercado.seria_titular(cedente, jogador):
         return f"{jogador.nome} é titular no {cedente.nome}"
     return mercado.motivo_saida_bloqueada(cedente, jogador)
 
@@ -131,14 +143,14 @@ def avaliar(jogador, cedente, tomador, rodada, duracao, total_rodadas, parte, ta
 
 
 def emprestar(jogador, cedente, tomador, volta_antes_da, parte, taxa, opcao=None,
-              emprestimo_id=None):
+              emprestimo_id=None, pelo_tecnico=False):
     """Leva o jogador do `cedente` ao `tomador` até `volta_antes_da` e lança
     a taxa nos dois caixas. Levanta `EmprestimoInvalido` se alguma regra
     impedir."""
     if jogador not in cedente.jogadores:
         raise EmprestimoInvalido(f"{jogador.nome} não joga no {cedente.nome}")
     motivo = (
-        motivo_nao_empresta(jogador, cedente, tomador)
+        motivo_nao_empresta(jogador, cedente, tomador, pelo_tecnico)
         or mercado.motivo_entrada_bloqueada(tomador, taxa)
     )
     if motivo:
@@ -153,6 +165,54 @@ def emprestar(jogador, cedente, tomador, volta_antes_da, parte, taxa, opcao=None
     }
     tomador.lancar("despesa_compras", taxa)
     cedente.lancar("receita_vendas", taxa)
+
+
+@dataclass
+class PropostaCessao:
+    """Um clube da CPU que quer o jogador do técnico emprestado."""
+    clube: object
+    parte: int           # % do salário que ele banca
+    taxa: int
+    titular: bool        # seria titular lá (joga, e jogar faz evoluir)
+
+
+def parte_que_banca(clube, jogador):
+    """Quanto do salário a CPU banca: depende de quantos salários dele
+    cabem no caixa."""
+    for salarios, parte in CAIXA_PARA_PARTE:
+        if clube.dinheiro >= salarios * jogador.salario:
+            return parte
+    return PARTES_SALARIO[0]
+
+
+def motivo_nao_cede(jogador, cedente):
+    """Por que o técnico não pode emprestar o jogador (None = pode)."""
+    if fama.idolo(jogador):
+        return "A torcida não aceita ver um ídolo emprestado"
+    return (f"{jogador.nome} já está emprestado" if jogador.emprestimo
+            else mercado.motivo_saida_bloqueada(cedente, jogador))
+
+
+def propostas_de_cessao(jogador, cedente, clubes, rodada, duracao, total_rodadas):
+    """Os clubes que querem o jogador do técnico emprestado por `duracao`:
+    até `MAX_INTERESSADOS`, os que o fariam titular primeiro, depois a
+    maior taxa e o caixa mais folgado."""
+    lista = []
+    for clube in clubes:
+        if clube is cedente or mercado.sao_rivais(cedente, clube):
+            continue
+        if not ofertas._precisa(clube, jogador):
+            continue
+        parte = parte_que_banca(clube, jogador)
+        titular = mercado.seria_titular(clube, jogador)
+        taxa = taxa_base(jogador, rodada, duracao, total_rodadas, parte)
+        if not titular:
+            taxa = max(TAXA_MINIMA, round(taxa * FATOR_BANCO_LA / 10_000) * 10_000)
+        if mercado.motivo_entrada_bloqueada(clube, taxa):
+            continue
+        lista.append(PropostaCessao(clube, parte, taxa, titular))
+    lista.sort(key=lambda p: (not p.titular, -p.taxa, -p.clube.dinheiro, p.clube.nome))
+    return lista[:MAX_INTERESSADOS]
 
 
 def devolver(jogador, tomador, cedente):

@@ -796,6 +796,32 @@ class PedidoEmprestimoFicha(BaseModel):
     contraproposta: ContraEmprestimo | None = None
 
 
+class PropostaCessao(BaseModel):
+    """Um clube da CPU que quer o jogador do técnico emprestado."""
+    clube: str
+    parte_salario: int                   # % do salário que ele banca
+    taxa: int
+    seria_titular: bool
+
+
+class DuracaoCessao(BaseModel):
+    duracao: DuracaoEmprestimo
+    volta: int
+    propostas: list[PropostaCessao]
+
+
+class CessaoFicha(BaseModel):
+    """Emprestar um jogador do técnico (v1.7): os interessados por duração."""
+    bloqueio: str | None = None
+    duracoes: list[DuracaoCessao] = []
+
+
+class NovaCessao(BaseModel):
+    jogador_id: int
+    clube: str
+    duracao: DuracaoEmprestimo
+
+
 class Emprestimo(BaseModel):
     emprestimo_id: int
     rodada: int
@@ -825,6 +851,11 @@ class RespostaEmprestimo(BaseModel):
     taxa_pedida: int | None = None       # só na contraproposta
     propostas_restantes: int
     emprestimo: Emprestimo | None = None
+    caixa: int
+
+
+class CessaoFeita(BaseModel):
+    emprestimo: Emprestimo
     caixa: int
 
 
@@ -883,6 +914,7 @@ class FichaMercado(BaseModel):
     observado: bool = False              # na lista de observados (v1.7)
     emprestimo: EmprestadoAqui | None = None        # v1.7: veio emprestado
     pedir_emprestado: PedidoEmprestimoFicha | None = None   # só de outros clubes
+    emprestar: CessaoFicha | None = None    # só do elenco do técnico
 
 
 class TransferenciaFeita(BaseModel):

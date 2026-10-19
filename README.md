@@ -846,7 +846,29 @@ etapas (o clube e depois o jogador):
         `POST /simulacoes/{id}/ofertas/{oid}/aceitar`, `/recusar`,
         `/contraproposta` `{valor}` — sai `POST /vendas`
       - [x] tela
-* [ ] Empréstimos
+* [x] Empréstimos — nas duas janelas, por meia temporada (volta antes da
+      rodada 20) ou até o fim; na janela da rodada 20, só até o fim. Quem
+      recebe paga uma taxa (até 10% do valor por temporada inteira,
+      proporcional ao tempo) e 50, 75 ou 100% do salário; o clube de origem
+      paga o resto. O jogador volta sozinho no fim; enquanto isso o contrato
+      é do clube de origem (não renova, não vai à lista, não é dispensado)
+      (`app/domain/emprestimo.py`, `emprestimo_service`)
+      - **Pegar emprestado**: na ficha de compra, duração, parte do salário,
+        taxa (a sugerida baixa quanto mais salário você banca) e, se quiser,
+        **opção de compra** por um preço fixo (1,25× o de venda, até a
+        multa). O clube aceita, contrapropõe ou recusa (3 pedidos por
+        janela); não empresta titular, ídolo nem para o rival. A opção vale
+        em qualquer rodada e abre direto o contrato com o jogador
+      - **Emprestar os seus**: na ficha do Elenco, até 3 clubes interessados
+        por duração (os que precisam da posição e podem pagar), cada um com
+        a taxa e a parte do salário que banca conforme o caixa; quem seria
+        titular lá aparece primeiro (jogando, ele evolui). Ídolo não sai, nem
+        para o rival
+      - API: `POST /simulacoes/{id}/emprestimos`,
+        `POST /simulacoes/{id}/emprestimos/{eid}/opcao`,
+        `POST /simulacoes/{id}/emprestimos/ceder`; `pedir_emprestado`,
+        `emprestar` e `emprestimo` na ficha do mercado; `emprestimos` em
+        `GET /mercado`
 * [ ] Clubes da CPU negociam entre si
 
 ---

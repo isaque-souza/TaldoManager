@@ -207,6 +207,31 @@ def emprestimo_feito(jogador, cedente, taxa, duracao, parte, opcao=None):
     )
 
 
+def emprestimo_cedido(jogador, tomador, taxa, duracao, parte, titular):
+    """O técnico emprestou um jogador dele à CPU."""
+    la = ("Lá ele deve ser titular: jogando, evolui." if titular
+          else "Lá ele não chega como titular.")
+    return _mensagem(
+        "Diretor de futebol", f"Emprestamos: {jogador.nome}",
+        f"{jogador.nome} ({jogador.funcao}, {jogador.overall}) foi emprestado "
+        f"ao {tomador.nome} até {_ate(duracao)}. Recebemos {_dinheiro(taxa)} "
+        f"de taxa e eles pagam {parte}% do salário; nós, o resto "
+        f"({_dinheiro(jogador.salario - round(jogador.salario * parte / 100))} "
+        f"por temporada). {la}",
+    )
+
+
+def emprestados_de_volta(nomes_e_clubes):
+    """Os nossos que voltaram de empréstimo depois da rodada."""
+    if not nomes_e_clubes:
+        return None
+    lista = ", ".join(f"{n} (estava no {c})" for n, c in nomes_e_clubes)
+    return _mensagem(
+        "Diretor de futebol", "Voltaram de empréstimo",
+        f"O empréstimo acabou e voltaram ao elenco: {lista}. Confira a escalação.",
+    )
+
+
 def emprestimo_acabando(jogador, rodadas):
     """Faltam poucas rodadas e há opção de compra."""
     e = jogador.emprestimo

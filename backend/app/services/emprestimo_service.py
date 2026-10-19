@@ -1,5 +1,5 @@
-"""Empréstimos do técnico (v1.7): pedir emprestado à CPU e exercer a opção
-de compra. As regras ficam em `app.domain.emprestimo`; o estado vivo é o do
+"""Empréstimos do técnico (v1.7): pedir emprestado à CPU, exercer a opção
+de compra e emprestar os dele à CPU. As regras ficam em `app.domain.emprestimo`; o estado vivo é o do
 `mercado_service` (carregar, regravar).
 
 - `pedir`: o pedido ao clube (duração, parte do salário, taxa e se quer a
@@ -8,6 +8,8 @@ de compra. As regras ficam em `app.domain.emprestimo`; o estado vivo é o do
 - `exercer_opcao`: abre a negociação com o valor da cláusula; a etapa 2 (o
   contrato com o jogador) é a de sempre, em `mercado_service.propor_contrato`
   — mas não depende da janela
+- `ceder`: empresta um jogador do técnico a um dos clubes interessados
+  (`emprestimo.propostas_de_cessao`), nos termos que eles oferecem
 - a volta ao clube de origem é do motor (`Campeonato.jogar_rodada`)
 """
 
@@ -18,6 +20,7 @@ from app.repositories import emprestimo_repository as emprestimo_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import negociacao_repository as negociacao_repo
 from app.repositories import observado_repository as observado_repo
+from app.repositories import oferta_repository as oferta_repo
 from app.repositories import transferencia_repository as transferencia_repo
 from app.services import mercado_service
 
@@ -204,5 +207,91 @@ def exercer_opcao(simulacao_id, emprestimo_id):
             "clube": r["de_clube"],
             "valor": r["opcao_compra"],
         }
+    finally:
+        conn.close()
+
+
+def interessados(ctx, jogador):
+    """O bloco "emprestar" da ficha de um jogador do técnico: o motivo de
+    bloqueio e, por duração desta janela, os clubes interessados."""
+    total = len(ctx.campeonato.calendario)
+    bloqueio = (
+        (None if mercado.janela_aberta(ctx.rodada) else "Janela de transferências fechada")
+        or emprestimo.motivo_nao_cede(jogador, ctx.alvo)
+    )
+    if bloqueio:
+        return {"bloqueio": bloqueio, "duracoes": []}
+    return {
+        "bloqueio": None,
+        "duracoes": [
+            {
+                "duracao": d,
+                "volta": emprestimo.volta(d, total),
+                "propostas": [
+                    {"clube": p.clube.nome, "parte_salario": p.parte, "taxa": p.taxa,
+                     "seria_titular": p.titular}
+                    for p in emprestimo.propostas_de_cessao(
+                        jogador, ctx.alvo, ctx.campeonato.clubes, ctx.rodada, d, total,
+                    )
+                ],
+            }
+            for d in emprestimo.duracoes(ctx.rodada)
+        ],
+    }
+
+
+def ceder(simulacao_id, jogador_id, clube, duracao):
+    """Empresta um jogador do técnico ao `clube`, nos termos que ele
+    ofereceu para `duracao`. None se a simulação ou o jogador não
+    existem."""
+
+    conn = conectar()
+    try:
+        ctx = mercado_service._carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        ctx.exigir_janela()
+        jogador = mercado_service._do_meu_elenco(ctx, jogador_id)
+        if jogador is None:
+            return None
+        cedente = ctx.alvo
+        emprestimo.validar(ctx.rodada, duracao, emprestimo.PARTES_SALARIO[-1])
+        motivo = emprestimo.motivo_nao_cede(jogador, cedente)
+        if motivo:
+            raise EmprestimoInvalido(motivo)
+        total = len(ctx.campeonato.calendario)
+        proposta = next(
+            (p for p in emprestimo.propostas_de_cessao(
+                jogador, cedente, ctx.campeonato.clubes, ctx.rodada, duracao, total,
+            ) if p.clube.nome == clube),
+            None,
+        )
+        if proposta is None:
+            raise EmprestimoInvalido(f"O {clube} não está interessado em {jogador.nome}")
+
+        tomador, volta = proposta.clube, emprestimo.volta(duracao, total)
+        with conn:
+            eid = emprestimo_repo.inserir(
+                conn, simulacao_id, ctx.rodada, jogador_id, jogador.nome,
+                cedente.nome, tomador.nome, duracao, volta, proposta.parte, proposta.taxa, None,
+            )
+            emprestimo.emprestar(
+                jogador, cedente, tomador, volta, proposta.parte, proposta.taxa,
+                emprestimo_id=eid, pelo_tecnico=True,
+            )
+            mapa = ctx.gravar()
+            transferencia_repo.inserir(
+                conn, simulacao_id, ctx.rodada, jogador_id,
+                mapa[cedente.nome], mapa[tomador.nome], proposta.taxa, tipo="emprestimo",
+            )
+            # as ofertas de compra por ele caem: saiu do elenco
+            oferta_repo.retirar_do_jogador(conn, simulacao_id, ctx.rodada, jogador_id)
+            mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                caixa.emprestimo_cedido(
+                    jogador, tomador, proposta.taxa, duracao, proposta.parte, proposta.titular,
+                )
+            ])
+            feito = visao(emprestimo_repo.buscar(conn, eid), ctx.rodada)
+        return {"emprestimo": feito, "caixa": cedente.dinheiro}
     finally:
         conn.close()

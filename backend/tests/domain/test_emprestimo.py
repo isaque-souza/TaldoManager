@@ -139,3 +139,39 @@ def test_o_campeonato_devolve_na_rodada_certa():
     assert j in b.jogadores and camp.devolvidos == []
     camp.jogar_rodada()
     assert j in a.jogadores and camp.devolvidos == [(j, b, a)]
+
+
+# --- o técnico empresta os dele (parte 2) ---
+
+def test_quem_quer_o_jogador_do_tecnico():
+    tecnico = _clube("T")
+    fraco, forte, rival = _clube("Fraco", overall=60), _clube("Forte", overall=90), _clube("Rival", overall=60)
+    tecnico.rivais = {"Rival"}
+    j = _reserva(tecnico)
+
+    propostas = emprestimo.propostas_de_cessao(j, tecnico, [tecnico, fraco, forte, rival], 1, "temporada", 38)
+    clubes = [p.clube.nome for p in propostas]
+    assert "Rival" not in clubes and "T" not in clubes
+    assert clubes[0] == "Fraco" and propostas[0].titular
+    assert all(p.taxa >= emprestimo.TAXA_MINIMA for p in propostas)
+
+
+def test_a_parte_do_salario_vem_do_caixa():
+    j = Jogador("X", 20, "Atacante", 70)
+    j.salario = 1_000_000
+    assert emprestimo.parte_que_banca(_clube("Rico", dinheiro=50_000_000), j) == 100
+    assert emprestimo.parte_que_banca(_clube("Medio", dinheiro=10_000_000), j) == 75
+    assert emprestimo.parte_que_banca(_clube("Pobre", dinheiro=1_000_000), j) == 50
+
+
+def test_o_tecnico_empresta_ate_titular_mas_nao_idolo():
+    tecnico, outro = _clube("T"), _clube("O", overall=60)
+    titular = next(j for j in tecnico.jogadores if j.posicao == "Atacante")
+    assert emprestimo.motivo_nao_cede(titular, tecnico) is None
+    emprestimo.emprestar(titular, tecnico, outro, 20, 100, 10_000, pelo_tecnico=True)
+    assert titular in outro.jogadores and titular.emprestimo["de"] == "T"
+    assert "já está emprestado" in emprestimo.motivo_nao_cede(titular, outro)
+
+    idolo = next(j for j in tecnico.jogadores if j.posicao == "Meio-Campo")
+    idolo.fama, idolo.temporadas_no_clube = 100, 10
+    assert "ídolo" in emprestimo.motivo_nao_cede(idolo, tecnico)

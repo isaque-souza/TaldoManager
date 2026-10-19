@@ -366,10 +366,10 @@ function abaNegociacoes() {
 // os empréstimos da temporada (v1.7): os ativos, com a opção de compra
 function tabelaEmprestimos(m) {
   if (!m.emprestimos.length) return "";
-  const STATUS = { ativo: ["chip-perto", "No elenco"], encerrado: ["", "Voltou"], comprado: ["chip-batida", "Comprado"] };
+  const STATUS = { ativo: ["chip-perto", "Emprestado"], encerrado: ["", "Voltou"], comprado: ["chip-batida", "Comprado"] };
   return `<h3 class="secao">Empréstimos da temporada</h3>` + tabela(m.emprestimos.map((e) => ({
     jogador: e.jogador,
-    de: e.de_clube,
+    de: e.de_clube === m.clube_usuario ? `→ ${e.para_clube}` : e.de_clube,
     ate: `${DURACAO_EMP[e.duracao]} (R${e.volta - 1})`,
     custo: `${dinheiro(e.taxa)} + ${e.parte_salario}% do salário`,
     situacao: `<span class="chip ${STATUS[e.status][0]}">${STATUS[e.status][1]}</span>`,
