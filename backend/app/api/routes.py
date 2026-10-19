@@ -66,6 +66,7 @@ from app.services.marketing_service import CampanhaInvalida
 from app.services.plano_service import PlanoInvalido
 from app.services.temporada_service import PartidaEmAndamento, TemporadaConcluida
 from app.services.transmissao_service import TransmissaoInvalida
+from scripts.data_loader import TODAS_AS_LIGAS
 
 router = APIRouter()
 
@@ -91,8 +92,9 @@ def health():
 
 @router.get("/clubes", response_model=list[ClubeSeed], tags=["infra"])
 def listar_clubes():
-    """Os clubes do seed — para o usuário escolher qual dirigir."""
-    return simulacao_service.listar_clubes()
+    """Os clubes do seed, de todas as ligas (v1.6) — para o usuário escolher
+    qual dirigir."""
+    return simulacao_service.listar_clubes(TODAS_AS_LIGAS)
 
 
 @router.get("/clubes/{nome}", response_model=ClubeComElenco, tags=["infra"])
@@ -142,6 +144,8 @@ def criar_simulacao(cfg: NovaSimulacao | None = None):
     rodada 1, exige `clube`) — avance com `POST /simulacoes/{id}/rodadas`.
     """
     cfg = cfg or NovaSimulacao()
+    # todo jogo novo tem todas as ligas (v1.6), na ordem de LIGAS
+    ligas = tuple(l for l in TODAS_AS_LIGAS if l in (cfg.ligas or TODAS_AS_LIGAS))
     try:
         if cfg.modo == "rodada_a_rodada":
             sim_id = temporada_service.iniciar(
@@ -150,6 +154,7 @@ def criar_simulacao(cfg: NovaSimulacao | None = None):
                 tatica=cfg.tatica,
                 formacao=cfg.formacao,
                 xi_preferido=cfg.xi,
+                ligas=ligas,
             )
         else:
             sim_id = simulacao_service.salvar_temporada(
@@ -158,6 +163,7 @@ def criar_simulacao(cfg: NovaSimulacao | None = None):
                 tatica=cfg.tatica,
                 formacao=cfg.formacao,
                 xi_preferido=cfg.xi,
+                ligas=ligas,
             )
     except ValueError as e:
         raise _erro_de_valor(e) from e
@@ -496,9 +502,13 @@ def obter_carreira(carreira_id: int):
     response_model=SimulacaoResponse,
     tags=["simulacoes"],
 )
-def obter_simulacao(simulacao_id: int):
-    """Classificação, rankings e recordes de uma simulação salva."""
-    visao = simulacao_service.carregar_temporada(simulacao_id)
+def obter_simulacao(
+    simulacao_id: int,
+    liga: str | None = Query(None, description="taldo ou premier; sem dizer, a do técnico"),
+):
+    """Classificação, rankings e recordes de uma liga de uma simulação
+    salva (v1.6: por padrão, a liga do técnico)."""
+    visao = simulacao_service.carregar_temporada(simulacao_id, liga)
     if visao is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
     return visao

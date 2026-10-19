@@ -205,7 +205,8 @@ def proxima_rodada(simulacao_id):
             # o time como o motor vai escalar (editor no campo, v1.2)
             "escalacao": _escalacao(alvo),
             "confrontos": [
-                {"mandante": m.nome, "visitante": v.nome} for m, v in rodada
+                {"mandante": m.nome, "visitante": v.nome, "liga": m.liga}
+                for m, v in rodada
             ],
             "elenco": [
                 {
@@ -468,6 +469,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
         visao = simulacao_service._montar_visao(
             simulacao_service._cru_do_banco(conn, simulacao_id)
         )
+        liga_de = {c.nome: c.liga for c in campeonato.clubes}
         return {
             "rodada_jogada": rodada_jogada,
             "concluida": concluida,
@@ -478,6 +480,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
                     "visitante": p["visitante"],
                     "gols_mandante": p["gols_mandante"],
                     "gols_visitante": p["gols_visitante"],
+                    "liga": liga_de[p["mandante"]],
                 }
                 for pid, p in zip(partida_ids, novas)
             ],

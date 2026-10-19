@@ -112,9 +112,13 @@ def _montar(sim, campeonato, rodada, decisoes):
             "placar": list(placar),
         })
 
+    # os outros jogos da liga do técnico (v1.6): a outra liga joga na mesma
+    # rodada, mas não mexe na tabela dele
+    da_liga = {c.nome for c in campeonato.clubes_da_liga(p.clube1.liga)}
     outros = []
     for jogo in campeonato.partidas_jogadas:
-        if jogo["rodada"] != rodada or jogo["mandante"] == p.clube1.nome:
+        if (jogo["rodada"] != rodada or jogo["mandante"] == p.clube1.nome
+                or jogo["mandante"] not in da_liga):
             continue
         outros.append({
             "mandante": jogo["mandante"],

@@ -58,16 +58,21 @@ def test_listar_clubes():
     resp = client.get("/clubes")
     assert resp.status_code == 200
     clubes = resp.json()
-    assert len(clubes) == 20
-    assert {"nome", "pais", "forca", "ranking_forca", "meta_posicao", "meta",
+    # v1.6: as duas ligas
+    assert len(clubes) == 40
+    assert {c["liga"] for c in clubes} == {"taldo", "premier"}
+    assert {"nome", "liga", "pais", "forca", "ranking_forca", "meta_posicao", "meta",
             "dinheiro", "torcedores", "identidade"} == set(clubes[0])
 
 
 def test_listar_clubes_ranking_segue_a_forca():
-    clubes = sorted(client.get("/clubes").json(), key=lambda c: c["ranking_forca"])
-    assert [c["ranking_forca"] for c in clubes] == list(range(1, 21))
-    forcas = [c["forca"] for c in clubes]
-    assert forcas == sorted(forcas, reverse=True)
+    todos = client.get("/clubes").json()
+    for liga in ("taldo", "premier"):        # o ranking é dentro de cada liga
+        clubes = sorted((c for c in todos if c["liga"] == liga),
+                        key=lambda c: c["ranking_forca"])
+        assert [c["ranking_forca"] for c in clubes] == list(range(1, 21))
+        forcas = [c["forca"] for c in clubes]
+        assert forcas == sorted(forcas, reverse=True)
 
 
 def test_criar_simulacao_com_clube_e_tatica():
@@ -233,14 +238,17 @@ def test_fluxo_rodada_a_rodada():
     corpo = pr.json()
     assert corpo["rodada"] == 1
     assert corpo["clube_usuario"] == clube
-    assert len(corpo["confrontos"]) == 10
+    # as duas ligas jogam na mesma rodada (v1.6)
+    assert len(corpo["confrontos"]) == 20
+    assert sum(c["liga"] == "premier" for c in corpo["confrontos"]) == 10
 
     jogou = client.post(f"/simulacoes/{sid}/rodadas", json={"tatica": "defensivo"})
     assert jogou.status_code == 200
     r = jogou.json()
     assert r["rodada_jogada"] == 1
     assert r["concluida"] is False
-    assert len(r["resultados"]) == 10
+    assert len(r["resultados"]) == 20
+    assert {x["liga"] for x in r["resultados"]} == {"taldo", "premier"}
     assert r["tatica"] == "defensivo"
 
 
@@ -497,7 +505,9 @@ def test_rodada_ao_vivo_pela_api():
     jogada = client.post(f"/simulacoes/{sid}/rodadas", json={}).json()
 
     av = client.get(f"/simulacoes/{sid}/rodadas/1/ao-vivo").json()
-    assert len(av["partidas"]) == len(jogada["resultados"])
+    # só os jogos da liga do técnico (v1.6)
+    minha = next(r["liga"] for r in jogada["resultados"] if clube in (r["mandante"], r["visitante"]))
+    assert len(av["partidas"]) == sum(r["liga"] == minha for r in jogada["resultados"]) == 10
     pid = av["partidas"][0]["partida_id"]
     assert client.get(f"/simulacoes/{sid}/partidas/{pid}").json()["partida"]["acrescimos"] in range(1, 6)
 
@@ -581,3 +591,26 @@ def test_planos_via_api():
     assert client.delete(f"/simulacoes/{sid}/planos/{titular['id']}").status_code == 200
     assert client.delete(f"/simulacoes/{sid}/planos/{retranca['id']}").status_code == 400
     assert client.get("/simulacoes/999999/planos").status_code == 404
+
+
+def test_visao_de_cada_liga():
+    """v1.6: a visão mostra uma liga — a do técnico, ou ?liga=."""
+    sid = client.post("/simulacoes", json={"seed": 5, "clube": "Arsenal"}).json()["id"]
+
+    corpo = client.get(f"/simulacoes/{sid}").json()
+    assert corpo["liga"] == "premier" and corpo["campeonato"] == "Premier League"
+    assert [l["id"] for l in corpo["ligas"]] == ["taldo", "premier"]
+    assert len(corpo["classificacao"]) == 20
+    assert "Arsenal" in {c["clube"] for c in corpo["classificacao"]}
+    assert corpo["campeao"] == corpo["classificacao"][0]["clube"]
+    assert corpo["meta"]["posicao_atual"] == next(
+        c["posicao"] for c in corpo["classificacao"] if c["clube"] == "Arsenal"
+    )
+
+    taldo = client.get(f"/simulacoes/{sid}", params={"liga": "taldo"}).json()
+    assert taldo["liga"] == "taldo" and len(taldo["classificacao"]) == 20
+    assert "Arsenal" not in {c["clube"] for c in taldo["classificacao"]}
+    assert taldo["campeao"] == taldo["classificacao"][0]["clube"]
+    assert {j["clube"] for j in taldo["artilharia"]} <= {c["clube"] for c in taldo["classificacao"]}
+    # a meta continua a do técnico, na Premier
+    assert taldo["meta"] == corpo["meta"]

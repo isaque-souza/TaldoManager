@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 618 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 620 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -658,7 +658,7 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       numa tabela do importador. Nomes iguais aos da Taldo ganham a
       nacionalidade ("João Gomes (BRA)"). XI de ~73 (Sheffield) a ~87 (City).
       Ainda não aparece no jogo: é o próximo passo
-* [ ] Várias ligas no banco e no motor — todo jogo novo terá as duas
+* [x] Várias ligas no banco e no motor — todo jogo novo tem as duas
       ligas rodando juntas
       - [x] motor — cada clube tem a sua `liga`; `carregar_campeonato(ligas)`
             lê a seed de cada uma (`LIGAS` no `data_loader`); o calendário é
@@ -675,8 +675,17 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
             ranking de força são da liga do clube; o campeão do save é o da
             liga do técnico; a carreira segue com as ligas da temporada
             anterior e a lista de livres cresce com elas (50 por liga)
-      - [ ] API (clubes por liga, tabela de cada liga)
-* [ ] Várias ligas na tela (escolher liga, tabelas e mercado entre ligas)
+      - [x] API — `GET /clubes` traz os 40 com a `liga` (ranking dentro de
+            cada uma); `POST /simulacoes` cria com as duas (`ligas` no corpo
+            para escolher); `GET /simulacoes/{id}` mostra uma liga (a do
+            técnico, ou `?liga=`) — tabela, rankings, finanças e gráficos só
+            dela, com `liga` e `ligas`; confrontos e resultados da rodada
+            trazem a `liga`; os outros jogos ao vivo são só da liga do
+            técnico
+* [x] Várias ligas na tela — "Novo jogo" com abas Liga Taldo / Premier
+      League; na temporada, abas para ver a tabela, os rankings e os
+      gráficos de cada liga; na rodada, os jogos da sua liga primeiro e os
+      da outra recolhidos (`js/ligas.js`); o mercado já lista as duas
 * [ ] Copa entre as ligas (futuro)
 
 ---
@@ -697,7 +706,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 618 testes (domain, db, repositories, services, api)
+│   └── tests/              # 620 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

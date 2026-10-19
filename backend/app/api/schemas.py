@@ -140,8 +140,16 @@ class FimDeCarreira(BaseModel):
     melhor_posicao: int | None
 
 
+class LigaResumo(BaseModel):
+    id: str
+    nome: str
+
+
 class SimulacaoResponse(BaseModel):
     campeonato: str
+    # v1.6: a liga mostrada (a do técnico, ou ?liga=) e as do save
+    liga: str = "taldo"
+    ligas: list[LigaResumo] = []
     seed: int | None
     rodadas: int
     campeao: str | None
@@ -287,6 +295,8 @@ class NovaSimulacao(BaseModel):
     formacao: str | None = None
     xi: list[str] | None = None        # nomes do XI titular preferido
     modo: Literal["completa", "rodada_a_rodada"] = "completa"
+    # ligas que rodam juntas (v1.6); sem dizer, todas
+    ligas: list[Literal["taldo", "premier"]] | None = None
 
 
 class Posicionamento(BaseModel):
@@ -319,6 +329,7 @@ class DecisaoSalva(BaseModel):
 class ConfrontoRodada(BaseModel):
     mandante: str
     visitante: str
+    liga: str = "taldo"                  # v1.6
 
 
 class ElencoSituacao(BaseModel):
@@ -360,6 +371,7 @@ class ResultadoRodada(BaseModel):
     visitante: str
     gols_mandante: int
     gols_visitante: int
+    liga: str = "taldo"                  # v1.6
 
 
 class JogadorPreJogo(BaseModel):
@@ -443,9 +455,10 @@ class Identidade(BaseModel):
 
 class ClubeSeed(BaseModel):
     nome: str
+    liga: str = "taldo"     # v1.6
     pais: str
     forca: float            # média de overall do melhor XI no 4-3-3
-    ranking_forca: int      # 1 = elenco mais forte da liga
+    ranking_forca: int      # 1 = elenco mais forte da liga dele
     meta_posicao: int       # a meta que a diretoria daria
     meta: str               # descrição dela ("Terminar no G-4")
     dinheiro: int

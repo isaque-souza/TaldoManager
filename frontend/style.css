@@ -1133,3 +1133,6 @@ body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .
 .es-escolhida { outline: 2px solid var(--gramado-claro); outline-offset: -2px; }
 .es-escolhida header { background: var(--gramado-noite); }
 .es-atual { color: var(--gramado-claro); font-size: .8rem; font-weight: 600; }
+
+/* ligas (v1.6): a outra liga da rodada, recolhida */
+details.outra-liga { margin-top: 1rem; }

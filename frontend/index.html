@@ -47,7 +47,9 @@
 
     <div data-inicio-painel="novo" hidden>
       <p class="instrucao">Escolha o clube que você vai dirigir. Clubes fortes
-        brigam pelo título; os fracos, para não cair.</p>
+        brigam pelo título; os fracos, para não cair. As duas ligas jogam ao
+        mesmo tempo, e o mercado é entre elas.</p>
+      <nav class="abas" id="inicio-ligas"></nav>
       <div id="inicio-clubes" class="grade-clubes"></div>
       <div id="barra-comecar" class="barra-comecar">
         <button id="comecar" disabled>Escolha um clube</button>
@@ -118,6 +120,7 @@
   <!-- visão temporada -->
   <section id="temporada" hidden>
     <button id="temporada-voltar" class="voltar secondary" hidden>← Voltar para a rodada</button>
+    <nav class="abas" id="temporada-ligas" hidden></nav>
     <div class="cards">
       <article>
         <header><strong><span data-icone="trofeu"></span> Campeão</strong></header>

@@ -29,7 +29,7 @@ from app.repositories import movimento_repository as movimento_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from scripts.data_loader import (
-    LIGA_PADRAO, TODAS_AS_LIGAS, carregar_campeonato,
+    LIGA_PADRAO, LIGAS, TODAS_AS_LIGAS, carregar_campeonato,
 )
 
 NOME_CAMPEONATO = "Taldo"
@@ -364,11 +364,37 @@ def _meta_da_visao(cru, clubes_ordenados):
     }
 
 
-def _montar_visao(cru):
-    partidas = cru["partidas"]
+def _ligas_da_visao(cru, liga):
+    """(ligas do save, liga do técnico, liga mostrada). Saves antigos não
+    trazem `liga` nos clubes: são da Taldo."""
+    ligas = list(dict.fromkeys(c.get("liga", "taldo") for c in cru["clubes"]))
+    do_tecnico = next(
+        (c.get("liga", "taldo") for c in cru["clubes"]
+         if c["nome"] == cru.get("clube_usuario")),
+        ligas[0],
+    )
+    if liga not in ligas:
+        liga = do_tecnico
+    return ligas, do_tecnico, liga
+
+
+def _montar_visao(cru, liga=None):
+    """A visão de uma liga do save (v1.6): tabela, rankings, finanças e
+    gráficos só com os clubes dela. Sem `liga` (ou uma que o save não tem),
+    a do técnico."""
+    ligas, do_tecnico, liga = _ligas_da_visao(cru, liga)
+    da_liga = {c["nome"] for c in cru["clubes"] if c.get("liga", "taldo") == liga}
+    partidas = [p for p in cru["partidas"] if p["mandante"] in da_liga]
     forma = _forma_por_clube(partidas)
 
-    clubes_ordenados = sorted(cru["clubes"], key=lambda c: c["posicao_final"])
+    clubes_ordenados = sorted(
+        (c for c in cru["clubes"] if c["nome"] in da_liga),
+        key=lambda c: c["posicao_final"],
+    )
+    # a meta é sempre na liga do técnico, qualquer que seja a mostrada
+    clubes_do_tecnico = [
+        c for c in cru["clubes"] if c.get("liga", "taldo") == do_tecnico
+    ]
 
     classificacao = [
         {
@@ -389,7 +415,7 @@ def _montar_visao(cru):
         for c in clubes_ordenados
     ]
 
-    jogadores = cru["jogadores"]
+    jogadores = [j for j in cru["jogadores"] if j["clube"] in da_liga]
 
     def ranking(chave, filtro=None, limite=None):
         itens = sorted(jogadores, key=chave, reverse=True)
@@ -408,10 +434,17 @@ def _montar_visao(cru):
     ]
 
     return {
-        "campeonato": NOME_CAMPEONATO,
+        "campeonato": NOME_CAMPEONATO if liga == "taldo" else LIGAS[liga][0],
+        # ligas do save (v1.6): a mostrada e as que dá para escolher
+        "liga": liga,
+        "ligas": [{"id": l, "nome": LIGAS[l][0]} for l in ligas],
         "seed": cru["seed"],
         "rodadas": cru["rodadas"],
-        "campeao": cru["campeao"] or None,
+        # o campeão do save é o da liga do técnico; o da outra, o 1º dela
+        "campeao": (
+            (cru["campeao"] if liga == do_tecnico else clubes_ordenados[0]["nome"])
+            if cru["campeao"] else None
+        ),
         "estado": cru.get("estado", "concluida"),
         "rodada_atual": cru.get("rodada_atual"),
         "carreira_id": cru.get("carreira_id"),
@@ -420,7 +453,7 @@ def _montar_visao(cru):
         "movimentos_virada": cru.get("movimentos_virada", []),
         "evolucao_virada": cru.get("evolucao_virada", []),
         "clube_usuario": cru.get("clube_usuario"),
-        "meta": _meta_da_visao(cru, clubes_ordenados),
+        "meta": _meta_da_visao(cru, clubes_do_tecnico),
         "cargo": cru.get("cargo"),
         "fim_de_carreira": cru.get("fim_de_carreira"),
         "tatica": cru.get("tatica"),
@@ -781,12 +814,12 @@ def _cru_do_banco(conn, simulacao_id):
     }
 
 
-def carregar_temporada(simulacao_id):
+def carregar_temporada(simulacao_id, liga=None):
     """Lê a simulação do banco e devolve a visão. None se não existir."""
     conn = conectar()
     try:
         cru = _cru_do_banco(conn, simulacao_id)
-        return _montar_visao(cru) if cru is not None else None
+        return _montar_visao(cru, liga) if cru is not None else None
     finally:
         conn.close()
 
@@ -861,11 +894,15 @@ def ao_vivo(simulacao_id, rodada):
 
     conn = conectar()
     try:
-        if simulacao_repo.buscar(conn, simulacao_id) is None:
+        sim = simulacao_repo.buscar(conn, simulacao_id)
+        if sim is None:
             return None
+        # só a liga do técnico (v1.6): é a tabela que mexe com ele
+        liga = {c["nome"]: c["liga"] for c in clube_repo.listar_por_simulacao(conn, simulacao_id)}
+        minha = liga.get(sim["clube_usuario"], "taldo")
         partidas = []
         for p in partida_repo.listar_por_simulacao(conn, simulacao_id):
-            if p["rodada"] != rodada:
+            if p["rodada"] != rodada or liga.get(p["mandante_nome"]) != minha:
                 continue
             gols = [
                 {"minuto": r["minuto"], "clube": r["clube_nome"]}

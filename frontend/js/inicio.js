@@ -5,9 +5,11 @@ import { carregarLista, lerSessao, preencherLista } from "./saves.js";
 import { dinheiro } from "./tabelas.js";
 import { camisa, escudo } from "./identidade.js";
 import { icone } from "./icones.js";
+import { abasLiga } from "./ligas.js";
 
 let clubes = null;      // cache de GET /clubes (a seed não muda)
 let escolhido = null;   // nome do clube marcado em "Novo jogo"
+let ligaVista = "taldo"; // a liga cujos clubes aparecem em "Novo jogo" (v1.6)
 let painel = null;      // "novo" | "carregar" (null = decide pelos saves)
 
 export async function mostrarInicio() {
@@ -101,7 +103,13 @@ function estrelas(ranking) {
 
 function renderClubes() {
   if (!clubes) return;
-  $("inicio-clubes").innerHTML = [...clubes]
+  const ligas = [...new Set(clubes.map((c) => c.liga || "taldo"))];
+  $("inicio-ligas").innerHTML = abasLiga(ligas, ligaVista);
+  $("inicio-ligas").querySelectorAll("[data-liga]").forEach((b) =>
+    b.addEventListener("click", () => { ligaVista = b.dataset.liga; renderClubes(); })
+  );
+  $("inicio-clubes").innerHTML = clubes
+    .filter((c) => (c.liga || "taldo") === ligaVista)
     .sort((a, b) => a.ranking_forca - b.ranking_forca)
     .map((c) => `
       <button class="card-clube${c.nome === escolhido ? " escolhido" : ""}" data-clube="${c.nome}">
