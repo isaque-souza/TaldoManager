@@ -8,9 +8,10 @@
 
 import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { decisaoParaEnviar, enviarRodada, mostrarRodadaTela } from "./rodada.js";
-import { corDoTexto, escudo, identidade } from "./identidade.js";
+import { camisa, corDoTexto, escudo, identidade } from "./identidade.js";
 import { icone } from "./icones.js";
-import { SETOR, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
+import { barrasAtributos } from "./atributos.js";
+import { SETOR, ehGoleiro, naTela, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
 
 const MS_POR_MINUTO = 500;          // 1×: ~45 s por jogo (escolha do usuário)
 const CHAVE_VELOCIDADE = "taldo:velocidade";
@@ -126,7 +127,9 @@ function iniciar(t) {
     timer: null,
     pausado: false,
     acabou: false,
-    selecao: { sai: null, entra: null },
+    selecao: null,       // o primeiro toque no gerenciar time (v1.7)
+    pendentes: [],       // as mudanças da pausa, antes de confirmar
+    confirmadas: "[]",
     momento: null,
   };
   jogo.cores = coresDosTimes();
@@ -198,6 +201,10 @@ function avancarMinuto(m, { silencioso = false } = {}) {
     adicionarLinha(relogio(m), `O ${d.clube} muda o desenho: agora no <b>${d.formacao}</b>`, "troca");
     redesenharTime(d.clube, d.formacao);
   }
+  for (const d of jogo.decisoes.filter((x) => x.minuto === m && x.posicoes)) {
+    adicionarLinha(relogio(m), `${d.posicoes[0]} e ${d.posicoes[1]} trocam de posição`, "troca");
+    trocarPosicoesNoCampo(...d.posicoes);
+  }
   for (const e of jogo.eventos.filter((x) => x.minuto === m)) {
     const { classe, texto } = narrar(e);
     adicionarLinha(relogio(m), texto, classe);
@@ -221,21 +228,40 @@ function renderTudo() {
   renderOutros();
 }
 
-// ---------- pausa: tática e substituições ----------
+// ---------- pausa: gerenciar o time (v1.7, no estilo do FIFA 15) ----------
+//
+// O campo com o time e o banco embaixo. Toque num jogador e depois em outro:
+// dois em campo trocam de posição; um em campo e um do banco, substituição.
+// Nada vale até confirmar: as mudanças ficam pendentes (dá para desfazer
+// cada uma ou todas) e "Confirmar" (ou "Retomar") as manda juntas — o
+// servidor refaz a partida do minuto seguinte em diante.
 
 async function pausar() {
   if (!jogo || jogo.acabou) return;
   pararRelogio();
   jogo.pausado = true;
-  jogo.selecao = { sai: null, entra: null };
+  jogo.selecao = null;
+  // o que já estava marcado para o minuto seguinte entra como pendente
+  jogo.pendentes = jogo.decisoes
+    .filter((d) => d.minuto === jogo.minuto + 1)
+    .map(({ minuto, clube, ...m }) => limpa(m));
+  jogo.confirmadas = JSON.stringify(jogo.pendentes);
   $("av-pausar").innerHTML = `${icone("play")} Retomar`;
   renderTudo();
   await carregarMomento();
 }
 
-function retomar() {
+// tira os campos vazios (a decisão gravada só tem os seus)
+const limpa = (m) => Object.fromEntries(Object.entries(m).filter(([, v]) => v != null));
+
+const temPendentes = () => JSON.stringify(jogo.pendentes) !== jogo.confirmadas;
+
+async function retomar() {
   if (!jogo || jogo.acabou) return;
+  // sair do menu confirma o que ficou pendente, como no FIFA
+  if (jogo.momento && temPendentes() && !(await confirmar())) return;
   jogo.pausado = false;
+  jogo.selecao = null;
   $("av-painel").hidden = true;
   $("av-pausar").innerHTML = `${icone("pausa")} Pausar`;
   renderTudo();
@@ -249,72 +275,158 @@ async function carregarMomento() {
   renderPainel();
 }
 
-// decisões já marcadas para o minuto seguinte ainda não aparecem na foto
-// do minuto atual: entram aqui
+// o time da foto do minuto com as mudanças pendentes aplicadas, na ordem
+// (a mesma conta do servidor). Uma que não cabe mais (depois de desfazer a
+// de que ela dependia) cai, com o motivo.
 function meuTimeAgora() {
   const time = jogo.momento.clubes.find((c) => c.clube === jogo.meu);
-  const prox = jogo.decisoes.filter((d) => d.minuto === jogo.minuto + 1);
-  const saem = new Set(prox.filter((d) => d.sai).map((d) => d.sai));
-  const entram = new Set(prox.filter((d) => d.entra).map((d) => d.entra));
-  const tatica = [...prox].reverse().find((d) => d.tatica)?.tatica || time.tatica;
-  const formacao = [...prox].reverse().find((d) => d.formacao)?.formacao || time.formacao;
-  return {
-    tatica,
-    formacao,
-    restantes: time.substituicoes_restantes - saem.size,
-    em_campo: time.em_campo.map((j) => ({ ...j, saindo: saem.has(j.nome) })),
-    banco: time.banco.map((j) => ({ ...j, entrando: entram.has(j.nome) })),
+  const t = {
+    tatica: time.tatica,
+    formacao: time.formacao,
+    restantes: time.substituicoes_restantes,
+    em_campo: time.em_campo.map((j) => ({ ...j })),
+    banco: time.banco.map((j) => ({ ...j })),
+    validas: [],
+    caiu: null,
   };
+  for (const m of jogo.pendentes) {
+    const motivo = aplicar(t, m);
+    if (motivo) { t.caiu = motivo; break; }
+    t.validas.push(m);
+  }
+  return t;
+}
+
+function aplicar(t, m) {
+  if (m.tatica) { t.tatica = m.tatica; return null; }
+  if (m.formacao) { t.formacao = m.formacao; return null; }
+  const achar = (nome) => t.em_campo.find((j) => j.nome === nome);
+  if (m.posicoes) {
+    const [a, b] = m.posicoes.map(achar);
+    if (!a || !b) return "quem ia trocar de posição não está mais em campo";
+    if ([a, b].some((j) => ehGoleiro(j) || j.vaga === "Goleiro")) {
+      return "o goleiro fica no gol";
+    }
+    for (const k of ["vaga", "slot"]) [a[k], b[k]] = [b[k], a[k]];
+    for (const j of [a, b]) j.overall_vaga = j.overall_por_posicao?.[j.vaga] ?? j.overall;
+    return null;
+  }
+  const sai = achar(m.sai);
+  const i = t.banco.findIndex((j) => j.nome === m.entra);
+  if (t.restantes <= 0) return "acabaram as substituições";
+  if (!sai) return `${m.sai} não está mais em campo`;
+  if (sai.expulso) return `${m.sai} foi expulso e não pode ser substituído`;
+  if (i < 0 || !t.banco[i].disponivel) return `${m.entra} não pode entrar`;
+  if (!podemTrocar(sai, t.banco[i])) return "goleiro só troca com goleiro";
+  const [entra] = t.banco.splice(i, 1);
+  t.em_campo[t.em_campo.indexOf(sai)] = {
+    ...entra, vaga: sai.vaga, slot: sai.slot, expulso: false, amarelos: 0, gols: 0, nota: 6,
+    overall_vaga: entra.overall_por_posicao?.[sai.vaga] ?? entra.overall, entrou: true,
+  };
+  t.banco.push({ ...sai, disponivel: false, saiu: true });
+  t.restantes -= 1;
+  return null;
+}
+
+// a escalação do apito tem os atributos de todo mundo (para a ficha)
+function doApito(nome) {
+  const time = [jogo.mandante, jogo.visitante].find((x) => x.clube === jogo.meu);
+  return [...time.titulares, ...time.banco].find((j) => j.nome === nome) || {};
+}
+
+// as vagas são as do desenho da formação do apito: uma formação nova
+// muda a postura, não quem joga onde (isso é trocando de posição)
+function noDesenho(slot) {
+  const time = [jogo.mandante, jogo.visitante].find((x) => x.clube === jogo.meu);
+  const v = (jogo.desenhos[time.formacao] || [])[slot];
+  return v ? naTela(v) : { left: 50, top: 50 };
+}
+
+function descrever(m) {
+  if (m.tatica) return `Tática: <b>${TATICAS.find(([k]) => k === m.tatica)[1].toLowerCase()}</b>`;
+  if (m.formacao) return `Formação: <b>${m.formacao}</b>`;
+  if (m.posicoes) return `${icone("troca")} <b>${m.posicoes[0]}</b> e <b>${m.posicoes[1]}</b> trocam de posição`;
+  return `${icone("troca")} Sai <b>${m.sai}</b>, entra <b>${m.entra}</b>`;
 }
 
 function renderPainel() {
   const t = meuTimeAgora();
   const sel = jogo.selecao;
-  // quem sai: o banco mostra quanto cada um renderia na vaga dele (v1.3)
-  const sai = sel.sai && t.em_campo.find((j) => j.nome === sel.sai);
-  const vagaSai = sai && (sai.vaga || posicaoDe(sai));
   const prox = relogio(jogo.minuto + 1);
+  const escolhido = sel && (sel.lado === "campo"
+    ? t.em_campo.find((j) => j.nome === sel.nome)
+    : t.banco.find((j) => j.nome === sel.nome));
 
   const energia = (v) =>
     `<span class="av-energia ${v < 45 ? "baixa" : v < 70 ? "media" : ""}" title="Energia ${v}"><i style="width:${v}%"></i></span>`;
-  // a coluna dos cartões existe mesmo vazia: a grade da linha não desalinha
-  const cartoes = (j) => `<span class="av-cartoes">${
-    j.expulso ? `<span class="cartao vermelho" role="img" aria-label="expulso"></span>`
-      : j.amarelos ? `<span class="cartao" role="img" aria-label="amarelo"></span>` : ""}</span>`;
+  const cartao = (j) => j.expulso
+    ? `<span class="cartao vermelho" role="img" aria-label="expulso"></span>`
+    : j.amarelos ? `<span class="cartao" role="img" aria-label="amarelo"></span>` : "";
 
-  const linhaCampo = (j) => {
-    const bloqueado = j.expulso || j.saindo || t.restantes <= 0;
-    return `<li><button class="av-jog ${sel.sai === j.nome ? "escolhido" : ""} ${j.saindo ? "saindo" : ""}"
-        data-sai="${j.nome}" ${bloqueado ? "disabled" : ""}>
-      <b class="av-num">${j.numero ?? "–"}</b>
-      <span class="av-nome">${j.nome}${j.saindo ? " <small>sai no " + prox + "</small>" : ""}</span>
-      <small class="av-pos ${j.vaga && j.vaga !== posicaoDe(j) ? "perde" : ""}"
-        title="${j.vaga && j.vaga !== posicaoDe(j) ? `${posicaoDe(j)} improvisado: rende ${j.overall_vaga}` : posicaoDe(j)}">${sigla(j.vaga || posicaoDe(j))}</small>
-      ${cartoes(j)}
+  // quanto o escolhido renderia em cada vaga / quanto cada reserva renderia
+  // na vaga do escolhido em campo
+  const vagaSel = escolhido && sel.lado === "campo" ? escolhido.vaga : null;
+
+  const camisaCampo = (j) => {
+    const { left, top } = noDesenho(j.slot);
+    const fora = j.vaga && j.vaga !== posicaoDe(j);
+    const alvo = escolhido && sel.lado === "banco" && !escolhido.saiu
+      ? (escolhido.overall_por_posicao?.[j.vaga] ?? null) : null;
+    return `<button type="button" class="gt-jog ${sel?.nome === j.nome ? "escolhido" : ""}
+        ${j.expulso ? "expulso" : ""} ${j.entrou ? "novo" : ""}" data-campo="${j.nome}"
+        style="left:${left}%;top:${top}%"
+        title="${j.nome} · ${sigla(j.vaga || posicaoDe(j))}${fora ? ` (${sigla(posicaoDe(j))} improvisado)` : ""}">
+      <b class="gt-ovr ${fora ? "perde" : ""}">${alvo ?? j.overall_vaga ?? j.overall}</b>
+      ${camisa(jogo.meu, { numero: j.numero, tamanho: 38 })}
+      <span class="gt-nome">${cartao(j)}${j.nome.split(" ").slice(-1)[0]}</span>
+      <small class="gt-pos ${fora ? "perde" : ""}">${sigla(j.vaga || posicaoDe(j))}</small>
       ${energia(j.energia)}
-      <span class="av-nota ${j.nota >= 7 ? "boa" : j.nota < 6 ? "ruim" : ""}">${j.nota.toFixed(1)}</span>
-    </button></li>`;
+    </button>`;
   };
-  const linhaBanco = (j) => {
-    // goleiro só troca com goleiro
-    const bloqueado = !j.disponivel || j.entrando || t.restantes <= 0 || (sai && !podemTrocar(sai, j));
-    const combina = vagaSai && posicaoDe(j) === vagaSai;
-    const naVaga = vagaSai && !bloqueado && j.overall_por_posicao ? j.overall_por_posicao[vagaSai] : null;
-    return `<li><button class="av-jog ${sel.entra === j.nome ? "escolhido" : ""} ${combina ? "combina" : ""} ${j.entrando ? "entrando" : ""}"
-        data-entra="${j.nome}" ${bloqueado ? "disabled" : ""}>
-      <b class="av-num">${j.numero ?? "–"}</b>
-      <span class="av-nome">${j.nome}${j.entrando ? " <small>entra no " + prox + "</small>" : !j.disponivel ? " <small>já saiu</small>" : ""}</span>
-      <small class="av-pos">${sigla(posicaoDe(j))}</small>
-      <span class="av-ovr ${naVaga != null && naVaga < j.overall ? "perde" : ""}"
-        title="${naVaga != null ? `rende ${naVaga} de ${vagaSai} (overall ${j.overall})` : `overall ${j.overall}`}">${naVaga ?? j.overall}</span>
+
+  const cartaoBanco = (j) => {
+    const naVaga = vagaSel && j.overall_por_posicao ? j.overall_por_posicao[vagaSel] : null;
+    const bloqueado = !j.disponivel || t.restantes <= 0;
+    return `<button type="button" class="gt-res ${sel?.nome === j.nome ? "escolhido" : ""}
+        ${vagaSel && posicaoDe(j) === vagaSel ? "combina" : ""}" data-banco="${j.nome}" ${bloqueado ? "disabled" : ""}
+        title="${j.saiu ? "já saiu" : !j.disponivel ? "já saiu e não volta" : j.nome}">
+      <b class="gt-ovr ${naVaga != null && naVaga < j.overall ? "perde" : ""}">${naVaga ?? j.overall}</b>
+      <small class="gt-pos">${sigla(posicaoDe(j))}</small>
+      <span class="gt-nome">${j.nome}</span>
       ${energia(j.energia)}
-    </button></li>`;
+    </button>`;
   };
+
+  const ficha = escolhido ? (() => {
+    const a = doApito(escolhido.nome);
+    return `<div class="gt-ficha">
+      <header>${camisa(jogo.meu, { numero: escolhido.numero, tamanho: 44 })}
+        <div><strong>${escolhido.nome}</strong>
+          <small>${posicaoDe(escolhido)} · OVR ${escolhido.overall}${escolhido.vaga && escolhido.vaga !== posicaoDe(escolhido)
+            ? ` · rende <b>${escolhido.overall_vaga}</b> de ${sigla(escolhido.vaga)}` : ""}</small>
+          <small>Energia ${escolhido.energia}${escolhido.nota != null && sel.lado === "campo" ? ` · nota ${escolhido.nota.toFixed(1)}` : ""}</small></div>
+      </header>
+      ${barrasAtributos(a.atributos)}
+      <p class="gt-dica">${sel.lado === "campo"
+        ? escolhido.expulso
+          ? "Expulso: não sai, mas a vaga dele pode ir para outro lugar. Toque em alguém em campo para trocar."
+          : "Toque em outro em campo para trocarem de posição, ou num reserva para a substituição."
+        : "Toque em quem sai, em campo."}</p>
+    </div>`;
+  })() : `<div class="gt-ficha vazio"><p class="gt-dica">Toque num jogador para ver a ficha. Depois, em outro:
+      <b>dois em campo</b> trocam de posição; <b>campo e banco</b>, substituição.</p></div>`;
+
+  const pendentes = t.validas.length
+    ? `<ol class="gt-pendentes">${t.validas.map((m, i) =>
+        `<li><span>${descrever(m)}</span>
+          <button type="button" class="secondary outline" data-desfazer="${i}" aria-label="Desfazer">${icone("nao")}</button></li>`
+      ).join("")}</ol>`
+    : `<p class="gt-dica">Nenhuma mudança pendente.</p>`;
 
   $("av-painel").innerHTML = `
     <div class="av-painel-topo">
       ${icone("prancheta")} <strong>${jogo.minuto === 45 ? "Intervalo" : `Pausado · ${relogio(jogo.minuto)}`}</strong>
-      <span>As mudanças valem a partir do ${prox}</span>
+      <span>Gerenciar time · as mudanças valem a partir do ${prox}</span>
       <button id="av-retomar">${icone("play")} Retomar</button>
     </div>
     <div class="av-tatica">
@@ -331,63 +443,110 @@ function renderPainel() {
         </select>
       </label>
     </div>
-    <div class="av-trocas">
-      <div>
-        <h4>Em campo <small>toque em quem sai</small></h4>
-        <ul>${t.em_campo.map(linhaCampo).join("")}</ul>
+    <div class="gt-grade">
+      <div class="gt-campo" aria-label="O seu time em campo">
+        <svg class="gt-marcas" viewBox="0 0 68 100" preserveAspectRatio="none" aria-hidden="true">
+          <rect x="1" y="1" width="66" height="98"/><line x1="1" y1="50" x2="67" y2="50"/>
+          <circle cx="34" cy="50" r="8"/><rect x="14" y="83" width="40" height="16"/><rect x="25" y="93" width="18" height="6"/>
+          <rect x="14" y="1" width="40" height="16"/>
+        </svg>
+        ${t.em_campo.map(camisaCampo).join("")}
       </div>
-      <div>
-        <h4>Banco <small>${t.restantes > 0 ? `${t.restantes} ${t.restantes === 1 ? "troca restante" : "trocas restantes"}` : "sem trocas"}</small></h4>
-        <ul>${t.banco.length ? t.banco.map(linhaBanco).join("") : `<li class="vazio">Sem reservas.</li>`}</ul>
+      <div class="gt-lado">
+        ${ficha}
+        <h4 class="av-tatica-rotulo">Mudanças desta pausa</h4>
+        ${pendentes}
+        ${t.caiu ? `<p class="av-painel-msg erro">Uma mudança caiu: ${t.caiu}.</p>` : ""}
+        <p class="av-painel-acoes">
+          <button id="av-confirmar" ${temPendentes() ? "" : "disabled"}>${icone("ok")} Confirmar</button>
+          <button id="av-desfazer-tudo" class="secondary outline" ${jogo.pendentes.length ? "" : "disabled"}>Desfazer tudo</button>
+        </p>
+        <span id="av-painel-msg" class="av-painel-msg" role="status"></span>
       </div>
     </div>
-    <p class="av-painel-acoes">
-      <button id="av-trocar" ${sel.sai && sel.entra ? "" : "disabled"}>${icone("troca")}
-        ${sel.sai && sel.entra ? `Sai ${sel.sai}, entra ${sel.entra}` : "Escolha quem sai e quem entra"}</button>
-      <span id="av-painel-msg" class="av-painel-msg" role="status"></span>
-    </p>`;
+    <div class="gt-banco">
+      <h4 class="av-tatica-rotulo">Reservas <small>${t.restantes > 0
+        ? `${t.restantes} ${t.restantes === 1 ? "substituição restante" : "substituições restantes"}`
+        : "sem substituições"}</small></h4>
+      <div class="gt-reservas">${t.banco.length ? t.banco.map(cartaoBanco).join("") : `<p class="vazio">Sem reservas.</p>`}</div>
+    </div>`;
   $("av-painel").hidden = false;
 
+  const painel = $("av-painel");
   $("av-retomar").addEventListener("click", retomar);
-  $("av-painel").querySelectorAll("[data-tatica]").forEach((b) =>
+  painel.querySelectorAll("[data-tatica]").forEach((b) =>
+    b.addEventListener("click", () => trocarUnica("tatica", b.dataset.tatica, t))
+  );
+  $("av-formacao").addEventListener("change", (e) => trocarUnica("formacao", e.target.value, t));
+  painel.querySelectorAll("[data-campo]").forEach((b) =>
+    b.addEventListener("click", () => tocar("campo", b.dataset.campo))
+  );
+  painel.querySelectorAll("[data-banco]").forEach((b) =>
+    b.addEventListener("click", () => tocar("banco", b.dataset.banco))
+  );
+  painel.querySelectorAll("[data-desfazer]").forEach((b) =>
     b.addEventListener("click", () => {
-      if (b.dataset.tatica !== t.tatica) decidir({ tatica: b.dataset.tatica });
+      jogo.pendentes = t.validas.filter((_, i) => i !== Number(b.dataset.desfazer));
+      jogo.selecao = null;
+      renderPainel();
     })
   );
-  $("av-formacao").addEventListener("change", (e) => {
-    if (e.target.value !== t.formacao) decidir({ formacao: e.target.value });
+  $("av-desfazer-tudo").addEventListener("click", () => {
+    jogo.pendentes = [];
+    jogo.selecao = null;
+    renderPainel();
   });
-  $("av-painel").querySelectorAll("[data-sai]").forEach((b) =>
-    b.addEventListener("click", () => {
-      jogo.selecao.sai = jogo.selecao.sai === b.dataset.sai ? null : b.dataset.sai;
-      renderPainel();
-    })
-  );
-  $("av-painel").querySelectorAll("[data-entra]").forEach((b) =>
-    b.addEventListener("click", () => {
-      jogo.selecao.entra = jogo.selecao.entra === b.dataset.entra ? null : b.dataset.entra;
-      renderPainel();
-    })
-  );
-  $("av-trocar").addEventListener("click", () =>
-    decidir({ sai: jogo.selecao.sai, entra: jogo.selecao.entra })
-  );
+  $("av-confirmar").addEventListener("click", confirmar);
 }
 
-// manda a decisão; o servidor devolve a partida refeita do minuto seguinte
-// em diante (o que já passou não muda)
-async function decidir(mudanca) {
+// tática e formação: vale a última escolhida (voltar à de agora desfaz)
+function trocarUnica(chave, valor, t) {
+  const time = jogo.momento.clubes.find((c) => c.clube === jogo.meu);
+  jogo.pendentes = t.validas.filter((m) => !(chave in m));
+  if (valor !== time[chave]) jogo.pendentes.push({ [chave]: valor });
+  renderPainel();
+}
+
+// o segundo toque decide: campo + campo = troca de posição; campo + banco =
+// substituição; o mesmo de novo solta
+function tocar(lado, nome) {
+  const sel = jogo.selecao;
+  if (!sel || (sel.lado === lado && sel.nome === nome) || (sel.lado === "banco" && lado === "banco")) {
+    jogo.selecao = sel && sel.nome === nome ? null : { lado, nome };
+    renderPainel();
+    return;
+  }
+  const mudanca = lado === "campo" && sel.lado === "campo"
+    ? { posicoes: [sel.nome, nome] }
+    : lado === "banco" ? { sai: sel.nome, entra: nome } : { sai: nome, entra: sel.nome };
+  const t = meuTimeAgora();
+  const motivo = aplicar(t, mudanca);
+  jogo.selecao = null;
+  if (motivo) {
+    renderPainel();
+    $("av-painel-msg").textContent = `Não dá: ${motivo}.`;
+    $("av-painel-msg").classList.add("erro");
+    return;
+  }
+  jogo.pendentes = [...meuTimeAgora().validas, mudanca];
+  renderPainel();
+}
+
+// manda as mudanças da pausa juntas; o servidor devolve a partida refeita do
+// minuto seguinte em diante (o que já passou não muda)
+async function confirmar() {
+  const mudancas = meuTimeAgora().validas;
   const msg = $("av-painel-msg");
-  msg.textContent = "Passando a instrução…";
+  msg.textContent = "Passando as instruções…";
   msg.classList.remove("erro");
   $("av-painel").querySelectorAll("button").forEach((b) => (b.disabled = true));
   let t = null;
   let erro = null;
   try {
-    const resp = await fetch(`/simulacoes/${estado.simId}/transmissao/decisoes`, {
-      method: "POST",
+    const resp = await fetch(`/simulacoes/${estado.simId}/transmissao/pausa`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ minuto: jogo.minuto + 1, ...mudanca }),
+      body: JSON.stringify({ minuto: jogo.minuto + 1, mudancas }),
     });
     const corpo = await resp.json();
     if (resp.ok) t = corpo;
@@ -395,23 +554,24 @@ async function decidir(mudanca) {
   } catch (e) {
     erro = `Sem resposta do servidor (${e.message})`;
   }
-  if (!jogo) return;
+  if (!jogo) return false;
   if (!t) {
     renderPainel();
     $("av-painel-msg").textContent = erro;
     $("av-painel-msg").classList.add("erro");
-    return;
+    return false;
   }
   jogo.minutos = t.minutos;
   jogo.eventos = t.eventos;
   jogo.decisoes = t.decisoes;
-  jogo.selecao = { sai: null, entra: null };
+  jogo.pendentes = mudancas;
+  jogo.confirmadas = JSON.stringify(mudancas);
+  jogo.selecao = null;
   renderPainel();
-  $("av-painel-msg").textContent = mudanca.tatica
-    ? "Instrução passada: o time muda a postura no próximo lance."
-    : mudanca.formacao
-      ? `O time passa ao ${mudanca.formacao}. Para mudar quem joga, faça substituições.`
-      : `${mudanca.entra} se aquece na beira do campo.`;
+  $("av-painel-msg").textContent = mudancas.length
+    ? "Instruções passadas: valem no próximo lance."
+    : "Tudo desfeito: o time segue como estava.";
+  return true;
 }
 
 // ---------- fim ----------
@@ -695,6 +855,16 @@ function trocarNoCampo(e) {
   peca.classList.remove("entrou");
   void peca.offsetWidth;
   peca.classList.add("entrou");
+}
+
+// troca de posição (v1.7): os dois bonecos trocam de lugar no campo
+function trocarPosicoesNoCampo(a, b) {
+  const pa = acharPeca(a);
+  const pb = acharPeca(b);
+  if (!pa || !pb) return;
+  for (const k of ["x", "vaga"]) [pa.dataset[k], pb.dataset[k]] = [pb.dataset[k], pa.dataset[k]];
+  [pa.style.left, pb.style.left] = [pb.style.left, pa.style.left];
+  [pa.style.top, pb.style.top] = [pb.style.top, pa.style.top];
 }
 
 function marcarExpulso(nome) {

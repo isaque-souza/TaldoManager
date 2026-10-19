@@ -911,6 +911,20 @@ class Partida:
                 # campo são os mesmos — quem joga muda por substituição
                 clube.formacao = decisao["formacao"]
                 continue
+            if "posicoes" in decisao:
+                # dois em campo trocam de vaga (v1.7); a do expulso também
+                # anda: o buraco vai para onde o técnico quiser
+                a, b = (
+                    next((j for j in clube.titulares if j.nome == n), None)
+                    for n in decisao["posicoes"]
+                )
+                if a is None or b is None or motivo_troca_de_posicao(
+                    a.posicao, a.vaga, b.posicao, b.vaga
+                ):
+                    continue
+                a.vaga, b.vaga = b.vaga, a.vaga
+                a.slot, b.slot = b.slot, a.slot
+                continue
             if self.motivo_substituicao_invalida(
                 clube, decisao["sai"], decisao["entra"]
             ):
@@ -970,7 +984,9 @@ class Partida:
                 "posicao": j.posicao,
                 "funcao": j.funcao,
                 "vaga": j.vaga,
+                "slot": j.slot,   # a vaga no desenho da formação (v1.7)
                 "overall_vaga": j.overall_em_campo(),
+                "overall_por_posicao": j.overall_por_posicao(),   # v1.7
                 "overall": j.overall,
                 "energia": round(j.energia),
                 "amarelos": j.amarelos_partida,
@@ -1722,6 +1738,15 @@ class Partida:
 
         self.posse_c1 = round(peso1 / (peso1 + peso2) * 100)
         self.posse_c2 = 100 - self.posse_c1
+
+
+def motivo_troca_de_posicao(setor_a, vaga_a, setor_b, vaga_b):
+    """Dois em campo trocam de vaga (v1.7). O gol fica de fora: o motor
+    sabe quem é o goleiro pela posição dele, então nem o goleiro vai para a
+    linha nem alguém de linha vai para o gol. None se pode."""
+    if "Goleiro" in (setor_a, setor_b, vaga_a, vaga_b):
+        return "O goleiro fica no gol: a troca de posição é entre jogadores de linha"
+    return None
 
 
 def motivo_goleiro(setor_sai, setor_entra):

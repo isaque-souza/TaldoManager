@@ -1171,6 +1171,7 @@ class DecisaoAoVivo(BaseModel):
     formacao: str | None = None
     sai: str | None = None
     entra: str | None = None
+    posicoes: list[str] | None = None   # troca de posição (v1.7)
 
 
 class OutroJogo(BaseModel):
@@ -1197,14 +1198,28 @@ class Transmissao(BaseModel):
     desenhos: dict[str, list[dict]] = {}
 
 
-class DecisaoNova(BaseModel):
-    """Corpo do POST /simulacoes/{id}/transmissao/decisoes: a tática nova, a
-    formação nova OU uma substituição, valendo a partir de `minuto`."""
-    minuto: int = Field(ge=1)
+class MudancaNaPausa(BaseModel):
+    """Uma coisa só: a tática, a formação, uma substituição (`sai` e
+    `entra`) ou dois em campo trocando de vaga (`posicoes`, v1.7)."""
     tatica: Tatica | None = None
     formacao: str | None = None
     sai: str | None = None
     entra: str | None = None
+    posicoes: list[str] | None = None
+
+
+class DecisaoNova(MudancaNaPausa):
+    """Corpo do POST /simulacoes/{id}/transmissao/decisoes: uma mudança a
+    mais, valendo a partir de `minuto`."""
+    minuto: int = Field(ge=1)
+
+
+class PausaNova(BaseModel):
+    """Corpo do PUT /simulacoes/{id}/transmissao/pausa (v1.7): todas as
+    mudanças da pausa, na ordem; trocam as já marcadas para `minuto` (vazia
+    desfaz todas)."""
+    minuto: int = Field(ge=1)
+    mudancas: list[MudancaNaPausa] = []
 
 
 class JogadorEmCampo(BaseModel):
@@ -1213,7 +1228,9 @@ class JogadorEmCampo(BaseModel):
     posicao: str
     funcao: str | None = None          # v1.3
     vaga: str | None = None            # posição em que está jogando
+    slot: int | None = None            # a vaga no desenho da formação (v1.7)
     overall_vaga: int | None = None    # o overall nela
+    overall_por_posicao: dict[str, int] = {}   # para trocar de posição (v1.7)
     overall: int
     energia: int
     amarelos: int

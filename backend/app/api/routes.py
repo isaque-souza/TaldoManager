@@ -8,6 +8,7 @@ from app.api.schemas import (
     ClubeComElenco,
     ContratoJogador,
     DecisaoNova,
+    PausaNova,
     DecisaoSalva,
     ClubeDetalhe,
     ClubeSeed,
@@ -895,7 +896,28 @@ def decidir_na_partida(simulacao_id: int, decisao: DecisaoNova):
         dados = transmissao_service.decidir(
             simulacao_id, decisao.minuto,
             tatica=decisao.tatica, sai=decisao.sai, entra=decisao.entra,
-            formacao=decisao.formacao,
+            formacao=decisao.formacao, posicoes=decisao.posicoes,
+        )
+    except (TemporadaConcluida, TransmissaoInvalida) as e:
+        raise _erro_transmissao(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.put(
+    "/simulacoes/{simulacao_id}/transmissao/pausa",
+    response_model=Transmissao,
+    tags=["simulacoes"],
+)
+def confirmar_pausa(simulacao_id: int, pausa: PausaNova):
+    """Confirma as mudanças da pausa (v1.7): tática, formação,
+    substituições e trocas de posição, na ordem, valendo a partir de
+    `minuto`. Trocam as já marcadas para ele; vazia desfaz todas."""
+    try:
+        dados = transmissao_service.pausa(
+            simulacao_id, pausa.minuto,
+            [m.model_dump(exclude_none=True) for m in pausa.mudancas],
         )
     except (TemporadaConcluida, TransmissaoInvalida) as e:
         raise _erro_transmissao(e) from e
