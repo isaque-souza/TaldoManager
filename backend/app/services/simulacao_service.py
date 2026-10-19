@@ -205,6 +205,7 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
             "torcedores": clube.torcedores,
             "torcedores_inicial": clube.torcedores_inicial,
             "despesa_marketing": clube.despesa_marketing,
+            "torcedores_base": clube.torcedores_base,
         })
 
         for jogador in clube.jogadores:

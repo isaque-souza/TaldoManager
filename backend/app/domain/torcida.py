@@ -38,6 +38,14 @@ POR_POSICAO = (
 
 MINIMO = 50_000    # a torcida mais fiel não vai embora
 
+# freio (v1.4): no fim da temporada a torcida volta 15% do caminho (em
+# escala log) até o tamanho natural do clube, que cresce 5% a cada título.
+# Sem ele, a vantagem se acumulava sem limite: em 12 temporadas a liga
+# dobrava (87 → 171 mi) e o Galaxy ia de 11 a 56 mi. Com ele, a liga fica
+# em ~108 mi e uma dinastia ainda dobra a torcida (11 → 25 mi)
+VOLTA_AO_NATURAL = 0.15
+TITULO_NATURAL = 0.05
+
 # vender para o rival (v1.4): a torcida não perdoa — e a do rival comemora.
 # Quanto mais importante o jogador, maior a revolta
 VENDA_RIVAL = -0.02
@@ -166,10 +174,25 @@ def variacao_da_posicao(posicao):
 
 
 def fim_de_temporada(classificacao):
-    """Pela posição final e pelos ídolos do elenco (v1.4). Chamar depois de
-    `fama.fim_de_temporada`."""
+    """Pela posição final e pelos ídolos do elenco, e depois o freio rumo ao
+    tamanho natural (v1.4). Chamar depois de `fama.fim_de_temporada`."""
     for posicao, clube in enumerate(classificacao, start=1):
         _aplicar(clube, variacao_da_posicao(posicao) + fama.bonus_torcida(clube))
+        if posicao == 1:
+            clube.torcedores_base = round(clube.torcedores_base * (1 + TITULO_NATURAL))
+        voltar_ao_natural(clube)
+
+
+def voltar_ao_natural(clube):
+    """A torcida anda `VOLTA_AO_NATURAL` do caminho (em log) até o tamanho
+    natural: quem está acima perde um pouco, quem está abaixo recupera.
+    Sem tamanho natural registrado (clubes montados à mão), nada muda."""
+    base = clube.torcedores_base
+    if base <= 0 or clube.torcedores <= 0:
+        return
+    log = math.log(clube.torcedores)
+    log -= VOLTA_AO_NATURAL * (log - math.log(base))
+    clube.torcedores = max(MINIMO, round(math.exp(log)))
 
 
 def mando_de_campo(torcedores):
