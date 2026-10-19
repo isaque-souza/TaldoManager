@@ -136,6 +136,42 @@ export function blocoEmprestado(f, rodada) {
   </div>`;
 }
 
+// emprestar um jogador do técnico (na Central do Elenco): os clubes
+// interessados em cada duração desta janela, com os termos deles
+export function blocoEmprestar(f) {
+  const e = f.emprestar;
+  if (!e) return "";
+  const titulo = `<h4 class="secao">${icone("acordo")} Emprestar</h4>`;
+  if (e.bloqueio) {
+    return `<div class="el-emprestar">${titulo}<small class="bloqueio">${icone("cadeado")} ${e.bloqueio}</small></div>`;
+  }
+  const duracoes = e.duracoes.map((d) => {
+    const quem = d.propostas.length
+      ? d.propostas.map((p) => `<li>
+          <span><b>${p.clube}</b><br><small>taxa ${dinheiro(p.taxa)} · banca ${p.parte_salario}% do salário</small>
+            ${p.seria_titular ? `<span class="chip chip-perto" title="Jogando, ele evolui">Seria titular</span>` : ""}</span>
+          <button class="transf secondary" data-acao="ceder" data-id="${f.jogador_id}"
+            data-clube="${p.clube}" data-duracao="${d.duracao}">Emprestar</button></li>`).join("")
+      : `<li><small class="bloqueio">Nenhum clube interessado.</small></li>`;
+    return `<p class="el-emprestar-dur">${DURACAO_EMP[d.duracao]} (volta na rodada ${d.volta})</p><ul>${quem}</ul>`;
+  }).join("");
+  return `<div class="el-emprestar">${titulo}${duracoes}
+    <small class="bloqueio">O contrato segue com você; o clube de lá paga a parte dele do salário.</small></div>`;
+}
+
+async function cederEmprestado(jogadorId, clube, duracao) {
+  const r = await postarMercado(
+    `/simulacoes/${estado.simId}/emprestimos/ceder`, { jogador_id: jogadorId, clube, duracao },
+    "Emprestando…", { onde: "r-contrato-msg" },
+  );
+  if (!r) return;
+  const e = r.emprestimo;
+  avisoMercado(`${icone("acordo")} ${e.jogador} foi emprestado ao ${e.para_clube}, ${DURACAO_EMP[e.duracao]}:
+    entram ${dinheiro(e.taxa)} e eles pagam ${e.parte_salario}% do salário.`, false, "r-contrato-msg");
+  carregarCaixa();
+  return carregarProximaRodada();   // elenco e escalação mudaram
+}
+
 // a taxa sugerida acompanha a duração e a parte do salário escolhidas
 function ligarEmprestimo(container) {
   container.querySelectorAll(".tr-emprestimo[data-taxas]").forEach((box) => {
@@ -230,6 +266,7 @@ export function cliqueMercado(botao) {
           taxa: Number(campo("taxa").value), opcao: campo("opcao").checked };
     return pedirEmprestimo(id, corpo);
   }
+  if (acao === "ceder") return cederEmprestado(id, botao.dataset.clube, botao.dataset.duracao);
   if (acao === "opcao") {
     const onde = botao.closest('[data-painel="elenco"]') ? "r-contrato-msg" : "r-mercado-msg";
     return exercerOpcao(Number(botao.dataset.emprestimo), onde);

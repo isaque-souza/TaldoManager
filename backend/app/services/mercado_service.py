@@ -439,6 +439,7 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
         janela = _Janela(ctx)
         ids, aberta, fechada = janela.ids, janela.aberta, janela.fechada
 
+        from app.services.emprestimo_service import interessados   # evita import circular
         recebidas = _ofertas_da_janela(ctx)
         elenco = []
         for j in sorted(alvo.jogadores, key=lambda j: -j.overall):
@@ -453,6 +454,8 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
                 "rescisao": mercado.rescisao(j),
                 "dispensa_bloqueada": mercado.motivo_dispensa_bloqueada(alvo, j),
                 **_papel(j),
+                # emprestar à CPU (v1.7): só os que são do clube
+                "emprestar": None if j.emprestimo else interessados(ctx, j),
             })
 
         disponiveis = []
