@@ -4609,5 +4609,1262 @@
             "Centroavante",
             "Meia-atacante"
         ]
+    },
+    {
+        "id": 361,
+        "nome": "Noah Pereira",
+        "idade": 18,
+        "posicao": "Atacante",
+        "overall": 67,
+        "potencial": 76,
+        "contrato_anos": 3,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 362,
+        "nome": "Francesco Mendes",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 80,
+        "contrato_anos": 1,
+        "multa_rescisoria": 2600000,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Volante"
+        ]
+    },
+    {
+        "id": 363,
+        "nome": "Gustavo Rodriguez",
+        "idade": 20,
+        "posicao": "Defesa",
+        "overall": 83,
+        "potencial": 96,
+        "contrato_anos": 5,
+        "multa_rescisoria": 13700000,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 364,
+        "nome": "Francesco Brown",
+        "idade": 20,
+        "posicao": "Goleiro",
+        "overall": 76,
+        "potencial": 87,
+        "contrato_anos": 3,
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 365,
+        "nome": "Arthur Gomes",
+        "idade": 28,
+        "posicao": "Defesa",
+        "overall": 78,
+        "potencial": 80,
+        "contrato_anos": 3,
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "id": 366,
+        "nome": "João Perez",
+        "idade": 24,
+        "posicao": "Goleiro",
+        "overall": 80,
+        "potencial": 83,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 367,
+        "nome": "Thiago Almeida",
+        "idade": 20,
+        "posicao": "Meio-Campo",
+        "overall": 80,
+        "potencial": 94,
+        "contrato_anos": 1,
+        "multa_rescisoria": 11600000,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 368,
+        "nome": "Harry Dubois",
+        "idade": 29,
+        "posicao": "Meio-Campo",
+        "overall": 86,
+        "potencial": 86,
+        "contrato_anos": 2,
+        "multa_rescisoria": 25600000,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 369,
+        "nome": "Giovanni Lima",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 84,
+        "potencial": 84,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 370,
+        "nome": "Matheus Ribeiro",
+        "idade": 26,
+        "posicao": "Atacante",
+        "overall": 81,
+        "potencial": 82,
+        "contrato_anos": 3,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 371,
+        "nome": "Harry Brown",
+        "idade": 29,
+        "posicao": "Meio-Campo",
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 5,
+        "multa_rescisoria": 4300000,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 372,
+        "nome": "Jack Fernandez",
+        "idade": 23,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 85,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 373,
+        "nome": "Jack Araujo",
+        "idade": 25,
+        "posicao": "Atacante",
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 5,
+        "multa_rescisoria": 1600000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ]
+    },
+    {
+        "id": 374,
+        "nome": "Arthur Dubois",
+        "idade": 19,
+        "posicao": "Goleiro",
+        "overall": 74,
+        "potencial": 84,
+        "contrato_anos": 4,
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 375,
+        "nome": "Jack Wilson",
+        "idade": 22,
+        "posicao": "Defesa",
+        "overall": 69,
+        "potencial": 77,
+        "contrato_anos": 3,
+        "multa_rescisoria": 1000000,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia central",
+            "Ponta"
+        ]
+    },
+    {
+        "id": 376,
+        "nome": "Enzo Silva",
+        "idade": 25,
+        "posicao": "Goleiro",
+        "overall": 77,
+        "potencial": 78,
+        "contrato_anos": 4,
+        "multa_rescisoria": 3700000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 377,
+        "nome": "Noah Bianchi",
+        "idade": 17,
+        "posicao": "Meio-Campo",
+        "overall": 83,
+        "potencial": 96,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Ponta"
+        ]
+    },
+    {
+        "id": 378,
+        "nome": "João Walker",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 79,
+        "potencial": 79,
+        "contrato_anos": 4,
+        "multa_rescisoria": 5500000,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Meia-atacante",
+            "Volante"
+        ]
+    },
+    {
+        "id": 379,
+        "nome": "Caio Almeida",
+        "idade": 35,
+        "posicao": "Defesa",
+        "overall": 81,
+        "potencial": 81,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "id": 380,
+        "nome": "Jack Moretti",
+        "idade": 18,
+        "posicao": "Atacante",
+        "overall": 88,
+        "potencial": 99,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia-atacante"
+        ]
+    },
+    {
+        "id": 381,
+        "nome": "Felipe Martins",
+        "idade": 23,
+        "posicao": "Meio-Campo",
+        "overall": 68,
+        "potencial": 74,
+        "contrato_anos": 5,
+        "multa_rescisoria": null,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 382,
+        "nome": "Matheus Rocha",
+        "idade": 18,
+        "posicao": "Meio-Campo",
+        "overall": 72,
+        "potencial": 78,
+        "contrato_anos": 4,
+        "multa_rescisoria": null,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Meia central"
+        ]
+    },
+    {
+        "id": 383,
+        "nome": "Thiago Souza",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 71,
+        "potencial": 74,
+        "contrato_anos": 2,
+        "multa_rescisoria": 1200000,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "id": 384,
+        "nome": "Noah Lima",
+        "idade": 18,
+        "posicao": "Goleiro",
+        "overall": 75,
+        "potencial": 81,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 385,
+        "nome": "Enzo Perez",
+        "idade": 19,
+        "posicao": "Atacante",
+        "overall": 76,
+        "potencial": 84,
+        "contrato_anos": 1,
+        "multa_rescisoria": 4200000,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ]
+    },
+    {
+        "id": 386,
+        "nome": "Giovanni Pereira",
+        "idade": 32,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 78,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Meia-atacante"
+        ]
+    },
+    {
+        "id": 387,
+        "nome": "Felipe Silva",
+        "idade": 21,
+        "posicao": "Atacante",
+        "overall": 74,
+        "potencial": 76,
+        "contrato_anos": 4,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 388,
+        "nome": "Felipe Rocha",
+        "idade": 18,
+        "posicao": "Goleiro",
+        "overall": 73,
+        "potencial": 84,
+        "contrato_anos": 4,
+        "multa_rescisoria": 2800000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 389,
+        "nome": "Diego Souza",
+        "idade": 28,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 74,
+        "contrato_anos": 3,
+        "multa_rescisoria": 1200000,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Meia central"
+        ]
+    },
+    {
+        "id": 390,
+        "nome": "Caio Martin",
+        "idade": 19,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 87,
+        "contrato_anos": 2,
+        "multa_rescisoria": 3900000,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
+    },
+    {
+        "id": 391,
+        "nome": "Carlos Almeida",
+        "idade": 19,
+        "posicao": "Goleiro",
+        "overall": 80,
+        "potencial": 92,
+        "contrato_anos": 3,
+        "multa_rescisoria": 9300000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 392,
+        "nome": "Bruno Oliveira",
+        "idade": 26,
+        "posicao": "Atacante",
+        "overall": 77,
+        "potencial": 80,
+        "contrato_anos": 2,
+        "multa_rescisoria": 3600000,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 393,
+        "nome": "Carlos Bianchi",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 79,
+        "potencial": 80,
+        "contrato_anos": 3,
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 394,
+        "nome": "Jack Ribeiro",
+        "idade": 17,
+        "posicao": "Meio-Campo",
+        "overall": 81,
+        "potencial": 91,
+        "contrato_anos": 3,
+        "multa_rescisoria": null,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Ponta"
+        ]
+    },
+    {
+        "id": 395,
+        "nome": "Pablo Brown",
+        "idade": 26,
+        "posicao": "Meio-Campo",
+        "overall": 77,
+        "potencial": 77,
+        "contrato_anos": 5,
+        "multa_rescisoria": 2300000,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 396,
+        "nome": "João Rossi",
+        "idade": 35,
+        "posicao": "Meio-Campo",
+        "overall": 67,
+        "potencial": 67,
+        "contrato_anos": 1,
+        "multa_rescisoria": 500000,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 397,
+        "nome": "Enzo Rodriguez",
+        "idade": 18,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 84,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 398,
+        "nome": "Lucas Gomes",
+        "idade": 22,
+        "posicao": "Defesa",
+        "overall": 72,
+        "potencial": 80,
+        "contrato_anos": 3,
+        "multa_rescisoria": 2100000,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 399,
+        "nome": "Alejandro Bianchi",
+        "idade": 27,
+        "posicao": "Atacante",
+        "overall": 68,
+        "potencial": 71,
+        "contrato_anos": 5,
+        "multa_rescisoria": 700000,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 400,
+        "nome": "Oliver Oliveira",
+        "idade": 24,
+        "posicao": "Goleiro",
+        "overall": 71,
+        "potencial": 75,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 401,
+        "nome": "Antoine Perez",
+        "idade": 20,
+        "posicao": "Atacante",
+        "overall": 75,
+        "potencial": 88,
+        "contrato_anos": 3,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante"
+        ]
+    },
+    {
+        "id": 402,
+        "nome": "Enzo Dubois",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 67,
+        "potencial": 69,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "id": 403,
+        "nome": "Antoine Almeida",
+        "idade": 22,
+        "posicao": "Meio-Campo",
+        "overall": 72,
+        "potencial": 79,
+        "contrato_anos": 4,
+        "multa_rescisoria": null,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 404,
+        "nome": "Lucas Barbosa",
+        "idade": 26,
+        "posicao": "Meio-Campo",
+        "overall": 72,
+        "potencial": 73,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 405,
+        "nome": "Francesco Silva",
+        "idade": 28,
+        "posicao": "Goleiro",
+        "overall": 75,
+        "potencial": 78,
+        "contrato_anos": 5,
+        "multa_rescisoria": 2800000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 406,
+        "nome": "Noah Martins",
+        "idade": 19,
+        "posicao": "Atacante",
+        "overall": 75,
+        "potencial": 88,
+        "contrato_anos": 4,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 407,
+        "nome": "Bruno Martins",
+        "idade": 22,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 79,
+        "contrato_anos": 1,
+        "multa_rescisoria": 3200000,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 408,
+        "nome": "Miguel Ferreira",
+        "idade": 33,
+        "posicao": "Meio-Campo",
+        "overall": 68,
+        "potencial": 68,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Meia central"
+        ]
+    },
+    {
+        "id": 409,
+        "nome": "Lucas Silva",
+        "idade": 22,
+        "posicao": "Goleiro",
+        "overall": 72,
+        "potencial": 80,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 410,
+        "nome": "Pierre Mendes",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 77,
+        "potencial": 79,
+        "contrato_anos": 5,
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 411,
+        "nome": "Leonardo Almeida",
+        "idade": 23,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 81,
+        "contrato_anos": 5,
+        "multa_rescisoria": 2900000,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 412,
+        "nome": "Rodrigo Fernandez",
+        "idade": 18,
+        "posicao": "Goleiro",
+        "overall": 66,
+        "potencial": 79,
+        "contrato_anos": 2,
+        "multa_rescisoria": 600000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 413,
+        "nome": "Felipe Mendes",
+        "idade": 19,
+        "posicao": "Atacante",
+        "overall": 65,
+        "potencial": 80,
+        "contrato_anos": 3,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 414,
+        "nome": "Carlos Martin",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 77,
+        "contrato_anos": 1,
+        "multa_rescisoria": 1200000,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 415,
+        "nome": "Caio Costa",
+        "idade": 29,
+        "posicao": "Defesa",
+        "overall": 70,
+        "potencial": 73,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Ponta"
+        ]
+    },
+    {
+        "id": 416,
+        "nome": "Bruno Lopez",
+        "idade": 23,
+        "posicao": "Meio-Campo",
+        "overall": 77,
+        "potencial": 85,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Ponta"
+        ]
+    },
+    {
+        "id": 417,
+        "nome": "Juan Santos",
+        "idade": 24,
+        "posicao": "Goleiro",
+        "overall": 74,
+        "potencial": 79,
+        "contrato_anos": 3,
+        "multa_rescisoria": 2600000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 418,
+        "nome": "Louis Rodriguez",
+        "idade": 19,
+        "posicao": "Defesa",
+        "overall": 68,
+        "potencial": 77,
+        "contrato_anos": 4,
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ]
+    },
+    {
+        "id": 419,
+        "nome": "Gustavo Garcia",
+        "idade": 17,
+        "posicao": "Atacante",
+        "overall": 70,
+        "potencial": 79,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 420,
+        "nome": "Felipe Walker",
+        "idade": 19,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 91,
+        "contrato_anos": 5,
+        "multa_rescisoria": 10000000,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 421,
+        "nome": "Miguel Rocha",
+        "idade": 22,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 79,
+        "contrato_anos": 4,
+        "multa_rescisoria": 2000000,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 422,
+        "nome": "Pedro Souza",
+        "idade": 25,
+        "posicao": "Meio-Campo",
+        "overall": 69,
+        "potencial": 69,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 423,
+        "nome": "Noah Taylor",
+        "idade": 28,
+        "posicao": "Defesa",
+        "overall": 78,
+        "potencial": 80,
+        "contrato_anos": 1,
+        "multa_rescisoria": 4600000,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 424,
+        "nome": "Marco Silva",
+        "idade": 32,
+        "posicao": "Goleiro",
+        "overall": 65,
+        "potencial": 65,
+        "contrato_anos": 2,
+        "multa_rescisoria": 500000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 425,
+        "nome": "Bruno Brown",
+        "idade": 35,
+        "posicao": "Atacante",
+        "overall": 74,
+        "potencial": 74,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 426,
+        "nome": "Pedro Gomes",
+        "idade": 35,
+        "posicao": "Defesa",
+        "overall": 80,
+        "potencial": 80,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 427,
+        "nome": "Pablo Mendes",
+        "idade": 21,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 81,
+        "contrato_anos": 4,
+        "multa_rescisoria": null,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Ponta",
+            "Segundo atacante"
+        ]
+    },
+    {
+        "id": 428,
+        "nome": "Caio Rossi",
+        "idade": 19,
+        "posicao": "Atacante",
+        "overall": 77,
+        "potencial": 89,
+        "contrato_anos": 1,
+        "multa_rescisoria": 7700000,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 429,
+        "nome": "Liam Brown",
+        "idade": 30,
+        "posicao": "Goleiro",
+        "overall": 73,
+        "potencial": 73,
+        "contrato_anos": 4,
+        "multa_rescisoria": 700000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 430,
+        "nome": "Lucas Oliveira",
+        "idade": 17,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 88,
+        "contrato_anos": 2,
+        "multa_rescisoria": 7900000,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 431,
+        "nome": "Harry Perez",
+        "idade": 30,
+        "posicao": "Goleiro",
+        "overall": 68,
+        "potencial": 68,
+        "contrato_anos": 4,
+        "multa_rescisoria": 500000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 432,
+        "nome": "Leonardo Dubois",
+        "idade": 30,
+        "posicao": "Meio-Campo",
+        "overall": 71,
+        "potencial": 71,
+        "contrato_anos": 1,
+        "multa_rescisoria": 700000,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Meia central"
+        ]
+    },
+    {
+        "id": 433,
+        "nome": "Lucas Ferreira",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 71,
+        "potencial": 74,
+        "contrato_anos": 5,
+        "multa_rescisoria": 1000000,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 434,
+        "nome": "Harry Smith",
+        "idade": 19,
+        "posicao": "Atacante",
+        "overall": 72,
+        "potencial": 83,
+        "contrato_anos": 5,
+        "multa_rescisoria": 2500000,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 435,
+        "nome": "Carlos Barbosa",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 69,
+        "potencial": 71,
+        "contrato_anos": 2,
+        "multa_rescisoria": 700000,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 436,
+        "nome": "Rodrigo Ferreira",
+        "idade": 22,
+        "posicao": "Meio-Campo",
+        "overall": 70,
+        "potencial": 74,
+        "contrato_anos": 2,
+        "multa_rescisoria": 1400000,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 437,
+        "nome": "Diego Santos",
+        "idade": 17,
+        "posicao": "Atacante",
+        "overall": 73,
+        "potencial": 82,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia-atacante"
+        ]
+    },
+    {
+        "id": 438,
+        "nome": "Enzo Pereira",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 77,
+        "contrato_anos": 3,
+        "multa_rescisoria": null,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "id": 439,
+        "nome": "Miguel Fernandez",
+        "idade": 19,
+        "posicao": "Meio-Campo",
+        "overall": 77,
+        "potencial": 86,
+        "contrato_anos": 2,
+        "multa_rescisoria": 4700000,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 440,
+        "nome": "Diego Dubois",
+        "idade": 20,
+        "posicao": "Goleiro",
+        "overall": 70,
+        "potencial": 84,
+        "contrato_anos": 5,
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 441,
+        "nome": "Enzo Almeida",
+        "idade": 17,
+        "posicao": "Goleiro",
+        "overall": 73,
+        "potencial": 85,
+        "contrato_anos": 4,
+        "multa_rescisoria": 2100000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 442,
+        "nome": "Marco Oliveira",
+        "idade": 21,
+        "posicao": "Meio-Campo",
+        "overall": 70,
+        "potencial": 72,
+        "contrato_anos": 5,
+        "multa_rescisoria": null,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 443,
+        "nome": "João Johnson",
+        "idade": 29,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 73,
+        "contrato_anos": 5,
+        "multa_rescisoria": 1000000,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Meia-atacante",
+            "Ponta"
+        ]
+    },
+    {
+        "id": 444,
+        "nome": "Louis Barbosa",
+        "idade": 24,
+        "posicao": "Atacante",
+        "overall": 75,
+        "potencial": 79,
+        "contrato_anos": 5,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 445,
+        "nome": "Felipe Barbosa",
+        "idade": 21,
+        "posicao": "Defesa",
+        "overall": 70,
+        "potencial": 73,
+        "contrato_anos": 3,
+        "multa_rescisoria": 1500000,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 446,
+        "nome": "André Dubois",
+        "idade": 19,
+        "posicao": "Atacante",
+        "overall": 65,
+        "potencial": 75,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia-atacante"
+        ]
+    },
+    {
+        "id": 447,
+        "nome": "Juan Brown",
+        "idade": 22,
+        "posicao": "Meio-Campo",
+        "overall": 70,
+        "potencial": 73,
+        "contrato_anos": 4,
+        "multa_rescisoria": 1000000,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Ponta"
+        ]
+    },
+    {
+        "id": 448,
+        "nome": "Enzo Brown",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 67,
+        "potencial": 67,
+        "contrato_anos": 2,
+        "multa_rescisoria": null,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Volante"
+        ]
+    },
+    {
+        "id": 449,
+        "nome": "Thiago Costa",
+        "idade": 17,
+        "posicao": "Goleiro",
+        "overall": 65,
+        "potencial": 77,
+        "contrato_anos": 5,
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 450,
+        "nome": "Thiago Lima",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 67,
+        "potencial": 70,
+        "contrato_anos": 5,
+        "multa_rescisoria": 600000,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "id": 451,
+        "nome": "Alejandro Taylor",
+        "idade": 21,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 81,
+        "contrato_anos": 5,
+        "multa_rescisoria": null,
+        "funcao": "Meia-atacante",
+        "secundarias": []
+    },
+    {
+        "id": 452,
+        "nome": "Juan Garcia",
+        "idade": 28,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 76,
+        "contrato_anos": 4,
+        "multa_rescisoria": 2700000,
+        "funcao": "Zagueiro",
+        "secundarias": []
+    },
+    {
+        "id": 453,
+        "nome": "Luca Ribeiro",
+        "idade": 19,
+        "posicao": "Meio-Campo",
+        "overall": 65,
+        "potencial": 75,
+        "contrato_anos": 4,
+        "multa_rescisoria": null,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 454,
+        "nome": "Caio Lopez",
+        "idade": 26,
+        "posicao": "Goleiro",
+        "overall": 70,
+        "potencial": 71,
+        "contrato_anos": 1,
+        "multa_rescisoria": null,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 455,
+        "nome": "Giovanni Dubois",
+        "idade": 17,
+        "posicao": "Atacante",
+        "overall": 69,
+        "potencial": 75,
+        "contrato_anos": 4,
+        "multa_rescisoria": null,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Centroavante",
+            "Meia-atacante"
+        ]
+    },
+    {
+        "id": 456,
+        "nome": "Francesco Taylor",
+        "idade": 19,
+        "posicao": "Atacante",
+        "overall": 69,
+        "potencial": 76,
+        "contrato_anos": 2,
+        "multa_rescisoria": 1100000,
+        "funcao": "Ponta",
+        "secundarias": []
+    },
+    {
+        "id": 457,
+        "nome": "Alejandro Moretti",
+        "idade": 22,
+        "posicao": "Goleiro",
+        "overall": 65,
+        "potencial": 68,
+        "contrato_anos": 3,
+        "multa_rescisoria": 500000,
+        "funcao": "Goleiro",
+        "secundarias": []
+    },
+    {
+        "id": 458,
+        "nome": "Antoine Dubois",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 65,
+        "potencial": 65,
+        "contrato_anos": 4,
+        "multa_rescisoria": 500000,
+        "funcao": "Meia central",
+        "secundarias": []
+    },
+    {
+        "id": 459,
+        "nome": "Oliver Fernandez",
+        "idade": 22,
+        "posicao": "Defesa",
+        "overall": 65,
+        "potencial": 71,
+        "contrato_anos": 5,
+        "multa_rescisoria": 500000,
+        "funcao": "Lateral",
+        "secundarias": []
+    },
+    {
+        "id": 460,
+        "nome": "André Santos",
+        "idade": 19,
+        "posicao": "Meio-Campo",
+        "overall": 64,
+        "potencial": 69,
+        "contrato_anos": 5,
+        "multa_rescisoria": 500000,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Ponta"
+        ]
     }
 ]

@@ -51,7 +51,7 @@ def test_mercado_abre_antes_da_rodada_1_e_mostra_os_rivais():
     m = mercado_service.ver_mercado(sid)
     assert m["janela_aberta"] and m["rodada"] == 1
     assert m["rivais"] == ["Taldo City"]
-    assert len(m["elenco"]) == 18
+    assert len(m["elenco"]) == 23
     assert all(f["clube"] != clube for f in m["disponiveis"])
     assert all(f["rival"] == (f["clube"] == "Taldo City") for f in m["disponiveis"])
 

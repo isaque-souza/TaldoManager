@@ -99,7 +99,7 @@ def test_elenco_de_um_clube_do_seed():
     resp = client.get("/clubes/Taldo City")
     assert resp.status_code == 200
     corpo = resp.json()
-    assert len(corpo["elenco"]) == 18
+    assert len(corpo["elenco"]) == 23
     assert "4-3-3" in corpo["formacoes"]
 
     assert client.get("/clubes/Nao Existe").status_code == 404
@@ -168,7 +168,7 @@ def test_detalhe_do_clube():
 
     corpo = resp.json()
     assert corpo["clube"]["nome"] == campeao["clube"]
-    assert len(corpo["elenco"]) == 18
+    assert len(corpo["elenco"]) == 23
     assert len(corpo["jogos"]) == 38
 
     assert client.get(f"/simulacoes/{sid}/clubes/9999").status_code == 404

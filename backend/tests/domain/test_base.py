@@ -1,6 +1,6 @@
 import random
 
-from app.domain import mercado
+from app.domain import mercado, posicoes
 from app.domain.base import (
     COMPOSICAO_IDEAL,
     DESCONTO_OVERALL,
@@ -11,6 +11,7 @@ from app.domain.base import (
     quantos_sobem,
     subir_jovens,
 )
+from app.domain.jogador import Jogador
 from app.domain.nomes import NOMES, SOBRENOMES
 from scripts.data_loader import carregar_campeonato
 
@@ -21,12 +22,12 @@ def _clube(n_jogadores=18):
     return clube
 
 
-def test_quantos_sobem_completa_ate_18_com_minimo_de_1():
-    assert quantos_sobem(_clube(16)) == 2
-    assert quantos_sobem(_clube(18)) == 1      # sempre revela alguém
+def test_quantos_sobem_completa_ate_23_com_minimo_de_1():
+    assert quantos_sobem(_clube(21)) == 2
+    assert quantos_sobem(_clube(23)) == 1      # sempre revela alguém
 
-    cheio = _clube(18)
-    cheio.jogadores += cheio.jogadores[:7]     # 25 = ELENCO_MAX
+    cheio = _clube(23)
+    cheio.jogadores += cheio.jogadores[:2]     # 25 = ELENCO_MAX
     assert quantos_sobem(cheio) == 0
 
 
@@ -48,10 +49,11 @@ def test_posicao_carente_repoe_o_goleiro():
 def test_posicao_carente_empata_na_sorte_entre_as_carentes():
     # elenco exatamente na composição ideal: empate geral (déficit 0)
     clube = _clube()
-    ideal = []
-    for funcao, n in COMPOSICAO_IDEAL.items():
-        ideal += [j for j in clube.jogadores if j.funcao == funcao][:n]
-    clube.jogadores = ideal
+    clube.jogadores = [
+        Jogador(f"{funcao} {i}", 25, posicoes.SETOR[funcao], 70, funcao=funcao)
+        for funcao, n in COMPOSICAO_IDEAL.items()
+        for i in range(n)
+    ]
     vistas = {posicao_carente(clube, random.Random(s)) for s in range(40)}
     assert vistas == set(COMPOSICAO_IDEAL)
 
@@ -101,7 +103,7 @@ def test_subir_jovens_em_todos_os_clubes():
     assert len(camp.clubes[0].jogadores) == TAMANHO_ALVO
     assert all(len(c.jogadores) >= TAMANHO_ALVO for c in camp.clubes)
     assert all(m["tipo"] == "subiu_da_base" for m in movs)
-    assert len(movs) == 2 + 19              # 2 no desfalcado, 1 nos outros
+    assert len(movs) == 7 + 19              # 7 no desfalcado, 1 nos outros
     nomes = [j.nome for c in camp.clubes for j in c.jogadores]
     assert len(nomes) == len(set(nomes))    # nada repetido na liga
     assert len(camp.clubes[0].jogadores) <= mercado.ELENCO_MAX

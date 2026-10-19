@@ -13,13 +13,23 @@ def _forca_xi(clube):
     return statistics.mean(j.overall for j in titulares)
 
 
-def test_seed_tem_20_clubes_e_360_jogadores():
+def test_seed_tem_20_clubes_e_460_jogadores():
     jogadores = carregar_jogadores()
     clubes = carregar_clubes(jogadores)
 
     assert len(clubes) == 20
-    assert len(jogadores) == 360
-    assert all(len(c.jogadores) == 18 for c in clubes)
+    assert len(jogadores) == 460
+    assert all(len(c.jogadores) == 23 for c in clubes)
+
+
+def test_todo_clube_pode_vender_um_goleiro():
+    """v1.6: com 3 goleiros, o clube vende um e fica no mínimo do mercado."""
+    from app.domain import mercado
+
+    jogadores = carregar_jogadores()
+    for clube in carregar_clubes(jogadores):
+        goleiro = next(j for j in clube.jogadores if j.posicao == "Goleiro")
+        assert mercado.motivo_saida_bloqueada(clube, goleiro) is None
 
 
 def test_clubes_de_elite_sao_mais_fortes_que_os_fracos():

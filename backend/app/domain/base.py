@@ -12,11 +12,17 @@ from app.domain import mercado, posicoes
 from app.domain.jogador import Jogador
 from app.domain.nomes import NOMES, SOBRENOMES
 
-TAMANHO_ALVO = 18             # tamanho dos elencos da seed
+TAMANHO_ALVO = 23             # tamanho dos elencos da seed (v1.6)
 MINIMO_POR_TEMPORADA = 1      # todo clube revela pelo menos um jovem
-# o mínimo da seed (scripts/gerar_funcoes.py): o que a formação mais
-# exigente pede de cada posição, mais um goleiro reserva
-COMPOSICAO_IDEAL = {**posicoes.MINIMO_POR_POSICAO, "Goleiro": 2}
+# o elenco de 23 da seed (scripts/ampliar_elencos.py): cobre o que a formação
+# mais exigente pede de cada posição (posicoes.MINIMO_POR_POSICAO) e tem 3
+# goleiros, para o clube poder vender um sem cair abaixo de
+# mercado.GOLEIROS_MIN
+COMPOSICAO_IDEAL = {
+    "Goleiro": 3, "Zagueiro": 4, "Lateral": 3, "Volante": 2,
+    "Meia central": 3, "Meia-atacante": 2, "Ponta": 3,
+    "Segundo atacante": 1, "Centroavante": 2,
+}
 
 IDADE_MIN, IDADE_MAX = 16, 18
 # jovem ≈ média do elenco − 10. Com −15 a liga entrava numa espiral (o jovem
