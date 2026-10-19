@@ -80,6 +80,8 @@ def ficar_livre(jogador):
     jogador.assinar_contrato(0, jogador.salario_referencia(), None)
     jogador.temporadas_no_clube = 0
     jogador.a_venda = False
+    jogador.papel = None
+    jogador.humor = "contente"
 
 
 def dispensar(jogador, clube, livres):

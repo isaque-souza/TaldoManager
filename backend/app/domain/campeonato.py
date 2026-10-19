@@ -1,7 +1,7 @@
 import random
 
 from . import copa as copa_
-from . import estadio, fama, financas, torcida
+from . import estadio, fama, financas, papeis, torcida
 from .partida import Partida
 
 
@@ -57,6 +57,10 @@ class Campeonato:
             publicos[clube1.nome] = partida.publico
 
             if clube_usuario in (clube1.nome, clube2.nome):
+                # papel no elenco (v1.7): quem pode jogar ganha o jogo na conta
+                meu = clube1 if clube1.nome == clube_usuario else clube2
+                papeis.completar(meu)
+                papeis.contar_disponiveis(meu)
                 partida.decisoes = decisoes or []
                 partida.capturar_em = capturar_em
                 fora = random.getstate()
@@ -85,6 +89,10 @@ class Campeonato:
             estadio.avancar_obra(clube)
 
         self.jogar_copa()
+
+        # o humor do elenco do técnico anda a cada 5 rodadas (v1.7)
+        if clube_usuario and papeis.eh_checagem(self.rodada):
+            papeis.checar(next(c for c in self.clubes if c.nome == clube_usuario))
 
         self.rodada += 1
 

@@ -106,6 +106,10 @@ CREATE TABLE IF NOT EXISTS jogador (
     fama            INTEGER,                     -- v1.4; NULL em saves antigos
     temporadas_no_clube INTEGER,
     a_venda         INTEGER NOT NULL DEFAULT 0,  -- na lista de transferências (v1.7)
+    papel           TEXT,                        -- papel no elenco (v1.7); só o clube do técnico
+    humor           TEXT NOT NULL DEFAULT 'contente',
+    titularidades   INTEGER NOT NULL DEFAULT 0,  -- jogos como titular (liga)
+    jogos_disponivel INTEGER NOT NULL DEFAULT 0, -- jogos do clube em que podia jogar
     -- dispensado no meio da temporada (v1.7): está nos livres, mas a linha
     -- fica (lances e atuações apontam para ela); o clube_id é o do clube
     -- por onde jogou

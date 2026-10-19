@@ -112,6 +112,11 @@ _COLUNAS_NOVAS = {
         # lista de transferências e dispensa (v1.7)
         ("a_venda", "INTEGER NOT NULL DEFAULT 0"),
         ("livre", "INTEGER NOT NULL DEFAULT 0"),
+        # papel no elenco (v1.7)
+        ("papel", "TEXT"),
+        ("humor", "TEXT NOT NULL DEFAULT 'contente'"),
+        ("titularidades", "INTEGER NOT NULL DEFAULT 0"),
+        ("jogos_disponivel", "INTEGER NOT NULL DEFAULT 0"),
     ),
     # onde o técnico pôs cada titular no plano (v1.3), JSON
     "plano": (("posicionamento", "TEXT"),),

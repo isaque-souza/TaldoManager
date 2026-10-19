@@ -86,6 +86,12 @@ def avaliar_renovacao(jogador, clube, salario, anos, opcao_multa):
     validar(jogador, anos, opcao_multa)
     pedido = salario_pedido(jogador, clube, opcao_multa)
 
+    # quer sair por falta de tempo de jogo (v1.7): nem conversa
+    if jogador.humor == "quer_sair":
+        return Resposta(
+            "recusada", pedido,
+            f"{jogador.nome} quer sair do clube e não aceita renovar",
+        )
     if salario >= pedido:
         return Resposta("aceita", salario, f"{jogador.nome} aceitou renovar")
     if salario >= FAIXA_CONTRAPROPOSTA * pedido:

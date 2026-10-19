@@ -172,6 +172,12 @@ def foto_do_elenco(clube):
             "vermelhos": j.vermelhos,
             "condicao": j.condicao,
             "funcao": j.funcao,
+            # papel no elenco (v1.7)
+            "papel": j.papel,
+            "humor": j.humor,
+            "titularidades": j.titularidades,
+            "partidas": j.partidas,
+            "jogos_disponivel": j.jogos_disponivel,
         }
         for j in clube.jogadores
     }
@@ -236,6 +242,10 @@ def depois_da_rodada(antes, depois, adversario):
                 "o jogo seguinte.",
             ))
 
+        humor = _mudanca_de_humor(nome, a, d)
+        if humor:
+            mensagens.append(humor)
+
     exaustos = sorted(
         n for n, d in depois.items()
         if d["condicao"] == "Exausto" and antes.get(n, {}).get("condicao") != "Exausto"
@@ -248,6 +258,40 @@ def depois_da_rodada(antes, depois, adversario):
             "pode poupá-lo; um rodízio agora ajuda.",
         ))
     return mensagens
+
+
+# papel no elenco (v1.7): o auxiliar avisa quando o humor muda na checagem
+PAPEL_ROTULO = {"titular": "titular", "rotacao": "rotação", "promessa": "promessa", "reserva": "reserva"}
+
+
+def _tempo_de_jogo(d):
+    if d["papel"] == "titular":
+        return f"começou {d['titularidades']} de {d['jogos_disponivel']} jogos"
+    return f"entrou em {d['partidas']} de {d['jogos_disponivel']} jogos"
+
+
+def _mudanca_de_humor(nome, a, d):
+    if a.get("humor") == d.get("humor") or not d.get("papel"):
+        return None
+    papel = PAPEL_ROTULO[d["papel"]]
+    if d["humor"] == "quer_sair":
+        return _mensagem(
+            "Auxiliar técnico", f"{nome} quer sair",
+            f"{nome}, prometido como {papel}, {_tempo_de_jogo(d)} e pediu para "
+            "ser negociado. Ele se colocou na lista de transferências e não "
+            "aceita renovar enquanto não voltar a jogar.",
+        )
+    if d["humor"] == "incomodado" and a.get("humor") == "contente":
+        return _mensagem(
+            "Auxiliar técnico", f"{nome} está incomodado",
+            f"{nome} foi prometido como {papel} e {_tempo_de_jogo(d)}. Se "
+            "continuar assim, vai pedir para sair.",
+        )
+    return _mensagem(
+        "Auxiliar técnico", f"{nome} está mais tranquilo",
+        f"{nome} voltou a ter o tempo de jogo de {papel} ({_tempo_de_jogo(d)}) "
+        "e o clima melhorou.",
+    )
 
 
 # ---------------------------------------------------------------------------

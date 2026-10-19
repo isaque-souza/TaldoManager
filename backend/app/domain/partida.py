@@ -1383,6 +1383,8 @@ class Partida:
 
             jogador.soma_nota += nota
             jogador.partidas += 1
+            if jogador in self.titulares_iniciais:
+                jogador.titularidades += 1   # papel no elenco (v1.7)
 
             if nota > jogador.melhor_nota:
                 jogador.melhor_nota = nota

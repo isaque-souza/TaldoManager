@@ -50,6 +50,12 @@ class Jogador:
         self.temporadas_no_clube = temporadas_no_clube
         # na lista de transferências do clube (v1.7); sai dela ao mudar de clube
         self.a_venda = False
+        # papel no elenco e humor (v1.7, só no clube do técnico): ver
+        # app.domain.papeis. Os contadores são da temporada, só da liga
+        self.papel = None
+        self.humor = "contente"
+        self.titularidades = 0
+        self.jogos_disponivel = 0
         self.gols = 0
         self.assistencias = 0
         self.partidas = 0
