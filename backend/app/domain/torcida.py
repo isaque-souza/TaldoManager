@@ -235,6 +235,17 @@ def reagir_a_venda(vendedor, comprador, jogador):
     return antes, vendedor.torcedores
 
 
+def reagir_a_dispensa(clube, jogador):
+    """Dispensar um ídolo (v1.7) dói como vendê-lo. Chamar antes da
+    dispensa (ela zera o tempo de casa). Devolve (antes, depois) da torcida,
+    ou None se ele não era ídolo."""
+    if not fama.idolo(jogador):
+        return None
+    antes = clube.torcedores
+    _aplicar(clube, VENDA_IDOLO)
+    return antes, clube.torcedores
+
+
 def variacao_percentual(atual, inicial):
     """Quanto a torcida mudou na temporada, em % (None sem base)."""
     if not inicial:

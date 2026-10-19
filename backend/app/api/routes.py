@@ -46,6 +46,9 @@ from app.api.schemas import (
     NovoIngresso,
     NovaCampanha,
     Transmissao,
+    NovaListaTransferencia,
+    ListaTransferencia,
+    Dispensa,
 )
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
@@ -359,6 +362,39 @@ def fazer_venda(simulacao_id: int, venda: NovaVenda):
     """Aceita a oferta de um clube por um jogador do seu elenco."""
     try:
         feita = mercado_service.vender(simulacao_id, venda.jogador_id, venda.clube)
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if feita is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return feita
+
+
+@router.put(
+    "/simulacoes/{simulacao_id}/jogadores/{jogador_id}/a-venda",
+    response_model=ListaTransferencia,
+    tags=["elenco"],
+)
+def marcar_a_venda(simulacao_id: int, jogador_id: int, lista: NovaListaTransferencia):
+    """Põe ou tira um jogador do seu elenco da lista de transferências."""
+    try:
+        feito = mercado_service.marcar_a_venda(simulacao_id, jogador_id, lista.a_venda)
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if feito is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return feito
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/jogadores/{jogador_id}/dispensa",
+    response_model=Dispensa,
+    tags=["elenco"],
+)
+def dispensar(simulacao_id: int, jogador_id: int):
+    """Rescinde com um jogador do seu elenco: paga metade dos salários que
+    o contrato ainda deve e ele fica sem clube. Vale a qualquer rodada."""
+    try:
+        feita = mercado_service.dispensar(simulacao_id, jogador_id)
     except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
         raise _erro_de_mercado(e) from e
     if feita is None:

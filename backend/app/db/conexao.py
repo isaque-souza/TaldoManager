@@ -109,6 +109,9 @@ _COLUNAS_NOVAS = {
         # fama (v1.4); saves antigos ficam com NULL = "sem registro"
         ("fama", "INTEGER"),
         ("temporadas_no_clube", "INTEGER"),
+        # lista de transferências e dispensa (v1.7)
+        ("a_venda", "INTEGER NOT NULL DEFAULT 0"),
+        ("livre", "INTEGER NOT NULL DEFAULT 0"),
     ),
     # onde o técnico pôs cada titular no plano (v1.3), JSON
     "plano": (("posicionamento", "TEXT"),),

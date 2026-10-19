@@ -79,6 +79,26 @@ def ficar_livre(jogador):
     """Sem clube não há contrato nem tempo de casa."""
     jogador.assinar_contrato(0, jogador.salario_referencia(), None)
     jogador.temporadas_no_clube = 0
+    jogador.a_venda = False
+
+
+def dispensar(jogador, clube, livres):
+    """O `clube` rescinde com o jogador (v1.7): paga a rescisão (entra nos
+    salários) e ele vai para os `livres`. Devolve o custo. Levanta
+    `TransferenciaInvalida` se alguma regra impedir."""
+
+    if jogador not in clube.jogadores:
+        raise mercado.TransferenciaInvalida(f"{jogador.nome} não joga no {clube.nome}")
+    motivo = mercado.motivo_dispensa_bloqueada(clube, jogador)
+    if motivo:
+        raise mercado.TransferenciaInvalida(motivo)
+
+    custo = mercado.rescisao(jogador)
+    mercado.tirar_do_elenco(clube, jogador)
+    ficar_livre(jogador)
+    livres.append(jogador)
+    clube.lancar("despesa_salarios", custo)
+    return custo
 
 
 # ---------------------------------------------------------------------------
