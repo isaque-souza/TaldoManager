@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 577 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 591 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -623,7 +623,19 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       reservas do clube (`scripts/ampliar_elencos.py`). A base passa a
       completar o elenco até 23. Calibração mantida (2,8 gols por jogo,
       mandante vence ~47%)
-* [ ] Jogadores livres — uns 50 sem clube, contratados só com as luvas
+* [ ] Jogadores livres — 50 sem clube no começo da temporada
+      (`scripts/gerar_livres.py` → `data/seeds/livres.json`: veteranos,
+      jogadores no auge e jovens, na faixa dos reservas da liga, com
+      goleiros). Sem transferência: o clube paga só as **luvas** (10% do
+      valor de mercado) e o salário, com contrato de 2 temporadas. Ficam no
+      estado do save e só ganham linha na tabela `jogador` quando assinam.
+      O **diretor de futebol** avisa da contratação.
+      API: `livres` em `GET /simulacoes/{id}/mercado`,
+      `POST /simulacoes/{id}/livres/contratar`
+      - [x] backend (seed, save, mercado e rota)
+      - [ ] tela (filtro "Livres" no mercado)
+      - [ ] carreira (livres envelhecem; dispensados viram livres; a CPU
+            contrata livres)
 * [ ] Importador da Premier League 2023/24 (OpenFootball, CC0) — overall
       por fórmula + ajuste manual das estrelas
 * [ ] Várias ligas no banco e no motor
@@ -648,7 +660,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 577 testes (domain, db, repositories, services, api)
+│   └── tests/              # 591 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

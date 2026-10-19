@@ -356,6 +356,23 @@ def test_fluxo_do_mercado():
     assert client.get("/simulacoes/999999/mercado").status_code == 404
 
 
+def test_contratar_livre_pela_api():
+    sid = client.post(
+        "/simulacoes", json={"seed": 4, "clube": "Real Taldo", "modo": "rodada_a_rodada"}
+    ).json()["id"]
+    livres = client.get(f"/simulacoes/{sid}/mercado").json()["livres"]
+    assert livres and all(f["clube"] is None and f["luvas"] for f in livres)
+
+    r = client.post(f"/simulacoes/{sid}/livres/contratar", json={"nome": livres[0]["nome"]})
+    assert r.status_code == 200
+    assert r.json()["jogador"] == livres[0]["nome"]
+    assert r.json()["luvas"] == livres[0]["luvas"]
+
+    # já contratado: não está mais livre -> 404
+    assert client.post(f"/simulacoes/{sid}/livres/contratar",
+                       json={"nome": livres[0]["nome"]}).status_code == 404
+
+
 def test_mercado_de_temporada_concluida_da_409():
     sid = client.post("/simulacoes", json={"seed": 2}).json()["id"]
     assert client.get(f"/simulacoes/{sid}/mercado").status_code == 409

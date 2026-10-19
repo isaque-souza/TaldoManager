@@ -72,23 +72,26 @@ def snapshot_estado(campeonato):
         # o elenco entra no snapshot porque transferências mudam quem joga
         # onde; sem isso, cada jogador voltaria para o clube da seed
         dados["elenco"] = [j.nome for j in clube.jogadores]
-        # `posicao` (e a específica, v1.3) vai junto para recriar quem não
-        # está na seed (base, v0.8)
-        dados["jogadores"] = {
-            j.nome: {
-                **{c: getattr(j, c) for c in _JOGADOR_CAMPOS},
-                "posicao": j.posicao,
-                "funcao": j.funcao,
-                "secundarias": list(j.secundarias),
-            }
-            for j in clube.jogadores
-        }
+        dados["jogadores"] = {j.nome: _campos(j) for j in clube.jogadores}
         clubes[clube.nome] = dados
 
     return {
         "rodada": campeonato.rodada,
         "rng": [rng[0], list(rng[1]), rng[2]],
         "clubes": clubes,
+        # quem está sem clube (v1.6): também muda (contratações)
+        "livres": {j.nome: _campos(j) for j in campeonato.livres},
+    }
+
+
+def _campos(jogador):
+    """O que o snapshot guarda de um jogador. `posicao` (e a específica,
+    v1.3) vai junto para recriar quem não está na seed (base, v0.8)."""
+    return {
+        **{c: getattr(jogador, c) for c in _JOGADOR_CAMPOS},
+        "posicao": jogador.posicao,
+        "funcao": jogador.funcao,
+        "secundarias": list(jogador.secundarias),
     }
 
 
@@ -139,6 +142,22 @@ def restaurar_estado(campeonato, blob):
     # do clube antigo e pode repetir o de alguém
     for clube in campeonato.clubes:
         numeros.revisar(clube)
+
+    # livres (v1.6). Snapshots de antes deles ficam com os da seed, menos
+    # quem tiver o nome de alguém da liga (um jovem da base, na carreira)
+    if "livres" in blob:
+        livres = []
+        for nome, campos in blob["livres"].items():
+            jogador = criar_jogador(nome, campos)
+            for c in _JOGADOR_CAMPOS:
+                setattr(jogador, c, campos.get(c, getattr(jogador, c)))
+            livres.append(jogador)
+        campeonato.livres = livres
+    else:
+        na_liga = {j.nome for c in campeonato.clubes for j in c.jogadores}
+        campeonato.livres = [
+            j for j in campeonato.livres if j.nome not in na_liga
+        ]
 
 
 def criar_jogador(nome, campos):

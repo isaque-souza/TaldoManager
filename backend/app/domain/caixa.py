@@ -117,6 +117,25 @@ def venda(jogador, comprador, valor):
     )
 
 
+def contratacao_livre(jogador, luvas):
+    return _mensagem(
+        "Diretor de futebol", f"Contratado: {jogador.nome}",
+        f"{jogador.nome} ({jogador.funcao}, {jogador.overall}) estava sem "
+        f"clube e assinou por {jogador.contrato_anos} temporadas. Sem "
+        f"transferência: pagamos só {_dinheiro(luvas)} de luvas, e o salário "
+        f"é de {_dinheiro(jogador.salario)} por temporada.",
+    )
+
+
+def livre_bloqueado(jogador, motivo, caixa=None):
+    """Nem deu para contratar o livre (elenco cheio, caixa para as luvas)."""
+    temos = f" Hoje temos {_dinheiro(caixa)} em caixa." if caixa is not None else ""
+    return _mensagem(
+        "Diretor de futebol", f"Não deu para contratar {jogador.nome}",
+        f"{jogador.nome} está sem clube, mas não deu: {motivo}.{temos}",
+    )
+
+
 # ---------------------------------------------------------------------------
 # depois da rodada: médico e auxiliar técnico
 # ---------------------------------------------------------------------------

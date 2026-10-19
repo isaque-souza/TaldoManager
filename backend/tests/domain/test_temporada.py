@@ -88,3 +88,36 @@ def test_snapshot_recria_jogador_fora_da_seed():
     assert (j.posicao, j.idade, j.overall, j.potencial, j.gols) == (
         "Goleiro", 17, 61, 83, 2
     )
+
+
+def test_snapshot_guarda_os_livres():
+    camp = carregar_campeonato()
+    contratado = camp.livres.pop(0)
+    camp.clubes[0].jogadores.append(contratado)
+    camp.livres[0].overall = 99
+    blob = snapshot_estado(camp)
+
+    novo = carregar_campeonato()
+    restaurar_estado(novo, blob)
+
+    nomes = [j.nome for j in novo.livres]
+    assert contratado.nome not in nomes and len(nomes) == 49
+    assert novo.livres[0].overall == 99
+    assert contratado.nome in {j.nome for j in novo.clubes[0].jogadores}
+
+
+def test_snapshot_antigo_sem_livres_fica_com_os_da_seed():
+    camp = carregar_campeonato()
+    blob = snapshot_estado(camp)
+    del blob["livres"]
+    # um jovem da base com o nome de um livre: não pode estar nos dois
+    blob["clubes"][camp.clubes[0].nome]["elenco"].append(camp.livres[0].nome)
+    blob["clubes"][camp.clubes[0].nome]["jogadores"][camp.livres[0].nome] = (
+        blob["clubes"][camp.clubes[0].nome]["jogadores"][camp.clubes[0].jogadores[0].nome]
+    )
+
+    novo = carregar_campeonato()
+    restaurar_estado(novo, blob)
+
+    assert len(novo.livres) == 49
+    assert camp.livres[0].nome not in {j.nome for j in novo.livres}

@@ -13,9 +13,11 @@ from app.api.schemas import (
     ClubeSeed,
     HealthResponse,
     JogadorDetalhe,
+    ContratacaoLivre,
     Mercado,
     NovaSimulacao,
     PartidaDetalhe,
+    NovaContratacaoLivre,
     NovaProposta,
     NovaRenovacao,
     NovaVenda,
@@ -305,6 +307,22 @@ def fazer_proposta(simulacao_id: int, proposta: NovaProposta):
     if resposta is None:
         raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
     return resposta
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/livres/contratar",
+    response_model=ContratacaoLivre,
+    tags=["mercado"],
+)
+def contratar_livre(simulacao_id: int, contratacao: NovaContratacaoLivre):
+    """Contrata um jogador sem clube: sem transferência, só as luvas."""
+    try:
+        feita = mercado_service.contratar_livre(simulacao_id, contratacao.nome)
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if feita is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador livre não encontrado")
+    return feita
 
 
 @router.get(

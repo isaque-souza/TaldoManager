@@ -68,6 +68,23 @@ def test_contrato_e_caixa_sao_herdados():
             jogador.multa_rescisoria) == (9_999_000, 5, 77_000_000)
 
 
+def test_livre_contratado_nao_volta_a_ficar_livre():
+    """v1.6: quem foi contratado começa a temporada seguinte no clube, e
+    não também na lista de livres."""
+    base = carregar_campeonato()
+    clubes, jogadores = _finais(base)
+    livre = base.livres[0]
+    jogadores.append({**jogadores[0], "nome": livre.nome, "posicao": livre.posicao,
+                      "funcao": livre.funcao, "idade": livre.idade,
+                      "overall": livre.overall, "potencial": livre.potencial})
+
+    novo = preparar_nova_temporada(carregar_campeonato(), clubes, jogadores)
+
+    assert livre.nome not in {j.nome for j in novo.livres}
+    assert len(novo.livres) == len(base.livres) - 1
+    assert livre.nome in {j.nome for c in novo.clubes for j in c.jogadores}
+
+
 def test_jogador_fora_da_seed_e_criado():
     base = carregar_campeonato()
     clubes, jogadores = _finais(base)

@@ -42,12 +42,14 @@ def atualizar(conn, simulacao_id, mapa_clubes, jogadores):
     """Regrava as stats acumuladas dos jogadores de uma temporada em andamento.
     UPDATE por (simulacao_id, nome) — e não por clube, porque com
     transferências o jogador muda de clube; o `clube_id` é regravado junto.
+    Quem ainda não tem linha (um livre recém-contratado, v1.6) é inserido.
     Devolve o mesmo mapa {(clube, nome): id} que `inserir`, para ligar
     lances e atuações da rodada recém-jogada."""
 
     mapa = {}
+    novos = []
     for j in jogadores:
-        conn.execute(
+        cur = conn.execute(
             f"""
             UPDATE jogador
                SET clube_id = ?,
@@ -61,6 +63,9 @@ def atualizar(conn, simulacao_id, mapa_clubes, jogadores):
                 j["nome"],
             ),
         )
+        if cur.rowcount == 0:
+            novos.append(j)
+    inserir(conn, simulacao_id, mapa_clubes, novos)
 
     for r in conn.execute(
         """

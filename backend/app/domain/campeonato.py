@@ -8,6 +8,7 @@ class Campeonato:
     def __init__(self, nome, clubes):
         self.nome = nome
         self.clubes = clubes
+        self.livres = []              # jogadores sem clube (v1.6)
         self.rodada = 1
         self.historico = []
         self.partidas_jogadas = []

@@ -624,9 +624,9 @@ class JogadorDetalhe(BaseModel):
 # --- mercado de transferências (v0.7) ---
 
 class FichaMercado(BaseModel):
-    jogador_id: int
+    jogador_id: int | None = None          # livres (v1.6) não têm id: vão pelo nome
     nome: str
-    clube: str
+    clube: str | None = None               # None = sem clube (v1.6)
     posicao: str
     funcao: str | None = None              # v1.3
     atributos: dict[str, int] = {}         # v1.3
@@ -647,6 +647,8 @@ class FichaMercado(BaseModel):
     contraproposta: int | None = None    # valor pedido na última contraproposta
     # só no próprio elenco
     ofertas: int | None = None
+    # só nos livres (v1.6): o bônus de assinatura, no lugar da transferência
+    luvas: int | None = None
 
 
 class TransferenciaFeita(BaseModel):
@@ -671,7 +673,21 @@ class Mercado(BaseModel):
     max_propostas: int
     elenco: list[FichaMercado]
     disponiveis: list[FichaMercado]
+    livres: list[FichaMercado] = []        # sem clube (v1.6)
     transferencias: list[TransferenciaFeita]
+
+
+class NovaContratacaoLivre(BaseModel):
+    nome: str
+
+
+class ContratacaoLivre(BaseModel):
+    rodada: int
+    jogador: str
+    luvas: int
+    salario: int
+    contrato_anos: int
+    caixa: int
 
 
 class TransferenciaResultado(BaseModel):
