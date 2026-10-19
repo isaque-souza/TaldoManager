@@ -73,3 +73,13 @@ def test_avaliar_chegada_aceita_contrapropoe_ou_recusa():
     assert quase.valor == pedido
     with pytest.raises(contrato.ContratoInvalido):
         contrato.avaliar_chegada(j, a, b, pedido, 9, "3x", papeis.ROTACAO)
+
+
+def test_sugestao_parte_do_mercado_com_a_mudanca_e_nao_revela_o_resto():
+    a, b = _clube("A", 70), _clube("B", 85)
+    j = _reforco(salario=1)
+    sugestao = contrato.salario_sugerido_chegada(j, a, b)
+    ref = j.salario_referencia()
+    assert sugestao == round(ref * contrato.FATOR_TITULAR * contrato.FATOR_MUDANCA / 1_000) * 1_000
+    # o pedido real (craque num clube mais fraco) fica acima
+    assert contrato.salario_pedido_chegada(j, a, b, "3x") > sugestao

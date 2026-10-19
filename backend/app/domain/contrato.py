@@ -191,6 +191,18 @@ def salario_pedido_chegada(jogador, comprador, vendedor, opcao_multa, papel=None
     return max(1_000, round(salario / 1_000) * 1_000)
 
 
+def salario_sugerido_chegada(jogador, comprador, vendedor):
+    """Um ponto de partida para a proposta: o de mercado com o custo da
+    mudança e o peso do papel que ele espera, sem os fatores escondidos
+    (craque, multa, clube mais fraco). Nunca abaixo do que já ganha."""
+    salario = jogador.salario_referencia()
+    if mercado.seria_titular(comprador, jogador):
+        salario *= FATOR_TITULAR
+    if vendedor is not None:
+        salario = max(salario * FATOR_MUDANCA, jogador.salario)
+    return max(1_000, round(salario / 1_000) * 1_000)
+
+
 def avaliar_chegada(jogador, comprador, vendedor, salario, anos, opcao_multa, papel):
     """Resposta do jogador ao contrato oferecido pelo `comprador`."""
 

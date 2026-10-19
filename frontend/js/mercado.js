@@ -1,9 +1,11 @@
-// Mercado de transferências: propostas de compra e ofertas de venda.
+// Mercado de transferências: propostas de compra (em duas etapas, v1.7: o
+// valor com o clube e depois o contrato com o jogador) e ofertas de venda.
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { abrirSecaoRodada, carregarProximaRodada, marcarHubMercado } from "./rodada.js";
 import { renderElenco } from "./elenco.js";
+import { MULTA_ROTULO, PAPEL_ROTULO } from "./contratos.js";
 import { icone, seloIdolo } from "./icones.js";
 import { carregarCaixa } from "./caixa.js";
 import { destaques, linhaAtributos } from "./atributos.js";
@@ -35,8 +37,22 @@ export async function carregarMercado() {
 export const bloqueado = (motivo) =>
   `<span class="bloqueio" title="${motivo}">${icone("cadeado")} ${motivo}</span>`;
 
+// a negociação desta janela (v1.7): acordo aberto leva ao contrato
+function acaoNegociacao(f) {
+  const n = f.negociacao;
+  if (!n) return null;
+  if (n.status === "aberta") {
+    return `<button class="transf" data-acao="negociacao" data-neg="${n.negociacao_id}">` +
+      `${icone("contrato")} Acertar contrato</button>`;
+  }
+  if (n.status === "desistiu") return bloqueado("Desistiu de vir nesta janela");
+  return null;
+}
+
 // compra: campo de proposta (+ aceitar a contraproposta, se houver)
 export function acaoCompra(f) {
+  const negociando = acaoNegociacao(f);
+  if (negociando) return negociando;
   if (f.bloqueio) return bloqueado(f.bloqueio);
   const aceitar = f.contraproposta
     ? `<button class="transf" data-acao="propor" data-id="${f.jogador_id}" data-valor="${f.contraproposta}">` +
@@ -54,9 +70,35 @@ export function acaoCompra(f) {
 
 // livre (v1.6): sem negociação — assina pagando as luvas
 function acaoLivre(f) {
+  const negociando = acaoNegociacao(f);
+  if (negociando) return negociando;
   if (f.bloqueio) return bloqueado(f.bloqueio);
   return `<button class="transf" data-acao="livre" data-nome="${f.nome}">` +
-    `Contratar por ${dinheiro(f.luvas)}</button>`;
+    `Negociar (luvas ${dinheiro(f.luvas)})</button>`;
+}
+
+const STATUS_NEG = {
+  aberta: ["chip-perto", "Falta o contrato"], fechada: ["chip-batida", "Contratado"],
+  desistiu: ["chip-longe", "Desistiu"], expirada: ["", "Expirou"],
+};
+
+// as negociações da janela (v1.7), no topo do mercado
+function blocoNegociacoes(m) {
+  if (!m.negociacoes.length) return "";
+  const linhas = m.negociacoes.map((n) => ({
+    jogador: n.jogador,
+    de: n.clube || "sem clube",
+    valor_fmt: n.clube ? dinheiro(n.valor) : `${dinheiro(n.valor)} (luvas)`,
+    status_fmt: `<span class="chip ${STATUS_NEG[n.status][0]}">${STATUS_NEG[n.status][1]}</span>`,
+    acao: n.status === "aberta"
+      ? `<button class="transf" data-acao="negociacao" data-neg="${n.negociacao_id}">Acertar contrato</button> ` +
+        `<small class="bloqueio">${n.tentativas_restantes} tentativa${n.tentativas_restantes === 1 ? "" : "s"}</small>`
+      : "",
+  }));
+  return `<h5>Negociações desta janela</h5>` + tabela(linhas, [
+    ["jogador", "Jogador"], ["de", "De"], ["valor_fmt", "Valor acertado"],
+    ["status_fmt", "Situação"], ["acao", ""],
+  ]);
 }
 
 export function acaoVenda(f) {
@@ -90,6 +132,9 @@ export function renderMercado(m) {
     `<p>${status} · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${dinheiro(m.caixa)}</strong> · ` +
     `elenco ${m.elenco.length} (mín. ${m.elenco_min}, máx. ${m.elenco_max})${rivais}</p>`;
 
+  html += `<div id="m-negociacao"></div>`;
+  if (m.janela_aberta) html += blocoNegociacoes(m);
+
   if (m.janela_aberta) {
     const pos = ["", "Goleiro", "Defesa", "Meio-Campo", "Atacante"];
     const tetos = [["", "qualquer"], ["1000000", "até 1 mi"], ["5000000", "até 5 mi"],
@@ -98,9 +143,10 @@ export function renderMercado(m) {
     html += livres
       ? `<p class="vazio">Jogadores <strong>sem clube</strong>: não há transferência nem negociação. O clube paga
       só as <strong>luvas</strong> (um bônus de assinatura) e o salário, com contrato de 2 temporadas.</p>`
-      : `<p class="vazio">Faça uma proposta: o clube aceita, pede mais (contraproposta) ou recusa.
-      Até ${m.max_propostas} propostas por jogador em cada janela. Cobrindo a <strong>multa rescisória</strong>,
-      o clube não pode recusar. Do rival (${icone("rival")}), tudo sai mais caro.</p>`;
+      : `<p class="vazio">Contratar tem duas etapas. <strong>1.</strong> Proposta ao clube: ele aceita, pede mais
+      (contraproposta) ou recusa — até ${m.max_propostas} propostas por jogador em cada janela; cobrindo a
+      <strong>multa rescisória</strong>, o clube não pode recusar, e do rival (${icone("rival")}) tudo sai mais caro.
+      <strong>2.</strong> Contrato com o jogador (salário, anos, multa e papel), antes de jogar a rodada.</p>`;
     const origens = [["clubes", "de outros clubes"], ["livres", `sem clube (${m.livres.length})`]];
     html += `<div class="mercado-filtros">
       <label>Jogadores <select id="m-origem">${origens.map(([v, r]) =>
@@ -172,10 +218,11 @@ export function ligarBotoesMercado(container) {
 }
 
 // propor e vender pedem dois cliques (sem alert/confirm, que travam a página);
-// "ver ofertas" só lê, então vai direto
+// "ver ofertas" e "acertar contrato" só abrem, então vão direto
 export function cliqueMercado(botao) {
   const acao = botao.dataset.acao;
   if (acao === "ofertas") return mostrarOfertas(Number(botao.dataset.id));
+  if (acao === "negociacao") return abrirNegociacao(Number(botao.dataset.neg));
   if (botao.dataset.confirmar !== "1") {
     botao.dataset.confirmar = "1";
     botao.dataset.rotulo = botao.textContent;
@@ -229,11 +276,90 @@ export async function propor(jogadorId, valor) {
   let msg = `${sinal} ${r.motivo}`;
   if (r.resposta === "contraproposta") msg += ` — pede ${dinheiro(r.valor_pedido)}`;
   msg += ".";
-  if (t) msg += ` ${t.jogador} chegou do ${t.de_clube} por ${dinheiro(t.valor)}.`;
+  if (r.negociacao_id) msg += " Agora acerte o contrato com o jogador.";
   avisoMercado(msg, r.resposta === "recusada");
   carregarCaixa();
-  if (t) await carregarProximaRodada();   // elenco e escalação mudaram
-  else await carregarMercado();
+  await carregarMercado();
+  if (r.negociacao_id) await abrirNegociacao(r.negociacao_id);
+}
+
+// ---------- etapa 2 (v1.7): o contrato com o jogador ----------
+
+export async function abrirNegociacao(negId) {
+  const d = await pedir(`/simulacoes/${estado.simId}/negociacoes/${negId}`);
+  if (!d) return;
+  const box = $("m-negociacao");
+  if (d.status !== "aberta") { box.innerHTML = ""; return; }
+  const contra = d.contraproposta;
+  // sugestão: a contraproposta, ou o ponto de partida do servidor
+  const salario = contra ? contra.salario : d.salario_sugerido;
+  const anosSel = contra ? contra.anos : Math.min(3, d.duracao_max);
+  const multaSel = contra ? contra.multa : "3x";
+  const papelSel = contra ? contra.papel : d.papel_esperado;
+  const anos = Array.from({ length: d.duracao_max }, (_, i) => i + 1)
+    .map((n) => `<option value="${n}"${n === anosSel ? " selected" : ""}>${n}</option>`).join("");
+  const multas = d.opcoes_multa.map((o) => `<option value="${o.opcao}"${o.opcao === multaSel ? " selected" : ""}>` +
+    `${MULTA_ROTULO[o.opcao]}${o.valor ? ` (${dinheiro(o.valor)})` : ""}</option>`).join("");
+  const papeis = d.papeis.map((p) => `<option value="${p}"${p === papelSel ? " selected" : ""}>${PAPEL_ROTULO[p]}</option>`).join("");
+  const origem = d.clube
+    ? `acordo com o ${d.clube} por ${dinheiro(d.valor)}`
+    : `sem clube · luvas de ${dinheiro(d.valor)}`;
+  const dicas = [
+    d.salario_atual != null ? `hoje ganha ${dinheiro(d.salario_atual)} e não aceita menos` : null,
+    `o mercado paga ${dinheiro(d.salario_referencia)} a esse overall`,
+    `ele espera ser ${PAPEL_ROTULO[d.papel_esperado].toLowerCase()} aqui: prometer mais baixa o pedido`,
+    d.clube ? "trocar de clube tem preço" : null,
+    d.clube_mais_fraco ? "e descer para um clube mais fraco, mais ainda" : null,
+  ].filter(Boolean).join(" · ");
+  box.innerHTML = `<article>
+    <header><strong>Contrato com ${d.jogador}</strong> · ${d.funcao}, ${d.idade} anos, OVR ${d.overall} · ${origem}</header>
+    ${contra ? `<p>${icone("acordo")} Ele pede ${dinheiro(contra.salario)} por ${contra.anos} temp., ${MULTA_ROTULO[contra.multa]}, como ${PAPEL_ROTULO[contra.papel].toLowerCase()}.</p>` : ""}
+    <div class="mercado-filtros">
+      <label>Salário/temporada <input type="number" id="n-salario" min="1000" step="1000" value="${salario}"></label>
+      <label>Temporadas <select id="n-anos">${anos}</select></label>
+      <label>Multa <select id="n-multa">${multas}</select></label>
+      <label>Papel <select id="n-papel">${papeis}</select></label>
+      <button class="transf" id="n-enviar">Propor contrato</button>
+      <button class="transf secondary outline" id="n-fechar">Fechar</button>
+    </div>
+    <small class="bloqueio">${dicas} · ${d.tentativas_restantes} tentativa${d.tentativas_restantes === 1 ? "" : "s"};
+      na última recusa ele desiste · jogar a rodada sem contrato desfaz o acordo</small>
+  </article>`;
+  $("n-fechar").addEventListener("click", () => { box.innerHTML = ""; });
+  const enviar = $("n-enviar");
+  enviar.addEventListener("click", () => {
+    if (enviar.dataset.confirmar !== "1") {   // dois cliques, como no resto do mercado
+      enviar.dataset.confirmar = "1";
+      enviar.textContent = "Confirmar?";
+      return;
+    }
+    proporContrato(negId, {
+      salario: Number($("n-salario").value), anos: Number($("n-anos").value),
+      multa: $("n-multa").value, papel: $("n-papel").value,
+    });
+  });
+  box.scrollIntoView({ block: "nearest" });
+}
+
+export async function proporContrato(negId, contrato) {
+  const r = await postarMercado(
+    `/simulacoes/${estado.simId}/negociacoes/${negId}/contrato`, contrato, "Conversando com o jogador…"
+  );
+  if (!r) return abrirNegociacao(negId);
+  const sinal = icone({ aceita: "ok", contraproposta: "acordo", recusada: "nao" }[r.resposta]);
+  let msg = `${sinal} ${r.motivo}`;
+  if (r.resposta === "contraproposta") msg += ` — pede ${dinheiro(r.salario_pedido)} por temporada`;
+  msg += ".";
+  if (r.status === "desistiu") msg += " Ele desistiu: o acordo caiu.";
+  if (r.contrato) {
+    msg += ` Assinou por ${dinheiro(r.contrato.salario)}/temp. e ${r.contrato.contrato_anos} temp., ` +
+      `como ${PAPEL_ROTULO[r.contrato.papel].toLowerCase()}.`;
+  }
+  avisoMercado(msg, r.resposta === "recusada");
+  carregarCaixa();
+  if (r.status === "fechada") return carregarProximaRodada();   // elenco e escalação mudaram
+  await carregarMercado();
+  if (r.status === "aberta") await abrirNegociacao(negId);
 }
 
 export async function mostrarOfertas(jogadorId) {
@@ -270,13 +396,11 @@ export async function vender(jogadorId, clube) {
 
 export async function contratarLivre(nome) {
   const r = await postarMercado(
-    `/simulacoes/${estado.simId}/livres/contratar`, { nome }, "Assinando o contrato…"
+    `/simulacoes/${estado.simId}/livres/contratar`, { nome }, "Chamando o jogador…"
   );
   if (!r) return carregarMercado();
-  avisoMercado(
-    `${icone("assinou")} ${r.jogador} assinou por ${r.contrato_anos} temporadas — ` +
-    `luvas de ${dinheiro(r.luvas)}, salário de ${dinheiro(r.salario)}.`
-  );
-  carregarCaixa();
-  await carregarProximaRodada();   // elenco e escalação mudaram
+  // sem clube não há etapa 1 (v1.7): vai direto ao contrato
+  avisoMercado(`${icone("acordo")} ${r.jogador} topou conversar: acerte o contrato (as luvas são ${dinheiro(r.valor)}).`);
+  await carregarMercado();
+  await abrirNegociacao(r.negociacao_id);
 }

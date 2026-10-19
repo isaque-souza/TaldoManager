@@ -652,6 +652,7 @@ def ver_negociacao(simulacao_id, negociacao_id):
             "funcao": jogador.funcao,
             "salario_atual": jogador.salario if vendedor else None,
             "salario_referencia": jogador.salario_referencia(),
+            "salario_sugerido": contrato.salario_sugerido_chegada(jogador, ctx.alvo, vendedor),
             "duracao_max": contrato.duracao_max(jogador),
             "opcoes_multa": [
                 {"opcao": op, "valor": contrato.valor_multa(jogador, op)}

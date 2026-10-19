@@ -733,6 +733,7 @@ class NegociacaoDetalhe(NegociacaoResumo):
     funcao: str | None = None
     salario_atual: int | None = None    # None = livre
     salario_referencia: int | None = None
+    salario_sugerido: int | None = None  # ponto de partida (sem os fatores escondidos)
     duracao_max: int | None = None
     opcoes_multa: list["OpcaoMultaValor"] = []
     papeis: list[str] = []
