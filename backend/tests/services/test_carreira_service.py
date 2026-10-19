@@ -55,8 +55,10 @@ def test_temporada_2_zera_estatisticas_e_herda_o_caixa():
     final = {f["clube"]: f for f in t1["financas"]}
     for f in t2["financas"]:
         assert f["caixa_inicial"] == final[f["clube"]]["caixa"]
-        assert f["caixa"] == f["caixa_inicial"]
-        assert f["receitas"] == f["despesas"] == f["saldo"] == 0
+        assert f["receitas"] == 0
+        # a única despesa da largada é a obra que a CPU pagou na virada (v1.5)
+        assert f["caixa"] == f["caixa_inicial"] - f["despesas"]
+        assert f["saldo"] == -f["despesas"]
 
 
 def test_jogador_transferido_continua_no_clube_novo():

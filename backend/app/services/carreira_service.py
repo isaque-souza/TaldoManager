@@ -10,7 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, fama, historico, livres
+from app.domain import caixa, estadio, fama, historico, livres
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -25,6 +25,7 @@ from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import movimento_repository as movimento_repo
+from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import plano_service, simulacao_service
 from scripts.data_loader import (
@@ -52,6 +53,19 @@ def _nomes_usados(conn, carreira_id):
         (carreira_id,),
     )
     return seed | {r["nome"] for r in rows}
+
+
+def _lotados(conn, simulacao_id, clubes_finais):
+    """{clube: jogos em casa com o estádio cheio} na temporada. Pela
+    capacidade final: se uma obra acabou no meio, os jogos de antes dela não
+    contam como lotados (o estádio já cresceu)."""
+    capacidade = {c["nome"]: c.get("capacidade") or 0 for c in clubes_finais}
+    lotados = {}
+    for p in partida_repo.listar_por_simulacao(conn, simulacao_id):
+        nome = p["mandante_nome"]
+        if p["publico"] and capacidade.get(nome) and p["publico"] >= capacidade[nome]:
+            lotados[nome] = lotados.get(nome, 0) + 1
+    return lotados
 
 
 def proxima_temporada(simulacao_id):
@@ -137,6 +151,10 @@ def proxima_temporada(simulacao_id):
             }
             movimentos += subir_jovens(campeonato, usados, random)
             livres.completar(campeonato, usados, random)
+            # a CPU amplia o estádio que lotou (v1.5); nada aqui sorteia
+            obras = estadio.cpu_amplia(
+                campeonato, _lotados(conn, simulacao_id, clubes_finais), clube_usuario,
+            )
 
             # o técnico mantém tática, formação e XI — menos quem saiu do
             # clube. Com planos de jogo (v1.2), a temporada começa no padrão.
@@ -189,6 +207,10 @@ def proxima_temporada(simulacao_id):
                 *caixa.virada(clube_usuario, movimentos, [
                     (j.nome, j.funcao) for j in alvo.jogadores if j.contrato_anos <= 1
                 ], idolos),
+                caixa.obras_na_liga([
+                    (c.nome, estadio.OBRAS[t]["lugares"]) for c, t in obras
+                    if c.liga == alvo.liga
+                ]),
             ])
             # os planos de jogo seguem para a temporada nova (v1.2)
             plano_service.copiar(conn, simulacao_id, nova_id, alvo)

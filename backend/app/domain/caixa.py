@@ -375,6 +375,22 @@ def obra_concluida(lugares, capacidade):
     )
 
 
+def obras_na_liga(obras):
+    """Virada (v1.5): os clubes da CPU que começaram a ampliar o estádio.
+    `obras`: [(clube, lugares)]."""
+    if not obras:
+        return None
+    itens = [f"{nome} (+{lugares // 1000} mil)" for nome, lugares in obras]
+    lista = itens[0] if len(itens) == 1 else f"{', '.join(itens[:-1])} e {itens[-1]}"
+    verbo = "começou" if len(obras) == 1 else "começaram"
+    return _mensagem(
+        "Estádio", "Obras na liga",
+        f"Estádio lotado vira obra: {lista} {verbo} a ampliar para esta "
+        "temporada. Com mais gente na arquibancada, eles ficam mais fortes "
+        "em casa.",
+    )
+
+
 def virada(clube, movimentos, contratos_acabando, idolos=()):
     """Mensagens da virada de temporada para o clube do técnico: quem subiu
     da base, quem saiu, quem renovou e os contratos que acabam no fim desta.
