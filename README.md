@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 607 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 612 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -658,7 +658,19 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       numa tabela do importador. Nomes iguais aos da Taldo ganham a
       nacionalidade ("João Gomes (BRA)"). XI de ~73 (Sheffield) a ~87 (City).
       Ainda não aparece no jogo: é o próximo passo
-* [ ] Várias ligas no banco e no motor
+* [ ] Várias ligas no banco e no motor — todo jogo novo terá as duas
+      ligas rodando juntas
+      - [x] motor — cada clube tem a sua `liga`; `carregar_campeonato(ligas)`
+            lê a seed de cada uma (`LIGAS` no `data_loader`); o calendário é
+            o turno e returno de cada liga lado a lado (a rodada N joga as
+            duas); tabela, premiação, fama e torcida do fim da temporada são
+            por liga; os livres das ligas formam uma lista só. Sem dizer a
+            liga, só a Taldo (tudo como antes). Calibrado: Taldo 2,81 gols
+            por jogo e mandante 46%; Premier 2,77 e 48% (campeões: Liverpool,
+            City, Arsenal); a temporada com as duas leva ~1,4 s
+      - [ ] banco e serviços (`simulacao.ligas`, `clube.liga`, meta por liga,
+            virada da carreira)
+      - [ ] API (clubes por liga, tabela de cada liga)
 * [ ] Várias ligas na tela (escolher liga, tabelas e mercado entre ligas)
 * [ ] Copa entre as ligas (futuro)
 
@@ -680,7 +692,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 607 testes (domain, db, repositories, services, api)
+│   └── tests/              # 612 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

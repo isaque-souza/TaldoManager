@@ -8,6 +8,9 @@ class Campeonato:
     def __init__(self, nome, clubes):
         self.nome = nome
         self.clubes = clubes
+        # ligas (v1.6): cada uma tem a sua tabela e o seu turno e returno,
+        # jogados na mesma rodada; a ordem é a dos clubes
+        self.ligas = list(dict.fromkeys(c.liga for c in clubes))
         self.livres = []              # jogadores sem clube (v1.6)
         self.rodada = 1
         self.historico = []
@@ -79,10 +82,12 @@ class Campeonato:
         self.rodada += 1
 
         if self.rodada > len(self.calendario):
-            financas.pagar_premiacao(self.classificacao())
-            # a fama antes da torcida: os ídolos novos já atraem gente
-            fama.fim_de_temporada(self.classificacao())
-            torcida.fim_de_temporada(self.classificacao())
+            for liga in self.ligas:
+                tabela = self.classificacao(liga)
+                financas.pagar_premiacao(tabela)
+                # a fama antes da torcida: os ídolos novos já atraem gente
+                fama.fim_de_temporada(tabela)
+                torcida.fim_de_temporada(tabela)
 
         for clube in self.clubes:
             clube.historico_caixa.append(clube.dinheiro)
@@ -137,10 +142,16 @@ class Campeonato:
             "atuacoes": partida.resumo_escalacao(),
         })
             
-    def classificacao(self):
+    def clubes_da_liga(self, liga=None):
+        """Os clubes de uma liga (v1.6); sem `liga`, todos."""
+        return [c for c in self.clubes if liga is None or c.liga == liga]
+
+    def classificacao(self, liga=None):
+        """A tabela de uma liga (v1.6). Sem `liga`, todos os clubes juntos —
+        com uma liga só, é a tabela dela."""
 
         return sorted(
-            self.clubes,
+            self.clubes_da_liga(liga),
             key=lambda c: (
                 c.pontos,
                 c.saldo_gols(),
@@ -372,8 +383,22 @@ class Campeonato:
         )
     
     def gerar_calendario(self):
+        """O turno e returno de cada liga (v1.6), lado a lado: a rodada N
+        tem os jogos da rodada N de todas as ligas (elas têm o mesmo número
+        de clubes)."""
 
-        times = self.clubes[:]
+        por_liga = [self._calendario_da_liga(self.clubes_da_liga(liga))
+                    for liga in self.ligas]
+        if not por_liga:
+            return []
+        return [
+            [jogo for rodadas in por_liga for jogo in rodadas[i]]
+            for i in range(max(len(r) for r in por_liga))
+        ]
+
+    def _calendario_da_liga(self, clubes):
+
+        times = clubes[:]
 
         if len(times) % 2 != 0:
             times.append(None)

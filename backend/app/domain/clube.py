@@ -60,6 +60,7 @@ class Clube:
         self.capacidade = 0
         self.ingresso = "normal"
         self.rivais = set()   # nomes dos clubes rivais (clássicos)
+        self.liga = "taldo"   # em que liga joga (v1.6)
         self.identidade = None   # cores/escudo/camisa (só visual, v1.1)
 
         # finanças da temporada (v0.7) — ver app.domain.financas
