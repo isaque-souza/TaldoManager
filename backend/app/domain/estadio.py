@@ -237,3 +237,39 @@ def manutencao(clube):
     """Custo de manter os lugares ampliados, por jogo em casa."""
     return round(clube.lugares_ampliados * preco_normal(clube.torcedores)
                  * MANUTENCAO_POR_LUGAR)
+
+
+# a CPU amplia na virada (v1.5) quando lotou em LOTADOS_PARA_AMPLIAR dos
+# jogos em casa da temporada que acabou. Constrói o que falta para um
+# clássico caber (sem passar disso; no mínimo a obra pequena) e só se, depois
+# de pagar, sobrar uma folha salarial anual em caixa. Como o estádio cresce e
+# a falta diminui, a CPU para sozinha
+LOTADOS_PARA_AMPLIAR = 8
+
+
+def obra_da_cpu(clube, lotados):
+    """Que obra a CPU faz (tipo), ou None."""
+    if clube.capacidade <= 0 or clube.obra_lugares or lotados < LOTADOS_PARA_AMPLIAR:
+        return None
+    falta = demanda_base(clube.torcedores) * MULT_CLASSICO - clube.capacidade
+    por_tamanho = sorted(OBRAS, key=lambda t: OBRAS[t]["lugares"], reverse=True)
+    cabem = [t for t in por_tamanho if OBRAS[t]["lugares"] <= falta] or [por_tamanho[-1]]
+    folha = sum(j.salario for j in clube.jogadores)
+    for tipo in cabem:
+        if clube.dinheiro - custo_da_obra(tipo, clube.torcedores) >= folha:
+            return tipo
+    return None
+
+
+def cpu_amplia(campeonato, lotados, clube_usuario):
+    """Os clubes da CPU que começam uma obra. `lotados`: {nome: jogos em
+    casa lotados na temporada anterior}. Devolve [(clube, tipo)]."""
+    obras = []
+    for clube in campeonato.clubes:
+        if clube.nome == clube_usuario:
+            continue
+        tipo = obra_da_cpu(clube, lotados.get(clube.nome, 0))
+        if tipo:
+            iniciar_obra(clube, tipo)
+            obras.append((clube, tipo))
+    return obras

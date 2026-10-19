@@ -379,3 +379,73 @@ def test_rota_da_obra():
 
     r = client.post(f"/simulacoes/{sid}/estadio/obra", json={"tipo": "gigante"})
     assert r.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# a CPU amplia (virada)
+# ---------------------------------------------------------------------------
+
+def _clube_cpu(capacidade=20_000, dinheiro=50_000_000, torcedores=3_000_000):
+    clube = _clube(capacidade=capacidade, torcedores=torcedores)
+    clube.dinheiro = dinheiro
+    return clube
+
+
+def test_cpu_so_amplia_quando_lota():
+    clube = _clube_cpu()
+    assert estadio.obra_da_cpu(clube, estadio.LOTADOS_PARA_AMPLIAR - 1) is None
+    assert estadio.obra_da_cpu(clube, estadio.LOTADOS_PARA_AMPLIAR) is not None
+    assert estadio.obra_da_cpu(_clube_cpu(capacidade=0), 19) is None   # sem estádio
+    estadio.iniciar_obra(clube, "pequena")
+    assert estadio.obra_da_cpu(clube, 19) is None                       # já em obra
+
+
+def test_cpu_constroi_o_que_falta_para_o_classico():
+    classico = estadio.demanda_base(3_000_000) * estadio.MULT_CLASSICO
+    assert estadio.obra_da_cpu(_clube_cpu(capacidade=round(classico) - 25_000), 19) == "grande"
+    assert estadio.obra_da_cpu(_clube_cpu(capacidade=round(classico) - 12_000), 19) == "media"
+    # falta pouco: ainda lota, então a pequena
+    assert estadio.obra_da_cpu(_clube_cpu(capacidade=round(classico) - 1_000), 19) == "pequena"
+
+
+def test_cpu_nao_se_endivida_com_obra():
+    classico = estadio.demanda_base(3_000_000) * estadio.MULT_CLASSICO
+    clube = _clube_cpu(capacidade=round(classico) - 25_000)
+    custo = {t: estadio.custo_da_obra(t, clube.torcedores) for t in estadio.OBRAS}
+    # sem folha: dá para a média, não para a grande → faz a média
+    clube.dinheiro = custo["media"] + 1
+    assert estadio.obra_da_cpu(clube, 19) == "media"
+    clube.dinheiro = custo["pequena"] - 1
+    assert estadio.obra_da_cpu(clube, 19) is None
+
+
+def test_cpu_amplia_menos_o_clube_do_tecnico():
+    camp = carregar_campeonato()
+    lotados = {c.nome: 19 for c in camp.clubes}
+    usuario = camp.clubes[0].nome
+    obras = estadio.cpu_amplia(camp, lotados, usuario)
+    assert obras and usuario not in {c.nome for c, _ in obras}
+    assert camp.clubes[0].obra_lugares == 0
+    for clube, tipo in obras:
+        assert clube.obra_lugares == estadio.OBRAS[tipo]["lugares"]
+        assert clube.despesa_estadio == estadio.custo_da_obra(tipo, clube.torcedores)
+
+
+def test_virada_poe_a_cpu_para_ampliar(cargo_garantido):
+    from app.services import carreira_service
+
+    sid = simulacao_service.salvar_temporada(seed=3, clube_usuario="Real Taldo")
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+    from app.db.conexao import conectar
+    from app.repositories import clube_repository
+
+    conn = conectar()
+    try:
+        clubes = [dict(c) for c in clube_repository.listar_por_simulacao(conn, nova)]
+    finally:
+        conn.close()
+    em_obra = [c for c in clubes if c["obra_lugares"]]
+    assert em_obra, "nenhum clube da CPU ampliou"
+    assert "Real Taldo" not in {c["nome"] for c in em_obra}
+    assuntos = [m["assunto"] for m in mensagem_service.listar(nova)["mensagens"]]
+    assert "Obras na liga" in assuntos

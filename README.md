@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 629 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 634 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -586,7 +586,7 @@ e o tamanho dela é o que enche a bilheteria:
 
 ---
 
-# 🏟️ Estádio (v1.5 — em andamento)
+# ✅ Estádio (v1.5) — Concluída
 
 O estádio é onde a torcida vira dinheiro e empurra o time:
 
@@ -615,7 +615,14 @@ O estádio é onde a torcida vira dinheiro e empurra o time:
       jogo em casa), na linha **Estádio** das finanças. A caixa de entrada
       avisa quando a obra começa e quando fica pronta.
       API: `POST /simulacoes/{id}/estadio/obra`
-* [ ] Clubes da CPU ampliam o estádio quando lotam
+* [x] Clubes da CPU ampliam o estádio quando lotam — na virada, quem
+      lotou em 8 ou mais dos 19 jogos em casa constrói o que falta para um
+      clássico caber (no mínimo a obra pequena), se depois de pagar sobrar
+      uma folha salarial anual em caixa. Como o estádio cresce e a falta
+      diminui, a CPU para sozinha: em 8 temporadas a capacidade média vai de
+      31 mil para ~36 mil, e a calibração não muda (2,8 gols por jogo,
+      mandante vence ~46%). A caixa de entrada da virada conta quais clubes
+      da sua liga começaram a ampliar
 
 ---
 
