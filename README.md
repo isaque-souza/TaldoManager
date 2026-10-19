@@ -626,7 +626,7 @@ O estádio é onde a torcida vira dinheiro e empurra o time:
 
 ---
 
-# 👥 Elencos e segunda liga (v1.6 — em andamento)
+# ✅ Elencos e segunda liga (v1.6) — Concluída
 
 Elencos de verdade e, depois, uma segunda liga com jogadores reais (Premier
 League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
@@ -701,7 +701,7 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       League; na temporada, abas para ver a tabela, os rankings e os
       gráficos de cada liga; na rodada, os jogos da sua liga primeiro e os
       da outra recolhidos (`js/ligas.js`); o mercado já lista as duas
-* [ ] Copa entre as ligas — 16 clubes (os 8 melhores de cada liga), em
+* [x] Copa entre as ligas — 16 clubes (os 8 melhores de cada liga), em
       mata-mata de jogo único no meio da semana, depois das rodadas 8, 17,
       26 e 35 da liga (o calendário de 38 rodadas não muda). Oitavas sempre
       Taldo × Premier, cruzadas (1º de uma × 8º da outra); o 1º de cada liga
@@ -734,7 +734,13 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
             e os resultados da rodada ganham a seção da copa
             (`js/copa.js`). A **diretoria** avisa se o clube entrou na copa
             e o resultado de cada jogo dele (avançou, caiu ou campeão)
-      - [ ] histórico (campeões da copa na carreira)
+      - [x] histórico — na tela da Carreira, o campeão da copa e até onde
+            você foi em cada temporada, e a tabela de títulos da copa; no
+            Hall da Fama a copa vale 1 ponto de lenda (o título da liga, 2),
+            com o mesmo corte de 10+ jogos. Junto, uma correção: com duas
+            ligas, campeão, vice, artilheiro e MVP da carreira passam a ser
+            os da liga do técnico (antes podia aparecer o 1º da outra liga);
+            o título de jogador vale nas duas
 
 ---
 

@@ -148,6 +148,26 @@ class Copa:
         return _jogo(a, b) if self.seed[a] <= self.seed[b] else _jogo(b, a)
 
 
+def campeao_de(dados):
+    """O campeão de uma copa (`Copa.para_dict`), ou None."""
+    final = (dados or {}).get("fases", {}).get("final")
+    return final[0]["vencedor"] if final and final[0]["vencedor"] else None
+
+
+def ate_onde(dados, clube):
+    """Até onde o clube foi na copa: "campeao", a fase em que caiu (ou a
+    que vai jogar, com a copa em andamento) ou None se não entrou."""
+    if not dados or not any(clube in n for n in dados["classificados"].values()):
+        return None
+    if campeao_de(dados) == clube:
+        return "campeao"
+    alcancada = "oitavas"
+    for fase in FASES:
+        if any(clube in (j["mandante"], j["visitante"]) for j in dados["fases"].get(fase, [])):
+            alcancada = fase
+    return alcancada
+
+
 def _jogo(mandante, visitante):
     return {
         "mandante": mandante,

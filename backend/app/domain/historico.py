@@ -12,6 +12,7 @@ mesmo quando ele troca de clube.
 
 # pontos de lenda (Hall da Fama)
 PONTOS_TITULO = 2
+PONTOS_COPA = 1              # copa entre as ligas (v1.6): metade da liga
 PONTOS_PREMIO = 3            # artilheiro ou MVP de uma temporada
 GOLS_POR_PONTO = 25
 PICO_LENDA = 90              # pico de overall que vale pontos
@@ -66,6 +67,10 @@ def resumo_temporada(clubes, jogadores, clube_usuario=None):
             if mvp and mvp["melhor_em_campo"] > 0 else None
         ),
         "posicao_usuario": posicao_usuario,
+        # com duas ligas (v1.6), os campeões de todas: o título de jogador
+        # vale em qualquer uma (quem chama completa; uma liga só = este)
+        "campeoes": [ordem[0]["nome"]] if ordem else [],
+        "campeao_copa": None,
     }
 
 
@@ -91,6 +96,7 @@ def totais_por_jogador(temporadas):
                 "gols": 0,
                 "assistencias": 0,
                 "titulos": 0,
+                "copas": 0,
                 "artilharias": 0,
                 "mvps": 0,
                 "pico_overall": 0,
@@ -103,23 +109,26 @@ def totais_por_jogador(temporadas):
             r["pico_overall"] = max(r["pico_overall"], j["overall"])
             # campeão = jogou pelo elenco campeão (estava nele ao fim da
             # temporada, com PARTIDAS_TITULO jogos ou mais)
-            if (j["clube"] == resumo["campeao"]
-                    and j["partidas"] >= PARTIDAS_TITULO):
-                r["titulos"] += 1
+            if j["partidas"] >= PARTIDAS_TITULO:
+                if j["clube"] in resumo.get("campeoes", [resumo["campeao"]]):
+                    r["titulos"] += 1
+                if j["clube"] == resumo.get("campeao_copa"):
+                    r["copas"] += 1
             for campo, premiado in premiados.items():
                 if premiado and premiado["nome"] == j["nome"]:
                     r[campo] += 1
     return totais
 
 
-def titulos_por_clube(resumos):
+def titulos_por_clube(resumos, chave="campeao"):
     """`resumos`: `(temporada, resumo)` em ordem. Mais títulos primeiro;
-    empate: quem ganhou primeiro."""
+    empate: quem ganhou primeiro. `chave`: "campeao" (a liga) ou
+    "campeao_copa"."""
 
     por_clube = {}
     for temporada, resumo in resumos:
-        if resumo["campeao"]:
-            por_clube.setdefault(resumo["campeao"], []).append(temporada)
+        if resumo.get(chave):
+            por_clube.setdefault(resumo[chave], []).append(temporada)
     ordem = sorted(por_clube.items(), key=lambda kv: (-len(kv[1]), kv[1][0]))
     return [
         {"clube": clube, "titulos": len(anos), "temporadas": anos}
@@ -147,6 +156,7 @@ def lideres(totais, limite=LIMITE_LIDERES):
 
 def pontos_de_lenda(total):
     pontos = PONTOS_TITULO * total["titulos"]
+    pontos += PONTOS_COPA * total.get("copas", 0)
     pontos += PONTOS_PREMIO * (total["artilharias"] + total["mvps"])
     pontos += total["gols"] // GOLS_POR_PONTO
     if total["pico_overall"] >= PICO_LENDA:
@@ -161,6 +171,8 @@ def motivo(total):
     partes = []
     if total["titulos"]:
         partes.append(f"{total['titulos']}× campeão")
+    if total.get("copas"):
+        partes.append(f"copa {total['copas']}×")
     if total["artilharias"]:
         partes.append(f"artilheiro {total['artilharias']}×")
     if total["mvps"]:

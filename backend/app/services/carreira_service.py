@@ -251,6 +251,8 @@ def detalhe_carreira(carreira_id):
                 "artilheiro": None,
                 "mvp": None,
                 "posicao_usuario": None,
+                "campeao_copa": None,
+                "copa_usuario": None,
                 "estado": t["estado"],
                 "rodada_atual": t["rodada_atual"],
             }
@@ -267,8 +269,21 @@ def detalhe_carreira(carreira_id):
                 clubes = [
                     dict(r) for r in clube_repo.listar_por_simulacao(conn, t["id"])
                 ]
-                resumo = historico.resumo_temporada(clubes, jogadores, clube_usuario)
-                linha.update(resumo)
+                # com duas ligas (v1.6), campeão, vice, artilheiro e MVP são
+                # da liga do técnico; o título de jogador vale nas duas
+                liga = next(
+                    (c["liga"] for c in clubes if c["nome"] == clube_usuario), None
+                )
+                da_liga = [c for c in clubes if c["liga"] == liga] or clubes
+                nomes = {c["nome"] for c in da_liga}
+                resumo = historico.resumo_temporada(
+                    da_liga, [j for j in jogadores if j["clube"] in nomes], clube_usuario,
+                )
+                resumo["campeoes"] = [c["nome"] for c in clubes if c["posicao_final"] == 1]
+                dados_copa = json.loads(t["copa_json"]) if t["copa_json"] else None
+                resumo["campeao_copa"] = copa.campeao_de(dados_copa)
+                linha.update({k: v for k, v in resumo.items() if k != "campeoes"})
+                linha["copa_usuario"] = copa.ate_onde(dados_copa, clube_usuario)
                 concluidas.append({
                     "temporada": t["temporada"],
                     "jogadores": jogadores,
@@ -285,6 +300,9 @@ def detalhe_carreira(carreira_id):
             "temporadas": temporadas,
             "titulos": historico.titulos_por_clube(
                 [(t["temporada"], t["resumo"]) for t in concluidas]
+            ),
+            "titulos_copa": historico.titulos_por_clube(
+                [(t["temporada"], t["resumo"]) for t in concluidas], "campeao_copa",
             ),
             "lideres": historico.lideres(totais),
             "hall_da_fama": historico.hall_da_fama(totais, aposentados),

@@ -151,3 +151,17 @@ def test_na_carreira_os_classificados_vem_da_tabela_anterior():
     copa = _copa_do_estado(nova)
     for liga in DUAS:
         assert copa["classificados"][liga] == [c["nome"] for c in tabela if c["liga"] == liga][:8]
+
+
+def test_carreira_com_duas_ligas_campeao_da_liga_do_tecnico_e_copa():
+    sid = simulacao_service.salvar_temporada(seed=4, clube_usuario="Liverpool", ligas=DUAS)
+    cid = carreira_service.proxima_temporada(sid)["carreira_id"]
+    c = carreira_service.detalhe_carreira(cid)
+    t1 = c["temporadas"][0]
+
+    liga = {r["nome"]: r["liga"] for r in _linhas("SELECT nome, liga FROM clube WHERE simulacao_id = ?", sid)}
+    # campeão e vice da Premier (a liga do técnico), não o 1º da outra liga
+    assert liga[t1["campeao"]] == liga[t1["vice"]] == "premier"
+    assert t1["campeao_copa"] and c["titulos_copa"][0]["clube"] == t1["campeao_copa"]
+    # o Liverpool foi 3º em 23/24: está na copa
+    assert t1["copa_usuario"] in ("oitavas", "quartas", "semi", "final", "campeao")

@@ -16,7 +16,8 @@ const LIDERES = {
   partidas: ["Partidas", [["nome", "Jogador"], ["clube", "Clube"],
     ["posicao", "Posição"], ["partidas", "Jogos"], ["temporadas", "Temp."]]],
   premios: ["Prêmios", [["nome", "Jogador"], ["clube", "Clube"],
-    ["artilharias", "Artilharias"], ["mvps", "MVPs"], ["titulos", "Títulos"]]],
+    ["artilharias", "Artilharias"], ["mvps", "MVPs"], ["titulos", "Títulos"],
+    ["copas", "Copas"]]],
 };
 
 let abaLideres = "gols";
@@ -34,10 +35,12 @@ export function mostrarCarreira() {
   $("carreira").hidden = false;
 
   const meus = c.titulos.find((t) => t.clube === c.clube_usuario)?.titulos ?? 0;
+  const copas = (c.titulos_copa || []).find((t) => t.clube === c.clube_usuario)?.titulos ?? 0;
   $("carreira-titulo").textContent = `Carreira — ${c.clube_usuario}`;
   $("carreira-info").textContent =
     `${c.temporadas.length} temporada${c.temporadas.length > 1 ? "s" : ""} · ` +
     `${meus} título${meus === 1 ? "" : "s"} seu${meus === 1 ? "" : "s"} · ` +
+    (copas ? `${copas} copa${copas === 1 ? "" : "s"} · ` : "") +
     `seed ${c.seed ?? "aleatório"}`;
 
   renderTemporadas(c);
@@ -45,6 +48,12 @@ export function mostrarCarreira() {
   renderLideres(c);
   renderHall(c);
 }
+
+// até onde o técnico foi na copa entre as ligas (v1.6)
+const CAMPANHA_COPA = {
+  campeao: "campeão", final: "vice", semi: "semifinal", quartas: "quartas",
+  oitavas: "oitavas",
+};
 
 function destaque(d) {
   return d ? `${d.nome} <small>(${d.clube}) · ${d.valor}</small>` : "—";
@@ -61,11 +70,16 @@ function renderTemporadas(c) {
     art: t.estado === "em_andamento" ? "" : destaque(t.artilheiro),
     mvpd: t.estado === "em_andamento" ? "" : destaque(t.mvp),
     voce: t.posicao_usuario ? `${t.posicao_usuario}º` : "",
+    copa: t.campeao_copa ? `${icone("trofeu")} ${t.campeao_copa}` : "",
+    sua_copa: t.copa_usuario ? CAMPANHA_COPA[t.copa_usuario] : (t.campeao_copa ? "fora" : ""),
   }));
+  // a copa só existe nas carreiras com duas ligas (v1.6)
+  const temCopa = c.temporadas.some((t) => t.campeao_copa);
   $("carreira-temporadas").innerHTML = tabela(
     linhas,
     [["t", "Temp."], ["camp", "Campeão"], ["vice", "Vice"],
-      ["art", "Artilheiro (gols)"], ["mvpd", "MVP (melhor em campo)"], ["voce", "Você"]],
+      ["art", "Artilheiro (gols)"], ["mvpd", "MVP (melhor em campo)"], ["voce", "Você"],
+      ...(temCopa ? [["copa", "Copa"], ["sua_copa", "Sua copa"]] : [])],
     (t) => (t.campeao === c.clube_usuario ? "eu" : "")
   );
   $("carreira-temporadas").querySelectorAll("a.temporada").forEach((a) =>
@@ -83,6 +97,15 @@ function renderTitulos(c) {
     [["clube", "Clube"], ["titulos", "Títulos"], ["anos", "Temporadas"]],
     (t) => (t.clube === c.clube_usuario ? "eu" : "")
   );
+  const copa = (c.titulos_copa || []).map((t) => ({
+    ...t,
+    anos: t.temporadas.map((n) => `T${n}`).join(", "),
+  }));
+  $("carreira-titulos-copa").innerHTML = copa.length
+    ? `<h3 class="secao" style="margin-top: 1.2rem">${icone("trofeu")} Copa entre as ligas</h3>
+       ${tabela(copa, [["clube", "Clube"], ["titulos", "Copas"], ["anos", "Temporadas"]],
+         (t) => (t.clube === c.clube_usuario ? "eu" : ""))}`
+    : "";
 }
 
 function renderLideres(c) {

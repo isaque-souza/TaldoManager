@@ -151,3 +151,27 @@ def test_motivo_no_singular():
     total = {"titulos": 1, "artilharias": 0, "mvps": 0, "gols": 1,
              "pico_overall": 90}
     assert motivo(total) == "1× campeão · 1 gol · pico 90"
+
+
+# --- copa entre as ligas (v1.6) ---------------------------------------------
+
+def test_copa_conta_titulo_de_jogador_e_ponto_de_lenda():
+    from app.domain import historico as h
+
+    resumo = {"campeao": "A", "campeoes": ["A", "P"], "campeao_copa": "P",
+              "artilheiro": None, "mvp": None}
+    jogadores = [
+        {"nome": "titular", "posicao": "Ataque", "clube": "P", "partidas": 30,
+         "gols": 0, "assistencias": 0, "overall": 80},
+        {"nome": "reserva", "posicao": "Ataque", "clube": "P", "partidas": 3,
+         "gols": 0, "assistencias": 0, "overall": 70},
+    ]
+    totais = h.totais_por_jogador([{"jogadores": jogadores, "resumo": resumo}])
+    # campeão da outra liga também é campeão; e da copa
+    assert totais["titular"]["titulos"] == 1 and totais["titular"]["copas"] == 1
+    assert totais["reserva"]["titulos"] == 0 and totais["reserva"]["copas"] == 0
+    assert h.pontos_de_lenda(totais["titular"]) == h.PONTOS_TITULO + h.PONTOS_COPA
+    assert "copa 1×" in h.motivo(totais["titular"])
+    assert h.titulos_por_clube([(1, resumo), (2, resumo)], "campeao_copa") == [
+        {"clube": "P", "titulos": 2, "temporadas": [1, 2]}
+    ]
