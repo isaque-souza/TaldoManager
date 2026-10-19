@@ -8,11 +8,18 @@ from app.domain.campeonato import Campeonato
 
 SEEDS_DIR = Path(__file__).resolve().parent.parent / "data" / "seeds"
 
+# ligas (v1.6): id -> (nome, pasta da seed). A ordem é a das tabelas.
+LIGAS = {
+    "taldo": ("Liga Taldo", SEEDS_DIR),
+    "premier": ("Premier League", SEEDS_DIR / "premier"),
+}
+LIGA_PADRAO = ("taldo",)   # saves de antes da v1.6
 
-def carregar_jogadores():
+
+def carregar_jogadores(liga="taldo"):
 
     with open(
-        SEEDS_DIR / "jogadores.json",
+        LIGAS[liga][1] / "jogadores.json",
         encoding="utf-8"
     ) as arquivo:
 
@@ -37,14 +44,16 @@ def carregar_jogadores():
             fama=fama_inicial,
             temporadas_no_clube=temporadas,
         )
+        # a camisa de verdade (Premier, v1.6); a Taldo não traz e o clube dá
+        jogadores[j["id"]].numero = j.get("numero")
 
     return jogadores
 
 
-def carregar_clubes(jogadores):
+def carregar_clubes(jogadores, liga="taldo"):
 
     with open(
-        SEEDS_DIR / "clubes.json",
+        LIGAS[liga][1] / "clubes.json",
         encoding="utf-8"
     ) as arquivo:
 
@@ -78,6 +87,7 @@ def carregar_clubes(jogadores):
             )
 
         clube.rivais = set(c.get("rivais", []))
+        clube.liga = liga
         # cores, escudo e camisa (v1.1) — só visual, o motor não usa
         clube.identidade = c.get("identidade")
 
@@ -88,11 +98,11 @@ def carregar_clubes(jogadores):
     return clubes
 
 
-def carregar_livres():
+def carregar_livres(liga="taldo"):
     """Os jogadores sem clube do começo da temporada (v1.6). Sem contrato:
     quem contrata define (mercado.contratar_livre)."""
 
-    caminho = SEEDS_DIR / "livres.json"
+    caminho = LIGAS[liga][1] / "livres.json"
     if not caminho.exists():
         return []
     with open(caminho, encoding="utf-8") as arquivo:
@@ -106,15 +116,19 @@ def carregar_livres():
     return jogadores
 
 
-def carregar_campeonato():
+def carregar_campeonato(ligas=LIGA_PADRAO):
+    """O campeonato com os clubes das `ligas` (v1.6): cada liga tem a sua
+    tabela e o seu calendário, jogados na mesma rodada. Os livres das ligas
+    formam uma lista só."""
 
-    jogadores = carregar_jogadores()
-
-    clubes = carregar_clubes(jogadores)
+    clubes, sem_clube = [], []
+    for liga in ligas:
+        clubes += carregar_clubes(carregar_jogadores(liga), liga)
+        sem_clube += carregar_livres(liga)
 
     campeonato = Campeonato(
         "Taldo",
         clubes
     )
-    campeonato.livres = carregar_livres()
+    campeonato.livres = sem_clube
     return campeonato
