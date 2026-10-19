@@ -604,9 +604,17 @@ O estádio é onde a torcida vira dinheiro e empurra o time:
       time. Calibrado para os placares não mudarem (2,8 gols por jogo,
       mandante vence ~47%). O público aparece na página da partida.
       API: `GET /simulacoes/{id}/estadio`, `POST /simulacoes/{id}/estadio/ingresso`
-* [ ] Ampliação — obras de +5 mil (10 rodadas), +10 mil (um turno) e +20
-      mil lugares (uma temporada), pagas com o caixa, uma por vez, com
-      manutenção por lugar
+* [x] Ampliação — no card **Estádio**, três obras: anel provisório (+5 mil
+      lugares, 10 rodadas), novo setor (+10 mil, um turno) e segundo anel
+      (+20 mil, uma temporada). Paga à vista, uma por vez; o custo por lugar
+      segue o preço do ingresso (70, 65 e 60 jogos), então a obra se paga no
+      mesmo tempo em qualquer clube (~4–5 temporadas com o lugar novo
+      ocupado). O estádio segue funcionando durante a obra; o prazo conta as
+      rodadas jogadas e uma obra que não acabar segue na temporada seguinte.
+      Os lugares novos pagam manutenção (15% do ingresso por lugar, a cada
+      jogo em casa), na linha **Estádio** das finanças. A caixa de entrada
+      avisa quando a obra começa e quando fica pronta.
+      API: `POST /simulacoes/{id}/estadio/obra`
 * [ ] Clubes da CPU ampliam o estádio quando lotam
 
 ---
