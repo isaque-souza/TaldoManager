@@ -65,6 +65,9 @@ def motivo_entrada_bloqueada(clube, preco):
 
 
 def tirar_do_elenco(clube, jogador):
+    # papel e humor são do clube (v1.7): no próximo, começa do zero
+    jogador.papel = None
+    jogador.humor = "contente"
     clube.jogadores.remove(jogador)
     for lista in (clube.titulares, clube.reservas):
         if jogador in lista:

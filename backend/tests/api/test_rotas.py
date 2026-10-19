@@ -402,6 +402,17 @@ def test_lista_de_transferencias_e_dispensa_pela_api():
     assert client.post(f"/simulacoes/{sid}/jogadores/999999/dispensa").status_code == 404
 
 
+def test_papel_pela_api():
+    sid = client.post(
+        "/simulacoes", json={"seed": 4, "clube": "Real Taldo", "modo": "rodada_a_rodada"}
+    ).json()["id"]
+    meu = client.get(f"/simulacoes/{sid}/mercado").json()["elenco"][0]
+    r = client.put(f"/simulacoes/{sid}/jogadores/{meu['jogador_id']}/papel", json={"papel": "rotacao"})
+    assert r.status_code == 200 and r.json()["papel"] == "rotacao"
+    r = client.put(f"/simulacoes/{sid}/jogadores/{meu['jogador_id']}/papel", json={"papel": "craque"})
+    assert r.status_code == 400
+
+
 def test_mercado_de_temporada_concluida_da_409():
     sid = client.post("/simulacoes", json={"seed": 2}).json()["id"]
     assert client.get(f"/simulacoes/{sid}/mercado").status_code == 409

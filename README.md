@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 677 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 697 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -765,8 +765,26 @@ etapas (o clube e depois o jogador):
         na virada
       - API: `PUT /simulacoes/{id}/jogadores/{jid}/a-venda`,
         `POST /simulacoes/{id}/jogadores/{jid}/dispensa`
-* [ ] Papel no elenco — titular, rotação, reserva ou promessa; quem joga
-      menos que o prometido reclama e depois pede para sair
+* [x] Papel no elenco — cada jogador do seu clube tem um papel prometido:
+      **titular** (começar 50% dos jogos), **rotação** (entrar em 30%),
+      **promessa** (até 21 anos, entrar em 20%) ou **reserva** (sem
+      exigência). Conta só a liga e só os jogos em que ele podia jogar
+      (lesionado ou suspenso não reclama). Na 1ª vez, o papel vem da
+      escalação do motor (11 titulares; goleiro reserva não vai para a
+      rotação) (`app/domain/papeis.py`)
+      - A cada 5 rodadas, a partir da 10, o humor anda um passo: abaixo da
+        meta, contente → incomodado → **quer sair** (vai sozinho para a lista
+        de transferências e não renova); na meta, volta um passo. O
+        **auxiliar técnico** avisa na caixa de entrada. Metas calibradas com
+        o motor escalando sozinho: com 60% / 40%, o rodízio por cansaço
+        deixava 2 ou 3 titulares insatisfeitos à toa
+      - Na Central do Elenco: coluna Papel, aba "Insatisfeitos" e, na ficha,
+        o papel (rebaixar incomoda, promover deixa contente) e quanto da meta
+        ele está cumprindo
+      - Na renovação o papel entra na conversa: cada nível acima do atual
+        ele pede 5% a menos; abaixo, 10% a mais
+      - API: `PUT /simulacoes/{id}/jogadores/{jid}/papel`; `papel` em
+        `POST /simulacoes/{id}/renovacoes`
 * [ ] Negociação em duas etapas — o valor com o clube, depois salário, anos,
       multa e papel com o jogador
 * [ ] Central de Transferências — buscar nas duas ligas, observados,

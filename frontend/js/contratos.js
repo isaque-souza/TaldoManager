@@ -8,6 +8,7 @@ import { icone } from "./icones.js";
 // ---------- contratos ----------
 
 export const MULTA_ROTULO = { sem: "sem multa", "2x": "2× o valor", "3x": "3× o valor", "5x": "5× o valor" };
+export const PAPEL_ROTULO = { titular: "Titular", rotacao: "Rotação", promessa: "Promessa", reserva: "Reserva" };
 
 export async function abrirContrato(jogadorId) {
   const c = await pedir(`/simulacoes/${estado.simId}/jogadores/${jogadorId}/contrato`);
@@ -16,6 +17,10 @@ export async function abrirContrato(jogadorId) {
   const salario = contra ? contra.salario : c.salario_referencia;
   const anosSel = contra ? contra.anos : Math.min(3, c.duracao_max);
   const multaSel = contra ? contra.multa : "3x";
+  const papelSel = contra ? contra.papel : c.papel;
+  // o papel prometido entra na conversa (v1.7): prometer mais, ele pede menos
+  const papeis = c.papeis
+    .map((p) => `<option value="${p}"${p === papelSel ? " selected" : ""}>${PAPEL_ROTULO[p]}</option>`).join("");
   const anos = Array.from({ length: c.duracao_max }, (_, i) => i + 1)
     .map((n) => `<option value="${n}"${n === anosSel ? " selected" : ""}>${n}</option>`).join("");
   const multas = c.opcoes_multa
@@ -25,15 +30,18 @@ export async function abrirContrato(jogadorId) {
   box.innerHTML = `<article>
     <header><strong>Renovar com ${c.jogador}</strong> · ${c.idade} anos · OVR ${c.overall} ·
       hoje: ${dinheiro(c.salario)}/temp., ${c.contrato_anos} temp., multa ${c.multa_rescisoria ? dinheiro(c.multa_rescisoria) : "—"}</header>
-    ${contra ? `<p>${icone("acordo")} Contraproposta na mesa: ${dinheiro(contra.salario)} por ${contra.anos} temp., ${MULTA_ROTULO[contra.multa]}.</p>` : ""}
+    ${contra ? `<p>${icone("acordo")} Contraproposta na mesa: ${dinheiro(contra.salario)} por ${contra.anos} temp., ${MULTA_ROTULO[contra.multa]}, como ${PAPEL_ROTULO[contra.papel].toLowerCase()}.</p>` : ""}
+    ${c.humor === "quer_sair" ? `<p class="negativo">${icone("nao")} ${c.jogador} quer sair do clube e não aceita renovar enquanto não voltar a jogar.</p>` : ""}
     <div class="mercado-filtros">
       <label>Salário/temporada <input type="number" id="c-salario" min="1000" step="1000" value="${salario}"></label>
       <label>Temporadas <select id="c-anos">${anos}</select></label>
       <label>Multa <select id="c-multa">${multas}</select></label>
+      <label>Papel <select id="c-papel">${papeis}</select></label>
       <button class="transf" id="c-enviar">Propor</button>
       <button class="transf secondary outline" id="c-fechar">Fechar</button>
     </div>
     <small class="bloqueio">Mercado paga ${dinheiro(c.salario_referencia)} a esse overall ·
+      prometer um papel maior baixa o pedido, um menor o encarece ·
       ${c.tentativas_restantes} tentativa${c.tentativas_restantes === 1 ? "" : "s"} nesta rodada</small>
   </article>`;
   $("c-fechar").addEventListener("click", () => { box.innerHTML = ""; });
@@ -44,14 +52,14 @@ export async function abrirContrato(jogadorId) {
       enviar.textContent = "Confirmar?";
       return;
     }
-    renovar(jogadorId, Number($("c-salario").value), Number($("c-anos").value), $("c-multa").value);
+    renovar(jogadorId, Number($("c-salario").value), Number($("c-anos").value), $("c-multa").value, $("c-papel").value);
   });
   box.scrollIntoView({ block: "nearest" });
 }
 
-export async function renovar(jogadorId, salario, anos, multa) {
+export async function renovar(jogadorId, salario, anos, multa, papel) {
   const r = await postarMercado(
-    `/simulacoes/${estado.simId}/renovacoes`, { jogador_id: jogadorId, salario, anos, multa }, "Conversando com o jogador…",
+    `/simulacoes/${estado.simId}/renovacoes`, { jogador_id: jogadorId, salario, anos, multa, papel }, "Conversando com o jogador…",
     { onde: "r-contrato-msg" }
   );
   if (!r) return;
@@ -61,7 +69,8 @@ export async function renovar(jogadorId, salario, anos, multa) {
   msg += ".";
   if (r.contrato) {
     msg += ` Novo contrato: ${dinheiro(r.contrato.salario)}/temp. por ${r.contrato.contrato_anos} temp., ` +
-      `multa ${r.contrato.multa_rescisoria ? dinheiro(r.contrato.multa_rescisoria) : "—"}.`;
+      `multa ${r.contrato.multa_rescisoria ? dinheiro(r.contrato.multa_rescisoria) : "—"}, ` +
+      `como ${PAPEL_ROTULO[r.contrato.papel].toLowerCase()}.`;
     $("c-form").innerHTML = "";
   }
   $("r-contrato-msg").textContent = msg;

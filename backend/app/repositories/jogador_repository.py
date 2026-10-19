@@ -10,6 +10,7 @@ CAMPOS = (
     "potencial", "contrato_anos", "valor_mercado", "salario",
     "multa_rescisoria", "numero", "funcao", "secundarias",
     "fama", "temporadas_no_clube", "a_venda",
+    "papel", "humor", "titularidades", "jogos_disponivel",
 )
 
 # campos que dados de antes da v1.3 (posição) e da v1.4 (fama) não trazem
@@ -17,9 +18,17 @@ CAMPOS = (
 _OPCIONAIS = ("funcao", "secundarias", "fama", "temporadas_no_clube")
 
 
+# v1.7: NOT NULL, então quem não traz fica com o padrão
+_PADRAO = {"a_venda": 0, "humor": "contente", "titularidades": 0, "jogos_disponivel": 0}
+
+
 def _valor(j, campo):
-    if campo == "a_venda":   # v1.7; NOT NULL, então sem ela é 0
+    if campo == "a_venda":
         return int(bool(j.get(campo)))
+    if campo in _PADRAO:
+        return j.get(campo) or _PADRAO[campo]
+    if campo == "papel":   # v1.7; só o clube do técnico tem
+        return j.get(campo)
     return j.get(campo) if campo in _OPCIONAIS else j[campo]
 
 

@@ -67,6 +67,9 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
         jogador.multa_rescisoria = final["multa_rescisoria"]
         jogador.numero = final.get("numero")
         jogador.a_venda = bool(final.get("a_venda"))   # v1.7
+        # papel e humor seguem; os contadores são da temporada
+        jogador.papel = final.get("papel")
+        jogador.humor = final.get("humor") or "contente"
         # fama (v1.4); temporadas anteriores não guardam (None) e ficam com
         # a da seed
         if final.get("fama") is not None:

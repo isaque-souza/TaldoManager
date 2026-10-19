@@ -106,6 +106,10 @@ CREATE TABLE IF NOT EXISTS jogador (
     fama            INTEGER,                     -- v1.4; NULL em saves antigos
     temporadas_no_clube INTEGER,
     a_venda         INTEGER NOT NULL DEFAULT 0,  -- na lista de transferências (v1.7)
+    papel           TEXT,                        -- papel no elenco (v1.7); só o clube do técnico
+    humor           TEXT NOT NULL DEFAULT 'contente',
+    titularidades   INTEGER NOT NULL DEFAULT 0,  -- jogos como titular (liga)
+    jogos_disponivel INTEGER NOT NULL DEFAULT 0, -- jogos do clube em que podia jogar
     -- dispensado no meio da temporada (v1.7): está nos livres, mas a linha
     -- fica (lances e atuações apontam para ela); o clube_id é o do clube
     -- por onde jogou
@@ -175,7 +179,8 @@ CREATE TABLE IF NOT EXISTS renovacao (
     anos          INTEGER NOT NULL,
     multa         TEXT NOT NULL,     -- opção: sem | 2x | 3x | 5x
     resposta      TEXT NOT NULL,     -- aceita | contraproposta | recusada
-    salario_pedido INTEGER           -- só nas contrapropostas
+    salario_pedido INTEGER,          -- só nas contrapropostas
+    papel         TEXT               -- papel prometido (v1.7); NULL = o atual
 );
 
 -- Timeline da partida: um registro por evento (gol, cartão, substituição, ...).

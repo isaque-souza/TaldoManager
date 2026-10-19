@@ -1,5 +1,6 @@
 // Central do Elenco (v1.7): o elenco com filtros e a ficha do jogador
-// escolhido, com as ações (renovar, lista de transferências, dispensar).
+// escolhido, com as ações (renovar, lista de transferências, dispensar) e o
+// papel prometido no elenco (titular, rotação, promessa, reserva).
 // Os dados vêm do mercado (contrato, valor, a temporada) e da próxima rodada
 // (energia, lesão, suspensão).
 
@@ -7,7 +8,7 @@ import { $, estado, navegarPara } from "./nucleo.js";
 import { dinheiro, tabela } from "./tabelas.js";
 import { abrirSecaoRodada, carregarProximaRodada } from "./rodada.js";
 import { avisoMercado, carregarMercado, mostrarOfertas, postarMercado } from "./mercado.js";
-import { abrirContrato, MULTA_ROTULO } from "./contratos.js";
+import { abrirContrato, MULTA_ROTULO, PAPEL_ROTULO as PAPEL } from "./contratos.js";
 import { abrirJogador } from "./jogador.js";
 import { carregarCaixa } from "./caixa.js";
 import { icone, seloIdolo } from "./icones.js";
@@ -15,11 +16,16 @@ import { barrasAtributos } from "./atributos.js";
 import { camisa } from "./identidade.js";
 import { posicaoDe, sigla } from "./posicoes.js";
 
-// setor: "" (todos), um setor do motor ou "venda" (a lista de transferências)
+// setor: "" (todos), um setor do motor, "venda" (a lista de transferências)
+// ou "humor" (quem não está contente com o tempo de jogo)
 const FILTROS = [
   ["", "Todos"], ["Goleiro", "Goleiros"], ["Defesa", "Defesa"],
   ["Meio-Campo", "Meio-campo"], ["Atacante", "Ataque"], ["venda", "À venda"],
+  ["humor", "Insatisfeitos"],
 ];
+const IDADE_PROMESSA = 21;
+const passaFiltro = (f, v) =>
+  !v || (v === "venda" ? f.a_venda : v === "humor" ? f.humor !== "contente" : f.posicao === v);
 const filtro = { setor: "", selecionado: null };
 let mercado = null;   // o último GET /mercado, para redesenhar sem pedir de novo
 
@@ -46,24 +52,26 @@ function situacaoDe(nome) {
 function selos(f, { acabando = true } = {}) {
   return [
     f.idolo ? seloIdolo() : "",
+    f.humor === "quer_sair" ? `<span class="chip chip-longe">Quer sair</span>`
+      : f.humor === "incomodado" ? `<span class="chip chip-perto">Incomodado</span>` : "",
     f.a_venda ? `<span class="chip">À venda</span>` : "",
     acabando && f.contrato_anos <= 1 ? `<span class="chip chip-perto">Acabando</span>` : "",
   ].join(" ");
 }
 
 function lista() {
-  const passa = (f) =>
-    !filtro.setor || (filtro.setor === "venda" ? f.a_venda : f.posicao === filtro.setor);
-  const linhas = mercado.elenco.filter(passa).map((f) => {
+  const linhas = mercado.elenco.filter((f) => passaFiltro(f, filtro.setor)).map((f) => {
     const s = situacaoDe(f.nome);
     return {
       ...f,
       num: f.numero ?? "",
-      // o nome é o botão que abre a ficha
-      jogador: `<button type="button" class="el-nome" data-sel="${f.jogador_id}">${f.nome}</button> ${selos(f, { acabando: false })}`,
+      // o nome é o botão que abre a ficha; lesão e suspensão vão nos selos
+      jogador: `<button type="button" class="el-nome" data-sel="${f.jogador_id}">${f.nome}</button> ` +
+        `${selos(f, { acabando: false })} ${s.chip}`,
       pos: sigla(posicaoDe(f)),
-      pot: f.potencial > f.overall ? `${f.potencial} ↑` : f.potencial,
-      situacao: s.chip || (s.energia != null ? `${s.energia}%` : ""),
+      // potencial acima do overall em verde: ainda vai crescer
+      pot: f.potencial > f.overall ? `<span class="sobe" title="ainda cresce">${f.potencial}</span>` : f.potencial,
+      papel_fmt: PAPEL[f.papel] || "—",
       contrato: f.contrato_anos <= 1
         ? `<span class="chip chip-perto" title="Contrato acabando">${f.contrato_anos}</span>`
         : f.contrato_anos,
@@ -72,7 +80,7 @@ function lista() {
   });
   return tabela(linhas, [
     ["num", "Nº"], ["jogador", "Jogador"], ["pos", "Pos."], ["idade", "Idade"],
-    ["overall", "OVR"], ["pot", "Pot."], ["situacao", "Energia"], ["contrato", "Temp."],
+    ["overall", "OVR"], ["pot", "Pot."], ["papel_fmt", "Papel"], ["contrato", "Temp."],
     ["valor", "Valor"],
   ], (f) => (f.jogador_id === filtro.selecionado ? "sel" : ""));
 }
@@ -89,10 +97,12 @@ function ficha(f) {
       ${camisa(mercado.clube_usuario, { numero: f.numero, tamanho: 56 })}
       <div>
         <h3>${f.nome}</h3>
-        <small>${f.funcao || f.posicao} · ${f.idade} anos · OVR <b>${f.overall}</b> · POT <b>${f.potencial}</b></small>
+        <small>${f.funcao || f.posicao} · ${f.idade} anos · OVR <b>${f.overall}</b> · POT <b>${f.potencial}</b>` +
+          `${s.energia != null ? ` · energia ${s.energia}%` : ""}</small>
         <div class="el-selos">${selos(f)} ${s.chip}</div>
       </div>
     </header>
+    ${blocoPapel(f)}
     <div class="el-acoes">
       <button type="button" data-el="renovar">${icone("contrato")} Renovar</button>
       <button type="button" class="secondary" data-el="lista">
@@ -126,10 +136,40 @@ function ficha(f) {
   </article>`;
 }
 
+// o papel prometido, o humor e quanto da meta ele está cumprindo
+function blocoPapel(f) {
+  const opcoes = Object.entries(PAPEL).map(([v, rotulo]) => {
+    const bloqueada = v === "promessa" && f.idade > IDADE_PROMESSA;
+    return `<option value="${v}"${v === f.papel ? " selected" : ""}${bloqueada ? " disabled" : ""}>` +
+      `${rotulo}${bloqueada ? ` (só até ${IDADE_PROMESSA} anos)` : ""}</option>`;
+  }).join("");
+  const humor = { contente: ["chip-batida", "Contente"], incomodado: ["chip-perto", "Incomodado"],
+                  quer_sair: ["chip-longe", "Quer sair"] }[f.humor] || ["", ""];
+  let meta;
+  if (!f.meta_fracao) {
+    meta = "Reserva não cobra tempo de jogo.";
+  } else {
+    const verbo = f.meta_conta === "titular" ? "Começar" : "Entrar em";
+    const pct = Math.round(f.meta_fracao * 100);
+    if (f.aproveitamento == null) {
+      meta = `${verbo} ${pct}% dos jogos. Ainda sem jogos para medir.`;
+    } else {
+      const feito = f.meta_conta === "titular" ? f.titularidades : f.partidas;
+      const atual = Math.round(f.aproveitamento * 100);
+      meta = `${verbo} ${pct}% dos jogos: ${feito} de ${f.jogos_disponivel} ` +
+        `(<b class="${atual < pct ? "negativo" : ""}">${atual}%</b>).`;
+    }
+  }
+  return `<div class="el-papel">
+    <label>Papel no elenco <select data-el="papel">${opcoes}</select></label>
+    <span class="chip ${humor[0]}">${humor[1]}</span>
+    <small>${meta} Rebaixar o papel incomoda; quem quer sair vai para a lista e não renova.</small>
+  </div>`;
+}
+
 function desenhar() {
   const m = mercado;
-  const conta = (v) => m.elenco.filter((f) =>
-    !v || (v === "venda" ? f.a_venda : f.posicao === v)).length;
+  const conta = (v) => m.elenco.filter((f) => passaFiltro(f, v)).length;
   const abas = FILTROS.map(([v, rotulo]) =>
     `<button type="button" data-setor="${v}" class="${v === filtro.setor ? "ativa" : ""}">` +
     `${rotulo} <small>${conta(v)}</small></button>`).join("");
@@ -169,6 +209,7 @@ function ligarAcoes(box, f) {
     await mostrarOfertas(f.jogador_id);
   });
   botao("pagina").addEventListener("click", () => navegarPara(() => abrirJogador(f.jogador_id)));
+  botao("papel").addEventListener("change", (e) => definirPapel(f, e.target.value));
 
   // dispensar pede dois cliques, como propor e vender (sem confirm())
   const dispensar = botao("dispensar");
@@ -191,6 +232,17 @@ async function marcarAVenda(f, aVenda) {
   $("r-contrato-msg").innerHTML = aVenda
     ? `${icone("ok")} ${r.jogador} está na lista de transferências.`
     : `${icone("ok")} ${r.jogador} saiu da lista de transferências.`;
+  await carregarMercado();
+}
+
+async function definirPapel(f, papel) {
+  const r = await postarMercado(
+    `/simulacoes/${estado.simId}/jogadores/${f.jogador_id}/papel`, { papel },
+    "Conversando com o jogador…", { metodo: "PUT", onde: "r-contrato-msg" }
+  );
+  if (!r) return carregarMercado();
+  const humor = r.humor === "contente" ? "e está contente" : "e ficou incomodado";
+  $("r-contrato-msg").innerHTML = `${icone("ok")} ${r.jogador} agora é ${PAPEL[r.papel].toLowerCase()} ${humor}.`;
   await carregarMercado();
 }
 

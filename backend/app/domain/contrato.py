@@ -10,7 +10,7 @@ propostas de outros clubes, mas ele cobra por isso no salário.
 Determinístico, como o resto do mercado: não mexe na sorte da temporada.
 """
 
-from app.domain import mercado
+from app.domain import mercado, papeis
 from app.domain.mercado import Resposta
 
 FATOR_CRAQUE = 1.4
@@ -50,8 +50,24 @@ def valor_multa(jogador, opcao):
     return max(500_000, round(jogador.valor_mercado() * multiplo / 100_000) * 100_000)
 
 
-def salario_pedido(jogador, clube, opcao_multa):
-    """Quanto o jogador quer por temporada para renovar com esta multa."""
+# papel prometido (v1.7): cada nível acima do atual, ele pede 5% a menos;
+# cada nível abaixo, 10% a mais (titular > rotação > promessa > reserva)
+FATOR_PAPEL_ACIMA = 0.95
+FATOR_PAPEL_ABAIXO = 1.10
+
+
+def fator_papel(jogador, papel):
+    if papel is None or jogador.papel is None:
+        return 1.0
+    diferenca = papeis.NIVEL[papel] - papeis.NIVEL[jogador.papel]
+    if diferenca >= 0:
+        return FATOR_PAPEL_ACIMA ** diferenca
+    return FATOR_PAPEL_ABAIXO ** -diferenca
+
+
+def salario_pedido(jogador, clube, opcao_multa, papel=None):
+    """Quanto o jogador quer por temporada para renovar com esta multa (e,
+    v1.7, com este papel prometido; None = o atual)."""
 
     salario = jogador.salario_referencia()
 
@@ -64,11 +80,16 @@ def salario_pedido(jogador, clube, opcao_multa):
         salario *= FATOR_ULTIMO_ANO
 
     salario *= MULTAS[opcao_multa][1]
+    salario *= fator_papel(jogador, papel)
 
     return max(1_000, round(salario / 1_000) * 1_000)
 
 
-def validar(jogador, anos, opcao_multa):
+def validar(jogador, anos, opcao_multa, papel=None):
+    if papel is not None:
+        motivo = papeis.motivo_papel_bloqueado(jogador, papel)
+        if motivo:
+            raise ContratoInvalido(motivo)
     if opcao_multa not in MULTAS:
         raise ContratoInvalido(f"Opção de multa inválida: {opcao_multa!r}")
     maximo = duracao_max(jogador)
@@ -79,13 +100,19 @@ def validar(jogador, anos, opcao_multa):
         )
 
 
-def avaliar_renovacao(jogador, clube, salario, anos, opcao_multa):
+def avaliar_renovacao(jogador, clube, salario, anos, opcao_multa, papel=None):
     """Resposta do jogador à proposta. Se fechou, `Resposta.valor` é o
     salário do contrato novo."""
 
-    validar(jogador, anos, opcao_multa)
-    pedido = salario_pedido(jogador, clube, opcao_multa)
+    validar(jogador, anos, opcao_multa, papel)
+    pedido = salario_pedido(jogador, clube, opcao_multa, papel)
 
+    # quer sair por falta de tempo de jogo (v1.7): nem conversa
+    if jogador.humor == "quer_sair":
+        return Resposta(
+            "recusada", pedido,
+            f"{jogador.nome} quer sair do clube e não aceita renovar",
+        )
     if salario >= pedido:
         return Resposta("aceita", salario, f"{jogador.nome} aceitou renovar")
     if salario >= FAIXA_CONTRAPROPOSTA * pedido:
@@ -98,5 +125,11 @@ def avaliar_renovacao(jogador, clube, salario, anos, opcao_multa):
     )
 
 
-def renovar(jogador, anos, salario, opcao_multa):
+def renovar(jogador, anos, salario, opcao_multa, papel=None):
     jogador.assinar_contrato(anos, salario, valor_multa(jogador, opcao_multa))
+    # o papel combinado no contrato (v1.7): ele aceitou, então rebaixar aqui
+    # não incomoda; promover deixa contente
+    if papel is not None and papel != jogador.papel:
+        if jogador.papel is not None and papeis.NIVEL[papel] > papeis.NIVEL[jogador.papel]:
+            jogador.humor = papeis.CONTENTE
+        jogador.papel = papel

@@ -2,15 +2,15 @@
 
 
 def inserir(conn, simulacao_id, rodada, jogador_id, salario, anos, multa,
-            resposta, salario_pedido=None):
+            resposta, salario_pedido=None, papel=None):
     cur = conn.execute(
         """
         INSERT INTO renovacao (simulacao_id, rodada, jogador_id, salario,
-                               anos, multa, resposta, salario_pedido)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                               anos, multa, resposta, salario_pedido, papel)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (simulacao_id, rodada, jogador_id, salario, anos, multa, resposta,
-         salario_pedido),
+         salario_pedido, papel),
     )
     return cur.lastrowid
 
