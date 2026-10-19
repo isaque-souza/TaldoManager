@@ -27,7 +27,7 @@ from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import movimento_repository as movimento_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import plano_service, simulacao_service
+from app.services import copa_service, plano_service, simulacao_service
 from scripts.data_loader import (
     LIGA_PADRAO, TODAS_AS_LIGAS, carregar_campeonato_do_save, carregar_jogadores,
     carregar_livres, ligas_do_save,
@@ -214,6 +214,7 @@ def proxima_temporada(simulacao_id):
                     (c.nome, estadio.OBRAS[t]["lugares"]) for c, t in obras
                     if c.liga == alvo.liga
                 ]),
+                copa_service.mensagem_de_inicio(campeonato, clube_usuario),
             ])
             # os planos de jogo seguem para a temporada nova (v1.2)
             plano_service.copiar(conn, simulacao_id, nova_id, alvo)

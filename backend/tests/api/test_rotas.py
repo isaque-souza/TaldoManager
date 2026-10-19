@@ -614,3 +614,44 @@ def test_visao_de_cada_liga():
     assert {j["clube"] for j in taldo["artilharia"]} <= {c["clube"] for c in taldo["classificacao"]}
     # a meta continua a do técnico, na Premier
     assert taldo["meta"] == corpo["meta"]
+
+
+# --- copa entre as ligas (v1.6) ---------------------------------------------
+
+def _mensagens(sid):
+    return client.get(f"/simulacoes/{sid}/mensagens").json()["mensagens"]
+
+
+def test_copa_da_temporada_e_jogo_do_tecnico():
+    sid = client.post("/simulacoes", json={
+        "modo": "rodada_a_rodada", "clube": "Manchester City", "seed": 6,
+    }).json()["id"]
+
+    copa = client.get(f"/simulacoes/{sid}/copa").json()["copa"]
+    assert [f["fase"] for f in copa["fases"]] == ["oitavas", "quartas", "semi", "final"]
+    assert len(copa["fases"][0]["jogos"]) == 8 and copa["fases"][1]["jogos"] == []
+    assert copa["proxima"]["depois_da_rodada"] == 8
+    # o campeão de 23/24 está na copa, em casa contra o 8º da Taldo
+    assert copa["seu_clube"]["estado"] == "vivo"
+    assert copa["seu_clube"]["jogo"]["mando"] == "casa"
+    assert any(m["assunto"] == "Estamos na copa" for m in _mensagens(sid))
+
+    for rodada in range(1, 9):
+        res = client.post(f"/simulacoes/{sid}/rodadas").json()
+        assert (res["copa"] is not None) == (rodada == 8)
+    assert res["copa"]["fase"] == "oitavas" and len(res["copa"]["jogos"]) == 8
+    assert all(j["vencedor"] for j in res["copa"]["jogos"])
+
+    copa = client.get(f"/simulacoes/{sid}/copa").json()["copa"]
+    assert copa["fases"][0]["jogada"] and len(copa["fases"][1]["jogos"]) == 4
+    assert copa["seu_clube"]["estado"] in ("vivo", "eliminado")
+    assuntos = {m["assunto"] for m in _mensagens(sid)}
+    assert {"Avançamos na copa", "Fora da copa"} & assuntos
+
+
+def test_save_so_da_taldo_nao_tem_copa():
+    sid = client.post("/simulacoes", json={
+        "modo": "rodada_a_rodada", "clube": "Real Taldo", "seed": 2, "ligas": ["taldo"],
+    }).json()["id"]
+    assert client.get(f"/simulacoes/{sid}/copa").json() == {"copa": None}
+    assert client.get("/simulacoes/999999/copa").status_code == 404

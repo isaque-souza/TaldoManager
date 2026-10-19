@@ -623,7 +623,15 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .hub {
   display: grid; gap: .8rem; margin-bottom: 1.5rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-areas: "jogo jogo escalacao" "jogo jogo tabela" "mercado contratos financas" "caixa caixa marketing";
+  grid-template-areas:
+    "jogo jogo escalacao" "jogo jogo tabela" "copa copa mercado"
+    "caixa caixa contratos" "financas marketing estadio";
+}
+/* save só da Taldo (sem copa) */
+.hub.sem-copa {
+  grid-template-areas:
+    "jogo jogo escalacao" "jogo jogo tabela" "mercado contratos financas"
+    "caixa marketing estadio";
 }
 .hub[hidden] { display: none; }
 .hub-jogo { grid-area: jogo; }
@@ -634,6 +642,11 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .hub [data-abrir="financas"] { grid-area: financas; }
 .hub [data-abrir="caixa"] { grid-area: caixa; }
 .hub [data-abrir="marketing"] { grid-area: marketing; }
+.hub [data-abrir="estadio"] { grid-area: estadio; }
+.hub [data-abrir="copa"] { grid-area: copa; }
+button.hub-card[hidden] { display: none; }
+.hub-card.hub-ouro { border-color: color-mix(in srgb, var(--refletor) 55%, var(--linha)); }
+.hub-card.hub-ouro strong { color: var(--refletor); }
 
 .hub-card {
   display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: .3rem;
@@ -746,7 +759,13 @@ button.hub-card:hover, button.hub-card:focus-visible {
 @media (max-width: 760px) {
   .hub {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas: "jogo jogo" "escalacao tabela" "mercado contratos" "financas marketing" "caixa caixa";
+    grid-template-areas:
+      "jogo jogo" "escalacao tabela" "copa copa" "mercado contratos"
+      "financas marketing" "caixa estadio";
+  }
+  .hub.sem-copa {
+    grid-template-areas:
+      "jogo jogo" "escalacao tabela" "mercado contratos" "financas marketing" "caixa estadio";
   }
   .hub-jogo { min-height: 14rem; gap: 1rem; }
   .hub-card strong { font-size: 1.35rem; }
@@ -1142,3 +1161,32 @@ body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .
 
 /* ligas (v1.6): a outra liga da rodada, recolhida */
 details.outra-liga { margin-top: 1rem; }
+
+/* ---------- copa entre as ligas (v1.6) ---------- */
+.cp-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1.2rem; }
+.cp-topo p { margin: 0; }
+.cp-campeao { display: inline-flex; align-items: center; gap: .45rem; color: var(--refletor); }
+.cp-campeao strong { font-family: var(--fonte-tarja); font-size: 1.15rem; text-transform: uppercase; }
+.cp-regra { max-width: 46rem; margin: .8rem 0 1.2rem; color: var(--texto-2); font-size: .9rem; }
+/* a chave: uma coluna por fase; os jogos se espalham na altura da coluna,
+   então cada jogo das quartas fica na altura entre os dois das oitavas */
+.cp-chave { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
+.cp-fase { display: flex; flex-direction: column; min-width: 0; }
+.cp-fase header { margin-bottom: .6rem; }
+.cp-fase header .secao { margin: 0; }
+.cp-fase header small { display: block; color: var(--texto-2); font-size: .82rem; }
+.cp-jogos { display: flex; flex-direction: column; justify-content: space-around; gap: .6rem; flex: 1; }
+.cp-jogo { margin: 0; padding: .35rem 0; background: var(--superficie); border: 1px solid var(--linha); border-radius: 4px; }
+.cp-time { display: flex; align-items: center; gap: .45rem; padding: .2rem .6rem; }
+.cp-nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp-liga { font-family: var(--fonte-tarja); font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--texto-2); }
+.cp-liga[title] { text-decoration: none; border: 0; cursor: help; }
+.cp-gols { min-width: 1.4rem; text-align: center; font-family: var(--fonte-tarja); font-size: 1.15rem; }
+.cp-venceu .cp-nome { font-weight: 700; }
+.cp-perdeu { color: var(--texto-2); }
+.cp-time.eu .cp-nome { color: var(--refletor); }
+.cp-vago { color: var(--texto-2); font-style: italic; min-height: 2.05rem; }
+.cp-penaltis { display: block; padding: 0 .6rem; color: var(--texto-2); font-size: .72rem; text-align: right; }
+@media (max-width: 640px) {
+  .cp-chave { grid-template-columns: 1fr; }
+}

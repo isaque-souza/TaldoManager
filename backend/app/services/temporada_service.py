@@ -28,7 +28,7 @@ from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import lance_repository as lance_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import simulacao_service
+from app.services import copa_service, simulacao_service
 from scripts.data_loader import (
     LIGA_PADRAO, carregar_campeonato, carregar_campeonato_do_save,
 )
@@ -141,6 +141,9 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
                 mensagem_repo.inserir(conn, sim_id, None, [caixa.meta_da_temporada(
                     clube_usuario, meta["meta_posicao"], meta["ranking_forca"],
                 )])
+            mensagem_repo.inserir(conn, sim_id, None, [
+                copa_service.mensagem_de_inicio(campeonato, clube_usuario),
+            ])
         return sim_id
     finally:
         conn.close()
@@ -386,6 +389,9 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
         with redirect_stdout(io.StringIO()):
             campeonato.jogar_rodada(clube_usuario, decisoes)
         mensagens = caixa.depois_da_rodada(antes, caixa.foto_do_elenco(alvo), adversario)
+        mensagens.append(
+            copa_service.mensagem_da_rodada(campeonato, rodada_jogada, clube_usuario)
+        )
         if alvo.capacidade > capacidade_antes:
             mensagens.append(caixa.obra_concluida(
                 alvo.capacidade - capacidade_antes, alvo.capacidade,
@@ -495,6 +501,9 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
                 }
                 for pid, p in zip(partida_ids, novas)
             ],
+            "copa": copa_service.jogos_da_rodada(
+                campeonato.copa and campeonato.copa.para_dict(), rodada_jogada, liga_de,
+            ),
             **visao,
         }
     finally:

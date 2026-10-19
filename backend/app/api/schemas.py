@@ -438,10 +438,75 @@ class RodadaAoVivo(BaseModel):
     partidas: list[PartidaAoVivo]
 
 
+class GolCopa(BaseModel):
+    minuto: int
+    jogador: str | None
+    clube: str | None
+    tipo: str                            # gol | penalti
+
+
+class JogoCopa(BaseModel):
+    mandante: str
+    visitante: str
+    liga_mandante: str | None = None
+    liga_visitante: str | None = None
+    gols_mandante: int | None            # None = ainda não jogado
+    gols_visitante: int | None
+    penaltis: list[int] | None           # [mandante, visitante]
+    vencedor: str | None
+    publico: int | None
+    gols: list[GolCopa]
+
+
+class CopaDaRodada(BaseModel):
+    fase: str
+    nome: str
+    jogos: list[JogoCopa]
+
+
 class RodadaJogada(SimulacaoResponse):
     rodada_jogada: int
     concluida: bool
     resultados: list[ResultadoRodada]
+    # a fase da copa jogada no meio da semana (v1.6), se teve
+    copa: CopaDaRodada | None = None
+
+
+class FaseCopa(BaseModel):
+    fase: str
+    nome: str
+    depois_da_rodada: int
+    premio: int                          # por vitória nesta fase
+    jogos: list[JogoCopa]                # vazio = confrontos ainda não definidos
+    jogada: bool
+
+
+class ProximaFaseCopa(BaseModel):
+    fase: str
+    nome: str
+    depois_da_rodada: int
+
+
+class AdversarioCopa(BaseModel):
+    adversario: str
+    mando: Literal["casa", "fora"]
+
+
+class SituacaoCopa(BaseModel):
+    estado: Literal["fora", "vivo", "eliminado", "campeao"]
+    fase: str | None
+    jogo: AdversarioCopa | None
+
+
+class CopaVisao(BaseModel):
+    fases: list[FaseCopa]
+    campeao: str | None
+    proxima: ProximaFaseCopa | None
+    seu_clube: SituacaoCopa
+
+
+class Copa(BaseModel):
+    copa: CopaVisao | None               # None = save sem copa (uma liga só)
 
 
 class Identidade(BaseModel):

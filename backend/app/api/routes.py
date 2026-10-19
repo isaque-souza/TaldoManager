@@ -40,6 +40,7 @@ from app.api.schemas import (
     TransferenciaResultado,
     MomentoPartida,
     Marketing,
+    Copa,
     Estadio,
     NovaObra,
     NovoIngresso,
@@ -51,6 +52,7 @@ from app.domain.mercado import TransferenciaInvalida
 from app.services import (
     carreira_service,
     contrato_service,
+    copa_service,
     escalacao_service,
     estadio_service,
     marketing_service,
@@ -426,6 +428,21 @@ def fazer_campanha(simulacao_id: int, campanha: NovaCampanha):
         dados = marketing_service.lancar(simulacao_id, campanha.tipo)
     except (TemporadaConcluida, PartidaEmAndamento, CampanhaInvalida) as e:
         raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/copa",
+    response_model=Copa,
+    tags=["copa"],
+)
+def ver_copa(simulacao_id: int):
+    """Copa entre as ligas (v1.6): as fases com os jogos, o campeão, a
+    próxima data e onde o clube do técnico está. `copa` vem null quando o
+    save não tem copa (só uma liga)."""
+    dados = copa_service.ver(simulacao_id)
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
     return dados
