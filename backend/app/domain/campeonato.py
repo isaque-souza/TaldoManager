@@ -6,6 +6,11 @@ from .partida import Partida
 
 
 class Campeonato:
+
+    # versão do gerador de calendário (2: mando alternado). Vai no
+    # snapshot: um save em andamento segue com o calendário em que começou
+    CALENDARIO_ATUAL = 2
+
     def __init__(self, nome, clubes):
         self.nome = nome
         self.clubes = clubes
@@ -18,6 +23,7 @@ class Campeonato:
         self.historico = []
         self.partidas_jogadas = []
         self.partida_usuario = None   # a do técnico na última rodada
+        self.versao_calendario = self.CALENDARIO_ATUAL
         self.calendario = self.gerar_calendario()
         self.recordes = {
             "maior_goleada": {
@@ -413,13 +419,17 @@ class Campeonato:
             f"({self.recordes['mais_gols_jogo']['valor']})"
         )
     
-    def gerar_calendario(self):
+    def gerar_calendario(self, versao=None):
         """O turno e returno de cada liga (v1.6), lado a lado: a rodada N
         tem os jogos da rodada N de todas as ligas (elas têm o mesmo número
-        de clubes)."""
+        de clubes). `versao` 1 é o calendário de antes do mando alternado
+        (até 19 jogos seguidos em casa); fica só para os saves em andamento
+        criados com ele."""
 
-        por_liga = [self._calendario_da_liga(self.clubes_da_liga(liga))
-                    for liga in self.ligas]
+        gerar = (self._calendario_da_liga_v1
+                 if (versao or self.CALENDARIO_ATUAL) == 1
+                 else self._calendario_da_liga)
+        por_liga = [gerar(self.clubes_da_liga(liga)) for liga in self.ligas]
         if not por_liga:
             return []
         return [
@@ -428,6 +438,50 @@ class Campeonato:
         ]
 
     def _calendario_da_liga(self, clubes):
+        """Turno e returno pelo método do círculo, com o mando alternado."""
+
+        times = clubes[:]
+
+        if len(times) % 2 != 0:
+            times.append(None)
+
+        turno = []
+
+        for r in range(len(times) - 1):
+
+            rodada = []
+
+            for i in range(len(times) // 2):
+
+                time1 = times[i]
+                time2 = times[-i - 1]
+
+                # mando alternado: o time fixo do círculo troca de lado a
+                # cada rodada, e os outros confrontos se alternam pela
+                # posição — assim ninguém fica mais de 2 jogos seguidos em
+                # casa ou fora
+                if (r % 2 == 1) if i == 0 else (i % 2 == 1):
+                    time1, time2 = time2, time1
+
+                if time1 is not None and time2 is not None:
+                    rodada.append((time1, time2))
+
+            turno.append(rodada)
+
+            times = (
+                [times[0]]
+                + [times[-1]]
+                + times[1:-1]
+            )
+
+        # returno: o espelho do turno, começando pela 2ª rodada e fechando
+        # com a 1ª (na ordem certinha, a última do turno e a primeira do
+        # returno formariam 3 jogos seguidos no mesmo lado)
+        espelho = [[(time2, time1) for time1, time2 in rodada] for rodada in turno]
+
+        return turno + espelho[1:] + espelho[:1]
+
+    def _calendario_da_liga_v1(self, clubes):
 
         times = clubes[:]
 

@@ -81,6 +81,8 @@ def snapshot_estado(campeonato):
 
     return {
         "rodada": campeonato.rodada,
+        # versão do calendário: ele é regenerado ao carregar
+        "calendario": campeonato.versao_calendario,
         "rng": [rng[0], list(rng[1]), rng[2]],
         "clubes": clubes,
         # quem está sem clube (v1.6): também muda (contratações)
@@ -105,6 +107,13 @@ def restaurar_estado(campeonato, blob):
     """Aplica um snapshot num campeonato recém-carregado do seed."""
 
     campeonato.rodada = blob["rodada"]
+
+    # saves de antes do mando alternado (sem a chave) seguem com o antigo até
+    # o fim da temporada: trocar no meio mudaria os jogos que faltam
+    versao = blob.get("calendario", 1)
+    if versao != campeonato.versao_calendario:
+        campeonato.versao_calendario = versao
+        campeonato.calendario = campeonato.gerar_calendario(versao)
 
     versao, estado, gauss_next = blob["rng"]
     random.setstate((versao, tuple(estado), gauss_next))
