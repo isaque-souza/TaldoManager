@@ -16,6 +16,7 @@ import { posicaoDe } from "./posicoes.js";
 import { carregarCaixa } from "./caixa.js";
 import { carregarMarketing } from "./marketing.js";
 import { carregarEstadio } from "./estadio.js";
+import { carregarCopa, renderCopaDaRodada } from "./copa.js";
 import { porLiga } from "./ligas.js";
 
 // ---------- visão rodada a rodada ----------
@@ -204,6 +205,7 @@ export function renderRodadaAntes() {
   carregarCaixa();
   carregarMarketing();
   carregarEstadio();
+  carregarCopa();
   if (estado.abaRodada === "financas") carregarFinancasRodada();
 }
 
@@ -237,6 +239,8 @@ export function renderRodadaDepois() {
     marcarEu
   ));
   ligarLinks($("r-resultados"));
+  // a copa no meio da semana (v1.6)
+  renderCopaDaRodada($("r-copa-rodada"), res.copa, meu);
 
   $("r-classificacao").innerHTML = tabela(
     res.classificacao,

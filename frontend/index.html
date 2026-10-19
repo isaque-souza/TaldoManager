@@ -172,12 +172,17 @@
 
     <!-- antes de jogar: o hub do clube (cards) abre cada seção -->
     <div id="rodada-antes">
-      <div id="r-hub" class="hub">
+      <div id="r-hub" class="hub sem-copa">
         <article class="hub-card hub-jogo">
           <span class="hub-rotulo"><span data-icone="calendario"></span> Próximo jogo</span>
           <div id="hub-jogo"></div>
           <button id="r-jogar"></button>
         </article>
+        <button class="hub-card" data-abrir="copa" hidden>
+          <span class="hub-rotulo"><span data-icone="trofeu"></span> Copa entre as ligas</span>
+          <strong id="hub-copa"></strong>
+          <small id="hub-copa-info"></small>
+        </button>
         <button class="hub-card" data-abrir="caixa">
           <span class="hub-rotulo"><span data-icone="email"></span> Caixa de entrada</span>
           <strong id="hub-caixa"></strong>
@@ -294,6 +299,11 @@
         <div id="r-estadio"></div>
       </div>
 
+      <!-- copa entre as ligas (v1.6): o chaveamento -->
+      <div data-painel="copa" hidden>
+        <div id="r-copa"></div>
+      </div>
+
       <!-- caixa de entrada (v1.3): mensagens dos setores do clube -->
       <div data-painel="caixa" hidden>
         <div id="r-caixa"></div>
@@ -304,6 +314,7 @@
     <div id="rodada-depois" hidden>
       <h3 class="secao" id="r-res-titulo"></h3>
       <div id="r-resultados"></div>
+      <div id="r-copa-rodada"></div>
       <h3 class="secao" style="margin-top: 1.5rem">Classificação</h3>
       <div id="r-classificacao"></div>
       <p style="margin-top: 1rem">

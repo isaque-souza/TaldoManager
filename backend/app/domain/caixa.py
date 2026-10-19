@@ -432,3 +432,77 @@ def virada(clube, movimentos, contratos_acabando, idolos=()):
     if partes:
         mensagens.append(_mensagem("Diretoria", "Elenco para a nova temporada", " ".join(partes)))
     return mensagens
+
+
+# --- copa entre as ligas (v1.6) ---------------------------------------------
+
+_FASE = {
+    "oitavas": "as oitavas", "quartas": "as quartas", "semi": "a semifinal",
+    "final": "a final",
+}
+_NA_FASE = {
+    "oitavas": "nas oitavas", "quartas": "nas quartas", "semi": "na semifinal",
+    "final": "na final",
+}
+
+
+def _placar_copa(jogo, clube):
+    """"2 a 1" do ponto de vista do clube, com os pênaltis se teve."""
+    em_casa = jogo["mandante"] == clube
+    nossos = jogo["gols_mandante"] if em_casa else jogo["gols_visitante"]
+    deles = jogo["gols_visitante"] if em_casa else jogo["gols_mandante"]
+    texto = f"{nossos} a {deles}"
+    if jogo["penaltis"]:
+        p = jogo["penaltis"] if em_casa else jogo["penaltis"][::-1]
+        texto += f" ({p[0]} a {p[1]} nos pênaltis)"
+    return texto
+
+
+def _confronto_copa(fase, rodada, adversario, mando):
+    onde = "em casa" if mando == "casa" else "fora"
+    return (f"Em {_FASE[fase]}, no meio da semana depois da rodada {rodada}, "
+            f"pegamos o {adversario}, {onde}.")
+
+
+def copa_classificacao(situacao, rodada, premio_total):
+    """Início da temporada: entramos na copa ou não. `situacao` vem de
+    `copa_service.situacao`."""
+    if situacao["estado"] == "fora":
+        return _mensagem(
+            "Diretoria", "Fora da copa",
+            "Não estamos entre os 8 da liga que disputam a copa contra a "
+            "outra liga nesta temporada. Uma boa campanha agora garante a "
+            "vaga na próxima.",
+        )
+    jogo = situacao["jogo"]
+    return _mensagem(
+        "Diretoria", "Estamos na copa",
+        "Vamos disputar a copa entre as ligas: mata-mata em jogo único, com "
+        "pênaltis no empate. "
+        + _confronto_copa(situacao["fase"], rodada, jogo["adversario"], jogo["mando"])
+        + f" Cada vitória rende prêmio; o campeão leva {_dinheiro(premio_total)}.",
+    )
+
+
+def copa_resultado(fase, jogo, clube, premio, proxima=None):
+    """O jogo do técnico numa fase da copa. `proxima`: (fase, rodada,
+    adversário, mando) quando passou e ainda há fase."""
+    adversario = jogo["visitante"] if jogo["mandante"] == clube else jogo["mandante"]
+    placar = _placar_copa(jogo, clube)
+    if jogo["vencedor"] != clube:
+        return _mensagem(
+            "Diretoria", "Fora da copa",
+            f"Caímos {_NA_FASE[fase]} da copa: {placar} para o {adversario}. "
+            "Agora é a liga.",
+        )
+    if fase == "final":
+        return _mensagem(
+            "Diretoria", "Campeões da copa!",
+            f"Vencemos o {adversario} por {placar} na final: a copa é nossa! "
+            f"O título rendeu mais {_dinheiro(premio)} de prêmio.",
+        )
+    corpo = (f"Passamos do {adversario} por {placar} {_NA_FASE[fase]} da copa "
+             f"(prêmio de {_dinheiro(premio)}).")
+    if proxima:
+        corpo += " " + _confronto_copa(*proxima)
+    return _mensagem("Diretoria", "Avançamos na copa", corpo)

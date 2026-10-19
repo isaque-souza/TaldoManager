@@ -724,7 +724,16 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
             os 8 primeiros de cada liga na temporada anterior. A copa vai no
             snapshot (saves sem ela, ou só com a Taldo, seguem sem) e, quando
             a temporada acaba, fica em `simulacao.copa_json`
-      - [ ] API e tela (chaveamento e o jogo do seu clube)
+      - [x] API e tela — `GET /simulacoes/{id}/copa` (as quatro fases, o
+            campeão, a próxima data e onde o seu clube está: fora, vivo,
+            eliminado ou campeão; `copa` null num save só da Taldo); o
+            resultado da rodada traz a fase da copa jogada no meio da semana
+            (`copa`). Na tela, o card "Copa entre as ligas" no hub abre o
+            chaveamento (uma coluna por fase, os jogos de cada fase na
+            altura entre os dois que a alimentam; no celular, uma coluna só)
+            e os resultados da rodada ganham a seção da copa
+            (`js/copa.js`). A **diretoria** avisa se o clube entrou na copa
+            e o resultado de cada jogo dele (avançou, caiu ou campeão)
       - [ ] histórico (campeões da copa na carreira)
 
 ---
