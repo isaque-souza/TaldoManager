@@ -633,7 +633,8 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       API: `livres` em `GET /simulacoes/{id}/mercado`,
       `POST /simulacoes/{id}/livres/contratar`
       - [x] backend (seed, save, mercado e rota)
-      - [ ] tela (filtro "Livres" no mercado)
+      - [x] tela — no mercado, "Jogadores: sem clube" troca a lista de
+            compra pelos livres, com as luvas e o botão "Contratar por…"
       - [ ] carreira (livres envelhecem; dispensados viram livres; a CPU
             contrata livres)
 * [ ] Importador da Premier League 2023/24 (OpenFootball, CC0) — overall
