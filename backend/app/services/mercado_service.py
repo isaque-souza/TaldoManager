@@ -165,6 +165,12 @@ def _ficha(jogador, jogador_id, clube):
         "fama": jogador.fama,
         "idolo": fama.idolo(jogador),
         "a_venda": jogador.a_venda,
+        # a temporada até aqui (ficha da Central do Elenco, v1.7)
+        "numero": jogador.numero,
+        "partidas": jogador.partidas,
+        "gols": jogador.gols,
+        "assistencias": jogador.assistencias,
+        "nota_media": jogador.nota_media(),
     }
 
 

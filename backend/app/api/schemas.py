@@ -726,6 +726,11 @@ class FichaMercado(BaseModel):
     fama: int = 0                        # v1.4
     idolo: bool = False
     a_venda: bool = False                # na lista de transferências (v1.7)
+    numero: int | None = None            # v1.7: a temporada até aqui
+    partidas: int = 0
+    gols: int = 0
+    assistencias: int = 0
+    nota_media: float = 0.0
     bloqueio: str | None = None          # por que não dá pra negociar (None = dá)
     # só nos jogadores de outros clubes
     rival: bool = False

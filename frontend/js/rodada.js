@@ -38,7 +38,7 @@ export async function carregarProximaRodada() {
 
 // ---------- hub do clube (tela "antes da rodada") ----------
 // A página inicial do clube é um menu de cards; cada card abre uma seção
-// (partida, mercado, contratos, marketing, estádio, finanças) e "← Menu do clube" volta.
+// (partida, mercado, elenco, marketing, estádio, finanças) e "← Menu do clube" volta.
 
 // "hub" ou a seção aberta
 export function abrirSecaoRodada(secao) {
@@ -58,19 +58,20 @@ export function renderSecaoRodada() {
   });
 }
 
-// resumo do mercado/contratos nos cards (vem de carregarMercado)
-export function marcarHubMercado({ janelaAberta, acabando }) {
+// resumo do mercado/elenco nos cards (vem de carregarMercado)
+export function marcarHubMercado({ janelaAberta, total, acabando, aVenda }) {
   $("hub-mercado").textContent = janelaAberta ? "Janela aberta" : "Janela fechada";
   $("hub-mercado-info").innerHTML = janelaAberta
     ? `<span class="luz-aberta" aria-hidden="true"></span> compre e venda jogadores`
     : `${icone("cadeado")} só veja o elenco e as transferências`;
-  $("hub-contratos").textContent = acabando
+  $("hub-elenco").textContent = acabando
     ? `${acabando} ${acabando === 1 ? "contrato acaba" : "contratos acabam"}`
-    : "Elenco em dia";
-  $("hub-contratos-info").textContent = acabando
-    ? "no fim da temporada: renove ou perca de graça"
-    : "nenhum contrato no último ano";
-  $("hub-contratos").closest(".hub-card").classList.toggle("hub-alerta", acabando > 0);
+    : `${total} jogadores`;
+  const venda = aVenda ? ` · ${aVenda} à venda` : "";
+  $("hub-elenco-info").textContent = acabando
+    ? `no fim da temporada: renove ou perca de graça${venda}`
+    : `nenhum contrato no último ano${venda}`;
+  $("hub-elenco").closest(".hub-card").classList.toggle("hub-alerta", acabando > 0);
 }
 
 // lê dos seletores (não do rodadaInfo): o técnico pode ter mexido e voltado

@@ -625,12 +625,12 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-areas:
     "jogo jogo escalacao" "jogo jogo tabela" "copa copa mercado"
-    "caixa caixa contratos" "financas marketing estadio";
+    "caixa caixa elenco" "financas marketing estadio";
 }
 /* save só da Taldo (sem copa) */
 .hub.sem-copa {
   grid-template-areas:
-    "jogo jogo escalacao" "jogo jogo tabela" "mercado contratos financas"
+    "jogo jogo escalacao" "jogo jogo tabela" "mercado elenco financas"
     "caixa marketing estadio";
 }
 .hub[hidden] { display: none; }
@@ -638,7 +638,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .hub [data-abrir="partida"] { grid-area: escalacao; }
 .hub [data-abrir="tabela"] { grid-area: tabela; }
 .hub [data-abrir="mercado"] { grid-area: mercado; }
-.hub [data-abrir="contratos"] { grid-area: contratos; }
+.hub [data-abrir="elenco"] { grid-area: elenco; }
 .hub [data-abrir="financas"] { grid-area: financas; }
 .hub [data-abrir="caixa"] { grid-area: caixa; }
 .hub [data-abrir="marketing"] { grid-area: marketing; }
@@ -760,12 +760,12 @@ button.hub-card:hover, button.hub-card:focus-visible {
   .hub {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
-      "jogo jogo" "escalacao tabela" "copa copa" "mercado contratos"
+      "jogo jogo" "escalacao tabela" "copa copa" "mercado elenco"
       "financas marketing" "caixa estadio";
   }
   .hub.sem-copa {
     grid-template-areas:
-      "jogo jogo" "escalacao tabela" "mercado contratos" "financas marketing" "caixa estadio";
+      "jogo jogo" "escalacao tabela" "mercado elenco" "financas marketing" "caixa estadio";
   }
   .hub-jogo { min-height: 14rem; gap: 1rem; }
   .hub-card strong { font-size: 1.35rem; }
@@ -1189,4 +1189,47 @@ details.outra-liga { margin-top: 1rem; }
 .cp-penaltis { display: block; padding: 0 .6rem; color: var(--texto-2); font-size: .72rem; text-align: right; }
 @media (max-width: 640px) {
   .cp-chave { grid-template-columns: 1fr; }
+}
+
+/* ---------- Central do Elenco (v1.7) ---------- */
+/* lista à esquerda, ficha à direita (no celular, a ficha vem embaixo) */
+.el-grade { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(18rem, 1fr); gap: 1.2rem; align-items: start; }
+.el-lista, .el-lado { min-width: 0; }
+.el-lado { position: sticky; top: 4.5rem; max-height: calc(100vh - 5rem); overflow-y: auto; }
+.el-nome {
+  width: auto; margin: 0; padding: 0; border: 0; background: none; color: var(--texto);
+  font-family: var(--fonte-texto); font-size: inherit; font-weight: 600; text-align: left;
+  text-transform: none; letter-spacing: 0; white-space: nowrap; cursor: pointer;
+}
+.el-lista figure { overflow-x: auto; }
+.el-lista td { white-space: nowrap; padding-inline: .5rem; }
+.el-nome:hover { color: var(--gramado-claro); text-decoration: underline; }
+.el-lista tr.sel td { background: color-mix(in srgb, var(--gramado) 18%, transparent); }
+.el-lista tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--gramado-claro); }
+.el-lista .chip { font-size: .72rem; }
+.el-ficha { margin: 0; padding: 1rem; background: var(--superficie); border: 1px solid var(--linha); border-radius: 6px; }
+.el-ficha-topo { display: flex; gap: .9rem; align-items: center; margin: 0 0 1rem; padding: 0; background: none; border: 0; }
+.el-ficha-topo h3 { margin: 0; font-size: 1.3rem; text-transform: uppercase; }
+.el-ficha-topo small { color: var(--texto-2); font-size: .9rem; }
+.el-selos { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .3rem; }
+.el-selos:empty { display: none; }
+.el-numeros, .el-contrato { display: grid; gap: .5rem; margin: 0 0 1rem; }
+.el-numeros { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.el-contrato { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.el-numeros div, .el-contrato div { padding: .4rem .5rem; background: var(--superficie-2); border-radius: 4px; min-width: 0; }
+.el-ficha dt { color: var(--texto-2); font-family: var(--fonte-tarja); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.el-ficha dd { margin: 0; font-family: var(--fonte-tarja); font-size: 1.15rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.el-numeros dd { font-size: 1.3rem; }
+.el-ficha .atributos { grid-template-columns: 1fr; }
+.el-ficha .atr { grid-template-columns: 8.5rem 1fr 2rem; }
+.el-acoes { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .6rem; }
+.el-acoes button { width: auto; margin: 0; padding: .45rem .8rem; font-size: .82rem; }
+.el-ficha > small.bloqueio { display: block; margin: -.2rem 0 .6rem; }
+#c-form:not(:empty) { margin-top: 1rem; }
+@media (max-width: 900px) {
+  .el-grade { grid-template-columns: 1fr; }
+  .el-lado { position: static; max-height: none; }
+}
+@media (max-width: 640px) {
+  .el-contrato { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
