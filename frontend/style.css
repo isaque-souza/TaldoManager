@@ -1202,7 +1202,10 @@ details.outra-liga { margin-top: 1rem; }
   text-transform: none; letter-spacing: 0; white-space: nowrap; cursor: pointer;
 }
 .el-lista figure { overflow-x: auto; }
-.el-lista td { white-space: nowrap; padding-inline: .5rem; }
+.el-lista td { white-space: nowrap; padding-inline: .45rem; }
+/* o nome pode quebrar: os selos (lesão, humor...) descem para a linha de baixo */
+.el-lista td:nth-child(2) { white-space: normal; min-width: 8rem; }
+.el-lista .sobe { color: var(--gramado-claro); }
 .el-nome:hover { color: var(--gramado-claro); text-decoration: underline; }
 .el-lista tr.sel td { background: color-mix(in srgb, var(--gramado) 18%, transparent); }
 .el-lista tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--gramado-claro); }
@@ -1233,3 +1236,7 @@ details.outra-liga { margin-top: 1rem; }
 @media (max-width: 640px) {
   .el-contrato { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+.el-papel { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .8rem; margin: 0 0 1rem; padding: .6rem .7rem; background: var(--superficie-2); border-radius: 4px; }
+.el-papel label { margin: 0; flex: 1 1 100%; min-width: 0; white-space: nowrap; display: flex; align-items: center; gap: .5rem; font-family: var(--fonte-tarja); font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--texto-2); }
+.el-papel select { flex: 1; min-width: 0; width: auto; margin: 0; padding: .3rem 2rem .3rem .6rem; font-size: .9rem; }
+.el-papel small { flex-basis: 100%; color: var(--texto-2); font-size: .82rem; }

@@ -49,6 +49,8 @@ from app.api.schemas import (
     NovaListaTransferencia,
     ListaTransferencia,
     Dispensa,
+    NovoPapel,
+    PapelDefinido,
 )
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
@@ -378,6 +380,23 @@ def marcar_a_venda(simulacao_id: int, jogador_id: int, lista: NovaListaTransfere
     """Põe ou tira um jogador do seu elenco da lista de transferências."""
     try:
         feito = mercado_service.marcar_a_venda(simulacao_id, jogador_id, lista.a_venda)
+    except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if feito is None:
+        raise HTTPException(status_code=404, detail="Simulação ou jogador não encontrado")
+    return feito
+
+
+@router.put(
+    "/simulacoes/{simulacao_id}/jogadores/{jogador_id}/papel",
+    response_model=PapelDefinido,
+    tags=["elenco"],
+)
+def definir_papel(simulacao_id: int, jogador_id: int, novo: NovoPapel):
+    """Muda o papel prometido (titular, rotacao, promessa ou reserva).
+    Rebaixar deixa o jogador incomodado; promover, contente."""
+    try:
+        feito = mercado_service.definir_papel(simulacao_id, jogador_id, novo.papel)
     except (TemporadaConcluida, PartidaEmAndamento, TransferenciaInvalida) as e:
         raise _erro_de_mercado(e) from e
     if feito is None:

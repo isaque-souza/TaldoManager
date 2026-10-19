@@ -17,7 +17,7 @@ import json
 import random
 
 from app.db.conexao import conectar
-from app.domain import caixa, fama, livres, mercado, torcida
+from app.domain import caixa, fama, livres, mercado, papeis, torcida
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
 from app.repositories import clube_repository as clube_repo
@@ -47,6 +47,8 @@ class _Contexto:
         self.alvo = next(
             c for c in campeonato.clubes if c.nome == sim["clube_usuario"]
         )
+        # antes da 1ª rodada (ou com reforço novo) ainda há quem não tem papel
+        papeis.completar(self.alvo)
 
     @property
     def rodada(self):
@@ -174,6 +176,22 @@ def _ficha(jogador, jogador_id, clube):
     }
 
 
+def _papel(jogador):
+    """Papel no elenco (v1.7): o prometido, o humor e quanto da meta ele
+    está cumprindo."""
+    meta = papeis.META.get(jogador.papel)
+    fracao = papeis.aproveitamento(jogador)
+    return {
+        "papel": jogador.papel,
+        "humor": jogador.humor,
+        "titularidades": jogador.titularidades,
+        "jogos_disponivel": jogador.jogos_disponivel,
+        "meta_conta": meta[0] if meta else None,
+        "meta_fracao": meta[1] if meta else None,
+        "aproveitamento": round(fracao, 3) if fracao is not None else None,
+    }
+
+
 def _historico(conn, simulacao_id):
     return [
         {
@@ -231,6 +249,7 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
                 "ofertas": n_ofertas,
                 "rescisao": mercado.rescisao(j),
                 "dispensa_bloqueada": mercado.motivo_dispensa_bloqueada(alvo, j),
+                **_papel(j),
             })
 
         disponiveis = []
@@ -590,6 +609,35 @@ def dispensar(simulacao_id, jogador_id):
             "jogador": jogador.nome,
             "rescisao": custo,
             "caixa": clube.dinheiro,
+        }
+    finally:
+        conn.close()
+
+
+def definir_papel(simulacao_id, jogador_id, papel):
+    """Muda o papel prometido a um jogador do elenco dirigido (v1.7):
+    rebaixar incomoda, promover deixa contente. None se a simulação ou o
+    jogador não existem."""
+
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        jogador = _do_meu_elenco(ctx, jogador_id)
+        if jogador is None:
+            return None
+        try:
+            papeis.definir(jogador, papel)
+        except papeis.PapelInvalido as e:
+            raise TransferenciaInvalida(str(e)) from e
+        with conn:
+            ctx.gravar()
+        return {
+            "jogador_id": jogador_id,
+            "jogador": jogador.nome,
+            "papel": jogador.papel,
+            "humor": jogador.humor,
         }
     finally:
         conn.close()

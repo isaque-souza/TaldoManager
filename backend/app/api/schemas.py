@@ -740,6 +740,14 @@ class FichaMercado(BaseModel):
     ofertas: int | None = None
     rescisao: int | None = None          # quanto custa dispensar (v1.7)
     dispensa_bloqueada: str | None = None
+    # papel no elenco (v1.7)
+    papel: str | None = None
+    humor: str | None = None
+    titularidades: int = 0
+    jogos_disponivel: int = 0
+    meta_conta: str | None = None        # "titular" (começar) ou "jogou" (entrar)
+    meta_fracao: float | None = None
+    aproveitamento: float | None = None
     # só nos livres (v1.6): o bônus de assinatura, no lugar da transferência
     luvas: int | None = None
 
@@ -778,6 +786,17 @@ class ListaTransferencia(BaseModel):
     jogador_id: int
     jogador: str
     a_venda: bool
+
+
+class NovoPapel(BaseModel):
+    papel: str
+
+
+class PapelDefinido(BaseModel):
+    jogador_id: int
+    jogador: str
+    papel: str
+    humor: str
 
 
 class Dispensa(BaseModel):
