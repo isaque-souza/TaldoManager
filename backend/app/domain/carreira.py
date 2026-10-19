@@ -11,7 +11,7 @@ não do `estado_json` (que é apagado quando a temporada termina): o banco é a
 fonte da verdade.
 """
 
-from app.domain import contrato, mercado, numeros
+from app.domain import contrato, livres, mercado, numeros
 from app.domain.base import TAMANHO_ALVO
 from app.domain.evolucao import evoluir
 from app.domain.temporada import criar_jogador
@@ -25,7 +25,8 @@ def seed_da_temporada(seed_carreira, temporada):
     return seed_carreira + temporada - 1
 
 
-def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
+def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
+                            livres_finais=None):
     """Aplica num campeonato recém-carregado o estado final da temporada
     anterior.
 
@@ -35,6 +36,8 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
     `jogadores_finais`: dicts com `nome`, `clube`, `idade`, `overall`,
     `potencial`, `salario`, `contrato_anos`, `multa_rescisoria`, `fama` e
     `temporadas_no_clube`, na ordem do elenco.
+    `livres_finais`: os livres no fim dela (`temporada.restaurar_livres`);
+    None (temporada de antes da v1.6) fica com os da seed.
     """
 
     # todos os jogadores da liga, por nome (os nomes são únicos na seed)
@@ -91,8 +94,10 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais):
             clube.capacidade = final["capacidade"]
             clube.ingresso = final.get("ingresso") or "normal"
 
-    # livres (v1.6): por enquanto cada temporada recomeça com os da seed,
-    # menos quem já foi contratado
+    # livres (v1.6): os do fim da temporada anterior; sem registro, os da
+    # seed — nos dois casos, menos quem já está num clube
+    if livres_finais is not None:
+        campeonato.livres = list(livres_finais)
     na_liga = {j.nome for c in campeonato.clubes for j in c.jogadores}
     campeonato.livres = [j for j in campeonato.livres if j.nome not in na_liga]
 
@@ -106,12 +111,13 @@ def envelhecer(campeonato, jogadores_finais, rng):
 
     partidas = {j["nome"]: j["partidas"] for j in jogadores_finais}
 
-    for clube in campeonato.clubes:
-        for jogador in clube.jogadores:
-            jogador.idade, jogador.overall, jogador.potencial = evoluir(
-                jogador.idade, jogador.overall, jogador.potencial,
-                partidas.get(jogador.nome, 0), rng,
-            )
+    # os livres também (v1.6): sem jogar, quem não é jovem cai
+    todos = [j for c in campeonato.clubes for j in c.jogadores] + campeonato.livres
+    for jogador in todos:
+        jogador.idade, jogador.overall, jogador.potencial = evoluir(
+            jogador.idade, jogador.overall, jogador.potencial,
+            partidas.get(jogador.nome, 0), rng,
+        )
 
     return campeonato
 
@@ -179,6 +185,13 @@ def aposentar(campeonato, rng):
                 continue
             _remover(clube, jogador)
             movimentos.append(_movimento("aposentou", jogador, clube))
+
+    # livres (v1.6) também param — sem contrato, como quem não renovou. Sem
+    # clube, não entram nos movimentos (a tela da virada é por clube)
+    campeonato.livres = [
+        j for j in campeonato.livres
+        if rng.random() >= chance_aposentadoria(j.idade, True)
+    ]
     return movimentos
 
 
@@ -218,11 +231,14 @@ def _cpu_dispensa(clube, jogador):
 
 def _sair_livre(campeonato, clube, jogador, clube_usuario):
     """Tira o jogador do clube e o leva, de graça, para o clube da CPU com
-    vaga onde seria titular (ou para fora da liga). Devolve os movimentos."""
+    vaga onde seria titular (ou para a lista de livres, v1.6). Devolve os
+    movimentos."""
     _remover(clube, jogador)
     destino = _destino_livre(campeonato, jogador, clube, clube_usuario)
     if destino is None:
-        return [_movimento("saiu_livre", jogador, clube, "deixou a liga")]
+        livres.ficar_livre(jogador)
+        campeonato.livres.append(jogador)
+        return [_movimento("saiu_livre", jogador, clube, "ficou sem clube")]
 
     destino.contratar_jogador(jogador)
     jogador.temporadas_no_clube = 0
@@ -244,8 +260,8 @@ def resolver_contratos(campeonato, clube_usuario):
       que é dispensado;
     - clube do técnico: sai de graça (não foi renovado).
 
-    Quem sai vai para o clube da CPU com vaga onde seria titular, ou deixa a
-    liga. Se a saída deixaria o elenco abaixo do mínimo, o jogador assina 1
+    Quem sai vai para o clube da CPU com vaga onde seria titular, ou fica
+    livre (v1.6). Se a saída deixaria o elenco abaixo do mínimo, o jogador assina 1
     temporada de emergência. Devolve a lista de movimentos."""
 
     movimentos = []

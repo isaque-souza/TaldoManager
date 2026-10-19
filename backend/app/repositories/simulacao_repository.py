@@ -47,6 +47,14 @@ def atualizar_estado(conn, simulacao_id, *, estado, rodada_atual,
     )
 
 
+def definir_livres(conn, simulacao_id, livres_json):
+    """Os livres no fim da temporada (v1.6), para a virada da carreira."""
+    conn.execute(
+        "UPDATE simulacao SET livres_json = ? WHERE id = ?",
+        (livres_json, simulacao_id),
+    )
+
+
 def definir_ao_vivo(conn, simulacao_id, ao_vivo_json):
     """Abre/atualiza (JSON) ou encerra (None) a partida transmitida em curso.
     Não mexe em `atualizada_em`: só o estado vivo da temporada anda ali."""

@@ -487,3 +487,36 @@ def test_temporada_2_herda_a_torcida():
     assert any(f["torcedores"] != f["torcedores_inicial"] for f in final.values())
     for f in simulacao_service.carregar_temporada(nova)["financas"]:
         assert f["torcedores_inicial"] == f["torcedores"] == final[f["clube"]]["torcedores"]
+
+
+# --- livres (v1.6) -----------------------------------------------------------
+
+def test_livres_seguem_para_a_temporada_seguinte():
+    import json
+
+    from app.services import mercado_service
+
+    sid = temporada_service.iniciar(seed=5, clube_usuario="Real Taldo")
+    contratado = mercado_service.ver_mercado(sid)["livres"][0]["nome"]
+    mercado_service.contratar_livre(sid, contratado)
+    while temporada_service.avancar(sid)["concluida"] is False:
+        pass
+
+    conn = conectar()
+    try:
+        livres_json = conn.execute(
+            "SELECT livres_json FROM simulacao WHERE id = ?", (sid,)
+        ).fetchone()["livres_json"]
+    finally:
+        conn.close()
+    assert livres_json and contratado not in livres_json
+
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+    m = mercado_service.ver_mercado(nova)
+    nomes = {f["nome"] for f in m["livres"]}
+    assert contratado not in nomes
+    assert contratado in {f["nome"] for f in m["elenco"]}
+    # parte dos livres do fim da T1 continua livre (o resto se aposentou ou
+    # foi contratado pela CPU), e a lista foi completada
+    assert set(json.loads(livres_json)) & nomes
+    assert len(nomes) >= 50

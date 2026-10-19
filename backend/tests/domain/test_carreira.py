@@ -264,7 +264,7 @@ def test_destino_e_o_clube_mais_rico_onde_seria_titular():
     assert craque in rico.jogadores
 
 
-def test_sem_destino_o_jogador_deixa_a_liga():
+def test_sem_destino_o_jogador_fica_livre():
     camp = carregar_campeonato()
     _todos(camp, 3)
     meu = camp.clubes[0]
@@ -277,7 +277,10 @@ def test_sem_destino_o_jogador_deixa_a_liga():
     movs = resolver_contratos(camp, meu.nome)
 
     assert all(fraco not in c.jogadores for c in camp.clubes)
-    assert [(m["tipo"], m["detalhe"]) for m in movs] == [("saiu_livre", "deixou a liga")]
+    assert [(m["tipo"], m["detalhe"]) for m in movs] == [("saiu_livre", "ficou sem clube")]
+    # v1.6: vai para a lista de livres, sem contrato
+    assert fraco in camp.livres
+    assert (fraco.contrato_anos, fraco.temporadas_no_clube) == (0, 0)
 
 
 def test_elenco_minimo_gera_contrato_de_emergencia():

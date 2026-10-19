@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from app.domain import estadio, fama
+from app.domain import estadio, fama, livres
 from app.domain.jogador import Jogador
 from app.domain.clube import Clube
 from app.domain.campeonato import Campeonato
@@ -98,20 +98,12 @@ def carregar_livres():
     with open(caminho, encoding="utf-8") as arquivo:
         dados = json.load(arquivo)
 
-    return [
-        Jogador(
-            j["nome"],
-            j["idade"],
-            j["posicao"],
-            j["overall"],
-            potencial=j["potencial"],
-            contrato_anos=0,
-            funcao=j["funcao"],
-            secundarias=j["secundarias"],
-            fama=fama.inicial(j["nome"], j["idade"], j["overall"])[0],
-        )
-        for j in dados
-    ]
+    jogadores = []
+    for j in dados:
+        jogador = livres.para_jogador(j)
+        jogador.fama = fama.inicial(j["nome"], j["idade"], j["overall"])[0]
+        jogadores.append(jogador)
+    return jogadores
 
 
 def carregar_campeonato():

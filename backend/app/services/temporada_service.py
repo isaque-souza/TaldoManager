@@ -18,7 +18,9 @@ from datetime import datetime, timezone
 
 from app.db.conexao import conectar
 from app.domain import caixa, fama, posicoes
-from app.domain.temporada import restaurar_estado, snapshot_estado
+from app.domain.temporada import (
+    livres_para_json, restaurar_estado, snapshot_estado,
+)
 from app.repositories import atuacao_repository as atuacao_repo
 from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
@@ -440,6 +442,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
                     formacao=nova_formacao,
                     xi_preferido=xi_json,
                 )
+                # o snapshot some; os livres ficam para a próxima temporada
+                simulacao_repo.definir_livres(conn, simulacao_id, json.dumps(
+                    livres_para_json(campeonato), ensure_ascii=False,
+                ))
             else:
                 simulacao_repo.atualizar_estado(
                     conn, simulacao_id,
