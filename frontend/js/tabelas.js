@@ -106,3 +106,9 @@ export function reais(v) {
 export const blocoResumo = (rotulo, valor, detalhe, classe = "") =>
   `<div class="tile"><span class="tile-rotulo">${rotulo}</span>` +
   `<span class="tile-valor ${classe}">${valor}</span><span class="tile-detalhe">${detalhe}</span></div>`;
+
+// o potencial de quem é de fora vem do olheiro (v2.0): uma faixa, "74–82"
+export const potTexto = (f) => f.potencial_faixa && f.potencial_faixa[0] !== f.potencial_faixa[1]
+  ? `${f.potencial_faixa[0]}–${f.potencial_faixa[1]}` : `${f.potencial}`;
+export const potTitulo = (f) => f.potencial_faixa
+  ? "estimativa do olheiro" : f.potencial > f.overall ? "ainda cresce" : "";

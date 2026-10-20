@@ -12,17 +12,20 @@ A visão (classificação, rankings, recordes, ...) é sempre montada por
 import io
 import json
 import random
+import re
 from contextlib import redirect_stdout
 from datetime import datetime, timezone
+from types import SimpleNamespace
 
 from app.db.conexao import conectar
-from app.domain import atributos, copa, diretoria, fama, mercado, mercado_cpu, posicoes, vontade
+from app.domain import atributos, copa, diretoria, fama, mercado, mercado_cpu, olheiro, posicoes, vontade
 from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
 from app.repositories import atuacao_repository as atuacao_repo
 from app.repositories import carreira_repository as carreira_repo
 from app.repositories import clube_repository as clube_repo
+from app.repositories import emprestimo_repository as emprestimo_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import lance_repository as lance_repo
 from app.repositories import movimento_repository as movimento_repo
@@ -254,6 +257,8 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
             "obra_rodadas": clube.obra_rodadas,
             "lugares_ampliados": clube.lugares_ampliados,
             "despesa_estadio": clube.despesa_estadio,
+            "nivel_olheiro": clube.nivel_olheiro,
+            "despesa_olheiros": clube.despesa_olheiros,
         })
 
         for jogador in clube.jogadores:
@@ -358,7 +363,8 @@ def _financas_da_liga(clubes, jogadores):
         receitas = (c.get("receita_tv", 0) + c.get("receita_bilheteria", 0)
                     + c.get("receita_premiacao", 0) + c.get("receita_vendas", 0))
         despesas = (c.get("despesa_salarios", 0) + c.get("despesa_compras", 0)
-                    + c.get("despesa_marketing", 0) + c.get("despesa_estadio", 0))
+                    + c.get("despesa_marketing", 0) + c.get("despesa_estadio", 0)
+                    + c.get("despesa_olheiros", 0))
         linhas.append({
             "id": c.get("id"),
             "posicao": c["posicao_final"],
@@ -794,6 +800,28 @@ def _idolo(r):
     return fama.eh_idolo(r["fama"] or 0, r["temporadas_no_clube"] or 0)
 
 
+def _nivel_olheiro(clube_usuario, clubes):
+    return next((c["nivel_olheiro"] for c in clubes if c["nome"] == clube_usuario),
+                olheiro.NIVEL_INICIAL)
+
+
+def _joias_pelo_olheiro(movimentos, clube_usuario, clubes):
+    """Os jovens que subiram da base nos outros clubes mostram o potencial
+    como o olheiro o vê (v2.0): "potencial 74–82" no lugar do exato."""
+    if not clube_usuario:
+        return
+    nivel = _nivel_olheiro(clube_usuario, clubes)
+    for m in movimentos:
+        achado = re.fullmatch(r"potencial (\d+)", m.get("detalhe") or "")
+        if m["tipo"] != "subiu_da_base" or m["clube"] == clube_usuario or not achado:
+            continue
+        jovem = SimpleNamespace(nome=m["jogador"], idade=m["idade"],
+                                overall=m["overall"], potencial=int(achado[1]))
+        faixa = olheiro.faixa(jovem, nivel)
+        if faixa:
+            m["detalhe"] = f"potencial {faixa[0]}–{faixa[1]}"
+
+
 def _cru_do_banco(conn, simulacao_id):
     sim = simulacao_repo.buscar(conn, simulacao_id)
     if sim is None:
@@ -833,6 +861,7 @@ def _cru_do_banco(conn, simulacao_id):
     movimentos = [
         dict(r) for r in movimento_repo.listar_por_simulacao(conn, simulacao_id)
     ]
+    _joias_pelo_olheiro(movimentos, sim["clube_usuario"], clubes)
 
     cargo = cargo_da_temporada(conn, sim)
     demitido = cargo is not None and cargo["estado"] == "demitido"
@@ -1030,6 +1059,23 @@ def detalhe_partida(simulacao_id, partida_id):
         conn.close()
 
 
+def _potencial_visto(conn, simulacao_id, j, jogador_id):
+    """O potencial de `j` (linha da tabela) como o técnico o vê (v2.0): o
+    exato se é do clube dele (ou ele o emprestou), senão o do olheiro."""
+    sim = simulacao_repo.buscar(conn, simulacao_id)
+    usuario = sim["clube_usuario"]
+    emprestou = any(
+        e["jogador_id"] == jogador_id and e["de_clube"] == usuario and not e["comprado"]
+        for e in emprestimo_repo.listar_por_simulacao(conn, simulacao_id)
+    )
+    if not usuario or j["clube"] == usuario or emprestou:
+        return {"potencial_faixa": None}
+    clubes = clube_repo.listar_por_simulacao(conn, simulacao_id)
+    nivel = _nivel_olheiro(usuario, clubes)
+    return olheiro.estimativa(SimpleNamespace(**{k: j[k] for k in (
+        "nome", "idade", "overall", "potencial")}), nivel)
+
+
 def game_log_jogador(simulacao_id, jogador_id):
     """Ficha do jogador + uma linha por partida disputada (nota, contribuição,
     contexto). None se o jogador não for da simulação."""
@@ -1106,6 +1152,7 @@ def game_log_jogador(simulacao_id, jogador_id):
             # veterano: o sonho é onde encerrar a carreira
             "sonho_encerrar": j["idade"] >= vontade.IDADE_APOSENTADORIA,
         }
+        jogador.update(_potencial_visto(conn, simulacao_id, j, jogador_id))
 
         return {"jogador": jogador, "jogos": jogos}
     finally:

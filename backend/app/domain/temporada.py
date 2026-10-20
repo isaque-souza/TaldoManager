@@ -60,6 +60,8 @@ _CLUBE_CAMPOS = (
     # estádio (v1.5)
     "capacidade", "ingresso",
     "obra_lugares", "obra_rodadas", "lugares_ampliados", "despesa_estadio",
+    # olheiro (v2.0)
+    "nivel_olheiro", "despesa_olheiros",
 )
 
 

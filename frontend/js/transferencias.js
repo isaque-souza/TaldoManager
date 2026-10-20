@@ -6,10 +6,10 @@
 // jogador, na Central do Elenco.
 
 import { $, estado, navegarPara, pedir } from "./nucleo.js";
-import { blocoResumo, decimal, dinheiro, reais, tabela } from "./tabelas.js";
+import { blocoResumo, decimal, dinheiro, potTexto, potTitulo, reais, tabela } from "./tabelas.js";
 import {
-  acaoCompra, acaoEmprestimo, acaoLivre, acoesOferta, detalheOferta, DURACAO_EMP, ligarBotoesMercado,
-  postarMercado, STATUS_NEG,
+  acaoCompra, acaoEmprestimo, acaoLivre, acoesOferta, carregarMercado, detalheOferta, DURACAO_EMP,
+  ligarBotoesMercado, postarMercado, STATUS_NEG,
 } from "./mercado.js";
 import { MULTA_ROTULO } from "./contratos.js";
 import { abrirJogador } from "./jogador.js";
@@ -22,7 +22,7 @@ import { telaEstreita } from "./elenco.js";
 
 const ABAS = [
   ["buscar", "Buscar"], ["observados", "Observados"],
-  ["negociacoes", "Negociações"], ["historico", "Histórico"],
+  ["negociacoes", "Negociações"], ["historico", "Histórico"], ["olheiro", "Olheiro"],
 ];
 const LIMITE_LINHAS = 40;   // linhas da busca (o resto pede filtro)
 const SIGLA_LIGA = { taldo: "TAL", premier: "PL" };
@@ -123,7 +123,7 @@ const clubeFmt = (f) => f.clube
   : "sem clube";
 
 const potFmt = (f) =>
-  f.potencial > f.overall ? `<span class="sobe" title="ainda cresce">${f.potencial}</span>` : f.potencial;
+  f.potencial > f.overall ? `<span class="sobe" title="${potTitulo(f)}">${potTexto(f)}</span>` : potTexto(f);
 
 // a diferença desde que entrou na lista: +3, −1,2 mi...
 function variacao(atual, antes, fmt = (v) => v) {
@@ -169,7 +169,7 @@ function ficha(f, o = null) {
       </div>
       <dl class="el-notas">
         <div><dt>OVR</dt><dd>${f.overall}</dd></div>
-        <div><dt>POT</dt><dd class="${f.potencial > f.overall ? "sobe" : ""}">${f.potencial}</dd></div>
+        <div><dt>POT</dt><dd class="${f.potencial > f.overall ? "sobe" : ""}" title="${potTitulo(f)}">${potTexto(f)}</dd></div>
       </dl>
     </header>
     ${desde}
@@ -500,6 +500,44 @@ function abaHistorico() {
     ])}`;
 }
 
+// o olheiro profissional (v2.0): o nível estreita a faixa do potencial
+function abaOlheiro() {
+  const o = mercado.olheiro;
+  if (!o) return `<p class="vazio">Sem olheiro neste save.</p>`;
+  const cartoes = o.niveis.map((n) => {
+    const atual = n.nivel === o.nivel;
+    const custo = n.custo_temporada ? `${reais(n.custo_temporada)}<small>/temporada</small>` : "grátis";
+    const agora = !atual && n.custo_agora ? `<p>Agora: <strong>${reais(n.custo_agora)}</strong> até o fim da temporada.</p>` : "";
+    const motivo = !atual && n.bloqueio ? `<small class="mk-bloqueio">${icone("cadeado")} ${n.bloqueio}</small>` : "";
+    return `<article class="mk-campanha${atual ? " ol-atual" : ""}">
+      <header><strong>Nível ${n.nivel}</strong>${atual ? ` <span class="chip chip-batida">Atual</span>` : ""}</header>
+      <dl class="mk-ficha">
+        <div><dt>Faixa</dt><dd>±${n.faixa}</dd></div>
+        <div><dt>Custo</dt><dd>${custo}</dd></div>
+      </dl>
+      ${agora}${motivo}
+      ${atual ? "" : `<button type="button" class="secondary outline" data-olheiro="${n.nivel}" ${n.bloqueio ? "disabled" : ""}>
+        ${n.nivel > o.nivel ? "Contratar" : "Trocar"}</button>`}
+    </article>`;
+  }).join("");
+  return `<p class="mk-intro">O olheiro estima o <strong>potencial</strong> dos jogadores de outros clubes
+      e dos livres: você vê uma faixa (ex.: 74–82), e o valor certo está dentro dela. Quanto maior o nível,
+      mais estreita a faixa. Os do seu elenco e os veteranos (30+) você conhece de verdade.</p>
+    <p class="mk-intro">O contrato vai até o fim da temporada: subir de nível paga na hora a diferença pelas
+      rodadas que faltam; descer não devolve nada. Na virada, ele renova pela temporada cheia.
+      Gasto nesta temporada: <strong>${reais(o.gasto_temporada)}</strong>.</p>
+    <div class="mk-campanhas">${cartoes}</div>`;
+}
+
+async function trocarOlheiro(nivel) {
+  const r = await postarMercado(`/simulacoes/${estado.simId}/olheiro`, { nivel }, "Trocando o olheiro…");
+  if (!r) return;
+  const aviso = $("r-mercado-msg");
+  aviso.classList.remove("ruim");
+  aviso.innerHTML = `${icone("ok")} Olheiro de nível ${r.nivel} contratado.`;
+  await carregarMercado();
+}
+
 async function carregarHistorico() {
   const h = await pedir(`/simulacoes/${estado.simId}/historico-transferencias`);
   if (!h) return;
@@ -520,12 +558,13 @@ function desenhar() {
   const conta = {
     observados: `${observados.observados.length}`,
     negociacoes: alerta ? `<span class="chip chip-perto">${alerta}</span>` : "",
+    olheiro: m.olheiro ? `nív. ${m.olheiro.nivel}` : "",
   };
   const abas = ABAS.map(([v, rotulo]) =>
     `<button type="button" data-aba="${v}" class="${v === tela.aba ? "ativa" : ""}">` +
     `${rotulo}${conta[v] ? ` <small>${conta[v]}</small>` : ""}</button>`).join("");
   const corpo = { buscar: abaBuscar, observados: abaObservados,
-                  negociacoes: abaNegociacoes, historico: abaHistorico }[tela.aba]();
+                  negociacoes: abaNegociacoes, historico: abaHistorico, olheiro: abaOlheiro }[tela.aba]();
 
   const box = $("r-mercado");
   box.innerHTML = `
@@ -579,6 +618,9 @@ function ligar(box) {
   );
   box.querySelectorAll("[data-obs]").forEach((b) =>
     b.addEventListener("click", () => observar(b.dataset.obs, b.dataset.obsOn === "1"))
+  );
+  box.querySelectorAll("[data-olheiro]").forEach((b) =>
+    b.addEventListener("click", () => trocarOlheiro(Number(b.dataset.olheiro)))
   );
   box.querySelectorAll("[data-pagina]").forEach((b) =>
     b.addEventListener("click", () => navegarPara(() => abrirJogador(Number(b.dataset.pagina))))

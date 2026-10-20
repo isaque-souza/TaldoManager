@@ -70,7 +70,9 @@ CREATE TABLE IF NOT EXISTS clube (
     obra_lugares       INTEGER NOT NULL DEFAULT 0,
     obra_rodadas       INTEGER NOT NULL DEFAULT 0,   -- quantas faltam
     lugares_ampliados  INTEGER NOT NULL DEFAULT 0,
-    despesa_estadio    INTEGER NOT NULL DEFAULT 0    -- obras + manutenção
+    despesa_estadio    INTEGER NOT NULL DEFAULT 0,   -- obras + manutenção
+    nivel_olheiro      INTEGER NOT NULL DEFAULT 1,   -- olheiro profissional (v2.0)
+    despesa_olheiros   INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS jogador (
