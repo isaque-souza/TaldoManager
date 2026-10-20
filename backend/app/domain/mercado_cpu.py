@@ -11,6 +11,8 @@ rodada 19), antes de o técnico mexer:
   está emprestado não sai (vale a trava de `mercado.motivo_saida_bloqueada`)
 - no máximo `MAX_POR_JANELA` negócios por janela; o clube do técnico fica
   de fora (os dele passam pelas ofertas, em `app.domain.ofertas`)
+- o jogador tem vontade (v1.9): não vai para onde "não vem" e, se está
+  resistente ao comprador, recusa em `CHANCE_RECUSA` das vezes
 
 O sorteio usa um `random.Random` próprio (`semente`): não mexe na sequência
 das partidas, e o mesmo save sorteia sempre os mesmos negócios.
@@ -19,13 +21,14 @@ das partidas, e o mesmo save sorteia sempre os mesmos negócios.
 import random
 from dataclasses import dataclass
 
-from app.domain import fama, mercado
+from app.domain import fama, mercado, vontade
 
 CHANCE_COMPRA = 0.35       # por clube, por janela
 MAX_POR_JANELA = 10
 FRACAO_CAIXA = 0.4         # o máximo do caixa que vai num reforço
 GANHO_MINIMO = 2           # de overall sobre o pior titular da posição
 CANDIDATOS = 5             # sorteia entre os melhores negócios
+CHANCE_RECUSA = 0.5        # jogador resistente ao comprador (v1.9)
 
 
 @dataclass
@@ -62,7 +65,7 @@ def _vende(vendedor, jogador):
     )
 
 
-def _candidatos(comprador, clubes, ja):
+def _candidatos(comprador, clubes, ja, todos=None):
     """(ganho, jogador, vendedor, preço) dos reforços que cabem no caixa."""
     verba = comprador.dinheiro * FRACAO_CAIXA
     piores = {}
@@ -79,6 +82,9 @@ def _candidatos(comprador, clubes, ja):
             if pior is None or j.overall < pior + GANHO_MINIMO:
                 continue
             if not _vende(vendedor, j):
+                continue
+            # `todos`: o clube da história pode ser o do técnico (v1.9)
+            if vontade.motivo_nao_vem(j, comprador, todos or clubes):
                 continue
             preco = mercado.preco_pedido(j, vendedor, comprador)
             if preco > verba or mercado.motivo_entrada_bloqueada(comprador, preco):
@@ -98,13 +104,18 @@ def negociar(clubes, clube_usuario, rng):
     rng.shuffle(compradores)
 
     feitos, ja = [], set()
+    prest = vontade.prestigio(clubes)
     for comprador in compradores:
         if len(feitos) >= MAX_POR_JANELA:
             break
-        candidatos = _candidatos(comprador, cpu, ja)
+        candidatos = _candidatos(comprador, cpu, ja, clubes)
         if not candidatos:
             continue
         _, jogador, vendedor, preco = rng.choice(candidatos)
+        # o jogador também decide (v1.9): resistente, às vezes recusa
+        interesse = vontade.interesse(jogador, comprador, vendedor, clubes, prest)
+        if interesse.nivel == vontade.RESISTENTE and rng.random() < CHANCE_RECUSA:
+            continue
         mercado.transferir(jogador, vendedor, comprador, preco)
         ja.add(jogador.nome)
         feitos.append(Negocio(jogador, vendedor, comprador, preco))

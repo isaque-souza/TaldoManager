@@ -220,7 +220,15 @@ async function exercerOpcao(emprestimoId, onde) {
 export const STATUS_NEG = {
   aberta: ["chip-perto", "Falta o contrato"], fechada: ["chip-batida", "Contratado"],
   desistiu: ["chip-longe", "Desistiu"], expirada: ["", "Expirou"],
+  perdida: ["chip-longe", "Foi para outro"],   // disputa perdida (v1.9)
 };
+
+// outro clube também quer o jogador (v1.9): o técnico sabe "cerca de"
+export const avisoConcorrente = (c) => c
+  ? `<p class="tr-disputa">${icone("rival")} O <b>${c.clube}</b> também quer ele e ofereceu cerca de ` +
+    `<b>${reais(c.salario_aproximado)}</b> por temporada. Ele compara o salário e o quanto quer ` +
+    `jogar em cada clube; sem contrato até a rodada, assina lá.</p>`
+  : "";
 
 // o mercado alimenta a Central do Elenco, a Central de Transferências (v1.7)
 // e os cards do hub
@@ -378,10 +386,11 @@ export async function abrirNegociacao(negId) {
     d.interesse?.nivel === "quer_vir" ? `ele quer vir (${d.interesse.motivos.join(", ")}): pede menos` : null,
     d.interesse?.nivel === "resistente" ? `ele resiste à mudança (${d.interesse.motivos.join(", ")}): pede mais` : null,
     `${d.tentativas_restantes} tentativa${d.tentativas_restantes === 1 ? "" : "s"}: na última recusa ele desiste`,
-    "jogar a rodada sem contrato desfaz o acordo",
+    d.concorrente ? null : "jogar a rodada sem contrato desfaz o acordo",
   ].filter(Boolean).map((t) => `<li>${t}</li>`).join("");
   box.innerHTML = `<article class="tr-contrato">
     <header><strong>Contrato com ${d.jogador}</strong> · ${d.funcao}, ${d.idade} anos, OVR ${d.overall} · ${origem}</header>
+    ${avisoConcorrente(d.concorrente)}
     ${contra ? `<p>${icone("acordo")} Ele pede ${reais(contra.salario)} por ${contra.anos} temp., ${MULTA_ROTULO[contra.multa]}, como ${PAPEL_ROTULO[contra.papel].toLowerCase()}.</p>` : ""}
     <div class="mercado-filtros">
       <label>Salário/temporada ${campoDinheiro({

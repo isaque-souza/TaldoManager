@@ -728,10 +728,17 @@ class NegociacaoResumo(BaseModel):
     jogador: str
     clube: str | None = None            # None = estava sem clube
     valor: int                          # transferência acertada (ou luvas)
-    status: Literal["aberta", "fechada", "desistiu", "expirada"]
+    status: Literal["aberta", "fechada", "desistiu", "expirada", "perdida"]
     tentativas_restantes: int
     contraproposta: ContraContratoChegada | None = None
     opcao_compra: bool = False          # exercendo a opção de um empréstimo (v1.7)
+    concorrente: "ConcorrenteResumo | None" = None   # disputa (v1.9)
+
+
+class ConcorrenteResumo(BaseModel):
+    """O clube da CPU que também quer o jogador (v1.9)."""
+    clube: str
+    salario_aproximado: int             # o técnico sabe "cerca de"
 
 
 class NegociacaoDetalhe(NegociacaoResumo):
@@ -1374,6 +1381,7 @@ class CaixaDeEntrada(BaseModel):
 
 
 ProximaRodada.model_rebuild()   # `escalacao` aponta para um schema definido depois
+NegociacaoResumo.model_rebuild()   # `concorrente` (v1.9)
 NegociacaoDetalhe.model_rebuild()   # `interesse` (v1.9) também
 
 

@@ -209,8 +209,11 @@ _COMENTARIO = {
 
 
 def avaliar_chegada(jogador, comprador, vendedor, salario, anos, opcao_multa, papel,
-                    interesse=None):
-    """Resposta do jogador ao contrato oferecido pelo `comprador`."""
+                    interesse=None, para_bater=None, concorrente=None):
+    """Resposta do jogador ao contrato oferecido pelo `comprador`.
+    `para_bater` (v1.9): o salário que vence a proposta do `concorrente`
+    (nome do clube) — `disputa.salario_para_bater`; o pedido nunca fica
+    abaixo dele."""
 
     validar(jogador, anos, opcao_multa, papel)
     if interesse is not None and interesse.bloqueio:
@@ -219,6 +222,10 @@ def avaliar_chegada(jogador, comprador, vendedor, salario, anos, opcao_multa, pa
         jogador, comprador, vendedor, opcao_multa, papel, interesse,
     )
     comentario = _COMENTARIO.get(interesse.nivel, "") if interesse else ""
+    if para_bater is not None and para_bater > pedido:
+        # quem decide é a outra proposta
+        pedido = para_bater
+        comentario = f" — ele prefere a proposta do {concorrente}"
 
     if salario >= pedido:
         return Resposta("aceita", salario, f"{jogador.nome} aceitou o contrato")

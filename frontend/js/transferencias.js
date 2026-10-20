@@ -398,7 +398,8 @@ function abaNegociacoes() {
   const abertas = m.negociacoes.filter((n) => n.status === "aberta");
   html += secao("Contratos com o jogador", abertas.map((n) => cartao({
     jogador: n.jogador,
-    sub: n.clube ? `acordo com o ${n.clube}` : "sem clube",
+    sub: (n.clube ? `acordo com o ${n.clube}` : "sem clube") +
+      (n.concorrente ? ` · ${icone("rival")} o ${n.concorrente.clube} também quer` : ""),
     valor: `${reais(n.valor)}${n.clube ? "" : " <small>luvas</small>"}`,
     situacao: chip(STATUS_NEG[n.status]),
     acoes: `<button class="transf" data-acao="negociacao" data-neg="${n.negociacao_id}">${icone("contrato")} Acertar contrato</button>` +

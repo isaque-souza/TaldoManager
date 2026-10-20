@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS negociacao (
     jogador       TEXT NOT NULL,      -- nome (livres não têm id)
     clube         TEXT,               -- de onde vem; NULL = livre
     valor         INTEGER NOT NULL,   -- transferência acertada (ou luvas)
-    status        TEXT NOT NULL,      -- aberta | fechada | desistiu | expirada
+    status        TEXT NOT NULL,      -- aberta | fechada | desistiu | expirada | perdida
     tentativas    INTEGER NOT NULL DEFAULT 0,   -- propostas de contrato feitas
     contra_salario INTEGER,           -- última contraproposta do jogador
     contra_anos   INTEGER,
@@ -183,7 +183,13 @@ CREATE TABLE IF NOT EXISTS negociacao (
     contra_papel  TEXT,
     -- opção de compra de um empréstimo (v1.7): o valor é o da cláusula e a
     -- etapa 2 não depende da janela
-    emprestimo_id INTEGER REFERENCES emprestimo(id) ON DELETE CASCADE
+    emprestimo_id INTEGER REFERENCES emprestimo(id) ON DELETE CASCADE,
+    -- disputa (v1.9): o clube da CPU que também quer o jogador, o salário
+    -- que ofereceu e o fator de interesse do jogador nele. Sem fechar até
+    -- jogar a rodada (ou se ele desiste), o jogador assina lá: 'perdida'
+    concorrente   TEXT,
+    concorrente_salario INTEGER,
+    concorrente_fator REAL
 );
 
 -- Campanhas de marketing do técnico (v1.4): uma por turno.

@@ -2,15 +2,19 @@
 
 
 def inserir(conn, simulacao_id, rodada, jogador, valor, jogador_id=None, clube=None,
-            emprestimo_id=None):
+            emprestimo_id=None, concorrente=None):
+    """`concorrente` (v1.9): (clube, salário, fator) de quem disputa o
+    jogador, ou None."""
+    nome, salario, fator = concorrente or (None, None, None)
     cur = conn.execute(
         """
         INSERT INTO negociacao
             (simulacao_id, rodada, jogador_id, jogador, clube, valor, status,
-             emprestimo_id)
-        VALUES (?, ?, ?, ?, ?, ?, 'aberta', ?)
+             emprestimo_id, concorrente, concorrente_salario, concorrente_fator)
+        VALUES (?, ?, ?, ?, ?, ?, 'aberta', ?, ?, ?, ?)
         """,
-        (simulacao_id, rodada, jogador_id, jogador, clube, valor, emprestimo_id),
+        (simulacao_id, rodada, jogador_id, jogador, clube, valor, emprestimo_id,
+         nome, salario, fator),
     )
     return cur.lastrowid
 
@@ -66,3 +70,23 @@ def expirar_abertas(conn, simulacao_id, rodada):
         (simulacao_id, rodada),
     )
     return abertas
+
+
+def listar_disputas_perdidas(conn, simulacao_id, rodada):
+    """As negociações desta janela com concorrente que o técnico não fechou:
+    abertas (a rodada vai ser jogada) ou em que o jogador desistiu (v1.9)."""
+    return conn.execute(
+        """
+        SELECT * FROM negociacao
+        WHERE simulacao_id = ? AND rodada = ? AND concorrente IS NOT NULL
+          AND status IN ('aberta', 'desistiu')
+        ORDER BY id
+        """,
+        (simulacao_id, rodada),
+    ).fetchall()
+
+
+def marcar_perdida(conn, negociacao_id):
+    conn.execute(
+        "UPDATE negociacao SET status = 'perdida' WHERE id = ?", (negociacao_id,)
+    )
