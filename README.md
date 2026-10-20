@@ -302,12 +302,12 @@ jogador da temporada.
 * [x] Negociações (preço pedido pela importância do jogador; aceita / contraproposta / recusa; até 3 propostas por janela)
 * [x] Multa rescisória (nem todo jogador tem; pagando, o clube não pode recusar)
 * [x] Rivais (clássicos na seed; negociar com o rival custa 1,5×)
-* [ ] Disputa pela contratação, como no futebol real: qual clube paga mais,
+* [x] Disputa pela contratação, como no futebol real: qual clube paga mais,
       qual é mais famoso, onde o jogador seria titular (ou banco, se já há
       jogadores melhores na posição), se é o "time do sonho" dele... (v1.9)
 * [x] Renovação de contrato (salário, duração e multa; o jogador aceita, contrapropõe ou recusa)
 * [x] Contrato novo ao ser transferido (3 temporadas, salário de mercado, sem multa)
-* [ ] Vontade do jogador (querer sair, recusar renovar por estar no banco, "time do sonho") (v1.9)
+* [x] Vontade do jogador (querer sair, recusar renovar por estar no banco, "time do sonho") (v1.9)
 * [x] Evolução por idade (feita na v0.8, na virada de temporada)
 * [x] Potencial dos jogadores (na seed; o jogador ainda não evolui)
 * [x] Duração de contrato (temporadas restantes, na seed)
@@ -968,7 +968,7 @@ mudar as regras:
 
 ---
 
-# 🚧 Vontade do jogador (v1.9) — Em andamento
+# ✅ Vontade do jogador (v1.9) — Concluída
 
 O jogador passa a ter vontade própria: de onde veio, onde fez história e
 para onde quer ir. Isso pesa na hora de vir para o seu clube, de renovar e
@@ -1018,9 +1018,30 @@ resultados de um mesmo seed).
         assina com o concorrente no fim dela — negociação "perdida", com
         mensagem na caixa de entrada
       - A CPU também respeita a vontade nos negócios entre si: não compra
-        quem "não vem" e o jogador resistente recusa metade das vezes
-* [ ] Vontade no clube (proposta do clube do sonho, desconto na renovação)
-* [ ] Equilíbrio e acabamento
+        quem "não vem" e o jogador resistente recusa metade das vezes (aí o
+        comprador tenta o próximo da lista)
+* [x] Vontade no seu clube
+      - **Chamado do clube do sonho**: a cada janela, 30% de chance de o
+        clube do sonho de um dos seus jogadores (da CPU, que precisa dele e
+        pode pagar) oferecer o justo (1× a 1,3× o valor), mesmo sem ele
+        estar à venda. Não vender — recusar, pedir demais ou deixar expirar —
+        piora o humor dele um passo
+      - **No clube do sonho** (o sonho dele é o seu clube): o humor para em
+        "incomodado", nunca chega a querer sair, e ele renova 10% mais
+        barato; selo "Clube do sonho" no elenco
+      - **Renovação**: incomodado pede 10% a mais; o veterano (31+) que
+        sonha encerrar a carreira em outro clube também, e diz por quê
+      - **Encerrar a carreira**: o veterano que sai livre na virada vai para
+        o clube do sonho se ele tem vaga — "voltou para encerrar a carreira
+        no X, que o formou". Quem sai livre assina no máximo o que a idade
+        permite (2 temporadas aos 32+)
+* [x] Equilíbrio e acabamento
+      - Simulação de 5 seeds × 8 temporadas (clube grande e pequeno),
+        comparada com a v1.8: a concentração de craques e a diferença de
+        força entre os clubes ficaram iguais
+      - A recusa do jogador resistente derrubava ~25% dos negócios entre
+        os clubes da CPU; agora o comprador tenta o próximo da lista e o
+        volume voltou ao da v1.8
 
 ---
 
@@ -1040,7 +1061,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 817 testes (domain, db, repositories, services, api)
+│   └── tests/              # 827 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

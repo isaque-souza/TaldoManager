@@ -20,6 +20,7 @@ def sem_assedio(monkeypatch):
     testes contam as outras."""
     from app.domain import ofertas
     monkeypatch.setattr(ofertas, "CHANCE_ASSEDIO", 0.0)
+    monkeypatch.setattr(ofertas, "CHANCE_SONHO", 0.0)   # v1.9
     # e a disputa pela contratação (v1.9) também
     from app.domain import disputa
     monkeypatch.setattr(disputa, "CHANCE_BASE", 0.0)

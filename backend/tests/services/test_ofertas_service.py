@@ -16,6 +16,14 @@ from tests.negociar import oferecer
 CLUBE = "Real Taldo"
 
 
+@pytest.fixture(autouse=True)
+def _sem_sonho(monkeypatch, request):
+    """O chamado do clube do sonho (v1.9) traria ofertas a mais: tem os
+    testes dele no fim do arquivo."""
+    if "sonho" not in request.node.name:
+        monkeypatch.setattr(ofertas, "CHANCE_SONHO", 0.0)
+
+
 @pytest.fixture
 def sem_assedio(monkeypatch):
     monkeypatch.setattr(ofertas, "CHANCE_ASSEDIO", 0.0)
@@ -157,3 +165,40 @@ def test_ofertas_nao_mexem_na_sorte_da_temporada(monkeypatch, sempre_interessa):
     alvo = _reserva(mercado_service.ver_mercado(com))
     mercado_service.marcar_a_venda(com, alvo["jogador_id"], True)
     assert _rng(sem) == _rng(com)
+
+
+# --- o chamado do clube do sonho (v1.9) --------------------------------------
+
+def _oferta_do_sonho(monkeypatch):
+    monkeypatch.setattr(ofertas, "CHANCE_ASSEDIO", 0.0)
+    monkeypatch.setattr(ofertas, "CHANCE_SONHO", 1.0)
+    sid = _iniciar()
+    m = mercado_service.ver_mercado(sid)
+    (o,) = [o for o in m["ofertas_recebidas"] if o["sonho"]]
+    return sid, o
+
+
+def _humor(sid, nome):
+    m = mercado_service.ver_mercado(sid)
+    return next(f for f in m["elenco"] if f["nome"] == nome)["humor"]
+
+
+def test_sonho_chega_na_pre_temporada(monkeypatch):
+    sid, o = _oferta_do_sonho(monkeypatch)
+    ficha = next(f for f in mercado_service.ver_mercado(sid)["elenco"] if f["nome"] == o["jogador"])
+    assert ficha["sonho"] == o["clube"]
+    assert f"O {o['clube']}, clube do sonho de {o['jogador']}" in _assuntos(sid)
+
+
+def test_sonho_recusado_deixa_o_jogador_incomodado(monkeypatch):
+    sid, o = _oferta_do_sonho(monkeypatch)
+    assert _humor(sid, o["jogador"]) == "contente"
+    mercado_service.recusar_oferta(sid, o["oferta_id"])
+    assert _humor(sid, o["jogador"]) == "incomodado"
+    assert f"{o['jogador']} queria o {o['clube']}" in _assuntos(sid)
+
+
+def test_sonho_que_expira_tambem_chateia(monkeypatch):
+    sid, o = _oferta_do_sonho(monkeypatch)
+    temporada_service.avancar(sid)
+    assert _humor(sid, o["jogador"]) == "incomodado"

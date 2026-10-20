@@ -61,6 +61,7 @@ function situacaoDe(nome) {
 function selos(f, { acabando = true } = {}) {
   return [
     f.idolo ? seloIdolo() : "",
+    f.sonho && f.sonho === f.clube ? `<span class="chip chip-batida" title="Tem mais paciência e renova mais barato">Clube do sonho</span>` : "",
     f.emprestimo ? `<span class="chip" title="Emprestado pelo ${f.emprestimo.de_clube}">Emprestado</span>` : "",
     f.humor === "quer_sair" ? `<span class="chip chip-longe">Quer sair</span>`
       : f.humor === "incomodado" ? `<span class="chip chip-perto">Incomodado</span>` : "",

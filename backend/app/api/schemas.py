@@ -907,6 +907,7 @@ class FichaMercado(BaseModel):
     fama: int = 0                        # v1.4
     idolo: bool = False
     a_venda: bool = False                # na lista de transferências (v1.7)
+    sonho: str | None = None             # clube do sonho (v1.9)
     numero: int | None = None            # v1.7: a temporada até aqui
     partidas: int = 0
     gols: int = 0
@@ -1016,6 +1017,7 @@ class OfertaRecebida(BaseModel):
     valor: int
     status: Literal["aberta", "aceita", "recusada", "retirada", "expirada"]
     espontanea: bool = False             # assédio: ele não estava à venda
+    sonho: bool = False                  # é o clube do sonho dele (v1.9)
     pedido: int | None = None            # a contraproposta do técnico
     rival: bool = False
     # só enquanto está aberta

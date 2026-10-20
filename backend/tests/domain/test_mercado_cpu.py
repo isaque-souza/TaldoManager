@@ -2,7 +2,7 @@
 
 import random
 
-from app.domain import mercado_cpu
+from app.domain import mercado_cpu, vontade
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
 
@@ -75,6 +75,24 @@ def test_resistente_pode_recusar_o_comprador(monkeypatch):
     fraco, forte = _clube("Fraco", 60), _clube("Forte", 80)
     # do forte para o fraco ele é resistente: sempre recusa
     assert mercado_cpu.negociar([fraco, forte], "Técnico", random.Random(1)) == []
+
+
+def test_recusado_o_comprador_tenta_o_proximo(monkeypatch):
+    monkeypatch.setattr(mercado_cpu, "CHANCE_COMPRA", 1.0)
+    monkeypatch.setattr(mercado_cpu, "CHANCE_RECUSA", 1.0)
+    fraco, forte = _clube("Fraco", 60), _clube("Forte", 80)
+    # metade topa ir; a outra metade é resistente e sempre recusa
+    topam = {j.nome for j in forte.jogadores[::2]}
+    real = vontade.interesse
+
+    def interesse(jogador, *args):
+        i = real(jogador, *args)
+        i.nivel = vontade.ABERTO if jogador.nome in topam else vontade.RESISTENTE
+        return i
+
+    monkeypatch.setattr(vontade, "interesse", interesse)
+    negocios = mercado_cpu.negociar([fraco, forte], "Técnico", random.Random(1))
+    assert negocios and all(n.jogador.nome in topam for n in negocios)
 
 
 def test_ninguem_compra_quem_nao_vem(monkeypatch):

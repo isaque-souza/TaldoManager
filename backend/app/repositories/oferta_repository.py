@@ -2,14 +2,15 @@
 técnico, v1.7)."""
 
 
-def inserir(conn, simulacao_id, rodada, jogador_id, clube, valor, teto, espontanea):
+def inserir(conn, simulacao_id, rodada, jogador_id, clube, valor, teto, espontanea,
+            sonho=False):
     cur = conn.execute(
         """
         INSERT INTO oferta_recebida
-            (simulacao_id, rodada, jogador_id, clube, valor, teto, espontanea)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+            (simulacao_id, rodada, jogador_id, clube, valor, teto, espontanea, sonho)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (simulacao_id, rodada, jogador_id, clube, valor, teto, int(espontanea)),
+        (simulacao_id, rodada, jogador_id, clube, valor, teto, int(espontanea), int(sonho)),
     )
     return cur.lastrowid
 
@@ -71,3 +72,13 @@ def expirar_abertas(conn, simulacao_id, rodada):
         """,
         (simulacao_id, rodada),
     )
+
+
+def listar_do_sonho_abertas(conn, simulacao_id, rodada):
+    """As ofertas do clube do sonho ainda abertas nesta janela (v1.9): a
+    rodada vai ser jogada e elas vão expirar."""
+    return conn.execute(
+        _SELECT + """ WHERE o.simulacao_id = ? AND o.rodada = ? AND o.sonho = 1
+                        AND o.status = 'aberta'""",
+        (simulacao_id, rodada),
+    ).fetchall()

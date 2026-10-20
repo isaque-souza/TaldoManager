@@ -309,6 +309,7 @@ CREATE TABLE IF NOT EXISTS oferta_recebida (
     valor         INTEGER NOT NULL,
     teto          INTEGER NOT NULL,   -- até quanto aceita na contraproposta (escondido)
     espontanea    INTEGER NOT NULL DEFAULT 0,   -- assédio: ele não estava à venda
+    sonho         INTEGER NOT NULL DEFAULT 0,   -- é o clube do sonho dele (v1.9)
     status        TEXT NOT NULL DEFAULT 'aberta',
                   -- aberta | aceita | recusada | retirada | expirada
     pedido        INTEGER             -- a contraproposta do técnico, se houve

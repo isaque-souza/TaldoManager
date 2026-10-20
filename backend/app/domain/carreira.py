@@ -11,7 +11,7 @@ não do `estado_json` (que é apagado quando a temporada termina): o banco é a
 fonte da verdade.
 """
 
-from app.domain import contrato, livres, mercado, numeros
+from app.domain import contrato, livres, mercado, numeros, vontade
 from app.domain.base import TAMANHO_ALVO
 from app.domain.evolucao import evoluir
 from app.domain.temporada import criar_jogador
@@ -220,7 +220,14 @@ def _renovar(jogador, anos):
 
 def _destino_livre(campeonato, jogador, origem, clube_usuario):
     """Clube da CPU com vaga onde o jogador seria titular — o mais rico, que
-    pode pagar melhor. None se nenhum serve (ele deixa a liga)."""
+    pode pagar melhor. None se nenhum serve (ele deixa a liga). O veterano
+    que sonha encerrar a carreira em outro clube vai para lá, se há vaga
+    (v1.9)."""
+    sonho = next((c for c in campeonato.clubes if c.nome == jogador.sonho), None)
+    if (sonho is not None and sonho is not origem and sonho.nome != clube_usuario
+            and jogador.idade >= vontade.IDADE_APOSENTADORIA
+            and len(sonho.jogadores) < mercado.ELENCO_MAX):
+        return sonho
     candidatos = [
         c for c in campeonato.clubes
         if c is not origem
@@ -256,13 +263,28 @@ def _sair_livre(campeonato, clube, jogador, clube_usuario):
     destino.contratar_jogador(jogador)
     jogador.temporadas_no_clube = 0
     jogador.assinar_contrato(
-        mercado.CONTRATO_PADRAO_ANOS, jogador.salario_referencia(), None
+        min(mercado.CONTRATO_PADRAO_ANOS, contrato.duracao_max(jogador)),
+        jogador.salario_referencia(), None,
     )
+    volta = _volta_para_encerrar(jogador, destino)
     return [
-        _movimento("saiu_livre", jogador, clube, f"assinou com {destino.nome}"),
+        _movimento("saiu_livre", jogador, clube, volta or f"assinou com {destino.nome}"),
         _movimento("chegou_livre", jogador, destino,
-                   f"veio de graça do {clube.nome}"),
+                   volta or f"veio de graça do {clube.nome}"),
     ]
+
+
+def _volta_para_encerrar(jogador, destino):
+    """O texto do movimento quando o veterano foi para o clube do sonho
+    (v1.9); None se foi para outro."""
+    if destino.nome != jogador.sonho or jogador.idade < vontade.IDADE_APOSENTADORIA:
+        return None
+    if destino.nome == jogador.formador:
+        return f"voltou para encerrar a carreira no {destino.nome}, que o formou"
+    if destino.nome == jogador.clube_historia:
+        return f"voltou para encerrar a carreira no {destino.nome}, onde fez história"
+    return f"foi encerrar a carreira no {destino.nome}, o clube do sonho"
+
 
 
 def resolver_contratos(campeonato, clube_usuario):

@@ -239,3 +239,104 @@ def test_livre_quer_voltar_a_jogar():
     livre = Jogador("Livre", 28, "Atacante", 70)
     i = vontade.interesse(livre, _clube_de(liga, "Bahia"), None, liga.clubes)
     assert "quer voltar a jogar" in i.motivos
+
+
+# --- vontade no clube (passo 4) ---------------------------------------------
+
+from app.domain import contrato, ofertas, papeis  # noqa: E402
+from app.domain.carreira import resolver_contratos  # noqa: E402
+
+
+class _Sorte(random.Random):
+    """`random()` sempre devolve o mesmo valor (o resto é sorteio de verdade)."""
+
+    def __init__(self, valor):
+        super().__init__(1)
+        self.valor = valor
+
+    def random(self):
+        return self.valor
+
+
+def test_clube_do_sonho_faz_oferta_justa():
+    liga = _liga()
+    bahia, milan = _clube_de(liga, "Bahia"), _clube_de(liga, "Milan")
+    sonhador = Jogador("Sonhador", 25, "Atacante", 90)   # seria titular no Milan
+    bahia.contratar_jogador(sonhador)
+    sonhador.sonho = "Milan"
+    jogador, oferta = ofertas.do_sonho(bahia, liga.clubes, _Sorte(0.0))
+    assert jogador is sonhador and oferta.clube is milan
+    assert oferta.sonho and oferta.espontanea   # não estava à venda
+    assert oferta.valor >= sonhador.valor_mercado() - 10_000
+
+
+def test_sem_sorte_ou_sem_sonho_fora_nao_ha_oferta():
+    liga = _liga()
+    bahia = _clube_de(liga, "Bahia")
+    j = Jogador("Caseiro", 25, "Atacante", 90)
+    bahia.contratar_jogador(j)
+    j.sonho = "Milan"
+    assert ofertas.do_sonho(bahia, liga.clubes, _Sorte(0.99)) is None
+    j.sonho = "Bahia"   # já está no clube do sonho
+    assert ofertas.do_sonho(bahia, liga.clubes, _Sorte(0.0)) is None
+
+
+def test_nao_vender_ao_clube_do_sonho_piora_o_humor():
+    j = Jogador("Chateado", 25, "Atacante", 80)
+    assert vontade.recusou_o_sonho(j) and j.humor == papeis.INCOMODADO
+    assert vontade.recusou_o_sonho(j) and j.humor == papeis.QUER_SAIR
+    assert j.a_venda   # quem quer sair vai para a lista
+    assert not vontade.recusou_o_sonho(j)
+
+
+def test_no_clube_do_sonho_ele_nao_chega_a_querer_sair():
+    clube = Clube("A", "Brasil", 0)
+    j = Jogador("Paciente", 20, "Atacante", 80)
+    j.papel, j.jogos_disponivel, j.titularidades = papeis.TITULAR, 10, 2   # 20% < 50%
+    j.sonho = "A"
+    clube.jogadores = [j]
+    for _ in range(3):
+        papeis.checar(clube)
+    assert j.humor == papeis.INCOMODADO and not j.a_venda
+
+
+def test_vontade_pesa_na_renovacao():
+    clube = _clube("Inter")
+    j = Jogador("Renovando", 27, "Atacante", 75)
+    clube.contratar_jogador(j)
+    normal = contrato.salario_pedido(j, clube, "3x")
+
+    j.humor = papeis.INCOMODADO
+    assert contrato.salario_pedido(j, clube, "3x") > normal
+    j.humor = papeis.CONTENTE
+
+    j.sonho = "Inter"
+    assert contrato.salario_pedido(j, clube, "3x") < normal
+
+    j.idade, j.sonho = vontade.IDADE_APOSENTADORIA, "Bahia"
+    veterano = contrato.salario_pedido(j, clube, "3x")
+    j.sonho = "Inter"
+    assert veterano > contrato.salario_pedido(j, clube, "3x")
+    j.sonho = "Bahia"
+    r = contrato.avaliar_renovacao(j, clube, 1_000, 1, "3x")
+    assert "pensa em encerrar a carreira no Bahia" in r.motivo
+
+
+def test_veterano_livre_volta_para_encerrar_no_formador():
+    camp = carregar_campeonato()
+    meu, casa = camp.clubes[0], camp.clubes[7]
+    for c in camp.clubes:
+        for j in c.jogadores:
+            j.contrato_anos = 3
+    veterano = next(j for j in meu.jogadores if j.posicao != "Goleiro")
+    veterano.idade, veterano.contrato_anos = 33, 1
+    veterano.formador = veterano.sonho = casa.nome
+    while len(casa.jogadores) >= 25:
+        casa.jogadores.pop()
+
+    movs = resolver_contratos(camp, meu.nome)
+
+    assert veterano in casa.jogadores
+    assert veterano.contrato_anos <= contrato.duracao_max(veterano)
+    detalhes = {m["detalhe"] for m in movs if m["jogador"] == veterano.nome}
+    assert f"voltou para encerrar a carreira no {casa.nome}, que o formou" in detalhes

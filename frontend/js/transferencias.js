@@ -376,7 +376,9 @@ function abaNegociacoes() {
 
   // as ofertas da CPU pelos seus jogadores (v1.7)
   const ofertas = m.ofertas_recebidas.filter((o) => o.status === "aberta").map((o) => cartao({
-    jogador: o.jogador + (o.espontanea ? ` <span class="chip chip-perto" title="Ele não estava à venda">Assédio</span>` : ""),
+    jogador: o.jogador + (o.sonho
+      ? ` <span class="chip chip-batida" title="Não vender deixa ele chateado">Clube do sonho</span>`
+      : o.espontanea ? ` <span class="chip chip-perto" title="Ele não estava à venda">Assédio</span>` : ""),
     sub: `${o.rival ? `${icone("rival", "rival")} ` : ""}${o.clube}` +
       `${detalheOferta(o) ? ` · ${detalheOferta(o)}` : ""}`,
     valor: reais(o.valor) + (o.pedido ? ` <small class="bloqueio">pedimos ${reais(o.pedido)}</small>` : ""),
