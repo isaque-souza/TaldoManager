@@ -728,10 +728,17 @@ class NegociacaoResumo(BaseModel):
     jogador: str
     clube: str | None = None            # None = estava sem clube
     valor: int                          # transferência acertada (ou luvas)
-    status: Literal["aberta", "fechada", "desistiu", "expirada"]
+    status: Literal["aberta", "fechada", "desistiu", "expirada", "perdida"]
     tentativas_restantes: int
     contraproposta: ContraContratoChegada | None = None
     opcao_compra: bool = False          # exercendo a opção de um empréstimo (v1.7)
+    concorrente: "ConcorrenteResumo | None" = None   # disputa (v1.9)
+
+
+class ConcorrenteResumo(BaseModel):
+    """O clube da CPU que também quer o jogador (v1.9)."""
+    clube: str
+    salario_aproximado: int             # o técnico sabe "cerca de"
 
 
 class NegociacaoDetalhe(NegociacaoResumo):
@@ -745,7 +752,7 @@ class NegociacaoDetalhe(NegociacaoResumo):
     opcoes_multa: list["OpcaoMultaValor"] = []
     papeis: list[str] = []
     papel_esperado: str | None = None
-    clube_mais_fraco: bool = False
+    interesse: "InteresseFicha | None" = None   # v1.9
 
 
 class NovoContratoChegada(BaseModel):
@@ -873,6 +880,14 @@ class OpcaoExercida(BaseModel):
     valor: int
 
 
+class InteresseFicha(BaseModel):
+    """O quanto o jogador quer vir para o clube do técnico (v1.9)."""
+    nivel: Literal["quer_vir", "aberto", "resistente", "nao_vem"]
+    pontos: int
+    motivos: list[str] = []
+    bloqueio: str | None = None
+
+
 class FichaMercado(BaseModel):
     jogador_id: int | None = None          # livres (v1.6) não têm id: vão pelo nome
     nome: str
@@ -918,6 +933,7 @@ class FichaMercado(BaseModel):
     luvas: int | None = None
     negociacao: "NegociacaoResumo | None" = None   # v1.7: a desta janela
     observado: bool = False              # na lista de observados (v1.7)
+    interesse: InteresseFicha | None = None   # só de outros clubes e livres (v1.9)
     emprestimo: EmprestadoAqui | None = None        # v1.7: veio emprestado
     pedir_emprestado: PedidoEmprestimoFicha | None = None   # só de outros clubes
     emprestar: CessaoFicha | None = None    # só do elenco do técnico
@@ -1365,6 +1381,8 @@ class CaixaDeEntrada(BaseModel):
 
 
 ProximaRodada.model_rebuild()   # `escalacao` aponta para um schema definido depois
+NegociacaoResumo.model_rebuild()   # `concorrente` (v1.9)
+NegociacaoDetalhe.model_rebuild()   # `interesse` (v1.9) também
 
 
 # ---------------------------------------------------------------------------

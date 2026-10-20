@@ -20,6 +20,10 @@ def sem_assedio(monkeypatch):
     testes contam as outras."""
     from app.domain import ofertas
     monkeypatch.setattr(ofertas, "CHANCE_ASSEDIO", 0.0)
+    # e a disputa pela contratação (v1.9) também
+    from app.domain import disputa
+    monkeypatch.setattr(disputa, "CHANCE_BASE", 0.0)
+    monkeypatch.setattr(disputa, "CHANCE_CRAQUE", 0.0)
 
 
 def _iniciar(clube="Real Taldo", seed=11):

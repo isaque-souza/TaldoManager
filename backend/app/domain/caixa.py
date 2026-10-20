@@ -100,9 +100,15 @@ def resposta_proposta(jogador, vendedor, comprador, valor, resposta, restantes):
     )
 
 
-def resposta_contrato(jogador, vendedor, resposta, restantes, valor, desistiu=False):
-    """A etapa 2 (v1.7): o jogador responde o contrato oferecido."""
+def resposta_contrato(jogador, vendedor, resposta, restantes, valor, desistiu=False,
+                      concorrente=None):
+    """A etapa 2 (v1.7): o jogador responde o contrato oferecido.
+    `concorrente` (v1.9): o clube que também o quer, ou None."""
     de = f" do {vendedor.nome}" if vendedor else " (estava sem clube)"
+    disputa = (
+        f" O {concorrente} também quer ele: sem contrato até a rodada, ele "
+        f"assina lá." if concorrente else ""
+    )
     if resposta.fechou:
         pago = (f"Pagamos {_dinheiro(valor)} ao {vendedor.nome}" if vendedor
                 else f"Pagamos {_dinheiro(valor)} de luvas")
@@ -118,7 +124,8 @@ def resposta_contrato(jogador, vendedor, resposta, restantes, valor, desistiu=Fa
             "Diretor de futebol", f"{jogador.nome} desistiu",
             f"{jogador.nome}{de} não gostou das propostas de contrato e "
             "desistiu de vir. O acordo com o clube caiu; nesta janela não dá "
-            "para tentar de novo.",
+            "para tentar de novo."
+            + (f" Ele vai assinar com o {concorrente} no fim da rodada." if concorrente else ""),
         )
     tentativas = (
         f" Ainda dá para fazer mais {restantes} {'proposta' if restantes == 1 else 'propostas'}."
@@ -127,12 +134,39 @@ def resposta_contrato(jogador, vendedor, resposta, restantes, valor, desistiu=Fa
     if resposta.tipo == "contraproposta":
         return _mensagem(
             "Diretor de futebol", f"{jogador.nome} pede mais",
-            f"{jogador.nome}{de} quer vir, mas pede {_dinheiro(resposta.valor)} "
-            f"por temporada.{tentativas}",
+            f"{jogador.nome}{de} topa vir, mas pede {_dinheiro(resposta.valor)} "
+            f"por temporada.{tentativas}{disputa}",
         )
     return _mensagem(
         "Diretor de futebol", f"{jogador.nome} recusou o contrato",
-        f"{jogador.nome}{de} achou o salário baixo demais.{tentativas}",
+        f"{jogador.nome}{de} achou o salário baixo demais.{tentativas}{disputa}",
+    )
+
+
+# --- disputa pela contratação (v1.9) -----------------------------------------
+
+def concorrente_apareceu(jogador, concorrente, salario_aproximado):
+    """Outro clube entrou na disputa pelo jogador."""
+    return _mensagem(
+        "Diretor de futebol", f"O {concorrente} também quer {jogador.nome}",
+        f"O {concorrente} ofereceu a {jogador.nome} cerca de "
+        f"{_dinheiro(salario_aproximado)} por temporada. Ele vai comparar as "
+        "propostas — o salário e o quanto quer jogar em cada clube. Sem "
+        "contrato acertado até a rodada, ele assina com o "
+        f"{concorrente}.",
+    )
+
+
+def disputas_perdidas(perdidas):
+    """`perdidas`: (jogador, clube que ganhou). A rodada foi jogada sem o
+    contrato: eles assinaram com o concorrente."""
+    if not perdidas:
+        return None
+    lista = "; ".join(f"{nome} assinou com o {clube}" for nome, clube in perdidas)
+    return _mensagem(
+        "Diretor de futebol",
+        "Perdemos a disputa" if len(perdidas) == 1 else "Perdemos disputas",
+        f"Sem contrato acertado a tempo, ficaram com a outra proposta: {lista}.",
     )
 
 

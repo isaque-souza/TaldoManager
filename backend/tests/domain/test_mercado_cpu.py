@@ -19,6 +19,8 @@ def _clube(nome, overall=75, dinheiro=500_000_000):
 
 def _sempre_compra(monkeypatch):
     monkeypatch.setattr(mercado_cpu, "CHANCE_COMPRA", 1.0)
+    # a vontade do jogador (v1.9) tem testes próprios, no fim do arquivo
+    monkeypatch.setattr(mercado_cpu, "CHANCE_RECUSA", 0.0)
 
 
 def test_o_fraco_compra_o_reforco_do_forte(monkeypatch):
@@ -63,3 +65,25 @@ def test_mesma_semente_mesmos_negocios(monkeypatch):
                 for n in mercado_cpu.negociar(clubes, "T", mercado_cpu.semente(7, 1, 1))]
 
     assert rodada() == rodada()
+
+
+# --- a vontade do jogador (v1.9) ---------------------------------------------
+
+def test_resistente_pode_recusar_o_comprador(monkeypatch):
+    monkeypatch.setattr(mercado_cpu, "CHANCE_COMPRA", 1.0)
+    monkeypatch.setattr(mercado_cpu, "CHANCE_RECUSA", 1.0)
+    fraco, forte = _clube("Fraco", 60), _clube("Forte", 80)
+    # do forte para o fraco ele é resistente: sempre recusa
+    assert mercado_cpu.negociar([fraco, forte], "Técnico", random.Random(1)) == []
+
+
+def test_ninguem_compra_quem_nao_vem(monkeypatch):
+    _sempre_compra(monkeypatch)
+    fraco, forte, rival = _clube("Fraco", 60), _clube("Forte", 80), _clube("Rival", 60)
+    fraco.rivais = {"Rival"}
+    # sem a história, o fraco compra do forte (o primeiro teste); com todos
+    # os do forte tendo feito história no rival do fraco, ninguém vem
+    for j in forte.jogadores:
+        j.clube_historia = "Rival"
+    negocios = mercado_cpu.negociar([fraco, forte, rival], "Técnico", random.Random(1))
+    assert not any(n.comprador is fraco and n.vendedor is forte for n in negocios)

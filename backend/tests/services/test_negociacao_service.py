@@ -3,12 +3,21 @@
 import pytest
 
 from app.db.conexao import conectar
-from app.domain import contrato
+from app.domain import contrato, disputa
 from app.domain.mercado import TransferenciaInvalida
 from app.repositories import mensagem_repository as mensagem_repo
 from app.services import mercado_service, temporada_service
 
 CLUBE = "Real Taldo"
+
+
+@pytest.fixture(autouse=True)
+def _sem_disputa(monkeypatch, request):
+    """A disputa (v1.9) tem os testes dela no fim do arquivo; nos outros,
+    nenhum clube entra na briga."""
+    if "disputa" not in request.node.name:
+        monkeypatch.setattr(disputa, "CHANCE_BASE", 0.0)
+        monkeypatch.setattr(disputa, "CHANCE_CRAQUE", 0.0)
 
 
 def _acordo(seed=11):
@@ -74,7 +83,10 @@ def _pedido(sid, neg_id, papel):
         ctx = mercado_service._carregar(conn, sid)
         neg = mercado_service._buscar_negociacao(ctx, neg_id)
         jogador, vendedor = mercado_service._partes(ctx, neg)
-        return contrato.salario_pedido_chegada(jogador, ctx.alvo, vendedor, "3x", papel)
+        interesse = mercado_service._interesse(ctx, jogador, vendedor)   # v1.9
+        return contrato.salario_pedido_chegada(
+            jogador, ctx.alvo, vendedor, "3x", papel, interesse,
+        )
     finally:
         conn.close()
 
@@ -115,3 +127,55 @@ def test_negociacao_de_outra_simulacao_e_none():
     outra = temporada_service.iniciar(seed=2, clube_usuario=CLUBE)
     assert mercado_service.ver_negociacao(outra, r["negociacao_id"]) is None
     assert mercado_service.propor_contrato(outra, r["negociacao_id"], 1, 1, "3x") is None
+
+
+# --- disputa pela contratação (v1.9) -----------------------------------------
+
+def _acordo_com_disputa(monkeypatch):
+    monkeypatch.setattr(disputa, "CHANCE_BASE", 1.0)
+    sid, alvo, caixa, r = _acordo()
+    neg = mercado_service.ver_negociacao(sid, r["negociacao_id"])
+    assert neg["concorrente"], "com chance 1, alguém precisa entrar"
+    return sid, alvo, neg
+
+
+def test_disputa_aparece_na_negociacao_e_na_caixa(monkeypatch):
+    sid, alvo, neg = _acordo_com_disputa(monkeypatch)
+    rival = neg["concorrente"]
+    assert rival["clube"] not in (CLUBE, alvo["clube"])
+    assert rival["salario_aproximado"] == disputa.aproximado(rival["salario_aproximado"])
+    assert f"O {rival['clube']} também quer {alvo['nome']}" in _assuntos(sid)
+
+
+def test_disputa_perdida_na_rodada_leva_o_jogador_ao_concorrente(monkeypatch):
+    sid, alvo, neg = _acordo_com_disputa(monkeypatch)
+    rival = neg["concorrente"]["clube"]
+    temporada_service.avancar(sid)
+
+    m = mercado_service.ver_mercado(sid)
+    assert alvo["nome"] not in {f["nome"] for f in m["elenco"]}
+    agora = next(f for f in m["disponiveis"] if f["nome"] == alvo["nome"])
+    assert agora["clube"] == rival
+    assert "Perdemos a disputa" in _assuntos(sid)
+
+
+def test_disputa_ganha_pagando_o_suficiente(monkeypatch):
+    sid, alvo, neg = _acordo_com_disputa(monkeypatch)
+    conn = conectar()
+    try:
+        ctx = mercado_service._carregar(conn, sid)
+        n = mercado_service._buscar_negociacao(ctx, neg["negociacao_id"])
+        jogador, vendedor = mercado_service._partes(ctx, n)
+        interesse = mercado_service._interesse(ctx, jogador, vendedor)
+        bater = disputa.salario_para_bater(
+            n["concorrente_salario"], n["concorrente_fator"], interesse.fator,
+        )
+        pedido = contrato.salario_pedido_chegada(
+            jogador, ctx.alvo, vendedor, "3x", "titular", interesse,
+        )
+    finally:
+        conn.close()
+    r = mercado_service.propor_contrato(
+        sid, neg["negociacao_id"], max(bater, pedido), 1, "3x", "titular",
+    )
+    assert r["status"] == "fechada"

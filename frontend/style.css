@@ -861,6 +861,16 @@ button.hub-card:hover, button.hub-card:focus-visible {
 /* ídolo da torcida (v1.4): coroa dourada e cheia, para não confundir com a
    estrela (vazada) do craque */
 .idolo { color: var(--refletor); white-space: nowrap; }
+/* interesse em vir (v1.9) */
+.interesse { display: inline-block; padding: 0 .4rem; border-radius: 3px; font-size: .72rem; font-weight: 700; line-height: 1.5; white-space: nowrap; vertical-align: 1px; }
+.interesse .icone { width: .8rem; height: .8rem; vertical-align: -1px; }
+.interesse.quer_vir { background: color-mix(in srgb, var(--gramado-claro) 18%, transparent); color: var(--gramado-claro); }
+.interesse.aberto { background: var(--superficie-2); color: var(--texto-2); }
+.interesse.resistente { background: color-mix(in srgb, var(--ambar) 18%, transparent); color: var(--ambar); }
+.interesse.nao_vem { background: color-mix(in srgb, var(--ao-vivo) 18%, transparent); color: var(--ao-vivo); }
+.tr-interesse { margin: 0 0 .5rem; font-size: .88rem; color: var(--texto-2); }
+.tr-disputa { margin: 0 0 .8rem; padding: .5rem .8rem; border-left: 3px solid var(--ambar); background: color-mix(in srgb, var(--ambar) 12%, transparent); font-size: .9rem; }
+.tr-disputa .icone { vertical-align: -2px; color: var(--ambar); }
 .idolo .icone { vertical-align: -2px; }
 .idolo .icone path { fill: currentColor; }
 .pj-cansado { color: var(--ambar); }

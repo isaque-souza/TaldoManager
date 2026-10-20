@@ -17,7 +17,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, copa, emprestimo, fama, mercado, mercado_cpu, posicoes
+from app.domain import caixa, contrato, copa, disputa, emprestimo, fama, mercado, mercado_cpu, posicoes
 from app.domain.temporada import (
     livres_para_json, restaurar_estado, snapshot_estado,
 )
@@ -30,6 +30,7 @@ from app.repositories import oferta_repository as oferta_repo
 from app.repositories import lance_repository as lance_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
+from app.repositories import transferencia_repository as transferencia_repo
 from app.services import copa_service, oferta_service, simulacao_service
 from scripts.data_loader import (
     LIGA_PADRAO, carregar_campeonato, carregar_campeonato_do_save,
@@ -75,6 +76,37 @@ def _achar_clube(campeonato, nome):
     if clube is None:
         raise ValueError(f"Clube desconhecido: {nome!r}")
     return clube
+
+
+def _resolver_disputas(conn, simulacao_id, rodada, campeonato):
+    """Quem tinha concorrente e ficou sem contrato com o técnico (acordo
+    aberto ou jogador que desistiu) assina com o concorrente (v1.9). Devolve
+    (negociação, jogador, vendedor ou None, concorrente) do que deu certo;
+    se o concorrente não pode mais (caixa, elenco), o acordo só cai."""
+    clubes = {c.nome: c for c in campeonato.clubes}
+    feitas = []
+    for neg in negociacao_repo.listar_disputas_perdidas(conn, simulacao_id, rodada):
+        concorrente = clubes.get(neg["concorrente"])
+        if neg["clube"] is None:
+            vendedor = None
+            onde = campeonato.livres
+        else:
+            vendedor = clubes.get(neg["clube"])
+            onde = vendedor.jogadores if vendedor else []
+        jogador = next((j for j in onde if j.nome == neg["jogador"]), None)
+        if concorrente is None or jogador is None:
+            continue
+        anos = min(disputa.ANOS_CONCORRENTE, contrato.duracao_max(jogador))
+        termos = (anos, neg["concorrente_salario"], None)
+        try:
+            if vendedor is not None:
+                mercado.transferir(jogador, vendedor, concorrente, neg["valor"], termos)
+            else:
+                mercado.contratar_livre(jogador, campeonato.livres, concorrente, termos)
+        except mercado.TransferenciaInvalida:
+            continue
+        feitas.append((neg, jogador, vendedor, concorrente))
+    return feitas
 
 
 def _confronto_do_clube(rodada, nome):
@@ -425,6 +457,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             if p["rodada"] == rodada_jogada
         ]
 
+        # disputas que o técnico não fechou a tempo (v1.9): o jogador assina
+        # com o concorrente, como os negócios da CPU, depois da rodada
+        perdidas = _resolver_disputas(conn, simulacao_id, rodada_jogada, campeonato)
+
         # a janela do meio da temporada abre: a CPU negocia entre si (v1.7)
         negocios_cpu = []
         if (campeonato.rodada <= len(campeonato.calendario)
@@ -484,6 +520,19 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             for n in negocios_cpu:
                 chave = (n.comprador.nome, n.jogador.nome)
                 mapa_jog[(n.vendedor.nome, n.jogador.nome)] = mapa_jog[chave]
+            for neg, jogador, vendedor, concorrente in perdidas:
+                jogador_id = mapa_jog[(concorrente.nome, jogador.nome)]
+                if vendedor is not None:
+                    mapa_jog[(vendedor.nome, jogador.nome)] = jogador_id
+                negociacao_repo.marcar_perdida(conn, neg["id"])
+                transferencia_repo.inserir(
+                    conn, simulacao_id, rodada_jogada, jogador_id,
+                    mapa[vendedor.nome] if vendedor else None, mapa[concorrente.nome],
+                    neg["valor"], tipo="transferencia" if vendedor else "livre",
+                )
+            mensagens.append(caixa.disputas_perdidas(
+                [(j.nome, c.nome) for _, j, _, c in perdidas]
+            ))
             partida_ids = partida_repo.inserir(conn, simulacao_id, mapa, novas)
             lance_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
             atuacao_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)

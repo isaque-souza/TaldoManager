@@ -991,8 +991,34 @@ resultados de um mesmo seed).
         virada de temporada
       - A página do jogador ganha a seção **Carreira**: "Formado no Inter
         Taldo (Itália) · Fez história no ... · Sonha jogar no ..."
-* [ ] Interesse do jogador em vir (quer vir / aberto / resistente / não vem)
-* [ ] Disputa pela contratação (outro clube oferece; o jogador compara)
+* [x] Interesse do jogador em vir (`vontade.interesse`)
+      - Pontos: prestígio do seu clube contra o atual (±1 a cada 15, até
+        ±3), seria titular (+1) ou reserva (−1), está no banco onde está
+        (+1), seu clube é o sonho dele (+2) ou ele já está no sonho (−2),
+        ídolo onde está (−1), ir para o rival (−1), livre querendo voltar
+        a jogar (+1)
+      - **Quer vir** (3+), **Aberto** (1–2) ou **Resistente** (0 ou menos):
+        cada ponto mexe 8% no salário que ele pede (de −15% a +50%). Substitui
+        o fator antigo de "descer para um clube mais fraco"
+      - **Não vem**, o único bloqueio: o clube onde ele fez história é rival
+        do seu ("Ídolo do Real Taldo: não joga no rival"), mesmo anos depois
+      - No mercado, selo ao lado do nome ("Aberto" não ganha selo) e, na
+        ficha, os motivos do mais forte ao mais fraco; no contrato, a dica
+        diz se ele pede menos ou mais por isso
+* [x] Disputa pela contratação (`app/domain/disputa.py`)
+      - Quando o clube aceita a proposta (ou ao abrir a conversa com um
+        livre), um clube da CPU pode entrar na briga: 25% de chance, 50%
+        para quem tem OVR 85+. Entra quem precisa da posição, pode pagar o
+        mesmo valor e para onde o jogador iria — o de que ele mais gosta
+      - O concorrente oferece o salário que o jogador pediria a ele; o
+        técnico vê "cerca de" (2 algarismos). O jogador compara pacotes:
+        salário ÷ fator de interesse em cada clube. Para ficar com você, o
+        salário precisa bater o do concorrente pesado pelos dois interesses
+      - Sem contrato até jogar a rodada (ou se ele desiste), o jogador
+        assina com o concorrente no fim dela — negociação "perdida", com
+        mensagem na caixa de entrada
+      - A CPU também respeita a vontade nos negócios entre si: não compra
+        quem "não vem" e o jogador resistente recusa metade das vezes
 * [ ] Vontade no clube (proposta do clube do sonho, desconto na renovação)
 * [ ] Equilíbrio e acabamento
 
@@ -1014,7 +1040,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 782 testes (domain, db, repositories, services, api)
+│   └── tests/              # 817 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

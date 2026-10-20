@@ -24,8 +24,8 @@ import json
 import random
 
 from app.db.conexao import conectar
-from app.domain import caixa, contrato, emprestimo, fama, livres, mercado, ofertas as ofertas_cpu
-from app.domain import papeis, torcida
+from app.domain import caixa, contrato, disputa, emprestimo, fama, livres, mercado, ofertas as ofertas_cpu
+from app.domain import papeis, torcida, vontade
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
@@ -338,11 +338,44 @@ class _Janela:
         self.aberta = mercado.janela_aberta(ctx.rodada)
         self.fechada = None if self.aberta else "Janela de transferências fechada"
         self.observados = {r["nome"] for r in observado_repo.listar(conn, sid)}
+        # o prestígio dos clubes, para o interesse de cada um em vir (v1.9)
+        self.prestigio = vontade.prestigio(ctx.campeonato.clubes)
         # pedidos de empréstimo desta janela (v1.7), por jogador
         self.pedidos = {}
         for p in emprestimo_repo.listar_pedidos_da_janela(conn, sid, ctx.rodada):
             self.pedidos.setdefault(p["jogador_id"], []).append(p)
         self.total_rodadas = len(ctx.campeonato.calendario)
+
+
+def _interesse(ctx, jogador, vendedor, prest=None):
+    """O interesse do jogador em vir para o clube do técnico (v1.9)."""
+    return vontade.interesse(jogador, ctx.alvo, vendedor, ctx.campeonato.clubes, prest)
+
+
+def _sortear_concorrente(ctx, jogador, vendedor, valor):
+    """(clube, salário, fator) de quem entra na disputa pelo jogador, ou
+    None (v1.9)."""
+    rng = disputa.semente(ctx.sim["id"], ctx.rodada, jogador.nome)
+    c = disputa.concorrente(jogador, vendedor, ctx.alvo, valor, ctx.campeonato.clubes, rng)
+    return (c.clube.nome, c.salario, c.fator) if c else None
+
+
+def _concorrente_dict(neg):
+    if not neg["concorrente"]:
+        return None
+    return {
+        "clube": neg["concorrente"],
+        "salario_aproximado": disputa.aproximado(neg["concorrente_salario"]),
+    }
+
+
+def _interesse_dict(interesse):
+    return {
+        "nivel": interesse.nivel,
+        "pontos": interesse.pontos,
+        "motivos": interesse.motivos,
+        "bloqueio": interesse.bloqueio,
+    }
 
 
 def _ficha_de_compra(ctx, janela, j, clube):
@@ -351,7 +384,10 @@ def _ficha_de_compra(ctx, janela, j, clube):
     alvo = ctx.alvo
     feitas = janela.propostas.get(janela.ids[j.nome], [])
     ultima = feitas[-1] if feitas else None
-    bloqueio = janela.fechada or mercado.motivo_saida_bloqueada(clube, j)
+    interesse = _interesse(ctx, j, clube, janela.prestigio)
+    bloqueio = (
+        janela.fechada or mercado.motivo_saida_bloqueada(clube, j) or interesse.bloqueio
+    )
     if bloqueio is None and len(alvo.jogadores) >= mercado.ELENCO_MAX:
         bloqueio = f"Seu elenco já tem {mercado.ELENCO_MAX} jogadores"
     return {
@@ -366,6 +402,7 @@ def _ficha_de_compra(ctx, janela, j, clube):
         ),
         "negociacao": janela.por_nome.get(j.nome),
         "observado": j.nome in janela.observados,
+        "interesse": _interesse_dict(interesse),
         "pedir_emprestado": _pedido_de_emprestimo(ctx, janela, j, clube),
     }
 
@@ -413,12 +450,17 @@ def _ficha_de_livre(ctx, janela, j):
     """Um jogador sem clube: não tem linha na tabela `jogador` (nem id), vai
     pelo nome."""
     luvas = mercado.luvas(j)
+    interesse = _interesse(ctx, j, None, janela.prestigio)
     return {
         **_ficha(j, None, None),
         "luvas": luvas,
-        "bloqueio": janela.fechada or mercado.motivo_entrada_bloqueada(ctx.alvo, luvas),
+        "bloqueio": (
+            janela.fechada or mercado.motivo_entrada_bloqueada(ctx.alvo, luvas)
+            or interesse.bloqueio
+        ),
         "negociacao": janela.por_nome.get(j.nome),
         "observado": j.nome in janela.observados,
+        "interesse": _interesse_dict(interesse),
     }
 
 
@@ -622,6 +664,7 @@ def propor(simulacao_id, jogador_id, valor):
         motivo = (
             mercado.motivo_saida_bloqueada(vendedor, jogador)
             or mercado.motivo_entrada_bloqueada(comprador, valor)
+            or _interesse(ctx, jogador, vendedor).bloqueio   # v1.9
         )
         if motivo:
             raise bloqueada(motivo)
@@ -666,10 +709,18 @@ def propor(simulacao_id, jogador_id, valor):
             # o aceite só trava o valor: a etapa 2 é o contrato (v1.7)
             negociacao = None
             if resposta.fechou:
+                # outro clube pode entrar na disputa pelo contrato (v1.9)
+                rival = _sortear_concorrente(ctx, jogador, vendedor, resposta.valor)
                 negociacao = negociacao_repo.inserir(
                     conn, simulacao_id, ctx.rodada, jogador.nome, resposta.valor,
-                    jogador_id=jogador_id, clube=vendedor.nome,
+                    jogador_id=jogador_id, clube=vendedor.nome, concorrente=rival,
                 )
+                if rival:
+                    mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                        caixa.concorrente_apareceu(
+                            jogador, rival[0], disputa.aproximado(rival[1]),
+                        )
+                    ])
 
         return {
             "resposta": resposta.tipo,
@@ -818,7 +869,10 @@ def contratar_livre(simulacao_id, nome):
             return None
 
         clube = ctx.alvo
-        motivo = mercado.motivo_entrada_bloqueada(clube, mercado.luvas(jogador))
+        motivo = (
+            mercado.motivo_entrada_bloqueada(clube, mercado.luvas(jogador))
+            or _interesse(ctx, jogador, None).bloqueio   # v1.9
+        )
         if motivo:
             with conn:
                 mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
@@ -832,10 +886,18 @@ def contratar_livre(simulacao_id, nome):
         if neg and neg["status"] == "aberta":
             neg_id = neg["id"]
         else:
+            rival = _sortear_concorrente(ctx, jogador, None, mercado.luvas(jogador))
             with conn:
                 neg_id = negociacao_repo.inserir(
                     conn, simulacao_id, ctx.rodada, nome, mercado.luvas(jogador),
+                    concorrente=rival,
                 )
+                if rival:
+                    mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
+                        caixa.concorrente_apareceu(
+                            jogador, rival[0], disputa.aproximado(rival[1]),
+                        )
+                    ])
         return {
             "negociacao_id": neg_id,
             "jogador": nome,
@@ -905,6 +967,7 @@ def _resumo(neg):
         "tentativas_restantes": max(0, contrato.MAX_TENTATIVAS - neg["tentativas"]),
         "contraproposta": _contraproposta(neg),
         "opcao_compra": neg["emprestimo_id"] is not None,   # v1.7
+        "concorrente": _concorrente_dict(neg),               # v1.9
     }
 
 
@@ -950,9 +1013,7 @@ def ver_negociacao(simulacao_id, negociacao_id):
                 if papeis.motivo_papel_bloqueado(jogador, p) is None
             ],
             "papel_esperado": contrato.papel_esperado(ctx.alvo, jogador),
-            "clube_mais_fraco": (
-                vendedor is not None and contrato.clube_mais_fraco(ctx.alvo, vendedor)
-            ),
+            "interesse": _interesse_dict(_interesse(ctx, jogador, vendedor)),
         }
     finally:
         conn.close()
@@ -1007,8 +1068,16 @@ def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=Non
                 f"{jogador.nome} só aceita a contraproposta que fez"
             )
 
+        interesse = _interesse(ctx, jogador, vendedor)
+        para_bater = None
+        if neg["concorrente"]:
+            # a outra proposta, pesada pelo quanto ele quer cada clube (v1.9)
+            para_bater = disputa.salario_para_bater(
+                neg["concorrente_salario"], neg["concorrente_fator"], interesse.fator,
+            )
         resposta = contrato.avaliar_chegada(
-            jogador, comprador, vendedor, salario, anos, multa, papel
+            jogador, comprador, vendedor, salario, anos, multa, papel,
+            interesse, para_bater, neg["concorrente"],
         )
         restantes = max(0, contrato.MAX_TENTATIVAS - neg["tentativas"] - 1)
         if resposta.fechou:
@@ -1061,7 +1130,7 @@ def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=Non
             mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
                 caixa.resposta_contrato(
                     jogador, vendedor, resposta, restantes, neg["valor"],
-                    desistiu=status == "desistiu",
+                    desistiu=status == "desistiu", concorrente=neg["concorrente"],
                 )
             ])
 

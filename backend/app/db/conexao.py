@@ -130,6 +130,10 @@ _COLUNAS_NOVAS = {
     # opção de compra de um empréstimo (v1.7)
     "negociacao": (
         ("emprestimo_id", "INTEGER REFERENCES emprestimo(id) ON DELETE CASCADE"),
+        # disputa pela contratação (v1.9)
+        ("concorrente", "TEXT"),
+        ("concorrente_salario", "INTEGER"),
+        ("concorrente_fator", "REAL"),
     ),
     "partida": (
         ("finalizacoes_gol_mandante", "INTEGER NOT NULL DEFAULT 0"),
