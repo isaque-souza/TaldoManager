@@ -47,7 +47,7 @@ function cardCampanha(c) {
         <div><dt>Custo</dt><dd>${reais(c.custo)}</dd></div>
       </dl>
       ${bloqueio}
-      <button class="mk-fazer" data-tipo="${c.tipo}" ${c.bloqueio ? "disabled" : ""}>Lançar campanha</button>
+      <button class="mk-fazer secondary outline" data-tipo="${c.tipo}" ${c.bloqueio ? "disabled" : ""}>Lançar campanha</button>
     </article>`;
 }
 

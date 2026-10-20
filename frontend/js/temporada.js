@@ -2,7 +2,7 @@
 
 import { $, esconderTudo, estado, limparAviso, navegarPara, ocupado, pedir, voltarUm } from "./nucleo.js";
 import { carregarLista } from "./saves.js";
-import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
+import { decimal, dinheiro, ligarLinks, tabela } from "./tabelas.js";
 import { ligarEvolucao, renderEvolucao } from "./grafico.js";
 import { abrirCarreira, renderVirada } from "./carreira.js";
 import { renderFimDeCarreira, renderMeta } from "./diretoria.js";
@@ -166,9 +166,9 @@ export function mostrarTemporada() {
 
   const campeao = estado.temporada.classificacao[0];
   const nomeCampeao = emAndamento ? campeao.clube : estado.temporada.campeao;
-  $("campeao").innerHTML = comEscudo(
-    nomeCampeao, emAndamento ? `${nomeCampeao} (líder)` : nomeCampeao, 30
-  );
+  // no meio da temporada ainda não há campeão: o card mostra o líder
+  $("campeao-rotulo").textContent = emAndamento ? "Líder" : "Campeão";
+  $("campeao").innerHTML = comEscudo(nomeCampeao, nomeCampeao, 30);
   $("campeao-info").textContent =
     (estado.temporada.carreira_id ? `temporada ${estado.temporada.temporada} · ` : "") +
     (emAndamento ? `rodada ${estado.temporada.rodada_atual} de ${estado.temporada.rodadas} · ` : "") +
@@ -177,7 +177,7 @@ export function mostrarTemporada() {
   const mvp = estado.temporada.mvp;
   $("mvp").textContent = mvp ? mvp.nome : "—";
   $("mvp-info").textContent = mvp
-    ? `${mvp.clube} · ${mvp.posicao} · nota média ${mvp.nota_media} · ${mvp.melhor_em_campo}x melhor em campo`
+    ? `${mvp.clube} · ${mvp.posicao} · nota média ${decimal(mvp.nota_media)} · ${mvp.melhor_em_campo}x melhor em campo`
     : "";
 
   const meu = estado.temporada.clube_usuario;

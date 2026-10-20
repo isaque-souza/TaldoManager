@@ -6,7 +6,7 @@
 // jogador, na Central do Elenco.
 
 import { $, estado, navegarPara, pedir } from "./nucleo.js";
-import { blocoResumo, dinheiro, reais, tabela } from "./tabelas.js";
+import { blocoResumo, decimal, dinheiro, reais, tabela } from "./tabelas.js";
 import {
   acaoCompra, acaoEmprestimo, acaoLivre, acoesOferta, detalheOferta, DURACAO_EMP, ligarBotoesMercado,
   postarMercado, STATUS_NEG,
@@ -192,7 +192,7 @@ function abaResumo(f) {
       <div><dt>Jogos</dt><dd>${f.partidas}</dd></div>
       <div><dt>Gols</dt><dd>${f.gols}</dd></div>
       <div><dt>Assist.</dt><dd>${f.assistencias}</dd></div>
-      <div><dt>Nota</dt><dd>${f.partidas ? f.nota_media.toFixed(2) : "—"}</dd></div>
+      <div><dt>Nota</dt><dd>${f.partidas ? decimal(f.nota_media) : "—"}</dd></div>
     </dl>
     <dl class="el-contrato">
       <div><dt>Salário/temp.</dt><dd>${reais(f.salario)}</dd></div>

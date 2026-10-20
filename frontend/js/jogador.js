@@ -1,10 +1,11 @@
 // Página do jogador: ficha, mercado e game log.
 
 import { $, esconderTudo, estado, limparAviso, pedir, voltarUm } from "./nucleo.js";
-import { ligarLinks, reais, tabela } from "./tabelas.js";
+import { decimal, ligarLinks, reais, tabela } from "./tabelas.js";
 import { minutoFmt } from "./partida.js";
-import { cartao, seloIdolo } from "./icones.js";
+import { cartao, icone, seloIdolo } from "./icones.js";
 import { barrasAtributos } from "./atributos.js";
+import { camisa } from "./identidade.js";
 
 // ---------- visão jogador ----------
 
@@ -22,30 +23,48 @@ export async function abrirJogador(jogadorId) {
   estado.jogadorAtualId = Number(jogadorId);
   esconderTudo();
   $("jogador").hidden = false;
+  window.scrollTo(0, 0);   // vindo de uma lista rolada, a página abre no topo
 
   const j = d.jogador;
-  $("jogador-nome").textContent = j.nome;
-  const penas = j.penaltis + j.penaltis_perdidos
-    ? ` · pênaltis ${j.penaltis}/${j.penaltis + j.penaltis_perdidos}`
-    : "";
-  $("jogador-info").innerHTML =
-    `${j.clube} · ${j.funcao || j.posicao} · OVR ${j.overall} · ${j.idade} anos · ` +
-    `${j.partidas}J ${j.gols}G ${j.assistencias}A · nota média ${j.nota_media} · ` +
-    `melhor ${j.melhor_nota} · ${j.melhor_em_campo}x melhor em campo · ` +
-    `${cartao()} ${j.amarelos} ${cartao("vermelho")} ${j.vermelhos} · ${j.faltas} faltas${penas}`;
-  // saves anteriores à v0.7 não têm dados de mercado (vêm zerados)
-  $("jogador-mercado").textContent = j.valor_mercado
-    ? `Valor ${reais(j.valor_mercado)} · salário ${reais(j.salario)}/temporada · ` +
-      `potencial ${j.potencial} · contrato: ${j.contrato_anos} ` +
-      `temporada${j.contrato_anos === 1 ? "" : "s"}`
-    : "";
+  $("jogador-topo").innerHTML = `
+    ${j.clube ? camisa(j.clube, { tamanho: 64 }) : `<span class="tr-sem-clube">${icone("assinou")}</span>`}
+    <div class="jg-nome">
+      <h2>${j.nome}${j.idolo ? ` ${seloIdolo()}` : ""}</h2>
+      <p>${j.clube || "Sem clube"} · ${j.funcao || j.posicao} · ${j.idade} anos` +
+        `${j.idolo ? " · <strong>ídolo da torcida</strong>" : ""}</p>
+    </div>
+    <dl class="el-notas jg-notas">
+      <div><dt>OVR</dt><dd>${j.overall}</dd></div>
+      ${j.potencial ? `<div><dt>POT</dt><dd class="${j.potencial > j.overall ? "sobe" : ""}">${j.potencial}</dd></div>` : ""}
+    </dl>`;
 
-  // fama (v1.4); saves anteriores não guardam (null)
+  const bloco = (rotulo, valor) => `<div><dt>${rotulo}</dt><dd>${valor}</dd></div>`;
+  const jogou = j.partidas > 0;
+  const penas = j.penaltis + j.penaltis_perdidos;
+  const temporada = [
+    bloco("Jogos", j.partidas), bloco("Gols", j.gols), bloco("Assist.", j.assistencias),
+    bloco("Nota média", jogou ? decimal(j.nota_media) : "—"),
+    bloco("Melhor nota", jogou ? decimal(j.melhor_nota) : "—"),
+    bloco("Melhor em campo", `${j.melhor_em_campo}x`),
+    bloco("Cartões", `${cartao()} ${j.amarelos} ${cartao("vermelho")} ${j.vermelhos}`),
+    bloco("Faltas", j.faltas),
+    penas ? bloco("Pênaltis", `${j.penaltis}/${penas}`) : "",
+  ].join("");
+  // saves anteriores à v0.7 não têm dados de mercado (vêm zerados); a fama
+  // (v1.4) vem null nos anteriores a ela
   const casa = j.temporadas_no_clube;
-  $("jogador-fama").innerHTML = j.fama != null
-    ? `Fama ${j.fama}/100 · ${casa} temporada${casa === 1 ? "" : "s"} no clube` +
-      (j.idolo ? ` · ${seloIdolo()} <strong>ídolo da torcida</strong>` : "")
-    : "";
+  const contrato = [
+    j.valor_mercado ? bloco("Valor", reais(j.valor_mercado)) : "",
+    j.valor_mercado ? bloco("Salário/temp.", reais(j.salario)) : "",
+    j.valor_mercado ? bloco("Restam", `${j.contrato_anos} temp.`) : "",
+    j.multa_rescisoria ? bloco("Multa", reais(j.multa_rescisoria)) : "",
+    j.fama != null ? bloco("Fama", `${j.fama}/100`) : "",
+    j.fama != null ? bloco("No clube", `${casa} temp.`) : "",
+  ].join("");
+  $("jogador-blocos").innerHTML = `
+    <h3 class="secao">Temporada</h3>
+    <dl class="jg-blocos">${temporada}</dl>
+    ${contrato ? `<h3 class="secao">Contrato</h3><dl class="jg-blocos">${contrato}</dl>` : ""}`;
 
   $("jogador-atributos").innerHTML = barrasAtributos(j.atributos);
 

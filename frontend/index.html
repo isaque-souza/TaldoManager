@@ -138,7 +138,7 @@
     <nav class="abas" id="temporada-ligas" hidden></nav>
     <div class="cards">
       <article>
-        <header><strong><span data-icone="trofeu"></span> Campeão</strong></header>
+        <header><strong><span data-icone="trofeu"></span> <span id="campeao-rotulo">Campeão</span></strong></header>
         <h3 id="campeao" style="margin: 0"></h3>
         <small id="campeao-info"></small>
       </article>
@@ -335,7 +335,8 @@
 
     <!-- depois de jogar: resultados -->
     <div id="rodada-depois" hidden>
-      <h3 class="secao" id="r-res-titulo"></h3>
+      <!-- v1.8: o seu jogo em destaque (o número da rodada já está na faixa) -->
+      <div id="r-meu-jogo"></div>
       <div id="r-resultados"></div>
       <div id="r-copa-rodada"></div>
       <h3 class="secao" style="margin-top: 1.5rem">Classificação</h3>
@@ -454,13 +455,12 @@
   <!-- visão jogador -->
   <section id="jogador" hidden>
     <button class="voltar secondary" data-voltar>← Voltar</button>
-    <hgroup>
-      <h2 id="jogador-nome"></h2>
-      <p id="jogador-info"></p>
-      <p id="jogador-mercado"></p>
-      <p id="jogador-fama"></p>
-    </hgroup>
-    <div id="jogador-atributos"></div>
+    <!-- v1.8: cabeçalho como o das fichas, blocos da temporada e do contrato -->
+    <header id="jogador-topo" class="jg-topo"></header>
+    <div class="jg-grade">
+      <div id="jogador-blocos"></div>
+      <div id="jogador-atributos"></div>
+    </div>
     <h3 class="secao">Game log</h3>
     <div id="jogador-log"></div>
   </section>

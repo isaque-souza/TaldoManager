@@ -19,7 +19,7 @@ Tudo determinístico (sem `random`): não mexe na sorte da temporada.
 
 from dataclasses import dataclass
 
-from app.domain import fama
+from app.domain import fama, formato
 
 # rodadas ANTES das quais a janela está aberta: pré-temporada e virada do turno
 JANELAS = (1, 20)
@@ -63,7 +63,7 @@ def motivo_entrada_bloqueada(clube, preco):
     if len(clube.jogadores) >= ELENCO_MAX:
         return f"{clube.nome} já tem {ELENCO_MAX} jogadores"
     if clube.dinheiro < preco:
-        return f"{clube.nome} não tem caixa para pagar {preco:,}".replace(",", ".")
+        return f"{clube.nome} não tem caixa para pagar {formato.reais(preco)}"
     return None
 
 
@@ -162,7 +162,7 @@ def motivo_dispensa_bloqueada(clube, jogador):
         return motivo
     custo = rescisao(jogador)
     if clube.dinheiro < custo:
-        return f"{clube.nome} não tem caixa para pagar {custo:,} de rescisão".replace(",", ".")
+        return f"{clube.nome} não tem caixa para pagar {formato.reais(custo)} de rescisão"
     return None
 
 
