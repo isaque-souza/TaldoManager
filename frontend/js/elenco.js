@@ -5,7 +5,7 @@
 // (energia, lesão, suspensão).
 
 import { $, estado, navegarPara } from "./nucleo.js";
-import { dinheiro, tabela } from "./tabelas.js";
+import { dinheiro, reais, tabela } from "./tabelas.js";
 import { carregarProximaRodada } from "./rodada.js";
 import {
   acoesOferta, avisoMercado, blocoEmprestado, blocoEmprestar, carregarMercado, detalheOferta, ligarBotoesMercado,
@@ -121,7 +121,7 @@ function ficha(f) {
           <button type="button" class="secondary" data-el="lista">
             ${f.a_venda ? "Tirar da lista" : "Pôr na lista de transferências"}</button>
           <button type="button" class="secondary outline" data-el="dispensar"${f.dispensa_bloqueada ? " disabled" : ""}>
-            ${icone("saiu")} Dispensar (${dinheiro(f.rescisao)})</button>
+            ${icone("saiu")} Dispensar (${reais(f.rescisao)})</button>
           <button type="button" class="secondary outline" data-el="pagina">Página completa</button>
         </div>
         ${dispensa}
@@ -137,11 +137,11 @@ function ficha(f) {
     ${barrasAtributos(f.atributos)}
     <h3 class="secao">Contrato</h3>
     <dl class="el-contrato">
-      <div><dt>Salário</dt><dd>${dinheiro(f.salario)}/temp.</dd></div>
-      <div><dt>Mercado paga</dt><dd class="${f.salario_referencia > f.salario ? "negativo" : ""}">${dinheiro(f.salario_referencia)}</dd></div>
+      <div><dt>Salário/temp.</dt><dd>${reais(f.salario)}</dd></div>
+      <div><dt>Mercado paga</dt><dd class="${f.salario_referencia > f.salario ? "negativo" : ""}">${reais(f.salario_referencia)}</dd></div>
       <div><dt>Restam</dt><dd>${f.contrato_anos} temp.</dd></div>
-      <div><dt>Multa</dt><dd>${f.multa_rescisoria ? dinheiro(f.multa_rescisoria) : MULTA_ROTULO.sem}</dd></div>
-      <div><dt>Valor</dt><dd>${dinheiro(f.valor_mercado)}</dd></div>
+      <div><dt>Multa</dt><dd>${f.multa_rescisoria ? reais(f.multa_rescisoria) : MULTA_ROTULO.sem}</dd></div>
+      <div><dt>Valor</dt><dd>${reais(f.valor_mercado)}</dd></div>
       <div><dt>Fama</dt><dd>${f.fama}/100</dd></div>
     </dl>
     <div id="c-form"></div>
@@ -162,7 +162,7 @@ function blocoOfertas(f) {
     ${lista.map((o) => `<div class="el-oferta">
       <div class="el-oferta-topo">
         <b>${o.rival ? `${icone("rival", "rival")} ` : ""}${o.clube}</b>
-        <strong>${dinheiro(o.valor)}</strong>
+        <strong>${reais(o.valor)}</strong>
       </div>
       <small>${detalheOferta(o) || "&nbsp;"}</small>
       ${acoesOferta(o)}
@@ -219,7 +219,7 @@ function desenhar() {
   const box = $("el-central");
   box.innerHTML = `
     <p>${m.elenco.length} jogadores (mín. ${m.elenco_min}, máx. ${m.elenco_max}) ·
-      folha ${dinheiro(folha)}/temp. · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${dinheiro(m.caixa)}</strong></p>
+      folha ${reais(folha)}/temp. · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${reais(m.caixa)}</strong></p>
     ${fora.length ? `<p class="el-fora">${icone("acordo")} Emprestados: ${fora.map((f) =>
       `${f.nome} (${f.clube}, até a rodada ${f.emprestimo.volta - 1})`).join(", ")}</p>` : ""}
     <nav class="abas el-abas">${abas}</nav>
@@ -257,7 +257,7 @@ function ligarAcoes(box, f) {
   dispensar.addEventListener("click", () => {
     if (dispensar.dataset.confirmar !== "1") {
       dispensar.dataset.confirmar = "1";
-      dispensar.textContent = `Confirmar? Paga ${dinheiro(f.rescisao)}`;
+      dispensar.textContent = `Confirmar? Paga ${reais(f.rescisao)}`;
       return;
     }
     dispensarJogador(f);
@@ -294,7 +294,7 @@ async function dispensarJogador(f) {
   );
   if (!r) return;
   avisoMercado(
-    `${icone("saiu")} ${r.jogador} foi dispensado: ${dinheiro(r.rescisao)} de rescisão.`,
+    `${icone("saiu")} ${r.jogador} foi dispensado: ${reais(r.rescisao)} de rescisão.`,
     false, "r-contrato-msg"
   );
   filtro.selecionado = null;

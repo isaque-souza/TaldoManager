@@ -4,7 +4,7 @@
 // e não volta: dois cliques, como nas campanhas.
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
-import { dinheiro } from "./tabelas.js";
+import { reais } from "./tabelas.js";
 import { icone } from "./icones.js";
 import { carregarMarketing } from "./marketing.js";
 import { carregarCaixa } from "./caixa.js";
@@ -18,7 +18,7 @@ const rodadaAtual = () => estado.rodadaInfo && estado.rodadaInfo.rodada;
 const caminho = () => `/simulacoes/${estado.simId}/estadio`;
 const milhar = (n) => n.toLocaleString("pt-BR");
 const pct = (n) => `${n.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}%`;
-const reais = (v) =>
+const ingresso = (v) =>
   `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const rodadas = (n) => (n === 1 ? "1 rodada" : `${n} rodadas`);
 const mando = (m) =>
@@ -51,11 +51,11 @@ function cardFaixa(f, atual) {
       <header><strong>${f.nome}</strong>${escolhida ? ` <small class="es-atual">${icone("ok")} em uso</small>` : ""}</header>
       <p>${f.descricao}</p>
       <dl class="mk-ficha">
-        <div><dt>Ingresso</dt><dd>${reais(f.preco)}</dd></div>
+        <div><dt>Ingresso</dt><dd>${ingresso(f.preco)}</dd></div>
         <div><dt>Público</dt><dd>${milhar(f.publico)} <small>(${pct(f.ocupacao)})</small></dd></div>
       </dl>
       <dl class="mk-ficha">
-        <div><dt>Por jogo</dt><dd>R$ ${dinheiro(f.bilheteria)}</dd></div>
+        <div><dt>Por jogo</dt><dd>${reais(f.bilheteria)}</dd></div>
         <div><dt>Força em casa</dt><dd>${mando(f.mando_de_campo)}</dd></div>
       </dl>
       <button class="es-usar${escolhida ? " secondary" : ""}" data-faixa="${f.faixa}" ${escolhida ? "disabled" : ""}>
@@ -80,8 +80,8 @@ function cardObra(o) {
         <div><dt>Prazo</dt><dd>${rodadas(o.rodadas)}</dd></div>
       </dl>
       <dl class="mk-ficha">
-        <div><dt>Custo</dt><dd>R$ ${dinheiro(o.custo)}</dd></div>
-        <div><dt>Manutenção</dt><dd>R$ ${dinheiro(o.manutencao)} <small>por jogo</small></dd></div>
+        <div><dt>Custo</dt><dd>${reais(o.custo)}</dd></div>
+        <div><dt>Manutenção</dt><dd>${reais(o.manutencao)} <small>por jogo</small></dd></div>
       </dl>
       ${bloqueio}
       <button class="es-obra" data-tipo="${o.tipo}" ${o.bloqueio ? "disabled" : ""}>Contratar obra</button>
@@ -102,7 +102,7 @@ function blocoAmpliacao(d) {
   }
   const ampliados = d.lugares_ampliados
     ? `<p class="mk-intro">Já ampliados: ${milhar(d.lugares_ampliados)} lugares, com
-        manutenção de R$ ${dinheiro(d.manutencao)} por jogo em casa.</p>`
+        manutenção de ${reais(d.manutencao)} por jogo em casa.</p>`
     : "";
   return `<h3 class="es-titulo">${icone("obra")} Ampliação</h3>
     <p class="mk-intro">Mais lugares só rendem se o estádio lota. A obra é paga à
@@ -131,7 +131,7 @@ function renderEstadio() {
         <span class="tile-valor">${t.jogos_em_casa ? pct(t.ocupacao_media) : "—"}</span>
         <span class="tile-detalhe">${t.jogos_em_casa ? `${t.lotados} de ${t.jogos_em_casa} lotados` : temporada}</span></div>
       <div class="tile"><span class="tile-rotulo">Bilheteria</span>
-        <span class="tile-valor">${dinheiro(t.bilheteria)}</span>
+        <span class="tile-valor">${reais(t.bilheteria)}</span>
         <span class="tile-detalhe">${t.jogos_em_casa ? temporada : "na temporada"}</span></div>
     </div>
     <p class="mk-intro">Parte da torcida vai a cada jogo em casa; clássicos e boa

@@ -2,7 +2,7 @@
 
 import { $, esconderTudo, limparAviso, pedir, pilhaVoltar } from "./nucleo.js";
 import { carregarLista, lerSessao, preencherLista } from "./saves.js";
-import { dinheiro } from "./tabelas.js";
+import { dinheiro, reais } from "./tabelas.js";
 import { camisa, escudo } from "./identidade.js";
 import { icone } from "./icones.js";
 import { abasLiga } from "./ligas.js";
@@ -118,7 +118,7 @@ function renderClubes() {
         <small>${c.pais} · <span class="estrelas" title="${c.ranking_forca}º elenco mais forte">${estrelas(c.ranking_forca)}</span></small>
         <dl class="ficha">
           <div><dt>Força</dt><dd>${c.forca.toLocaleString("pt-BR")} <small>${c.ranking_forca}º</small></dd></div>
-          <div><dt>Caixa</dt><dd>${dinheiro(c.dinheiro)}</dd></div>
+          <div><dt>Caixa</dt><dd>${reais(c.dinheiro)}</dd></div>
           <div><dt>Torcida</dt><dd>${dinheiro(c.torcedores)}</dd></div>
         </dl>
         <span class="card-meta"><span class="meta-rotulo">Meta</span> ${c.meta}</span>

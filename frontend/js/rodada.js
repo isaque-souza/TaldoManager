@@ -1,7 +1,7 @@
 // Modo rodada a rodada: antes (escalação) e depois (resultados).
 
 import { $, api, esconderTudo, estado, limparAviso, navegarPara, ocupado, pedir, pilhaVoltar } from "./nucleo.js";
-import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
+import { ligarLinks, reais, tabela } from "./tabelas.js";
 import { COLUNAS, mostrarTemporada } from "./temporada.js";
 import { carregarMercado } from "./mercado.js";
 import { carregarLista } from "./saves.js";
@@ -116,9 +116,9 @@ function renderHub(info) {
     : "a liga ainda não começou";
 
   const fin = t && (t.financas || []).find((f) => f.clube === info.clube_usuario);
-  $("hub-financas").textContent = fin ? `R$ ${dinheiro(fin.caixa)}` : "—";
+  $("hub-financas").textContent = fin ? `${reais(fin.caixa)}` : "—";
   $("hub-financas-info").textContent = fin
-    ? `em caixa · folha de R$ ${dinheiro(fin.folha)}/temporada`
+    ? `em caixa · folha de ${reais(fin.folha)}/temporada`
     : "receitas, despesas e folha";
 }
 

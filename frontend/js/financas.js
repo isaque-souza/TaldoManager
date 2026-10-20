@@ -1,7 +1,7 @@
 // Dashboard financeiro de um clube: números principais, caixa rodada a
 // rodada, receitas × despesas e a folha por jogador.
 
-import { dinheiro, tabela } from "./tabelas.js";
+import { dinheiro, reais, tabela } from "./tabelas.js";
 import { icone } from "./icones.js";
 
 // ---------- helpers ----------
@@ -64,10 +64,10 @@ function tiles(clube, elenco) {
   const maior = elenco.reduce((a, j) => ((j.salario || 0) > (a?.salario || 0) ? j : a), null);
   const sinal = saldo > 0 ? "+" : "";
   return `<div class="tiles">
-    ${tile("Caixa atual", dinheiro(clube.dinheiro), `começou com ${dinheiro(clube.dinheiro_inicial)}`, clube.dinheiro < 0)}
-    ${tile("Saldo da temporada", sinal + dinheiro(saldo), saldo >= 0 ? "▲ no azul" : "▼ no vermelho", saldo < 0)}
-    ${tile("Folha salarial", dinheiro(folha), "por temporada")}
-    ${maior ? tile("Maior salário", dinheiro(maior.salario), esc(maior.nome)) : ""}
+    ${tile("Caixa atual", reais(clube.dinheiro), `começou com ${reais(clube.dinheiro_inicial)}`, clube.dinheiro < 0)}
+    ${tile("Saldo da temporada", sinal + reais(saldo), saldo >= 0 ? "▲ no azul" : "▼ no vermelho", saldo < 0)}
+    ${tile("Folha salarial", reais(folha), "por temporada")}
+    ${maior ? tile("Maior salário", reais(maior.salario), esc(maior.nome)) : ""}
     ${tileTorcida(clube)}
   </div>`;
 }

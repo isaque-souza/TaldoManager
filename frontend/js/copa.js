@@ -6,7 +6,7 @@
 import { $, estado, pedir } from "./nucleo.js";
 import { escudo } from "./identidade.js";
 import { icone } from "./icones.js";
-import { dinheiro, tabela } from "./tabelas.js";
+import { reais, tabela } from "./tabelas.js";
 import { nomeLiga } from "./ligas.js";
 
 const SIGLA_LIGA = { taldo: "TAL", premier: "PL" };
@@ -108,7 +108,7 @@ function colunaFase(f, i) {
       <header>
         <h3 class="secao">${f.nome}</h3>
         <small>depois da rodada ${f.depois_da_rodada}</small>
-        <small>R$ ${dinheiro(f.premio)} por vitória</small>
+        <small>${reais(f.premio)} por vitória</small>
       </header>
       <div class="cp-jogos">${jogos}</div>
     </section>`;

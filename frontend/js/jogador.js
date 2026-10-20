@@ -1,7 +1,7 @@
 // Página do jogador: ficha, mercado e game log.
 
 import { $, esconderTudo, estado, limparAviso, pedir, voltarUm } from "./nucleo.js";
-import { dinheiro, ligarLinks, tabela } from "./tabelas.js";
+import { ligarLinks, reais, tabela } from "./tabelas.js";
 import { minutoFmt } from "./partida.js";
 import { cartao, seloIdolo } from "./icones.js";
 import { barrasAtributos } from "./atributos.js";
@@ -35,7 +35,7 @@ export async function abrirJogador(jogadorId) {
     `${cartao()} ${j.amarelos} ${cartao("vermelho")} ${j.vermelhos} · ${j.faltas} faltas${penas}`;
   // saves anteriores à v0.7 não têm dados de mercado (vêm zerados)
   $("jogador-mercado").textContent = j.valor_mercado
-    ? `Valor ${dinheiro(j.valor_mercado)} · salário ${dinheiro(j.salario)}/temporada · ` +
+    ? `Valor ${reais(j.valor_mercado)} · salário ${reais(j.salario)}/temporada · ` +
       `potencial ${j.potencial} · contrato: ${j.contrato_anos} ` +
       `temporada${j.contrato_anos === 1 ? "" : "s"}`
     : "";
