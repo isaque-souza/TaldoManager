@@ -1,7 +1,7 @@
 // Página do jogador: ficha, mercado e game log.
 
 import { $, esconderTudo, estado, limparAviso, pedir, voltarUm } from "./nucleo.js";
-import { decimal, ligarLinks, reais, tabela } from "./tabelas.js";
+import { decimal, ligarLinks, potTexto, potTitulo, reais, tabela } from "./tabelas.js";
 import { minutoFmt } from "./partida.js";
 import { cartao, icone, seloIdolo } from "./icones.js";
 import { barrasAtributos } from "./atributos.js";
@@ -35,7 +35,7 @@ export async function abrirJogador(jogadorId) {
     </div>
     <dl class="el-notas jg-notas">
       <div><dt>OVR</dt><dd>${j.overall}</dd></div>
-      ${j.potencial ? `<div><dt>POT</dt><dd class="${j.potencial > j.overall ? "sobe" : ""}">${j.potencial}</dd></div>` : ""}
+      ${j.potencial ? `<div><dt>POT</dt><dd class="${j.potencial > j.overall ? "sobe" : ""}" title="${potTitulo(j)}">${potTexto(j)}</dd></div>` : ""}
     </dl>`;
 
   const bloco = (rotulo, valor) => `<div><dt>${rotulo}</dt><dd>${valor}</dd></div>`;

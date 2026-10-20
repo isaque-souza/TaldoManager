@@ -25,7 +25,7 @@ import random
 
 from app.db.conexao import conectar
 from app.domain import caixa, contrato, disputa, emprestimo, fama, livres, mercado, ofertas as ofertas_cpu
-from app.domain import papeis, torcida, vontade
+from app.domain import olheiro, papeis, torcida, vontade
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
@@ -177,6 +177,7 @@ def _ficha(jogador, jogador_id, clube):
         "idade": jogador.idade,
         "overall": jogador.overall,
         "potencial": jogador.potencial,
+        "potencial_faixa": None,          # exato; ver `_estimativa` (v2.0)
         "valor_mercado": jogador.valor_mercado(),
         "salario": jogador.salario,
         "salario_referencia": jogador.salario_referencia(),
@@ -195,6 +196,14 @@ def _ficha(jogador, jogador_id, clube):
         # emprestado por outro clube (v1.7)
         "emprestimo": _emprestado(jogador),
     }
+
+
+def _estimativa(ctx, jogador):
+    """O potencial de um jogador de fora como o técnico o vê (v2.0): a faixa
+    do olheiro — menos de quem ele mesmo emprestou, que conhece bem."""
+    if (jogador.emprestimo or {}).get("de") == ctx.alvo.nome:
+        return {}
+    return olheiro.estimativa(jogador, ctx.alvo.nivel_olheiro)
 
 
 def _emprestado(jogador):
@@ -393,6 +402,7 @@ def _ficha_de_compra(ctx, janela, j, clube):
         bloqueio = f"Seu elenco já tem {mercado.ELENCO_MAX} jogadores"
     return {
         **_ficha(j, janela.ids[j.nome], clube),
+        **_estimativa(ctx, j),
         "bloqueio": bloqueio,
         "rival": mercado.sao_rivais(alvo, clube),
         "propostas_restantes": max(0, mercado.MAX_PROPOSTAS - len(feitas)),
@@ -454,6 +464,7 @@ def _ficha_de_livre(ctx, janela, j):
     interesse = _interesse(ctx, j, None, janela.prestigio)
     return {
         **_ficha(j, None, None),
+        **_estimativa(ctx, j),
         "luvas": luvas,
         "bloqueio": (
             janela.fechada or mercado.motivo_entrada_bloqueada(ctx.alvo, luvas)
@@ -541,6 +552,7 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
             "transferencias": _historico(conn, simulacao_id),
             "emprestimos": _emprestimos(ctx),
             "partes_salario": list(emprestimo.PARTES_SALARIO),
+            "olheiro": olheiro.resumo(alvo, ctx.rodada - 1, janela.total_rodadas),
         }
     finally:
         conn.close()

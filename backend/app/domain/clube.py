@@ -64,6 +64,7 @@ class Clube:
         self.obra_lugares = 0
         self.obra_rodadas = 0
         self.lugares_ampliados = 0
+        self.nivel_olheiro = 1   # olheiro profissional (v2.0, ver app.domain.olheiro)
         self.rivais = set()   # nomes dos clubes rivais (clássicos)
         self.liga = "taldo"   # em que liga joga (v1.6)
         self.posicao_anterior = None   # na temporada anterior (copa, v1.6)
@@ -79,6 +80,7 @@ class Clube:
         self.despesa_compras = 0
         self.despesa_marketing = 0   # campanhas da torcida (v1.4)
         self.despesa_estadio = 0     # obras e manutenção (v1.5)
+        self.despesa_olheiros = 0    # salário do olheiro (v2.0)
         # caixa ao fim de cada rodada (para o gráfico). Guardado, não
         # reconstruído: transferências e renovações mexem no caixa e na folha
         # ENTRE as rodadas, então as partidas sozinhas não contam a história

@@ -93,6 +93,9 @@ _COLUNAS_NOVAS = {
         ("obra_rodadas", "INTEGER NOT NULL DEFAULT 0"),
         ("lugares_ampliados", "INTEGER NOT NULL DEFAULT 0"),
         ("despesa_estadio", "INTEGER NOT NULL DEFAULT 0"),
+        # olheiro profissional (v2.0)
+        ("nivel_olheiro", "INTEGER NOT NULL DEFAULT 1"),
+        ("despesa_olheiros", "INTEGER NOT NULL DEFAULT 0"),
     ),
     "jogador": (
         ("penaltis", "INTEGER NOT NULL DEFAULT 0"),

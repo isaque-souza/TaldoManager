@@ -1045,6 +1045,34 @@ resultados de um mesmo seed).
 
 ---
 
+# 🚧 Olheiros e Base (v2.0) — Em andamento
+
+Contratar deixa de ser à prova de erro: o potencial dos jogadores de fora
+vira uma estimativa do olheiro, e o clube ganha uma base própria com
+olheiros que buscam jovens pelo mundo. Regras em `app/domain/olheiro.py`
+(determinísticas: não mexem nos resultados de um mesmo seed).
+
+* [x] Olheiro profissional
+      - O potencial dos jogadores de outros clubes e dos livres aparece
+        como uma **faixa** (ex.: 74–82) no mercado, nos observados, na
+        página do jogador e nas joias da virada; o valor certo está sempre
+        dentro dela, mas não necessariamente no meio. Os do seu elenco (e
+        os que você emprestou) e os veteranos (30+) seguem exatos
+      - Níveis 1 a 5: faixa de ±7 (grátis), ±5 (R$ 500 mil/temporada),
+        ±4 (R$ 1 mi), ±2 (R$ 2 mi) e ±1 (R$ 4 mi) — sempre resta uma dúvida
+      - Contrato até o fim da temporada: subir paga na hora a diferença
+        pelas rodadas que faltam, descer não devolve; na virada renova pela
+        temporada cheia (linha "Olheiros" nas finanças)
+      - Aba **Olheiro** na Central de Transferências
+      - O valor de mercado segue usando o potencial verdadeiro: preço alto
+        ainda "denuncia" um jovem bom
+* [ ] Relatório de contratação (faixa de preço, interesse e dificuldade)
+* [ ] Módulo da base
+* [ ] Olheiros da base (regiões, duração e relatórios mensais)
+* [ ] Equilíbrio e acabamento
+
+---
+
 # 📁 Estrutura
 
 ```text
@@ -1061,7 +1089,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 827 testes (domain, db, repositories, services, api)
+│   └── tests/              # 851 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

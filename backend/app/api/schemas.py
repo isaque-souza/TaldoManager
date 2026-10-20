@@ -578,6 +578,7 @@ class ClubeInfo(BaseModel):
     torcedores_inicial: int = 0
     despesa_marketing: int = 0
     despesa_estadio: int = 0             # obras e manutenção (v1.5)
+    despesa_olheiros: int = 0            # salário do olheiro (v2.0)
 
 
 class JogoResumo(BaseModel):
@@ -691,6 +692,8 @@ class JogadorInfo(BaseModel):
     penaltis_perdidos: int = 0
     faltas: int = 0
     potencial: int = 0
+    # estimativa do olheiro (v2.0): [mín, máx]; None = exato (o meio vai em potencial)
+    potencial_faixa: list[int] | None = None
     contrato_anos: int = 0
     valor_mercado: int = 0
     salario: int = 0
@@ -899,6 +902,7 @@ class FichaMercado(BaseModel):
     idade: int
     overall: int
     potencial: int
+    potencial_faixa: list[int] | None = None   # olheiro (v2.0)
     valor_mercado: int
     salario: int
     contrato_anos: int
@@ -1026,6 +1030,27 @@ class OfertaRecebida(BaseModel):
     revolta_torcida: float | None = None   # % da torcida que vai embora (v1.4)
 
 
+# --- olheiro (v2.0) ----------------------------------------------------------
+
+class NivelOlheiro(BaseModel):
+    nivel: int
+    faixa: int                      # ± no potencial
+    custo_temporada: int
+    custo_agora: int                # o que a troca custa hoje (descer: 0)
+    bloqueio: str | None = None
+
+
+class Olheiro(BaseModel):
+    nivel: int
+    caixa: int
+    gasto_temporada: int
+    niveis: list[NivelOlheiro]
+
+
+class NovoNivelOlheiro(BaseModel):
+    nivel: int
+
+
 class Mercado(BaseModel):
     rodada: int
     janela_aberta: bool
@@ -1045,6 +1070,7 @@ class Mercado(BaseModel):
     transferencias: list[TransferenciaFeita]
     emprestimos: list[Emprestimo] = []     # da temporada (v1.7)
     partes_salario: list[int] = []
+    olheiro: Olheiro | None = None         # v2.0
 
 
 class NovaListaTransferencia(BaseModel):

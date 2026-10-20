@@ -153,8 +153,11 @@ const TIPOS = {
   adiou: `${icone("calendario")} Adiou a aposentadoria`,
 };
 
-// "potencial 85" -> 85 (o detalhe do jovem da base)
-const potencial = (m) => Number(m.detalhe.replace(/\D/g, "")) || 0;
+// "potencial 85" -> 85; "potencial 78–90" (o olheiro, v2.0) -> 84
+function potencial(m) {
+  const n = (m.detalhe.match(/\d+/g) || []).map(Number);
+  return n.length ? n.reduce((a, b) => a + b, 0) / n.length : 0;
+}
 
 function listaMovimentos(movs, mostrarClube) {
   if (!movs.length) return `<p class="vazio">Nada.</p>`;
