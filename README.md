@@ -1127,7 +1127,9 @@ cd ~/taldo && docker compose -f deploy/docker-compose.yml up -d --build
 # e no /opt/proxy/Caddyfile:  <endereço> { reverse_proxy taldo-app:8000 }
 docker exec proxy-caddy-1 caddy reload --config /etc/caddy/Caddyfile
 
-# a cada versão nova na main (faz backup antes)
+# atualização automática: a cada 5 min, se a main andou, faz backup e sobe
+(crontab -l; echo "*/5 * * * * bash ~/taldo/deploy/auto-atualizar.sh >> ~/taldo-deploy.log 2>&1") | crontab -
+# ou na mão, na hora
 bash ~/taldo/deploy/atualizar.sh
 ```
 
