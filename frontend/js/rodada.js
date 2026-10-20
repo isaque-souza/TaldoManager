@@ -38,7 +38,8 @@ export async function carregarProximaRodada() {
 
 // ---------- hub do clube (tela "antes da rodada") ----------
 // A página inicial do clube é um menu de cards; cada card abre uma seção
-// (partida, mercado, elenco, marketing, estádio, finanças) e "← Menu do clube" volta.
+// (partida, mercado, elenco, marketing, estádio, finanças), e a barra
+// lateral (v1.8, navegacao.js) leva de uma seção a outra.
 
 // "hub" ou a seção aberta
 export function abrirSecaoRodada(secao) {
@@ -52,7 +53,6 @@ export function renderSecaoRodada() {
   const noHub = estado.abaRodada === "hub";
   if (noHub && estado.rodadaInfo) resumoEscalacao();
   $("r-hub").hidden = !noHub;
-  $("r-hub-voltar").hidden = noHub;
   document.querySelectorAll("#rodada-antes [data-painel]").forEach((p) => {
     p.hidden = p.dataset.painel !== estado.abaRodada;
   });
@@ -406,6 +406,5 @@ document.querySelectorAll("#r-hub [data-abrir]").forEach((b) =>
     else abrirSecaoRodada(b.dataset.abrir);
   })
 );
-$("r-hub-voltar").addEventListener("click", () => abrirSecaoRodada("hub"));
 $("ed-voltar-jogo").addEventListener("click", () => jogarAoVivo());
 $("r-formacao").addEventListener("change", () => gravarEConferir());

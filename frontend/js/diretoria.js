@@ -17,6 +17,8 @@ export function renderMeta(id, t) {
   const meta = t && t.meta;
   el.hidden = !meta;
   if (!meta) return;
+  // a faixa da rodada esconde o detalhe da força: fica na dica
+  el.title = `Você tem o ${meta.ranking_forca}º elenco mais forte`;
 
   const linha = t.classificacao.find((c) => c.clube === t.clube_usuario);
   const comecou = linha && linha.jogos > 0;

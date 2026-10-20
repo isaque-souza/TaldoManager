@@ -219,14 +219,19 @@ html { scrollbar-color: #2b3d57 var(--noite); }
 ::selection { background: var(--gramado); color: #fff; }
 :focus-visible { outline: 2px solid var(--refletor); outline-offset: 2px; }
 
-body {
-  max-width: 1180px;
-  padding: 0 clamp(1rem, 3vw, 2rem) 3rem;
+/* o fundo fica no html: no body ele desenhava uma "caixa" da largura do
+   conteúdo, visível nas laterais */
+html {
   background:
     radial-gradient(120% 50% at 50% -12%, rgba(200, 228, 255, .13), transparent 62%),
     radial-gradient(80% 40% at 50% 115%, rgba(20, 131, 75, .14), transparent 70%),
     var(--noite);
   background-attachment: fixed;
+}
+body {
+  max-width: 1180px;
+  padding: 0 clamp(1rem, 3vw, 2rem) 3rem;
+  background: transparent;
   color: var(--texto);
   font-variant-numeric: tabular-nums;
 }
@@ -417,7 +422,7 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 }
 
 /* a tarja nos cabeçalhos de jogo: rodada e partida */
-#rodada > hgroup, #prejogo > hgroup {
+.faixa-rodada, #prejogo > hgroup {
   display: flex; flex-wrap: wrap; align-items: stretch; margin-bottom: 1rem; overflow: hidden;
   border: 1px solid var(--linha); border-radius: 4px; background: linear-gradient(180deg, #132033, #0d1724);
 }
@@ -1331,3 +1336,144 @@ p.el-ofertas { font-size: .88rem; }
 .el-emprestar li button { width: auto; margin: 0; padding: .25rem .7rem; font-size: .8rem; }
 .el-emprestar-dur { margin: .3rem 0 .1rem; font-size: .85rem; color: var(--texto-2); }
 .el-fora { font-size: .9rem; color: var(--texto-2); }
+
+/* =====================================================================
+   v1.8 "Visual" — passo 1: base
+   Barra lateral com as seções do clube, faixa da rodada numa linha e
+   tipografia: o condensado em caixa-alta fica para títulos, tarjas,
+   cabeçalhos de tabela e números de destaque; botões, abas e textos
+   usam a Barlow normal, mais fácil de ler.
+   ===================================================================== */
+:root { --lateral-w: 15rem; --gutter: clamp(1rem, 3vw, 2rem); }
+
+/* o Pico cresce a fonte base com a tela (até 20px em 1440px): tudo ficava
+   grande demais e nada cabia. Um jogo de gestão é denso: 16px, e só um
+   pouco mais nas telas bem largas */
+:root[data-theme="dark"] { --pico-font-size: 100%; }
+@media (min-width: 1680px) { :root[data-theme="dark"] { --pico-font-size: 106.25%; } }
+
+/* ---------- tipografia ---------- */
+button, [role="button"], .abas button, summary {
+  font-family: var(--fonte-texto); text-transform: none; letter-spacing: .01em; font-weight: 600;
+}
+.abas button small { font-weight: 500; }
+summary { font-weight: 600; }
+.dev > summary, .ed-elenco summary { font-family: var(--fonte-texto); text-transform: none; letter-spacing: 0; }
+/* textos de apoio: sem itálico, um pouco menores */
+.vazio { font-style: normal; font-size: .9rem; line-height: 1.5; }
+/* nomes clicáveis nas tabelas: brancos como o resto, verde só no hover */
+a.clube, a.jogador, a.partida, a.temporada {
+  color: var(--texto); text-decoration: none;
+  text-underline-offset: 3px; text-decoration-thickness: 1px;
+}
+a.clube:hover, a.jogador:hover, a.partida:hover, a.temporada:hover {
+  color: var(--gramado-claro); text-decoration: underline;
+}
+
+/* ---------- abas: uma linha só; o que não couber rola de lado ---------- */
+.abas {
+  flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: thin; scrollbar-color: var(--linha) transparent;
+}
+.abas button { flex: none; white-space: nowrap; font-size: .95rem; padding: .6rem 1rem; }
+
+/* ---------- layout com a barra lateral ---------- */
+body.com-lateral {
+  max-width: none; margin: 0;
+  padding-left: calc(var(--lateral-w) + var(--gutter));
+  padding-right: var(--gutter);
+}
+body.com-lateral > section, body.com-lateral > #status, body.com-lateral > #erro { max-width: 1320px; }
+body.com-lateral > .topo { display: none; }
+body.com-lateral > section:first-of-type, body.com-lateral #rodada { padding-top: 1.25rem; }
+
+.lateral {
+  position: fixed; inset: 0 auto 0 0; z-index: 20; width: var(--lateral-w);
+  display: flex; flex-direction: column; gap: .9rem; padding: 1rem .75rem;
+  background: color-mix(in srgb, var(--superficie) 92%, transparent);
+  border-right: 1px solid var(--linha); overflow-y: auto;
+}
+.lateral[hidden] { display: none; }
+.lateral .marca { padding: 0 .35rem; }
+.lateral .marca-bug, .lateral .marca-nome { font-size: 1rem; }
+.lateral-clube {
+  display: flex; align-items: center; gap: .6rem; padding: .6rem .5rem;
+  background: var(--superficie-2); border: 1px solid var(--linha); border-radius: 6px;
+}
+.lateral-clube svg { flex: none; }
+.lateral-clube span { display: flex; flex-direction: column; min-width: 0; }
+.lateral-clube strong {
+  font-family: var(--fonte-tarja); font-size: 1.05rem; text-transform: uppercase; letter-spacing: .02em;
+  line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.lateral-clube small { color: var(--texto-2); font-size: .78rem; }
+.lateral-nav { display: flex; flex-direction: column; gap: 2px; }
+.lateral-nav button, .lateral-sair {
+  display: flex; justify-content: flex-start; align-items: center; gap: .7rem; width: 100%;
+  margin: 0; padding: .55rem .65rem; border: 0; border-radius: 6px;
+  background: transparent; color: var(--texto-2); font-size: .95rem; font-weight: 500; text-align: left;
+}
+.lateral-nav button:hover, .lateral-sair:hover { background: rgba(255, 255, 255, .05); color: var(--texto); }
+.lateral-nav button.ativa {
+  background: color-mix(in srgb, var(--gramado) 22%, transparent); color: #fff; font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--gramado-claro);
+}
+.lateral-nav button[hidden] { display: none; }
+.lateral-nav .icone { width: 1.15em; height: 1.15em; }
+.lateral-nav span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lateral-selo {
+  min-width: 1.35rem; padding: .05rem .4rem; border-radius: 999px; text-align: center;
+  background: var(--ambar); color: var(--texto-sobre-ambar); font-size: .75rem; font-weight: 700;
+}
+.lateral-selo[hidden] { display: none; }
+.lateral-sair { margin-top: auto; border-top: 1px solid var(--linha); border-radius: 0; padding-top: .9rem; }
+.lateral-fundo { display: none; }
+
+/* ---------- faixa da rodada: rodada · confronto · meta · ação ---------- */
+.faixa-rodada { align-items: center; }
+.faixa-rodada > hgroup { display: flex; align-items: stretch; margin: 0; align-self: stretch; }
+.faixa-rodada #rodada-titulo { font-size: 1.3rem; padding: .6rem 1.8rem .6rem 1rem; display: flex; align-items: center; }
+.faixa-rodada #rodada-confronto { font-size: 1.05rem; padding: .45rem .9rem; }
+.faixa-rodada #rodada-confronto .chip { display: none; }   /* "pré-jogo": a faixa já diz */
+.faixa-rodada .meta {
+  flex: 1 1 18rem; margin: 0; padding: .45rem .9rem; border: 0; border-left: 1px solid var(--linha);
+  border-radius: 0; background: transparent; gap: .25rem .5rem;
+}
+.faixa-rodada .meta > small { display: none; }   /* detalhe vai na dica (title) */
+.faixa-rodada .meta strong { font-size: 1.05rem; }
+.faixa-rodada .meta-rotulo { display: none; }   /* o alvo já diz "meta" */
+#r-acao { width: auto; margin: .4rem .6rem .4rem auto; padding: .5rem 1rem; white-space: nowrap; }
+#r-acao[hidden] { display: none; }
+#rodada .faixa-rodada { margin-bottom: 1.25rem; }
+
+/* ---------- telas estreitas: a barra vira gaveta ---------- */
+@media (max-width: 1100px) {
+  :root { --lateral-w: 14rem; }
+}
+/* a barra já leva à rodada: o "← Voltar para a rodada" da tabela sobra */
+body.com-lateral #temporada-voltar { display: none; }
+@media (max-width: 900px) {
+  body.com-lateral { padding-left: var(--gutter); }
+  body.com-lateral > .topo { display: flex; }
+  body.com-lateral #rodada { padding-top: 0; }
+  .lateral {
+    width: min(18rem, 85vw); transform: translateX(-100%); transition: transform .22s ease;
+    background: var(--superficie); box-shadow: 0 0 40px rgba(0, 0, 0, .6);
+  }
+  body.com-lateral .lateral { visibility: hidden; }
+  body.gaveta-aberta .lateral { transform: none; visibility: visible; }
+  body.gaveta-aberta .lateral-fundo {
+    display: block; position: fixed; inset: 0; z-index: 15; background: rgba(0, 0, 0, .55);
+  }
+  body.com-lateral #menu { display: none; }
+  .faixa-rodada .meta { border-left: 0; border-top: 1px solid var(--linha); flex-basis: 100%; }
+  .faixa-rodada > hgroup { flex: 1 1 100%; flex-wrap: wrap; }
+  .faixa-rodada #rodada-titulo { flex: 1 1 100%; clip-path: none; padding: .5rem .9rem; font-size: 1.15rem; }
+  #r-acao { margin: 0 .9rem .7rem; flex: 1 1 100%; }
+}
+@media (min-width: 901px) {
+  #abrir-lateral { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lateral { transition: none; }
+}

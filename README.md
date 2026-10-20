@@ -883,6 +883,37 @@ etapas (o clube e depois o jogador):
 
 ---
 
+# 🚧 Visual (v1.8) — Em andamento
+
+As telas pediam rolagem demais, os números e campos eram crus e cada seção
+repetia o mesmo cabeçalho. A v1.8 refaz a cara do jogo em passos, sem
+mudar as regras:
+
+* [x] Base — **barra lateral** com as seções do clube (Início, Escalação,
+      Elenco, Transferências, Caixa, Tabela, Copa, Finanças, Estádio,
+      Marketing), com selo de mensagens novas e de alerta no elenco; no
+      celular ela vira gaveta (botão "Seções"). Some no menu inicial, no
+      pré-jogo e no jogo ao vivo. O "← Menu do clube" saiu
+      (`js/navegacao.js`)
+      - **Faixa da rodada** numa linha: rodada, confronto, meta e o botão
+        da ação principal (Jogar a rodada / Próxima rodada), em toda seção
+      - O **Voltar do navegador** volta dentro do jogo em vez de sair do
+        site (uma entrada "guarda" no histórico); no jogo ao vivo ele não
+        faz nada
+      - Tipografia: fonte base fixa em 16px (o Pico subia até 20px e nada
+        cabia); botões e abas na Barlow sem caixa-alta; abas numa linha só,
+        rolando de lado; nomes nas tabelas brancos (verde só no hover);
+        textos de apoio sem itálico
+      - O fundo saiu do `body` para o `html` (desenhava uma "caixa" nas
+        laterais) e o **Modo dev** só aparece com `?dev` no endereço
+* [ ] Menu do clube numa tela só
+* [ ] Campo de dinheiro (`R$`, aceita "2,5 mi" e "800 mil", atalhos)
+* [ ] Central do Elenco
+* [ ] Central de Transferências
+* [ ] Acabamento das outras telas
+
+---
+
 # 📁 Estrutura
 
 ```text
