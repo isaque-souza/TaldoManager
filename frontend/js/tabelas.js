@@ -11,6 +11,12 @@ import { seloIdolo } from "./icones.js";
 
 export const ehNumero = (v) => typeof v === "number";
 
+// número com vírgula (v1.8): notas e médias vêm do servidor como 6.47
+export const decimal = (v, casas = 2) =>
+  v.toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas });
+
+const COLUNAS_NOTA = ["nota", "nota_media", "melhor_nota", "pior_nota"];
+
 export function celula(valor, item, coluna) {
   if (Array.isArray(valor)) {
     return `<span class="forma">${valor
@@ -29,6 +35,10 @@ export function celula(valor, item, coluna) {
   }
   if (coluna === "placar" && item && item.partida_id != null) {
     return `<a class="partida" data-partida="${item.partida_id}">${valor}</a>`;
+  }
+  // notas sempre com duas casas (um 10 vira 10,00, como os 7,81 ao lado)
+  if (typeof valor === "number" && (!Number.isInteger(valor) || COLUNAS_NOTA.includes(coluna))) {
+    return decimal(valor);
   }
   return valor ?? "";
 }

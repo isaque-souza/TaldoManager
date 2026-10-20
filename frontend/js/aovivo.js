@@ -404,7 +404,7 @@ function renderPainel() {
         <div><strong>${escolhido.nome}</strong>
           <small>${posicaoDe(escolhido)} · OVR ${escolhido.overall}${escolhido.vaga && escolhido.vaga !== posicaoDe(escolhido)
             ? ` · rende <b>${escolhido.overall_vaga}</b> de ${sigla(escolhido.vaga)}` : ""}</small>
-          <small>Energia ${escolhido.energia}${escolhido.nota != null && sel.lado === "campo" ? ` · nota ${escolhido.nota.toFixed(1)}` : ""}</small></div>
+          <small>Energia ${escolhido.energia}${escolhido.nota != null && sel.lado === "campo" ? ` · nota ${escolhido.nota.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` : ""}</small></div>
       </header>
       ${barrasAtributos(a.atributos)}
       <p class="gt-dica">${sel.lado === "campo"

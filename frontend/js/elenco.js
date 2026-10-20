@@ -5,7 +5,7 @@
 // (energia, lesão, suspensão).
 
 import { $, estado, navegarPara } from "./nucleo.js";
-import { blocoResumo as bloco, dinheiro, reais, tabela } from "./tabelas.js";
+import { blocoResumo as bloco, decimal, dinheiro, reais, tabela } from "./tabelas.js";
 import { carregarProximaRodada } from "./rodada.js";
 import {
   acoesOferta, avisoMercado, blocoEmprestado, blocoEmprestar, carregarMercado, detalheOferta, ligarBotoesMercado,
@@ -158,7 +158,7 @@ function abaResumo(f) {
       <div><dt>Jogos</dt><dd>${f.partidas}</dd></div>
       <div><dt>Gols</dt><dd>${f.gols}</dd></div>
       <div><dt>Assist.</dt><dd>${f.assistencias}</dd></div>
-      <div><dt>Nota</dt><dd>${f.partidas ? f.nota_media.toFixed(2) : "—"}</dd></div>
+      <div><dt>Nota</dt><dd>${f.partidas ? decimal(f.nota_media) : "—"}</dd></div>
     </dl>
     <dl class="el-contrato">
       <div><dt>Salário/temp.</dt><dd>${reais(f.salario)}</dd></div>

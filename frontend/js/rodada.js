@@ -218,6 +218,24 @@ export function renderRodadaAntes() {
   if (estado.abaRodada === "financas") carregarFinancasRodada();
 }
 
+// o placar do seu jogo grande, com o resultado do seu lado e o link da partida
+function meuJogo(r, meu) {
+  if (!r) return "";
+  const pro = r.mandante === meu ? r.gols_mandante : r.gols_visitante;
+  const contra = r.mandante === meu ? r.gols_visitante : r.gols_mandante;
+  const [classe, rotulo] = pro > contra ? ["v", "Vitória"] : pro < contra ? ["d", "Derrota"] : ["e", "Empate"];
+  const time = (nome) => `<span class="mj-time${nome === meu ? " mj-eu" : ""}">${escudo(nome, 44)}<b>${nome}</b></span>`;
+  return `<article class="meu-jogo mj-${classe}">
+    <span class="mj-resultado">${rotulo}</span>
+    <div class="mj-placar">
+      ${time(r.mandante)}
+      <strong>${r.gols_mandante} <small>x</small> ${r.gols_visitante}</strong>
+      ${time(r.visitante)}
+    </div>
+    ${r.partida_id != null ? `<a class="partida mj-link" data-partida="${r.partida_id}">Ver a partida →</a>` : ""}
+  </article>`;
+}
+
 export function renderRodadaDepois() {
   const res = estado.rodadaResultado;
   $("rodada-antes").hidden = true;
@@ -229,9 +247,10 @@ export function renderRodadaDepois() {
   $("rodada-confronto").innerHTML = res.concluida
     ? `${res.campeao} é o campeão <span class="chip chip-batida">Fim de temporada</span>`
     : `<span class="chip">Encerrada</span>`;
-  $("r-res-titulo").textContent = `Rodada ${res.rodada_jogada}`;
-
   const meu = res.clube_usuario;
+  $("r-meu-jogo").innerHTML = meuJogo(res.resultados.find((r) => r.mandante === meu || r.visitante === meu), meu);
+  ligarLinks($("r-meu-jogo"));
+
   const linhas = res.resultados.map((r) => ({
     partida_id: r.partida_id,
     mandante: r.mandante,

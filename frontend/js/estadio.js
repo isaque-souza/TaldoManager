@@ -58,8 +58,10 @@ function cardFaixa(f, atual) {
         <div><dt>Por jogo</dt><dd>${reais(f.bilheteria)}</dd></div>
         <div><dt>Força em casa</dt><dd>${mando(f.mando_de_campo)}</dd></div>
       </dl>
-      <button class="es-usar${escolhida ? " secondary" : ""}" data-faixa="${f.faixa}" ${escolhida ? "disabled" : ""}>
-        ${escolhida ? "Em uso" : "Usar esta faixa"}</button>
+      ${escolhida
+        // a faixa em uso não tem botão: o selo no título e a borda já dizem
+        ? `<p class="es-em-uso">${icone("ok")} Faixa atual</p>`
+        : `<button class="es-usar secondary outline" data-faixa="${f.faixa}">Usar esta faixa</button>`}
     </article>`;
 }
 
@@ -84,7 +86,7 @@ function cardObra(o) {
         <div><dt>Manutenção</dt><dd>${reais(o.manutencao)} <small>por jogo</small></dd></div>
       </dl>
       ${bloqueio}
-      <button class="es-obra" data-tipo="${o.tipo}" ${o.bloqueio ? "disabled" : ""}>Contratar obra</button>
+      <button class="es-obra secondary outline" data-tipo="${o.tipo}" ${o.bloqueio ? "disabled" : ""}>Contratar obra</button>
     </article>`;
 }
 

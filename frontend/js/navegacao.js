@@ -47,7 +47,21 @@ function secaoAtual(tela) {
   return null;
 }
 
+// abas que não cabem rolam para o lado (v1.8): um esmaecido na borda
+// direita avisa que há mais, até chegar ao fim
+function marcarAbasQueRolam(nav) {
+  const navs = nav ? [nav] : document.querySelectorAll(".abas");
+  navs.forEach((n) =>
+    n.classList.toggle("tem-mais", n.scrollWidth - n.scrollLeft - n.clientWidth > 4)
+  );
+}
+document.addEventListener("scroll", (e) => {
+  if (e.target instanceof Element && e.target.classList.contains("abas")) marcarAbasQueRolam(e.target);
+}, true);
+window.addEventListener("resize", () => marcarAbasQueRolam());
+
 function atualizar() {
+  marcarAbasQueRolam();
   const tela = secaoVisivel();
   const visivel = emJogo() && !SEM_BARRA.includes(tela);
   document.body.classList.toggle("com-lateral", visivel);

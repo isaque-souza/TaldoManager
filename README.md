@@ -883,7 +883,7 @@ etapas (o clube e depois o jogador):
 
 ---
 
-# 🚧 Visual (v1.8) — Em andamento
+# ✅ Visual (v1.8) — Concluída
 
 As telas pediam rolagem demais, os números e campos eram crus e cada seção
 repetia o mesmo cabeçalho. A v1.8 refaz a cara do jogo em passos, sem
@@ -949,7 +949,22 @@ mudar as regras:
         lugar da lista, com "← Lista"/"← Elenco". Em telas médias saem as
         colunas Liga e Multa; no celular ficam ★, Jogador, Pos., OVR e
         Valor, e os filtros ficam atrás do botão "Filtros (N ativos)"
-* [ ] Acabamento das outras telas
+* [x] Acabamento das outras telas
+      - **Página do jogador** com o cabeçalho das fichas (OVR/POT grandes) e
+        blocos da temporada (jogos, gols, notas, cartões...) e do contrato,
+        no lugar da linha corrida de números
+      - **Resultados**: o seu jogo em destaque (placar grande, vitória,
+        empate ou derrota, link para a partida) no lugar do "Rodada N" que
+        repetia a faixa
+      - Notas com vírgula em todo lugar (`6,47`; nas colunas de nota, sempre
+        duas casas); na Tabela, o card vira **Líder** no meio da temporada
+        ("Campeão" só no fim); abas que não cabem esmaecem na borda
+      - Finanças sem a coluna "Diferença" (o salário acima do mercado fica
+        em âmbar) e com respiro acima dos maiores salários; Estádio e
+        Marketing com botões secundários (o verde fica para a ação da
+        tela); Copa sem itálico no "A definir"
+      - Mensagens do servidor com dinheiro formatado: "não tem caixa para
+        pagar R$ 283,8 mi" (`app/domain/formato.py`)
 
 ---
 

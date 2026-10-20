@@ -10,7 +10,7 @@ partir de fatos que os serviços já têm; quem grava é o
 `mensagem_repository`. Nada aqui sorteia.
 """
 
-from app.domain import mercado
+from app.domain import formato, mercado
 from app.domain.diretoria import descricao_meta, situacao
 
 # setores que escrevem para o técnico, na ordem dos filtros da tela
@@ -30,9 +30,7 @@ def _mensagem(setor, assunto, corpo):
 
 def _dinheiro(valor):
     """1.234.567 → "R$ 1,2 mi"; abaixo de 1 milhão, "R$ 850 mil"."""
-    if abs(valor) >= 1_000_000:
-        return f"R$ {valor / 1_000_000:.1f} mi".replace(".", ",")
-    return f"R$ {round(valor / 1_000)} mil"
+    return formato.reais(valor)
 
 
 def _rodadas(n):

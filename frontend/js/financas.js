@@ -202,19 +202,19 @@ function folhaPorJogador(elenco) {
     .sort((a, b) => (b.salario || 0) - (a.salario || 0))
     .slice(0, 6)
     .map((j) => {
-      const dif = (j.salario || 0) - (j.salario_referencia || j.salario || 0);
+      // acima do que o mercado paga: o salário em âmbar, com o ▲ da legenda
+      const acima = j.salario_referencia && j.salario > j.salario_referencia;
       return {
         ...j,
-        sal: dinheiro(j.salario || 0),
+        sal: acima
+          ? `<span class="acima-mercado" title="ganha mais que o mercado paga">▲ ${dinheiro(j.salario)}</span>`
+          : dinheiro(j.salario || 0),
         ref: j.salario_referencia ? dinheiro(j.salario_referencia) : "—",
-        dif: !j.salario_referencia || dif === 0
-          ? "="
-          : `${dif > 0 ? "▲ +" : "▼ "}${dinheiro(dif)}`,
       };
     });
   return tabela(top, [
     ["nome", "Jogador"], ["posicao", "Pos."], ["overall", "OVR"],
-    ["sal", "Salário"], ["ref", "Mercado paga"], ["dif", "Diferença"],
+    ["sal", "Salário"], ["ref", "Mercado paga"],
   ]);
 }
 
@@ -240,7 +240,7 @@ export function renderDashboard(container, clube, elenco) {
           ${barrasFluxo(clube)}
         </article>
       </div>
-      <article>
+      <article class="dash-salarios">
         <header><strong>Maiores salários</strong> <small class="bloqueio">▲ ganha mais que o mercado paga</small></header>
         ${folhaPorJogador(elenco)}
       </article>
