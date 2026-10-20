@@ -869,6 +869,9 @@ button.hub-card:hover, button.hub-card:focus-visible {
 .interesse.resistente { background: color-mix(in srgb, var(--ambar) 18%, transparent); color: var(--ambar); }
 .interesse.nao_vem { background: color-mix(in srgb, var(--ao-vivo) 18%, transparent); color: var(--ao-vivo); }
 .tr-interesse { margin: 0 0 .5rem; font-size: .88rem; color: var(--texto-2); }
+.tr-relatorio { margin: 0 0 .8rem; }
+.tr-relatorio .secao .chip { margin-left: .4rem; vertical-align: 1px; }
+.tr-relatorio dd small { color: var(--texto-2); font-size: .78rem; }
 .tr-disputa { margin: 0 0 .8rem; padding: .5rem .8rem; border-left: 3px solid var(--ambar); background: color-mix(in srgb, var(--ambar) 12%, transparent); font-size: .9rem; }
 .tr-disputa .icone { vertical-align: -2px; color: var(--ambar); }
 .idolo .icone { vertical-align: -2px; }

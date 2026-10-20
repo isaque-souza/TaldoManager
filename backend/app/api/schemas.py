@@ -904,6 +904,17 @@ class InteresseFicha(BaseModel):
     bloqueio: str | None = None
 
 
+class RelatorioFicha(BaseModel):
+    """O relatório de contratação do olheiro (v2.0)."""
+    status: Literal["andamento", "pronto"]
+    pronto_em: str                         # ISO
+    preco: list[int] | None = None         # [mín, máx] do preço pedido (ou das luvas)
+    salario: list[int] | None = None       # [mín, máx] do salário que ele pede
+    dificuldade: Literal["facil", "media", "dificil", "impossivel"] | None = None
+    motivo: str | None = None
+    chance_disputa: int | None = None      # % de outro clube entrar
+
+
 class FichaMercado(BaseModel):
     jogador_id: int | None = None          # livres (v1.6) não têm id: vão pelo nome
     nome: str
@@ -951,7 +962,8 @@ class FichaMercado(BaseModel):
     luvas: int | None = None
     negociacao: "NegociacaoResumo | None" = None   # v1.7: a desta janela
     observado: bool = False              # na lista de observados (v1.7)
-    interesse: InteresseFicha | None = None   # só de outros clubes e livres (v1.9)
+    interesse: InteresseFicha | None = None   # só de outros clubes e livres (v1.9); sem relatório, escondido (v2.0)
+    relatorio: RelatorioFicha | None = None   # do olheiro (v2.0)
     emprestimo: EmprestadoAqui | None = None        # v1.7: veio emprestado
     pedir_emprestado: PedidoEmprestimoFicha | None = None   # só de outros clubes
     emprestar: CessaoFicha | None = None    # só do elenco do técnico
@@ -1058,6 +1070,19 @@ class Olheiro(BaseModel):
     caixa: int
     gasto_temporada: int
     niveis: list[NivelOlheiro]
+    # relatórios de contratação (v2.0); só no GET /mercado
+    relatorios_em_andamento: int | None = None
+    relatorios_limite: int | None = None
+    relatorio_dias: int | None = None
+
+
+class NovoRelatorio(BaseModel):
+    nome: str
+
+
+class RelatorioPedido(BaseModel):
+    nome: str
+    pronto_em: str
 
 
 class NovoNivelOlheiro(BaseModel):

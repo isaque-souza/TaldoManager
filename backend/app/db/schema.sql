@@ -337,6 +337,19 @@ CREATE TABLE IF NOT EXISTS observado (
     UNIQUE (simulacao_id, nome)
 );
 
+-- Relatórios de contratação do olheiro (v2.0): um por jogador na temporada.
+-- Ficam prontos no dia `pronto_em`; o conteúdo é calculado na hora de ler
+-- (a situação de agora).
+CREATE TABLE IF NOT EXISTS relatorio (
+    id            INTEGER PRIMARY KEY,
+    simulacao_id  INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    nome          TEXT NOT NULL,
+    pedido_em     TEXT NOT NULL,      -- ISO, dia do calendário
+    pronto_em     TEXT NOT NULL,
+    pronto        INTEGER NOT NULL DEFAULT 0,
+    UNIQUE (simulacao_id, nome)
+);
+
 -- Empréstimos (v1.7): quem recebe paga a taxa e uma parte do salário; o
 -- jogador volta ao clube de origem antes da rodada `volta`. O estado vivo
 -- fica no snapshot (`Jogador.emprestimo`); aqui, o registro de cada um.

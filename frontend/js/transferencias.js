@@ -19,6 +19,7 @@ import { camisa } from "./identidade.js";
 import { nomeLiga } from "./ligas.js";
 import { posicaoDe, sigla } from "./posicoes.js";
 import { telaEstreita } from "./elenco.js";
+import { dataCurta } from "./calendario.js";
 
 const ABAS = [
   ["buscar", "Buscar"], ["observados", "Observados"],
@@ -188,19 +189,61 @@ function ficha(f, o = null) {
 // por que ele quer (ou não) vir: o motivo mais forte primeiro
 function linhaInteresse(f) {
   const i = f.interesse;
-  if (!i || i.bloqueio) return "";
+  // sem relatório pronto, a vontade fica escondida (v2.0)
+  if (!i) return `<p class="tr-interesse">Vontade de vir: <b>?</b> — só o relatório do olheiro diz.</p>`;
+  if (i.bloqueio) return "";
   return `<p class="tr-interesse">${seloInteresse(i, true)} ${i.motivos.join(" · ") || "nada pesa contra nem a favor"}</p>`;
+}
+
+// o relatório de contratação do olheiro (v2.0)
+const DIFICULDADE = {
+  facil: ["chip-batida", "Fácil"], media: ["", "Média"],
+  dificil: ["chip-perto", "Difícil"], impossivel: ["chip-longe", "Impossível"],
+};
+const faixaReais = ([a, b]) => `${dinheiro(a)} a ${dinheiro(b)}`;
+
+function blocoRelatorio(f) {
+  const r = f.relatorio;
+  const o = mercado.olheiro;
+  if (r?.status === "pronto") {
+    const [classe, rotulo] = DIFICULDADE[r.dificuldade];
+    return `<div class="tr-relatorio">
+      <h4 class="secao">${icone("alvo")} Relatório do olheiro <span class="chip ${classe}">${rotulo}</span></h4>
+      <p class="tr-nota">${r.motivo}.</p>
+      <dl class="el-contrato">
+        <div><dt>${f.clube ? "Preço pedido" : "Luvas"}</dt><dd>${faixaReais(r.preco)}</dd></div>
+        <div><dt>Salário/temp.</dt><dd>${faixaReais(r.salario)}</dd></div>
+        <div><dt>Disputa</dt><dd>${r.chance_disputa}% <small>de outro clube entrar</small></dd></div>
+      </dl>
+    </div>`;
+  }
+  if (r?.status === "andamento") {
+    return `<p class="tr-relatorio tr-nota">${icone("alvo")} O olheiro está fazendo o relatório: pronto em
+      <b>${dataCurta(r.pronto_em)}</b>.</p>`;
+  }
+  if (!f.observado) {
+    return `<p class="tr-relatorio tr-nota">${icone("alvo")} Observe ${f.nome} para pedir um relatório ao olheiro.</p>`;
+  }
+  const cheio = o && o.relatorios_em_andamento >= o.relatorios_limite;
+  return `<div class="tr-relatorio">
+    <button type="button" class="secondary outline" data-relatorio="${f.nome}" ${cheio ? "disabled" : ""}>
+      ${icone("alvo")} Pedir relatório ao olheiro${o ? ` (${o.relatorio_dias} dias)` : ""}</button>
+    ${cheio ? `<small class="mk-bloqueio">${icone("cadeado")} O olheiro de nível ${o.nivel} faz
+      ${o.relatorios_limite} relatório${o.relatorios_limite === 1 ? "" : "s"} por vez.</small>` : ""}
+  </div>`;
 }
 
 function abaContratar(f) {
   if (!f.clube) {
     return `<h4 class="secao">${icone("assinou")} Sem clube: sem transferência</h4>
       ${linhaInteresse(f)}
+      ${blocoRelatorio(f)}
       <p class="tr-nota">O clube paga só as luvas (${reais(f.luvas)}) e acerta o contrato com ele.</p>
       <div class="tr-compra">${acaoLivre(f)}</div>`;
   }
   return `<h4 class="secao">${icone("troca")} Proposta ao ${f.clube}</h4>
     ${linhaInteresse(f)}
+    ${blocoRelatorio(f)}
     <p class="tr-nota">Valor ${reais(f.valor_mercado)} · multa ${f.multa_rescisoria ? reais(f.multa_rescisoria) : "não tem"}` +
     `${f.rival ? ` · ${icone("rival", "rival")} rival: tudo sai mais caro` : ""}</p>
     <div class="tr-compra">${acaoCompra(f)}</div>
@@ -526,7 +569,19 @@ function abaOlheiro() {
     <p class="mk-intro">O contrato vai até o fim da temporada: subir de nível paga na hora a diferença pelas
       rodadas que faltam; descer não devolve nada. Na virada, ele renova pela temporada cheia.
       Gasto nesta temporada: <strong>${reais(o.gasto_temporada)}</strong>.</p>
+    <p class="mk-intro">Ele também faz <strong>relatórios de contratação</strong> dos seus observados: faixa do
+      preço e do salário, se o jogador quer vir e a dificuldade. Agora: ${o.relatorios_em_andamento ?? 0} de
+      ${o.relatorios_limite ?? o.nivel} em andamento, ${o.relatorio_dias ?? "?"} dias cada.</p>
     <div class="mk-campanhas">${cartoes}</div>`;
+}
+
+async function pedirRelatorio(nome) {
+  const r = await postarMercado(`/simulacoes/${estado.simId}/relatorios`, { nome }, "Chamando o olheiro…");
+  if (!r) return;
+  const aviso = $("r-mercado-msg");
+  aviso.classList.remove("ruim");
+  aviso.innerHTML = `${icone("alvo")} O olheiro vai atrás de ${nome}: relatório pronto em ${dataCurta(r.pronto_em)}.`;
+  await carregarMercado();
 }
 
 async function trocarOlheiro(nivel) {
@@ -618,6 +673,9 @@ function ligar(box) {
   );
   box.querySelectorAll("[data-obs]").forEach((b) =>
     b.addEventListener("click", () => observar(b.dataset.obs, b.dataset.obsOn === "1"))
+  );
+  box.querySelectorAll("[data-relatorio]").forEach((b) =>
+    b.addEventListener("click", () => pedirRelatorio(b.dataset.relatorio))
   );
   box.querySelectorAll("[data-olheiro]").forEach((b) =>
     b.addEventListener("click", () => trocarOlheiro(Number(b.dataset.olheiro)))

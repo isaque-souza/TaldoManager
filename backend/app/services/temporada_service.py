@@ -32,7 +32,7 @@ from app.repositories import lance_repository as lance_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.repositories import transferencia_repository as transferencia_repo
-from app.services import copa_service, oferta_service, simulacao_service
+from app.services import copa_service, oferta_service, relatorio_service, simulacao_service
 from scripts.data_loader import (
     LIGA_PADRAO, carregar_campeonato, carregar_campeonato_do_save,
 )
@@ -519,9 +519,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
 
         with conn:
             # jogar a rodada leva o calendário ao dia do jogo (v2.0)
-            simulacao_repo.definir_data(conn, simulacao_id, calendario.data_da_rodada(
-                sim["temporada"], rodada_jogada,
-            ))
+            dia_do_jogo = calendario.data_da_rodada(sim["temporada"], rodada_jogada)
+            simulacao_repo.definir_data(conn, simulacao_id, dia_do_jogo)
+            # relatórios do olheiro prontos até o dia do jogo (v2.0)
+            relatorio_service.entregar(conn, simulacao_id, dia_do_jogo, rodada_jogada)
             mapa = clube_repo.atualizar(conn, simulacao_id, cru["clubes"])
             mapa_jog = jogador_repo.atualizar(
                 conn, simulacao_id, mapa, cru["jogadores"]
