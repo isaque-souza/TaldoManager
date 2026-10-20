@@ -245,12 +245,16 @@ async function continuarCarreira() {
   if (criada) await carregarLista(criada.simulacao_id);
 }
 
-$("temporada-voltar").addEventListener("click", async () => {
-  // a rodada usa a visão da liga do técnico (v1.6): se outra estava na
-  // tela, volta para a dele
+// a rodada usa a visão da liga do técnico (v1.6): se outra estava na
+// tela, volta para a dele
+export async function visaoDoTecnico() {
   if ((estado.temporada.ligas || []).length > 1) {
     const dados = await pedir(`/simulacoes/${estado.simId}`);
     if (dados) estado.temporada = dados;
   }
+}
+
+$("temporada-voltar").addEventListener("click", async () => {
+  await visaoDoTecnico();
   voltarUm();
 });

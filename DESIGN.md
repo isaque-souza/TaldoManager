@@ -153,9 +153,13 @@ em SVG em `frontend/js/identidade.js`; ícones em `frontend/js/icones.js`.
 ## Typography
 
 - **Barlow Condensed** é a voz da transmissão: títulos de tela, tarjas,
-  abas, cabeçalhos de tabela, botões, selos — em maiúsculas com espaçamento
-  aberto nos rótulos (`0.06–0.08em`).
-- **Barlow** é o texto corrido e os dados das células.
+  cabeçalhos de tabela, selos e números de destaque — em maiúsculas com
+  espaçamento aberto nos rótulos (`0.06–0.08em`).
+- **Barlow** é o texto corrido, os dados das células e tudo que se clica:
+  botões, abas e a barra lateral (peso 600, sem caixa-alta, v1.8). Caixa-alta
+  condensada em todo botão cansava a leitura.
+- **Fonte base fixa em 16px** (o Pico subia até 20px em telas largas; v1.8):
+  um jogo de gestão é denso. Textos de apoio (`.vazio`) sem itálico.
 - Números sempre tabulares (`font-variant-numeric: tabular-nums` no `body`).
 - **Escala fixa de 8 degraus:** `0.72` (micro: selos pequenos, overall da
   peça) · `0.82` (rótulo) · `0.9` (texto secundário, título de seção) · `1`

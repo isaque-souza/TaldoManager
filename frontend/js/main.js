@@ -6,8 +6,10 @@ import { novaTemporada } from "./escalacao.js";
 import { mostrarInicio } from "./inicio.js";
 import { carregarIdentidades } from "./identidade.js";
 import { preencherIcones } from "./icones.js";
+import "./navegacao.js";
 
-// modo dev (seed, simular tudo, lista crua de saves)
+// modo dev (seed, simular tudo, lista crua de saves): só com ?dev no endereço
+$("dev").hidden = !new URLSearchParams(location.search).has("dev");
 $("nova").addEventListener("click", novaTemporada);
 $("apagar").addEventListener("click", apagarSelecionada);
 $("lista").addEventListener("change", (e) => {
