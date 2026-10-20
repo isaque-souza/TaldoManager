@@ -12,7 +12,8 @@ rodada 19), antes de o técnico mexer:
 - no máximo `MAX_POR_JANELA` negócios por janela; o clube do técnico fica
   de fora (os dele passam pelas ofertas, em `app.domain.ofertas`)
 - o jogador tem vontade (v1.9): não vai para onde "não vem" e, se está
-  resistente ao comprador, recusa em `CHANCE_RECUSA` das vezes
+  resistente ao comprador, recusa em `CHANCE_RECUSA` das vezes (e o
+  comprador tenta o próximo dos `CANDIDATOS`)
 
 O sorteio usa um `random.Random` próprio (`semente`): não mexe na sequência
 das partidas, e o mesmo save sorteia sempre os mesmos negócios.
@@ -111,12 +112,15 @@ def negociar(clubes, clube_usuario, rng):
         candidatos = _candidatos(comprador, cpu, ja, clubes)
         if not candidatos:
             continue
-        _, jogador, vendedor, preco = rng.choice(candidatos)
-        # o jogador também decide (v1.9): resistente, às vezes recusa
-        interesse = vontade.interesse(jogador, comprador, vendedor, clubes, prest)
-        if interesse.nivel == vontade.RESISTENTE and rng.random() < CHANCE_RECUSA:
-            continue
-        mercado.transferir(jogador, vendedor, comprador, preco)
-        ja.add(jogador.nome)
-        feitos.append(Negocio(jogador, vendedor, comprador, preco))
+        # o jogador também decide (v1.9): resistente, às vezes recusa — e o
+        # comprador tenta o próximo da lista
+        rng.shuffle(candidatos)
+        for _, jogador, vendedor, preco in candidatos:
+            interesse = vontade.interesse(jogador, comprador, vendedor, clubes, prest)
+            if interesse.nivel == vontade.RESISTENTE and rng.random() < CHANCE_RECUSA:
+                continue
+            mercado.transferir(jogador, vendedor, comprador, preco)
+            ja.add(jogador.nome)
+            feitos.append(Negocio(jogador, vendedor, comprador, preco))
+            break
     return feitos
