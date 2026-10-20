@@ -912,7 +912,17 @@ mudar as regras:
       "Rodada N de 38" (já na faixa) mostra onde o adversário está na
       tabela. Cabe sem rolar de 1280×620 a 1920×960 (telas médias: 3
       colunas; celular: 2)
-* [ ] Campo de dinheiro (`R$`, aceita "2,5 mi" e "800 mil", atalhos)
+* [x] Campo de dinheiro — proposta, contraproposta, taxa de empréstimo e os
+      dois salários (contrato e renovação) mostram `R$ 134,73 mi` em vez de
+      `134730000` e aceitam o que se digitaria: `2,5 mi`, `800 mil`,
+      `800k`, `1.500.000`. Têm −/+ (±5%, arredondado na escala do valor; as
+      setas do teclado também) e atalhos (valor de mercado, +10%, multa; no
+      salário, o que ele pede, o que o mercado paga e o que ganha hoje).
+      Texto que não é dinheiro marca o campo e nada é enviado
+      (`js/dinheiro.js`)
+      - Formato único: fora das tabelas o dinheiro leva o **R$**
+        (`reais()`); nas tabelas, não — o título da coluna já diz
+        (`dinheiro()`, que também conta torcedores)
 * [ ] Central do Elenco
 * [ ] Central de Transferências
 * [ ] Acabamento das outras telas

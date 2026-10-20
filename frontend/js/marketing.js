@@ -2,7 +2,7 @@
 // campanhas para ela crescer (uma por turno, pagas do caixa).
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
-import { dinheiro, tabela } from "./tabelas.js";
+import { dinheiro, reais, tabela } from "./tabelas.js";
 import { icone } from "./icones.js";
 import { carregarCaixa } from "./caixa.js";
 import { carregarProximaRodada } from "./rodada.js";
@@ -44,7 +44,7 @@ function cardCampanha(c) {
       <p>${c.descricao}</p>
       <dl class="mk-ficha">
         <div><dt>Torcida</dt><dd>+${c.ganho_pct.toLocaleString("pt-BR")}% <small>(+${dinheiro(c.torcedores_novos)})</small></dd></div>
-        <div><dt>Custo</dt><dd>R$ ${dinheiro(c.custo)}</dd></div>
+        <div><dt>Custo</dt><dd>${reais(c.custo)}</dd></div>
       </dl>
       ${bloqueio}
       <button class="mk-fazer" data-tipo="${c.tipo}" ${c.bloqueio ? "disabled" : ""}>Lançar campanha</button>
@@ -67,7 +67,7 @@ function renderMarketing() {
         d.feitas.map((f) => ({
           ...f,
           rod: `Rodada ${f.rodada}`,
-          cst: `R$ ${dinheiro(f.custo)}`,
+          cst: dinheiro(f.custo),
           nov: `+${dinheiro(f.torcedores_novos)}`,
         })),
         [["rod", "Quando"], ["nome", "Campanha"], ["cst", "Custo"], ["nov", "Torcedores"]],
@@ -83,7 +83,7 @@ function renderMarketing() {
         <span class="tile-valor">+${mando}</span>
         <span class="tile-detalhe">de overall no mando de campo</span></div>
       <div class="tile"><span class="tile-rotulo">Caixa</span>
-        <span class="tile-valor${d.caixa < 0 ? " negativo" : ""}">${dinheiro(d.caixa)}</span>
+        <span class="tile-valor${d.caixa < 0 ? " negativo" : ""}">${reais(d.caixa)}</span>
         <span class="tile-detalhe">para investir</span></div>
     </div>
     <p class="mk-intro">Uma campanha por turno. Torcida maior enche o estádio

@@ -6,7 +6,7 @@
 // jogador, na Central do Elenco.
 
 import { $, estado, navegarPara, pedir } from "./nucleo.js";
-import { dinheiro, tabela } from "./tabelas.js";
+import { dinheiro, reais, tabela } from "./tabelas.js";
 import {
   acaoCompra, acaoEmprestimo, acaoLivre, acoesOferta, detalheOferta, DURACAO_EMP, ligarBotoesMercado,
   postarMercado, STATUS_NEG,
@@ -130,7 +130,7 @@ function ficha(f, o = null) {
   const desde = o
     ? `<p class="tr-desde">${icone("estrela")} Observado desde a ${o.desde_temporada}ª temporada, ` +
       `${o.desde_rodada === 1 ? "pré-temporada" : `rodada ${o.desde_rodada}`}: OVR ${o.overall_inicial} → ` +
-      `<b>${f.overall}</b>, valor ${dinheiro(o.valor_inicial)} → <b>${dinheiro(f.valor_mercado)}</b>` +
+      `<b>${f.overall}</b>, valor ${reais(o.valor_inicial)} → <b>${reais(f.valor_mercado)}</b>` +
       `${o.avisos.length ? ` · ${o.avisos.join(" · ")}` : ""}</p>`
     : "";
   return `<article class="el-ficha">
@@ -160,12 +160,12 @@ function ficha(f, o = null) {
     ${barrasAtributos(f.atributos)}
     <h3 class="secao">Contrato</h3>
     <dl class="el-contrato">
-      <div><dt>Salário</dt><dd>${dinheiro(f.salario)}/temp.</dd></div>
-      <div><dt>Mercado paga</dt><dd>${dinheiro(f.salario_referencia)}</dd></div>
+      <div><dt>Salário/temp.</dt><dd>${reais(f.salario)}</dd></div>
+      <div><dt>Mercado paga</dt><dd>${reais(f.salario_referencia)}</dd></div>
       <div><dt>Restam</dt><dd>${livre ? "—" : `${f.contrato_anos} temp.`}</dd></div>
-      <div><dt>Multa</dt><dd>${f.multa_rescisoria ? dinheiro(f.multa_rescisoria) : MULTA_ROTULO.sem}</dd></div>
-      <div><dt>Valor</dt><dd>${dinheiro(f.valor_mercado)}</dd></div>
-      <div>${livre ? `<dt>Luvas</dt><dd>${dinheiro(f.luvas)}</dd>` : `<dt>Fama</dt><dd>${f.fama}/100</dd>`}</div>
+      <div><dt>Multa</dt><dd>${f.multa_rescisoria ? reais(f.multa_rescisoria) : MULTA_ROTULO.sem}</dd></div>
+      <div><dt>Valor</dt><dd>${reais(f.valor_mercado)}</dd></div>
+      <div>${livre ? `<dt>Luvas</dt><dd>${reais(f.luvas)}</dd>` : `<dt>Fama</dt><dd>${f.fama}/100</dd>`}</div>
     </dl>
   </article>`;
 }
@@ -408,9 +408,9 @@ function abaHistorico() {
       ? `<div class="mercado-filtros"><label>Mostrar <select data-temporada>${opcoes(temporadas, tela.temporada)}</select></label></div>`
       : ""}
     <dl class="tr-resumo">
-      <div><dt>Gasto</dt><dd>${dinheiro(resumo.gasto)}</dd></div>
-      <div><dt>Arrecadado</dt><dd>${dinheiro(resumo.arrecadado)}</dd></div>
-      <div><dt>Saldo</dt><dd class="${resumo.saldo < 0 ? "negativo" : "sobe"}">${resumo.saldo < 0 ? "−" : "+"}${dinheiro(Math.abs(resumo.saldo))}</dd></div>
+      <div><dt>Gasto</dt><dd>${reais(resumo.gasto)}</dd></div>
+      <div><dt>Arrecadado</dt><dd>${reais(resumo.arrecadado)}</dd></div>
+      <div><dt>Saldo</dt><dd class="${resumo.saldo < 0 ? "negativo" : "sobe"}">${resumo.saldo < 0 ? "−" : "+"}${reais(Math.abs(resumo.saldo))}</dd></div>
     </dl>
     <small class="bloqueio">Gasto = compras, luvas dos livres, rescisões e taxas de empréstimo; arrecadado = vendas.</small>
     ${tabela(linhas, [
@@ -448,7 +448,7 @@ function desenhar() {
 
   const box = $("r-mercado");
   box.innerHTML = `
-    <p>${status} · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${dinheiro(m.caixa)}</strong> ·
+    <p>${status} · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${reais(m.caixa)}</strong> ·
       elenco ${m.elenco.length} (mín. ${m.elenco_min}, máx. ${m.elenco_max})${rivais}</p>
     <nav class="abas el-abas">${abas}</nav>
     ${corpo}`;

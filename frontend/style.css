@@ -1493,3 +1493,28 @@ body.com-lateral #temporada-voltar { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .lateral { transition: none; }
 }
+
+/* ---------- campo de dinheiro (v1.8, js/dinheiro.js) ---------- */
+.dinheiro { display: inline-flex; flex-direction: column; gap: .3rem; vertical-align: top; }
+.dinheiro-linha { display: inline-flex; align-items: stretch; }
+input.campo-dinheiro {
+  width: 9.5rem; height: auto; margin: 0; padding: .4rem .6rem; font-size: .92rem; font-weight: 600;
+  font-variant-numeric: tabular-nums; border-radius: 4px 0 0 4px;
+}
+.dinheiro-passo {
+  width: 2.1rem; margin: 0; padding: 0; border: 1px solid var(--linha); border-left: 0; border-radius: 0;
+  background: var(--superficie-2); color: var(--texto); font-size: 1.05rem; font-weight: 600;
+}
+.dinheiro-passo:last-child { border-radius: 0 4px 4px 0; }
+.dinheiro-passo:hover { background: #1c2a3e; color: #fff; }
+.dinheiro-atalhos { display: flex; flex-wrap: wrap; gap: .3rem; }
+.dinheiro-atalho {
+  width: auto; margin: 0; padding: .12rem .55rem; border-radius: 999px; font-size: .75rem; font-weight: 500;
+  background: transparent; border: 1px solid var(--linha); color: var(--texto-2);
+}
+.dinheiro-atalho:hover { color: var(--texto); border-color: var(--linha-forte); background: rgba(255, 255, 255, .04); }
+.dinheiro-erro { color: var(--texto-alerta); font-size: .78rem; max-width: 16rem; }
+.dinheiro-erro[hidden] { display: none; }
+/* nos formulários de contrato os atalhos ficam sob o campo: os outros
+   campos alinham pelo topo, não pelo pé dos atalhos */
+#m-negociacao .mercado-filtros, #c-form .mercado-filtros { align-items: flex-start; }

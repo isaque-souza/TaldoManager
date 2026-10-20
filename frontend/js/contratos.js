@@ -1,7 +1,8 @@
 // Contratos: a renovação (aberta pela ficha da Central do Elenco, v1.7).
 
 import { $, estado, pedir } from "./nucleo.js";
-import { dinheiro } from "./tabelas.js";
+import { reais } from "./tabelas.js";
+import { campoDinheiro, lerDinheiro } from "./dinheiro.js";
 import { carregarMercado, postarMercado } from "./mercado.js";
 import { icone } from "./icones.js";
 
@@ -25,22 +26,25 @@ export async function abrirContrato(jogadorId) {
     .map((n) => `<option value="${n}"${n === anosSel ? " selected" : ""}>${n}</option>`).join("");
   const multas = c.opcoes_multa
     .map((o) => `<option value="${o.opcao}"${o.opcao === multaSel ? " selected" : ""}>` +
-      `${MULTA_ROTULO[o.opcao]}${o.valor ? ` (${dinheiro(o.valor)})` : ""}</option>`).join("");
+      `${MULTA_ROTULO[o.opcao]}${o.valor ? ` (${reais(o.valor)})` : ""}</option>`).join("");
   const box = $("c-form");
   box.innerHTML = `<article>
     <header><strong>Renovar com ${c.jogador}</strong> · ${c.idade} anos · OVR ${c.overall} ·
-      hoje: ${dinheiro(c.salario)}/temp., ${c.contrato_anos} temp., multa ${c.multa_rescisoria ? dinheiro(c.multa_rescisoria) : "—"}</header>
-    ${contra ? `<p>${icone("acordo")} Contraproposta na mesa: ${dinheiro(contra.salario)} por ${contra.anos} temp., ${MULTA_ROTULO[contra.multa]}, como ${PAPEL_ROTULO[contra.papel].toLowerCase()}.</p>` : ""}
+      hoje: ${reais(c.salario)}/temp., ${c.contrato_anos} temp., multa ${c.multa_rescisoria ? reais(c.multa_rescisoria) : "—"}</header>
+    ${contra ? `<p>${icone("acordo")} Contraproposta na mesa: ${reais(contra.salario)} por ${contra.anos} temp., ${MULTA_ROTULO[contra.multa]}, como ${PAPEL_ROTULO[contra.papel].toLowerCase()}.</p>` : ""}
     ${c.humor === "quer_sair" ? `<p class="negativo">${icone("nao")} ${c.jogador} quer sair do clube e não aceita renovar enquanto não voltar a jogar.</p>` : ""}
     <div class="mercado-filtros">
-      <label>Salário/temporada <input type="number" id="c-salario" min="1000" step="1000" value="${salario}"></label>
+      <label>Salário/temporada ${campoDinheiro({
+        valor: salario, rotulo: "Salário por temporada", atributos: `id="c-salario"`,
+        atalhos: [["Ele pede", contra?.salario], ["Mercado paga", c.salario_referencia], ["Ganha hoje", c.salario]],
+      })}</label>
       <label>Temporadas <select id="c-anos">${anos}</select></label>
       <label>Multa <select id="c-multa">${multas}</select></label>
       <label>Papel <select id="c-papel">${papeis}</select></label>
       <button class="transf" id="c-enviar">Propor</button>
       <button class="transf secondary outline" id="c-fechar">Fechar</button>
     </div>
-    <small class="bloqueio">Mercado paga ${dinheiro(c.salario_referencia)} a esse overall ·
+    <small class="bloqueio">Mercado paga ${reais(c.salario_referencia)} a esse overall ·
       prometer um papel maior baixa o pedido, um menor o encarece ·
       ${c.tentativas_restantes} tentativa${c.tentativas_restantes === 1 ? "" : "s"} nesta rodada</small>
   </article>`;
@@ -52,7 +56,13 @@ export async function abrirContrato(jogadorId) {
       enviar.textContent = "Confirmar?";
       return;
     }
-    renovar(jogadorId, Number($("c-salario").value), Number($("c-anos").value), $("c-multa").value, $("c-papel").value);
+    const salario = lerDinheiro($("c-salario"));
+    if (!salario) {   // o aviso já está no campo
+      enviar.dataset.confirmar = "";
+      enviar.textContent = "Propor";
+      return;
+    }
+    renovar(jogadorId, salario, Number($("c-anos").value), $("c-multa").value, $("c-papel").value);
   });
   box.scrollIntoView({ block: "nearest" });
 }
@@ -65,11 +75,11 @@ export async function renovar(jogadorId, salario, anos, multa, papel) {
   if (!r) return;
   const sinal = icone({ aceita: "ok", contraproposta: "acordo", recusada: "nao" }[r.resposta]);
   let msg = `${sinal} ${r.motivo}`;
-  if (r.resposta === "contraproposta") msg += ` — pede ${dinheiro(r.salario_pedido)} por temporada`;
+  if (r.resposta === "contraproposta") msg += ` — pede ${reais(r.salario_pedido)} por temporada`;
   msg += ".";
   if (r.contrato) {
-    msg += ` Novo contrato: ${dinheiro(r.contrato.salario)}/temp. por ${r.contrato.contrato_anos} temp., ` +
-      `multa ${r.contrato.multa_rescisoria ? dinheiro(r.contrato.multa_rescisoria) : "—"}, ` +
+    msg += ` Novo contrato: ${reais(r.contrato.salario)}/temp. por ${r.contrato.contrato_anos} temp., ` +
+      `multa ${r.contrato.multa_rescisoria ? reais(r.contrato.multa_rescisoria) : "—"}, ` +
       `como ${PAPEL_ROTULO[r.contrato.papel].toLowerCase()}.`;
     $("c-form").innerHTML = "";
   }

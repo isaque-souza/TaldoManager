@@ -84,3 +84,10 @@ export function dinheiro(v) {
   }
   return `${sinal}${Math.round(a / 1_000)} mil`;
 }
+
+// fora das tabelas o dinheiro leva o "R$" (v1.8): nas tabelas o título da
+// coluna já diz que é dinheiro. -2200000 -> "-R$ 2,2 mi"
+export function reais(v) {
+  const s = dinheiro(v);
+  return s.startsWith("-") ? `-R$ ${s.slice(1)}` : `R$ ${s}`;
+}
