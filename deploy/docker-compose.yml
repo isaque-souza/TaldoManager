@@ -1,0 +1,23 @@
+# Taldo Manager na VPS, atrás do Caddy compartilhado (/opt/proxy), que
+# encontra o container pelo nome "taldo-app" na rede "proxy".
+#   cd ~/taldo && docker compose -f deploy/docker-compose.yml up -d --build
+# nome próprio: sem ele o projeto vira "deploy" (o nome da pasta) e
+# colide com outros stacks da VPS que também moram numa pasta deploy/
+name: taldo
+
+services:
+  app:
+    build: ..
+    container_name: taldo-app
+    restart: unless-stopped
+    volumes:
+      - dados:/dados
+    networks:
+      - proxy
+
+volumes:
+  dados:
+
+networks:
+  proxy:
+    external: true

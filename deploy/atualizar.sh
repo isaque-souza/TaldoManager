@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
-# Põe a versão nova da main no ar:  sudo bash /opt/taldo/deploy/atualizar.sh
-# O banco fica em /var/lib/taldo e não é tocado; as migrações rodam sozinhas
-# quando o serviço sobe.
+# Põe a versão nova da main no ar (na VPS):  bash ~/taldo/deploy/atualizar.sh
+# Faz backup do banco antes; as migrações rodam sozinhas quando o container sobe.
 set -euo pipefail
-APP=/opt/taldo
-sqlite3 /var/lib/taldo/taldo_manager.db ".backup '/var/lib/taldo/backups/antes-de-atualizar.db'" 2>/dev/null || true
-sudo -u taldo git -C "$APP" pull --ff-only
-sudo -u taldo "$APP/venv/bin/pip" install -q -r "$APP/backend/requirements.txt"
-systemctl restart taldo
-echo "Atualizado: $(git -C "$APP" log --oneline -1)"
+cd "$(dirname "$0")/.."
+bash deploy/backup.sh antes-de-atualizar || true
+git pull --ff-only
+docker compose -f deploy/docker-compose.yml up -d --build
+echo "Atualizado: $(git log --oneline -1)"

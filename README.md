@@ -1117,18 +1117,25 @@ Cada técnico tem a própria conta, e um não vê nem mexe nos saves do outro.
 * Saves de antes das contas ficam sem dono e invisíveis; para passar todos
   para uma conta: `python -m scripts.dar_saves <nome>` (na pasta backend)
 
-Publicar numa VPS Ubuntu (ex.: Hostinger KVM 1), com HTTPS pelo Caddy e
-backup diário do banco:
+Publicar na VPS (Docker, atrás do Caddy compartilhado em `/opt/proxy`,
+que acha o container `taldo-app` pela rede `proxy`):
 
 ```bash
-# na VPS, uma vez (sem domínio, o endereço vira <ip>.sslip.io)
-curl -fsSL https://raw.githubusercontent.com/isaque-souza/TaldoManager/main/deploy/instalar.sh | sudo bash
-# a cada versão nova na main
-sudo bash /opt/taldo/deploy/atualizar.sh
+# na VPS, uma vez
+git clone https://github.com/isaque-souza/TaldoManager.git ~/taldo
+cd ~/taldo && docker compose -f deploy/docker-compose.yml up -d --build
+# e no /opt/proxy/Caddyfile:  <endereço> { reverse_proxy taldo-app:8000 }
+docker exec proxy-caddy-1 caddy reload --config /etc/caddy/Caddyfile
+
+# atualização automática: a cada 5 min, se a main andou, faz backup e sobe
+(crontab -l; echo "*/5 * * * * bash ~/taldo/deploy/auto-atualizar.sh >> ~/taldo-deploy.log 2>&1") | crontab -
+# ou na mão, na hora
+bash ~/taldo/deploy/atualizar.sh
 ```
 
-O código fica em `/opt/taldo`, o banco e os backups em `/var/lib/taldo`
-e o serviço é `taldo` (`journalctl -u taldo -f` para ver o log).
+O banco fica no volume `taldo_dados` (atualizar não apaga os saves);
+`deploy/backup.sh` copia para `~/taldo-backups` (o cron roda todo dia) e
+`docker logs -f taldo-app` mostra o log.
 
 ---
 
@@ -1150,7 +1157,7 @@ TaldoManager/
 │   ├── scripts/            # data_loader
 │   └── tests/              # 892 testes (domain, db, repositories, services, api)
 │
-├── deploy/                 # instalar/atualizar na VPS, systemd e Caddy
+├── deploy/                 # docker compose, atualizar e backup na VPS
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas
