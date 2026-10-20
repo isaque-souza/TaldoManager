@@ -31,7 +31,10 @@ const IDADE_PROMESSA = 21;
 const passaFiltro = (f, v) =>
   !v || (v === "venda" ? f.a_venda : v === "ofertas" ? f.ofertas > 0
     : v === "humor" ? f.humor !== "contente" : f.posicao === v);
-const filtro = { setor: "", selecionado: null };
+// aba: a aba da ficha (resumo, atributos, mercado), mantida ao trocar de
+// jogador; aberta: no celular, a ficha ocupa o lugar da lista
+const filtro = { setor: "", selecionado: null, aba: "resumo", aberta: false };
+const celular = () => matchMedia("(max-width: 900px)").matches;
 let mercado = null;   // o último GET /mercado, para redesenhar sem pedir de novo
 
 export function renderElenco(m) {
@@ -79,8 +82,9 @@ function lista() {
       // potencial acima do overall em verde: ainda vai crescer
       pot: f.potencial > f.overall ? `<span class="sobe" title="ainda cresce">${f.potencial}</span>` : f.potencial,
       papel_fmt: PAPEL[f.papel] || "—",
+      // o último ano em âmbar: avisa sem gritar mais que o nome
       contrato: f.contrato_anos <= 1
-        ? `<span class="chip chip-perto" title="Contrato acabando">${f.contrato_anos}</span>`
+        ? `<span class="el-acaba" title="Último ano de contrato">${f.contrato_anos}</span>`
         : f.contrato_anos,
       valor: dinheiro(f.valor_mercado),
     };
@@ -92,60 +96,85 @@ function lista() {
   ], (f) => (f.jogador_id === filtro.selecionado ? "sel" : ""));
 }
 
+// a ficha: cabeçalho, ações e três abas (resumo, atributos, mercado), para
+// caber na tela sem rolar
 function ficha(f) {
   if (!f) return `<p class="vazio">Escolha um jogador na lista.</p>`;
   const s = situacaoDe(f.nome);
-  const venda = mercado.janela_aberta && !f.bloqueio;
-  const dispensa = f.dispensa_bloqueada
-    ? `<small class="bloqueio">${icone("cadeado")} Dispensar: ${f.dispensa_bloqueada}</small>`
-    : "";
+  const abas = [["resumo", "Resumo"], ["atributos", "Atributos"]];
+  // emprestado (v1.7): o contrato é do clube de origem, não há mercado
+  if (!f.emprestimo) abas.push(["mercado", "Mercado"]);
+  if (!abas.some(([v]) => v === filtro.aba)) filtro.aba = "resumo";
+  const ofertas = mercado.janela_aberta
+    ? mercado.ofertas_recebidas.filter((o) => o.jogador_id === f.jogador_id && o.status === "aberta").length : 0;
+  const conteudo = { resumo: abaResumo, atributos: (j) => barrasAtributos(j.atributos), mercado: abaMercado }[filtro.aba];
   return `<article class="el-ficha">
-    <header class="el-ficha-topo">
+    <button type="button" class="secondary outline el-fechar" data-voltar-local>← Elenco</button>
+    <header class="el-ficha-topo el-cabeca">
       ${camisa(mercado.clube_usuario, { numero: f.numero, tamanho: 56 })}
-      <div>
+      <div class="el-cabeca-nome">
         <h3>${f.nome}</h3>
-        <small>${f.funcao || f.posicao} · ${f.idade} anos · OVR <b>${f.overall}</b> · POT <b>${f.potencial}</b>` +
+        <small>${f.funcao || f.posicao} · ${f.idade} anos` +
           `${s.energia != null ? ` · energia ${s.energia}%` : ""}</small>
         <div class="el-selos">${selos(f)} ${s.chip}</div>
       </div>
+      <dl class="el-notas">
+        <div><dt>OVR</dt><dd>${f.overall}</dd></div>
+        <div><dt>POT</dt><dd class="${f.potencial > f.overall ? "sobe" : ""}">${f.potencial}</dd></div>
+      </dl>
     </header>
+    ${acoes(f)}
+    <div id="c-form"></div>
+    <nav class="abas el-ficha-abas">${abas.map(([v, rotulo]) =>
+      `<button type="button" data-aba="${v}" class="${v === filtro.aba ? "ativa" : ""}">${rotulo}` +
+      `${v === "mercado" && ofertas ? ` <b class="el-aba-selo">${ofertas}</b>` : ""}</button>`).join("")}</nav>
+    <div class="el-ficha-corpo">${conteudo(f)}</div>
+  </article>`;
+}
+
+// Renovar é a ação principal; as outras, do mesmo tamanho, numa grade
+function acoes(f) {
+  if (f.emprestimo) {
+    return `<div class="el-ficha-acoes">
+      <button type="button" class="secondary outline" data-el="pagina">Página completa</button>
+    </div>`;
+  }
+  return `<div class="el-ficha-acoes">
+      <button type="button" data-el="renovar">${icone("contrato")} Renovar</button>
+      <button type="button" class="secondary outline" data-el="lista" title="Lista de transferências">
+        ${f.a_venda ? "Tirar da lista" : "Pôr na lista"}</button>
+      <button type="button" class="secondary outline" data-el="dispensar"${f.dispensa_bloqueada ? " disabled" : ""}>
+        ${icone("saiu")} Dispensar <small>${reais(f.rescisao)}</small></button>
+      <button type="button" class="secondary outline" data-el="pagina">Página completa</button>
+    </div>
+    ${f.dispensa_bloqueada ? `<small class="bloqueio el-ficha-aviso">${icone("cadeado")} Dispensar: ${f.dispensa_bloqueada}</small>` : ""}`;
+}
+
+function abaResumo(f) {
+  return `${f.emprestimo ? blocoEmprestado(f, mercado.rodada) : ""}
     ${blocoPapel(f)}
-    ${f.emprestimo
-      // emprestado (v1.7): o contrato é do clube de origem
-      ? `${blocoEmprestado(f, mercado.rodada)}
-        <div class="el-acoes">
-          <button type="button" class="secondary outline" data-el="pagina">Página completa</button>
-        </div>`
-      : `<div class="el-acoes">
-          <button type="button" data-el="renovar">${icone("contrato")} Renovar</button>
-          <button type="button" class="secondary" data-el="lista">
-            ${f.a_venda ? "Tirar da lista" : "Pôr na lista de transferências"}</button>
-          <button type="button" class="secondary outline" data-el="dispensar"${f.dispensa_bloqueada ? " disabled" : ""}>
-            ${icone("saiu")} Dispensar (${reais(f.rescisao)})</button>
-          <button type="button" class="secondary outline" data-el="pagina">Página completa</button>
-        </div>
-        ${dispensa}
-        ${venda ? "" : `<small class="bloqueio">${icone("cadeado")} Vender: ${f.bloqueio || "janela fechada"}</small>`}
-        ${blocoOfertas(f)}
-        ${blocoEmprestar(f)}`}
     <dl class="el-numeros">
       <div><dt>Jogos</dt><dd>${f.partidas}</dd></div>
       <div><dt>Gols</dt><dd>${f.gols}</dd></div>
       <div><dt>Assist.</dt><dd>${f.assistencias}</dd></div>
       <div><dt>Nota</dt><dd>${f.partidas ? f.nota_media.toFixed(2) : "—"}</dd></div>
     </dl>
-    ${barrasAtributos(f.atributos)}
-    <h3 class="secao">Contrato</h3>
     <dl class="el-contrato">
       <div><dt>Salário/temp.</dt><dd>${reais(f.salario)}</dd></div>
       <div><dt>Mercado paga</dt><dd class="${f.salario_referencia > f.salario ? "negativo" : ""}">${reais(f.salario_referencia)}</dd></div>
-      <div><dt>Restam</dt><dd>${f.contrato_anos} temp.</dd></div>
+      <div><dt>Restam</dt><dd class="${f.contrato_anos <= 1 ? "el-acaba" : ""}">${f.contrato_anos} temp.</dd></div>
       <div><dt>Multa</dt><dd>${f.multa_rescisoria ? reais(f.multa_rescisoria) : MULTA_ROTULO.sem}</dd></div>
       <div><dt>Valor</dt><dd>${reais(f.valor_mercado)}</dd></div>
       <div><dt>Fama</dt><dd>${f.fama}/100</dd></div>
-    </dl>
-    <div id="c-form"></div>
-  </article>`;
+    </dl>`;
+}
+
+// vender (ofertas da CPU) e emprestar
+function abaMercado(f) {
+  const venda = mercado.janela_aberta && !f.bloqueio;
+  return `${venda ? "" : `<small class="bloqueio el-ficha-aviso">${icone("cadeado")} Vender: ${f.bloqueio || "janela fechada"}</small>`}
+    ${blocoOfertas(f)}
+    ${blocoEmprestar(f)}`;
 }
 
 // as ofertas da CPU por ele nesta janela (v1.7): aceitar, recusar ou pedir mais
@@ -216,14 +245,25 @@ function desenhar() {
   ) + fora.reduce((t, f) => t + f.salario - Math.round(f.salario * f.emprestimo.parte_salario / 100), 0);
   const sel = m.elenco.find((f) => f.jogador_id === filtro.selecionado);
 
+  const acabando = m.elenco.filter((f) => !f.emprestimo && f.contrato_anos <= 1).length;
+  const bloco = (rotulo, valor, detalhe, classe = "") =>
+    `<div class="tile"><span class="tile-rotulo">${rotulo}</span>` +
+    `<span class="tile-valor ${classe}">${valor}</span><span class="tile-detalhe">${detalhe}</span></div>`;
+
   const box = $("el-central");
   box.innerHTML = `
-    <p>${m.elenco.length} jogadores (mín. ${m.elenco_min}, máx. ${m.elenco_max}) ·
-      folha ${reais(folha)}/temp. · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${reais(m.caixa)}</strong></p>
+    <div class="tiles el-resumo">
+      ${bloco("Jogadores", `${m.elenco.length}<small>/${m.elenco_max}</small>`, `mínimo ${m.elenco_min}`,
+        m.elenco.length < m.elenco_min || m.elenco.length > m.elenco_max ? "negativo" : "")}
+      ${bloco("Folha salarial", reais(folha), "por temporada")}
+      ${bloco("Caixa", reais(m.caixa), "para contratar", m.caixa < 0 ? "negativo" : "")}
+      ${bloco("Contratos acabando", acabando, acabando ? "último ano: renove ou venda" : "nenhum no último ano",
+        acabando ? "el-acaba" : "")}
+    </div>
     ${fora.length ? `<p class="el-fora">${icone("acordo")} Emprestados: ${fora.map((f) =>
       `${f.nome} (${f.clube}, até a rodada ${f.emprestimo.volta - 1})`).join(", ")}</p>` : ""}
     <nav class="abas el-abas">${abas}</nav>
-    <div class="el-grade">
+    <div class="el-grade${filtro.aberta ? " ficha-aberta" : ""}">
       <div class="el-lista">${lista()}</div>
       <div class="el-lado">${ficha(sel)}</div>
     </div>`;
@@ -234,11 +274,20 @@ function desenhar() {
   box.querySelectorAll("[data-sel]").forEach((b) =>
     b.addEventListener("click", () => {
       filtro.selecionado = Number(b.dataset.sel);
+      // no celular a ficha ocupa o lugar da lista
+      filtro.aberta = celular();
       desenhar();
-      // no celular a ficha fica embaixo da lista
-      box.querySelector(".el-ficha")?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      if (filtro.aberta) box.scrollIntoView({ block: "start" });
     })
   );
+  box.querySelectorAll("[data-aba]").forEach((b) =>
+    b.addEventListener("click", () => { filtro.aba = b.dataset.aba; desenhar(); })
+  );
+  box.querySelector(".el-fechar")?.addEventListener("click", () => {
+    filtro.aberta = false;
+    desenhar();
+    box.querySelector(`[data-sel="${filtro.selecionado}"]`)?.scrollIntoView({ block: "center" });
+  });
   if (sel) ligarAcoes(box, sel);
 }
 
@@ -247,7 +296,8 @@ function ligarAcoes(box, f) {
   // aceitar, recusar e pedir mais nas ofertas da CPU; a opção de compra (v1.7)
   ligarBotoesMercado(box.querySelector(".el-ficha"));
   botao("pagina").addEventListener("click", () => navegarPara(() => abrirJogador(f.jogador_id)));
-  botao("papel").addEventListener("change", (e) => definirPapel(f, e.target.value));
+  // o papel fica na aba Resumo: nas outras abas não há o seletor
+  botao("papel")?.addEventListener("change", (e) => definirPapel(f, e.target.value));
   if (f.emprestimo) return;   // o contrato é do clube de origem
   botao("renovar").addEventListener("click", () => abrirContrato(f.jogador_id));
   botao("lista").addEventListener("click", () => marcarAVenda(f, !f.a_venda));
@@ -257,7 +307,7 @@ function ligarAcoes(box, f) {
   dispensar.addEventListener("click", () => {
     if (dispensar.dataset.confirmar !== "1") {
       dispensar.dataset.confirmar = "1";
-      dispensar.textContent = `Confirmar? Paga ${reais(f.rescisao)}`;
+      dispensar.innerHTML = `Confirmar? <small>paga ${reais(f.rescisao)}</small>`;
       return;
     }
     dispensarJogador(f);

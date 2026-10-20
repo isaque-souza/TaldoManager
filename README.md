@@ -923,7 +923,17 @@ mudar as regras:
       - Formato único: fora das tabelas o dinheiro leva o **R$**
         (`reais()`); nas tabelas, não — o título da coluna já diz
         (`dinheiro()`, que também conta torcedores)
-* [ ] Central do Elenco
+* [x] Central do Elenco — o resumo virou blocos (jogadores/máximo,
+      folha, caixa e **contratos acabando**); a ficha ganhou cabeçalho com
+      OVR e POT grandes, ações numa grade de botões iguais (Renovar em
+      destaque) e **três abas** — Resumo (papel, números, contrato),
+      Atributos e Mercado (ofertas, com selo da quantidade, e emprestar) —
+      e a aba escolhida fica ao trocar de jogador. Na lista, o último ano
+      de contrato é um "1" em âmbar, sem caixa. O formulário de renovar
+      ocupa a ficha em duas colunas
+      - No celular a ficha ocupa o lugar da lista, com "← Elenco" para
+        voltar; o Voltar do navegador também fecha a ficha
+        (`data-voltar-local`)
 * [ ] Central de Transferências
 * [ ] Acabamento das outras telas
 
