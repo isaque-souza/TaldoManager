@@ -48,6 +48,10 @@ class Jogador:
         # ele muda de clube (ver app.domain.fama)
         self.fama = fama
         self.temporadas_no_clube = temporadas_no_clube
+        # vontade (v1.9): nomes de clubes; ver app.domain.vontade
+        self.formador = None
+        self.clube_historia = None
+        self.sonho = None
         # na lista de transferências do clube (v1.7); sai dela ao mudar de clube
         self.a_venda = False
         # emprestado por outro clube (v1.7): {"de", "volta", "parte",

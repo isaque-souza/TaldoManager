@@ -10,7 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, copa, estadio, fama, historico, livres, mercado_cpu
+from app.domain import caixa, copa, estadio, fama, historico, livres, mercado_cpu, vontade
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -139,6 +139,9 @@ def proxima_temporada(simulacao_id):
                 campeonato, clubes_finais, jogadores_finais, livres_finais
             )
             envelhecer(campeonato, jogadores_finais, random)
+            # quem terminou a temporada como ídolo ganha a história no clube
+            # (v1.9), antes de os contratos e a aposentadoria o tirarem de lá
+            vontade.marcar_historia(campeonato)
             # os ídolos de antes da virada: quem se aposentar ganha homenagem
             idolos = {
                 j.nome for c in campeonato.clubes if c.nome == clube_usuario
@@ -155,6 +158,8 @@ def proxima_temporada(simulacao_id):
             }
             movimentos += subir_jovens(campeonato, usados, random)
             livres.completar(campeonato, usados, random)
+            # todo mundo revê o sonho: ficou mais velho, o prestígio mudou (v1.9)
+            vontade.virada(campeonato)
             # a CPU amplia o estádio que lotou (v1.5); nada aqui sorteia
             obras = estadio.cpu_amplia(
                 campeonato, _lotados(conn, simulacao_id, clubes_finais), clube_usuario,

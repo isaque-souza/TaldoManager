@@ -16,7 +16,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import atributos, copa, diretoria, fama, mercado, mercado_cpu, posicoes
+from app.domain import atributos, copa, diretoria, fama, mercado, mercado_cpu, posicoes, vontade
 from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
@@ -203,6 +203,9 @@ def _serializar_jogador(jogador, clube_nome):
         "humor": jogador.humor,
         "titularidades": jogador.titularidades,
         "jogos_disponivel": jogador.jogos_disponivel,
+        "formador": jogador.formador,
+        "clube_historia": jogador.clube_historia,
+        "sonho": jogador.sonho,
     }
 
 
@@ -1036,6 +1039,11 @@ def game_log_jogador(simulacao_id, jogador_id):
         j = jogador_repo.buscar(conn, jogador_id)
         if j is None or j["simulacao_id"] != simulacao_id:
             return None
+        # o país do clube formador (v1.9)
+        paises = {
+            c["nome"]: c["pais"]
+            for c in clube_repo.listar_por_simulacao(conn, simulacao_id)
+        }
 
         jogos = []
         for r in atuacao_repo.listar_por_jogador(conn, jogador_id):
@@ -1090,6 +1098,13 @@ def game_log_jogador(simulacao_id, jogador_id):
             "valor_mercado": j["valor_mercado"],
             "salario": j["salario"],
             "multa_rescisoria": j["multa_rescisoria"],
+            # vontade (v1.9); None em saves antigos
+            "formador": j["formador"],
+            "formador_pais": paises.get(j["formador"]),
+            "clube_historia": j["clube_historia"],
+            "sonho": j["sonho"],
+            # veterano: o sonho é onde encerrar a carreira
+            "sonho_encerrar": j["idade"] >= vontade.IDADE_APOSENTADORIA,
         }
 
         return {"jogador": jogador, "jogos": jogos}

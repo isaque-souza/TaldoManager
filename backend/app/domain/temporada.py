@@ -18,7 +18,7 @@ por nome de clube.
 import json
 import random
 
-from app.domain import numeros
+from app.domain import numeros, vontade
 from app.domain.copa import Copa
 from app.domain.jogador import Jogador
 
@@ -43,6 +43,8 @@ _JOGADOR_CAMPOS = (
     "a_venda", "papel", "humor", "titularidades", "jogos_disponivel",
     # empréstimo (v1.7): volta ao clube de origem quando acaba
     "emprestimo",
+    # vontade (v1.9): formador, clube da história e sonho
+    "formador", "clube_historia", "sonho",
 )
 
 # campos acumulados de Clube (penalidade_expulsao é zerada a cada jogo)
@@ -172,6 +174,10 @@ def restaurar_estado(campeonato, blob):
         campeonato.livres = [
             j for j in campeonato.livres if j.nome not in na_liga
         ]
+
+    # snapshots de antes da v1.9: os jovens da base e os livres não têm
+    # formador nem sonho
+    vontade.completar(campeonato)
 
 
 def livres_para_json(campeonato):

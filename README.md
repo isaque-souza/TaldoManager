@@ -304,10 +304,10 @@ jogador da temporada.
 * [x] Rivais (clássicos na seed; negociar com o rival custa 1,5×)
 * [ ] Disputa pela contratação, como no futebol real: qual clube paga mais,
       qual é mais famoso, onde o jogador seria titular (ou banco, se já há
-      jogadores melhores na posição), se é o "time do sonho" dele...
+      jogadores melhores na posição), se é o "time do sonho" dele... (v1.9)
 * [x] Renovação de contrato (salário, duração e multa; o jogador aceita, contrapropõe ou recusa)
 * [x] Contrato novo ao ser transferido (3 temporadas, salário de mercado, sem multa)
-* [ ] Vontade do jogador (querer sair, recusar renovar por estar no banco, "time do sonho")
+* [ ] Vontade do jogador (querer sair, recusar renovar por estar no banco, "time do sonho") (v1.9)
 * [x] Evolução por idade (feita na v0.8, na virada de temporada)
 * [x] Potencial dos jogadores (na seed; o jogador ainda não evolui)
 * [x] Duração de contrato (temporadas restantes, na seed)
@@ -965,6 +965,36 @@ mudar as regras:
         tela); Copa sem itálico no "A definir"
       - Mensagens do servidor com dinheiro formatado: "não tem caixa para
         pagar R$ 283,8 mi" (`app/domain/formato.py`)
+
+---
+
+# 🚧 Vontade do jogador (v1.9) — Em andamento
+
+O jogador passa a ter vontade própria: de onde veio, onde fez história e
+para onde quer ir. Isso pesa na hora de vir para o seu clube, de renovar e
+quando outros clubes disputam o mesmo reforço. Regras em
+`app/domain/vontade.py` (determinísticas, como a fama: não mexem nos
+resultados de um mesmo seed).
+
+* [x] Prestígio, clube formador, clube da história e clube do sonho
+      - **Prestígio** do clube (0 a 100): força do elenco (60%) e tamanho
+        da torcida (40%) em relação aos outros clubes do save; os títulos
+        entram pela torcida
+      - **Formador**: quem sobe da base é cria da casa; quem já está na seed
+        é cria do clube atual (sempre, até 21 anos), de outro clube do mesmo
+        país ou de qualquer um — sorteado pelo nome
+      - **Clube da história**: o último em que ele foi ídolo; vai com ele
+        quando sai de lá
+      - **Sonho**, que muda com a idade: até 30 anos, um dos 3 grandes do
+        país onde foi formado ou um dos 8 melhores do mundo; a partir de 31,
+        encerrar a carreira no formador ou no clube da história. Revisto na
+        virada de temporada
+      - A página do jogador ganha a seção **Carreira**: "Formado no Inter
+        Taldo (Itália) · Fez história no ... · Sonha jogar no ..."
+* [ ] Interesse do jogador em vir (quer vir / aberto / resistente / não vem)
+* [ ] Disputa pela contratação (outro clube oferece; o jogador compara)
+* [ ] Vontade no clube (proposta do clube do sonho, desconto na renovação)
+* [ ] Equilíbrio e acabamento
 
 ---
 

@@ -699,6 +699,12 @@ class JogadorInfo(BaseModel):
     fama: int | None = None
     temporadas_no_clube: int | None = None
     idolo: bool = False
+    # vontade (v1.9): nomes de clubes; None em saves antigos
+    formador: str | None = None
+    formador_pais: str | None = None
+    clube_historia: str | None = None
+    sonho: str | None = None
+    sonho_encerrar: bool = False
 
 
 class JogadorDetalhe(BaseModel):

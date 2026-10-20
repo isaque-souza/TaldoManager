@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from app.domain import estadio, fama, livres
+from app.domain import estadio, fama, livres, vontade
 from app.domain.jogador import Jogador
 from app.domain.clube import Clube
 from app.domain.campeonato import Campeonato
@@ -140,6 +140,8 @@ def carregar_campeonato(ligas=LIGA_PADRAO):
         clubes
     )
     campeonato.livres = sem_clube
+    # formador e sonho de todo mundo (v1.9)
+    vontade.completar(campeonato)
     return campeonato
 
 
