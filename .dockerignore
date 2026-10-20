@@ -1,0 +1,7 @@
+.git
+**/__pycache__
+**/.pytest_cache
+backend/data/database/*.db*
+backend/tests
+.playwright-mcp
+.planning
