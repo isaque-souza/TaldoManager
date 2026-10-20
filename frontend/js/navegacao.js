@@ -203,6 +203,12 @@ function voltarNoJogo() {
     $("pj-voltar").click();
     return true;
   }
+  // uma tela dentro da tela (a ficha do elenco no celular): fecha ela antes
+  const local = [...$(tela).querySelectorAll("[data-voltar-local]")].find((b) => b.offsetParent);
+  if (local) {
+    local.click();
+    return true;
+  }
   if (tela === "rodada") {
     if (estado.faseRodada === "antes" && estado.abaRodada !== "hub") abrirSecaoRodada("hub");
     else mostrarInicio();
