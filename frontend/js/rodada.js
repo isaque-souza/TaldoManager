@@ -93,13 +93,16 @@ function resumoEscalacao() {
 function renderHub(info) {
   const t = estado.temporada;
   const loc = info.mando === "casa" ? "em casa" : "fora";
+  // a rodada já está na faixa: aqui vai onde o adversário está na tabela
+  const rival = t && t.classificacao.find((c) => c.clube === info.adversario);
+  const onde = rival && rival.jogos > 0 ? ` · ${info.adversario} é o ${rival.posicao}º` : "";
   $("hub-jogo").innerHTML = info.adversario
     ? `<div class="hub-confronto">
-         <span>${escudo(info.clube_usuario, 44)}<b>${info.clube_usuario}</b></span>
+         <span>${escudo(info.clube_usuario, 36)}<b>${info.clube_usuario}</b></span>
          <i>x</i>
-         <span>${escudo(info.adversario, 44)}<b>${info.adversario}</b></span>
+         <span>${escudo(info.adversario, 36)}<b>${info.adversario}</b></span>
        </div>
-       <small>Rodada ${info.rodada} de ${info.total_rodadas} · ${loc}</small>`
+       <small>${loc[0].toUpperCase() + loc.slice(1)}${onde}</small>`
     : `<p class="hub-folga">${info.clube_usuario} folga nesta rodada</p>
        <small>Rodada ${info.rodada} de ${info.total_rodadas}</small>`;
 

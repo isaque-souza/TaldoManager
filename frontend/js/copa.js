@@ -39,9 +39,8 @@ const mando = (m) => (m === "casa" ? "em casa" : "fora");
 function renderHubCopa() {
   const c = cp.dados;
   const card = $("hub-copa").closest(".hub-card");
-  // save só da Taldo: sem card e o hub volta à grade sem ele
+  // save só da Taldo: sem a faixa da copa no card do jogo
   card.hidden = !c;
-  $("r-hub").classList.toggle("sem-copa", !c);
   if (!c) return;
 
   const s = c.seu_clube;
