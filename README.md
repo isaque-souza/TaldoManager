@@ -906,7 +906,12 @@ mudar as regras:
         textos de apoio sem itálico
       - O fundo saiu do `body` para o `html` (desenhava uma "caixa" nas
         laterais) e o **Modo dev** só aparece com `?dev` no endereço
-* [ ] Menu do clube numa tela só
+* [x] Menu do clube numa tela só — grade de 4 colunas e 3 linhas, cards
+      mais baixos e o detalhe de cada um em no máximo duas linhas; a
+      **copa** virou uma faixa no pé do card do jogo, que no lugar de
+      "Rodada N de 38" (já na faixa) mostra onde o adversário está na
+      tabela. Cabe sem rolar de 1280×620 a 1920×960 (telas médias: 3
+      colunas; celular: 2)
 * [ ] Campo de dinheiro (`R$`, aceita "2,5 mi" e "800 mil", atalhos)
 * [ ] Central do Elenco
 * [ ] Central de Transferências

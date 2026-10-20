@@ -192,17 +192,19 @@
 
     <!-- antes de jogar: o hub do clube (cards) abre cada seção -->
     <div id="rodada-antes">
-      <div id="r-hub" class="hub sem-copa">
+      <div id="r-hub" class="hub">
         <article class="hub-card hub-jogo">
           <span class="hub-rotulo"><span data-icone="calendario"></span> Próximo jogo</span>
           <div id="hub-jogo"></div>
           <button id="r-jogar"></button>
+          <!-- a copa (v1.6) vira uma faixa no pé do card do jogo (v1.8): é o
+               outro jogo do técnico, e assim a grade fecha em 3 linhas -->
+          <button class="hub-card hub-copa" data-abrir="copa" hidden>
+            <span class="hub-rotulo"><span data-icone="trofeu"></span> Copa</span>
+            <strong id="hub-copa"></strong>
+            <small id="hub-copa-info"></small>
+          </button>
         </article>
-        <button class="hub-card" data-abrir="copa" hidden>
-          <span class="hub-rotulo"><span data-icone="trofeu"></span> Copa entre as ligas</span>
-          <strong id="hub-copa"></strong>
-          <small id="hub-copa-info"></small>
-        </button>
         <button class="hub-card" data-abrir="caixa">
           <span class="hub-rotulo"><span data-icone="email"></span> Caixa de entrada</span>
           <strong id="hub-caixa"></strong>

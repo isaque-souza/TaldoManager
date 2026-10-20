@@ -625,18 +625,14 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 }
 
 /* ---------- hub do clube: a página inicial da rodada, em cards ---------- */
+/* 4 colunas e 3 linhas (v1.8): o hub inteiro cabe numa tela de notebook
+   (1366×768, ~650px úteis) sem rolar. A copa mora no card do jogo */
 .hub {
-  display: grid; gap: .8rem; margin-bottom: 1.5rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: grid; gap: .75rem; margin-bottom: 1.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-template-areas:
-    "jogo jogo escalacao" "jogo jogo tabela" "copa copa mercado"
-    "caixa caixa elenco" "financas marketing estadio";
-}
-/* save só da Taldo (sem copa) */
-.hub.sem-copa {
-  grid-template-areas:
-    "jogo jogo escalacao" "jogo jogo tabela" "mercado elenco financas"
-    "caixa marketing estadio";
+    "jogo jogo escalacao tabela" "jogo jogo mercado elenco"
+    "caixa financas marketing estadio";
 }
 .hub[hidden] { display: none; }
 .hub-jogo { grid-area: jogo; }
@@ -648,14 +644,13 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 .hub [data-abrir="caixa"] { grid-area: caixa; }
 .hub [data-abrir="marketing"] { grid-area: marketing; }
 .hub [data-abrir="estadio"] { grid-area: estadio; }
-.hub [data-abrir="copa"] { grid-area: copa; }
 button.hub-card[hidden] { display: none; }
 .hub-card.hub-ouro { border-color: color-mix(in srgb, var(--refletor) 55%, var(--linha)); }
 .hub-card.hub-ouro strong { color: var(--refletor); }
 
 .hub-card {
   display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: .3rem;
-  margin: 0; min-height: 8.5rem; padding: 1rem 1.1rem; width: auto; text-align: left;
+  margin: 0; min-height: 7rem; padding: .8rem 1rem; width: auto; text-align: left;
   font-family: var(--fonte-texto); text-transform: none; letter-spacing: 0; font-weight: 400;
   color: var(--texto); background: linear-gradient(180deg, #142133, var(--superficie) 70%);
   border: 1px solid var(--linha); border-radius: 6px; box-shadow: none;
@@ -676,9 +671,13 @@ button.hub-card:hover, button.hub-card:focus-visible {
 }
 .hub-card strong {
   font-family: var(--fonte-tarja); font-weight: 800; text-transform: uppercase;
-  font-size: 1.6rem; line-height: 1.05; color: var(--texto);
+  font-size: 1.45rem; line-height: 1.05; color: var(--texto);
 }
-.hub-card small { color: var(--texto-2); font-size: .85rem; }
+/* o detalhe do card nunca passa de duas linhas (a caixa traz o assunto) */
+.hub-card small {
+  color: var(--texto-2); font-size: .85rem;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
 
 /* ---------- atributos do jogador (v1.3) ---------- */
 .atributos {
@@ -743,7 +742,7 @@ button.hub-card:hover, button.hub-card:focus-visible {
 
 /* o card do próximo jogo é o destaque: gramado no fundo, escudos grandes */
 .hub-jogo {
-  justify-content: space-between; min-height: 18rem; padding: 1.3rem 1.4rem;
+  justify-content: space-between; gap: .9rem; min-height: 0; padding: 1.1rem 1.25rem;
   background:
     repeating-linear-gradient(90deg, transparent 0 3.5rem, rgba(255, 255, 255, .025) 3.5rem 7rem),
     linear-gradient(160deg, var(--gramado-noite), var(--superficie) 75%);
@@ -751,28 +750,43 @@ button.hub-card:hover, button.hub-card:focus-visible {
 }
 .hub-jogo .hub-rotulo { margin-bottom: 0; color: var(--gramado-claro); }
 .hub-confronto {
-  display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+  display: flex; align-items: center; gap: .3rem 1rem; flex-wrap: wrap;
   font-family: var(--fonte-tarja); text-transform: uppercase;
 }
 .hub-confronto > span { display: inline-flex; align-items: center; gap: .6rem; }
-.hub-confronto b { font-size: clamp(1.4rem, 3.4vw, 2.3rem); font-weight: 800; line-height: 1; }
+.hub-confronto b { font-size: clamp(1.3rem, 2.1vw, 1.9rem); font-weight: 800; line-height: 1; }
 .hub-confronto i { font-style: normal; font-weight: 700; font-size: 1.3rem; color: var(--texto-2); }
-.hub-jogo #hub-jogo small, .hub-folga + small { display: block; margin-top: .6rem; }
+.hub-jogo #hub-jogo small, .hub-folga + small { display: block; margin-top: .45rem; }
 .hub-folga { margin: 0; font-family: var(--fonte-tarja); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; }
-.hub-jogo > button { width: auto; margin: 0; padding: .75rem 1.5rem; font-size: 1.05rem; }
+.hub-jogo > #r-jogar { width: auto; margin: 0; padding: .7rem 1.4rem; font-size: 1.05rem; }
+/* a faixa da copa no pé do card do jogo */
+.hub-jogo .hub-copa {
+  flex-direction: row; flex-wrap: wrap; align-items: baseline; justify-content: flex-start;
+  gap: .2rem .7rem; width: 100%; min-height: 0; padding: .6rem .85rem;
+  background: rgba(0, 0, 0, .28); border-color: var(--linha);
+}
+.hub-jogo .hub-copa:hover, .hub-jogo .hub-copa:focus-visible { background: rgba(0, 0, 0, .4); transform: none; }
+.hub-copa .hub-rotulo { margin: 0; }
+.hub-copa strong { font-size: 1.1rem; }
+.hub-copa small { -webkit-line-clamp: 1; }
+.hub-copa.hub-ouro { border-color: color-mix(in srgb, var(--refletor) 55%, var(--linha)); }
+/* telas médias (tablet, ou notebook com a barra lateral apertando) */
+@media (max-width: 1180px) {
+  .hub {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "jogo jogo escalacao" "jogo jogo tabela" "mercado elenco caixa"
+      "financas marketing estadio";
+  }
+}
 
 @media (max-width: 760px) {
   .hub {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
-      "jogo jogo" "escalacao tabela" "copa copa" "mercado elenco"
-      "financas marketing" "caixa estadio";
-  }
-  .hub.sem-copa {
-    grid-template-areas:
       "jogo jogo" "escalacao tabela" "mercado elenco" "financas marketing" "caixa estadio";
   }
-  .hub-jogo { min-height: 14rem; gap: 1rem; }
+  .hub-jogo { gap: 1rem; }
   .hub-card strong { font-size: 1.35rem; }
   .hub-confronto { flex-direction: column; align-items: flex-start; gap: .35rem; }
   .hub-confronto i { font-size: 1rem; padding-left: 1rem; }
@@ -1386,6 +1400,8 @@ body.com-lateral {
 body.com-lateral > section, body.com-lateral > #status, body.com-lateral > #erro { max-width: 1320px; }
 body.com-lateral > .topo { display: none; }
 body.com-lateral > section:first-of-type, body.com-lateral #rodada { padding-top: 1.25rem; }
+body.com-lateral { padding-bottom: 1.25rem; }
+body.com-lateral #rodada .hub { margin-bottom: 0; }
 
 .lateral {
   position: fixed; inset: 0 auto 0 0; z-index: 20; width: var(--lateral-w);
