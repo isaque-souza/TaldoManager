@@ -10,7 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, copa, estadio, fama, historico, livres, mercado_cpu, vontade
+from app.domain import caixa, calendario, copa, estadio, fama, historico, livres, mercado_cpu, vontade
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -206,6 +206,8 @@ def proxima_temporada(simulacao_id):
                 estado_json=json.dumps(snapshot_estado(campeonato)),
                 carreira_id=carreira_id,
                 temporada=temporada,
+                # a nova temporada começa na pré-temporada (v2.0)
+                data_atual=calendario.inicio(temporada).isoformat(),
                 ligas=(ligas_do_save(sim) if ligas_do_save(sim) != LIGA_PADRAO
                        else None),
                 # a meta nasce do elenco depois da virada (base, saídas...)

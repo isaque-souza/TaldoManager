@@ -1458,6 +1458,11 @@ body.com-lateral #rodada .hub { margin-bottom: 0; }
 
 /* ---------- faixa da rodada: rodada · confronto · meta · ação ---------- */
 .faixa-rodada { align-items: center; }
+.faixa-data { margin: 0; padding: .45rem .9rem; display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; font-size: .95rem; }
+.faixa-data:empty { display: none; }
+.faixa-data small { color: var(--texto-2); font-size: .82rem; }
+.hub-jogo > #r-dia { width: auto; margin: .5rem 0 0; padding: .45rem 1rem; font-size: .9rem; }
+#r-jogar small { font-size: .8rem; opacity: .85; }
 .faixa-rodada > hgroup { display: flex; align-items: stretch; margin: 0; align-self: stretch; }
 .faixa-rodada #rodada-titulo { font-size: 1.3rem; padding: .6rem 1.8rem .6rem 1rem; display: flex; align-items: center; }
 .faixa-rodada #rodada-confronto { font-size: 1.05rem; padding: .45rem .9rem; }

@@ -55,6 +55,8 @@ _COLUNAS_NOVAS = {
         ("atualizada_em", "TEXT"),
         ("meta_posicao", "INTEGER"),
         ("ranking_forca", "INTEGER"),
+        # calendário (v2.0)
+        ("data_atual", "TEXT"),
         # decisões da partida transmitida em curso (v1.2)
         ("ao_vivo_json", "TEXT"),
         # plano de jogo carregado para a próxima partida (v1.2)
@@ -140,6 +142,7 @@ _COLUNAS_NOVAS = {
     ),
     # oferta do clube do sonho do jogador (v1.9)
     "oferta_recebida": (("sonho", "INTEGER NOT NULL DEFAULT 0"),),
+    "mensagem": (("data", "TEXT"),),   # o dia no calendário (v2.0)
     "partida": (
         ("finalizacoes_gol_mandante", "INTEGER NOT NULL DEFAULT 0"),
         ("finalizacoes_gol_visitante", "INTEGER NOT NULL DEFAULT 0"),

@@ -17,7 +17,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, contrato, copa, disputa, emprestimo, fama, mercado, mercado_cpu, posicoes
+from app.domain import caixa, calendario, contrato, copa, disputa, emprestimo, fama, mercado, mercado_cpu, posicoes
 from app.domain import vontade
 from app.domain.temporada import (
     livres_para_json, restaurar_estado, snapshot_estado,
@@ -173,6 +173,8 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
                 rodada_atual=1,
                 estado_json=json.dumps(snapshot_estado(campeonato)),
                 ligas=ligas if tuple(ligas) != LIGA_PADRAO else None,
+                # o save começa no primeiro dia da pré-temporada (v2.0)
+                data_atual=calendario.inicio(1).isoformat(),
                 **meta,
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
@@ -516,6 +518,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
                 )
 
         with conn:
+            # jogar a rodada leva o calendário ao dia do jogo (v2.0)
+            simulacao_repo.definir_data(conn, simulacao_id, calendario.data_da_rodada(
+                sim["temporada"], rodada_jogada,
+            ))
             mapa = clube_repo.atualizar(conn, simulacao_id, cru["clubes"])
             mapa_jog = jogador_repo.atualizar(
                 conn, simulacao_id, mapa, cru["jogadores"]
