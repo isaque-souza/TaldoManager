@@ -5,7 +5,7 @@
 // (energia, lesão, suspensão).
 
 import { $, estado, navegarPara } from "./nucleo.js";
-import { dinheiro, reais, tabela } from "./tabelas.js";
+import { blocoResumo as bloco, dinheiro, reais, tabela } from "./tabelas.js";
 import { carregarProximaRodada } from "./rodada.js";
 import {
   acoesOferta, avisoMercado, blocoEmprestado, blocoEmprestar, carregarMercado, detalheOferta, ligarBotoesMercado,
@@ -32,9 +32,10 @@ const passaFiltro = (f, v) =>
   !v || (v === "venda" ? f.a_venda : v === "ofertas" ? f.ofertas > 0
     : v === "humor" ? f.humor !== "contente" : f.posicao === v);
 // aba: a aba da ficha (resumo, atributos, mercado), mantida ao trocar de
-// jogador; aberta: no celular, a ficha ocupa o lugar da lista
+// jogador; aberta: em tela estreita, a ficha ocupa o lugar da lista
 const filtro = { setor: "", selecionado: null, aba: "resumo", aberta: false };
-const celular = () => matchMedia("(max-width: 900px)").matches;
+// até 1100px (tablet e celular) a lista não cabe ao lado da ficha
+export const telaEstreita = () => matchMedia("(max-width: 1100px)").matches;
 let mercado = null;   // o último GET /mercado, para redesenhar sem pedir de novo
 
 export function renderElenco(m) {
@@ -246,9 +247,6 @@ function desenhar() {
   const sel = m.elenco.find((f) => f.jogador_id === filtro.selecionado);
 
   const acabando = m.elenco.filter((f) => !f.emprestimo && f.contrato_anos <= 1).length;
-  const bloco = (rotulo, valor, detalhe, classe = "") =>
-    `<div class="tile"><span class="tile-rotulo">${rotulo}</span>` +
-    `<span class="tile-valor ${classe}">${valor}</span><span class="tile-detalhe">${detalhe}</span></div>`;
 
   const box = $("el-central");
   box.innerHTML = `
@@ -274,8 +272,8 @@ function desenhar() {
   box.querySelectorAll("[data-sel]").forEach((b) =>
     b.addEventListener("click", () => {
       filtro.selecionado = Number(b.dataset.sel);
-      // no celular a ficha ocupa o lugar da lista
-      filtro.aberta = celular();
+      // em tela estreita a ficha ocupa o lugar da lista
+      filtro.aberta = telaEstreita();
       desenhar();
       if (filtro.aberta) box.scrollIntoView({ block: "start" });
     })

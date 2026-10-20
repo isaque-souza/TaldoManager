@@ -374,10 +374,11 @@ export async function abrirNegociacao(negId) {
     d.salario_atual != null ? `hoje ganha ${reais(d.salario_atual)} e não aceita menos` : null,
     `o mercado paga ${reais(d.salario_referencia)} a esse overall`,
     `ele espera ser ${PAPEL_ROTULO[d.papel_esperado].toLowerCase()} aqui: prometer mais baixa o pedido`,
-    d.clube ? "trocar de clube tem preço" : null,
-    d.clube_mais_fraco ? "e descer para um clube mais fraco, mais ainda" : null,
-  ].filter(Boolean).join(" · ");
-  box.innerHTML = `<article>
+    d.clube ? `trocar de clube tem preço${d.clube_mais_fraco ? "; descer para um mais fraco, mais ainda" : ""}` : null,
+    `${d.tentativas_restantes} tentativa${d.tentativas_restantes === 1 ? "" : "s"}: na última recusa ele desiste`,
+    "jogar a rodada sem contrato desfaz o acordo",
+  ].filter(Boolean).map((t) => `<li>${t}</li>`).join("");
+  box.innerHTML = `<article class="tr-contrato">
     <header><strong>Contrato com ${d.jogador}</strong> · ${d.funcao}, ${d.idade} anos, OVR ${d.overall} · ${origem}</header>
     ${contra ? `<p>${icone("acordo")} Ele pede ${reais(contra.salario)} por ${contra.anos} temp., ${MULTA_ROTULO[contra.multa]}, como ${PAPEL_ROTULO[contra.papel].toLowerCase()}.</p>` : ""}
     <div class="mercado-filtros">
@@ -388,11 +389,12 @@ export async function abrirNegociacao(negId) {
       <label>Temporadas <select id="n-anos">${anos}</select></label>
       <label>Multa <select id="n-multa">${multas}</select></label>
       <label>Papel <select id="n-papel">${papeis}</select></label>
-      <button class="transf" id="n-enviar">Propor contrato</button>
-      <button class="transf secondary outline" id="n-fechar">Fechar</button>
+      <div class="tr-contrato-botoes">
+        <button class="transf" id="n-enviar">Propor contrato</button>
+        <button class="transf secondary outline" id="n-fechar">Fechar</button>
+      </div>
     </div>
-    <small class="bloqueio">${dicas} · ${d.tentativas_restantes} tentativa${d.tentativas_restantes === 1 ? "" : "s"};
-      na última recusa ele desiste · jogar a rodada sem contrato desfaz o acordo</small>
+    <ul class="tr-dicas">${dicas}</ul>
   </article>`;
   $("n-fechar").addEventListener("click", () => { box.innerHTML = ""; delete box.dataset.neg; });
   const enviar = $("n-enviar");

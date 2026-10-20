@@ -6,7 +6,7 @@
 // jogador, na Central do Elenco.
 
 import { $, estado, navegarPara, pedir } from "./nucleo.js";
-import { dinheiro, reais, tabela } from "./tabelas.js";
+import { blocoResumo, dinheiro, reais, tabela } from "./tabelas.js";
 import {
   acaoCompra, acaoEmprestimo, acaoLivre, acoesOferta, detalheOferta, DURACAO_EMP, ligarBotoesMercado,
   postarMercado, STATUS_NEG,
@@ -18,6 +18,7 @@ import { barrasAtributos, destaques, linhaAtributos } from "./atributos.js";
 import { camisa } from "./identidade.js";
 import { nomeLiga } from "./ligas.js";
 import { posicaoDe, sigla } from "./posicoes.js";
+import { telaEstreita } from "./elenco.js";
 
 const ABAS = [
   ["buscar", "Buscar"], ["observados", "Observados"],
@@ -37,7 +38,12 @@ const TIPO_MOV = {
   emprestimo: ["chip-perto", "Empréstimo"], cedido: ["", "Cedido"],
 };
 
-const tela = { aba: "buscar", selecionado: null, temporada: "" };   // selecionado: o nome
+// selecionado: o nome; abaFicha: a aba da ficha (contratar, resumo,
+// atributos); aberta: em tela estreita, a ficha no lugar da lista;
+// filtros: no celular os filtros ficam recolhidos atrás de um botão
+const tela = {
+  aba: "buscar", selecionado: null, temporada: "", abaFicha: "contratar", aberta: false, filtros: false,
+};
 const busca = {
   origem: "clubes", liga: "", clube: "", posicao: "", idade: "", ovr: "", pot: "", valor: "",
 };
@@ -116,9 +122,11 @@ function variacao(atual, antes, fmt = (v) => v) {
 
 // ---------- a ficha (buscar e observados) ----------
 
+const fechar = `<button type="button" class="secondary outline el-fechar" data-voltar-local>← Lista</button>`;
+
 function ficha(f, o = null) {
   if (o && !f) {
-    return `<article class="el-ficha"><h3>${o.nome}</h3>
+    return `<article class="el-ficha">${fechar}<h3>${o.nome}</h3>
       <p class="vazio">${o.avisos.join(" · ")}. Estava no ${o.clube_inicial || "mercado de livres"}
         com OVR ${o.overall_inicial}.</p>
       <button type="button" class="secondary outline" data-obs="${o.nome}" data-obs-on="0">Tirar da lista</button>
@@ -126,7 +134,11 @@ function ficha(f, o = null) {
   }
   if (!f) return `<p class="vazio">Escolha um jogador na lista.</p>`;
   const livre = !f.clube;
-  const proposta = f.clube === mercado.clube_usuario ? "" : livre ? acaoLivre(f) : acaoCompra(f);
+  const nosso = f.clube === mercado.clube_usuario;
+  const abas = [["resumo", "Resumo"], ["atributos", "Atributos"]];
+  if (!nosso) abas.unshift(["contratar", "Contratar"]);
+  if (!abas.some(([v]) => v === tela.abaFicha)) tela.abaFicha = abas[0][0];
+  const conteudo = { contratar: abaContratar, resumo: abaResumo, atributos: (j) => barrasAtributos(j.atributos) };
   const desde = o
     ? `<p class="tr-desde">${icone("estrela")} Observado desde a ${o.desde_temporada}ª temporada, ` +
       `${o.desde_rodada === 1 ? "pré-temporada" : `rodada ${o.desde_rodada}`}: OVR ${o.overall_inicial} → ` +
@@ -134,31 +146,54 @@ function ficha(f, o = null) {
       `${o.avisos.length ? ` · ${o.avisos.join(" · ")}` : ""}</p>`
     : "";
   return `<article class="el-ficha">
-    <header class="el-ficha-topo">
-      ${livre ? `<span class="tr-sem-clube">${icone("assinou")}</span>` : camisa(f.clube, { numero: f.numero, tamanho: 56 })}
-      <div>
+    ${fechar}
+    <header class="el-ficha-topo el-cabeca">
+      ${livre ? `<span class="tr-sem-clube">${icone("assinou")}</span>` : camisa(f.clube, { numero: f.numero, tamanho: 48 })}
+      <div class="el-cabeca-nome">
         <h3>${f.nome}</h3>
-        <small>${f.funcao || f.posicao} · ${f.idade} anos · OVR <b>${f.overall}</b> · POT <b>${f.potencial}</b></small>
+        <small>${f.funcao || f.posicao} · ${f.idade} anos</small>
         <small class="tr-clube">${livre ? "Sem clube" : `${clubeFmt(f)} · ${nomeLiga(f.liga)}`}</small>
-        <div class="el-selos">${f.idolo ? seloIdolo() : ""}${f.observado ? ` <span class="chip">Observado</span>` : ""}</div>
+        <div class="el-selos">${f.idolo ? seloIdolo() : ""}</div>
       </div>
+      <dl class="el-notas">
+        <div><dt>OVR</dt><dd>${f.overall}</dd></div>
+        <div><dt>POT</dt><dd class="${f.potencial > f.overall ? "sobe" : ""}">${f.potencial}</dd></div>
+      </dl>
     </header>
     ${desde}
-    <div class="el-acoes">
-      <button type="button" class="secondary" data-obs="${f.nome}" data-obs-on="${f.observado ? 0 : 1}">
-        ${icone("estrela")} ${f.observado ? "Deixar de observar" : "Observar"}</button>
+    <div class="el-ficha-acoes">
+      <button type="button" class="secondary outline${f.observado ? " tr-observando" : ""}" data-obs="${f.nome}" data-obs-on="${f.observado ? 0 : 1}">
+        ${icone("estrela")} ${f.observado ? "Observando" : "Observar"}</button>
       ${f.jogador_id ? `<button type="button" class="secondary outline" data-pagina="${f.jogador_id}">Página completa</button>` : ""}
     </div>
-    <div class="tr-compra">${proposta}</div>
-    ${livre || f.clube === mercado.clube_usuario ? "" : acaoEmprestimo(f)}
-    <dl class="el-numeros">
+    <nav class="abas el-ficha-abas">${abas.map(([v, rotulo]) =>
+      `<button type="button" data-aba-ficha="${v}" class="${v === tela.abaFicha ? "ativa" : ""}">${rotulo}</button>`).join("")}</nav>
+    <div class="el-ficha-corpo">${conteudo[tela.abaFicha](f)}</div>
+  </article>`;
+}
+
+// a proposta ao clube (ou as luvas do livre) e o pedido de empréstimo
+function abaContratar(f) {
+  if (!f.clube) {
+    return `<h4 class="secao">${icone("assinou")} Sem clube: sem transferência</h4>
+      <p class="tr-nota">O clube paga só as luvas (${reais(f.luvas)}) e acerta o contrato com ele.</p>
+      <div class="tr-compra">${acaoLivre(f)}</div>`;
+  }
+  return `<h4 class="secao">${icone("troca")} Proposta ao ${f.clube}</h4>
+    <p class="tr-nota">Valor ${reais(f.valor_mercado)} · multa ${f.multa_rescisoria ? reais(f.multa_rescisoria) : "não tem"}` +
+    `${f.rival ? ` · ${icone("rival", "rival")} rival: tudo sai mais caro` : ""}</p>
+    <div class="tr-compra">${acaoCompra(f)}</div>
+    ${acaoEmprestimo(f)}`;
+}
+
+function abaResumo(f) {
+  const livre = !f.clube;
+  return `<dl class="el-numeros">
       <div><dt>Jogos</dt><dd>${f.partidas}</dd></div>
       <div><dt>Gols</dt><dd>${f.gols}</dd></div>
       <div><dt>Assist.</dt><dd>${f.assistencias}</dd></div>
       <div><dt>Nota</dt><dd>${f.partidas ? f.nota_media.toFixed(2) : "—"}</dd></div>
     </dl>
-    ${barrasAtributos(f.atributos)}
-    <h3 class="secao">Contrato</h3>
     <dl class="el-contrato">
       <div><dt>Salário/temp.</dt><dd>${reais(f.salario)}</dd></div>
       <div><dt>Mercado paga</dt><dd>${reais(f.salario_referencia)}</dd></div>
@@ -166,8 +201,7 @@ function ficha(f, o = null) {
       <div><dt>Multa</dt><dd>${f.multa_rescisoria ? reais(f.multa_rescisoria) : MULTA_ROTULO.sem}</dd></div>
       <div><dt>Valor</dt><dd>${reais(f.valor_mercado)}</dd></div>
       <div>${livre ? `<dt>Luvas</dt><dd>${reais(f.luvas)}</dd>` : `<dt>Fama</dt><dd>${f.fama}/100</dd>`}</div>
-    </dl>
-  </article>`;
+    </dl>`;
 }
 
 // ---------- abas ----------
@@ -184,6 +218,8 @@ function abaBuscar() {
     .sort((a, b) => a.localeCompare(b, "pt-BR"));
   const filtro = (campo, rotulo, lista) =>
     `<label>${rotulo} <select data-busca="${campo}">${opcoes(lista, busca[campo])}</select></label>`;
+  // "de outros clubes" é o normal: não conta como filtro ativo
+  const ativos = Object.entries(busca).filter(([k, v]) => v && !(k === "origem" && v === "clubes")).length;
 
   const lista = candidatos();
   if (!lista.some((f) => f.nome === tela.selecionado)) tela.selecionado = lista[0]?.nome ?? null;
@@ -207,15 +243,17 @@ function abaBuscar() {
        ["idade", "Idade"], ["overall", "OVR"], ["pot", "Pot."], ["valor", "Valor"], ["multa", "Multa"]];
 
   const explica = !m.janela_aberta ? "" : livres
-    ? `<p class="vazio">Jogadores <strong>sem clube</strong>: não há transferência. O clube paga só as
+    ? `<p>Jogadores <strong>sem clube</strong>: não há transferência. O clube paga só as
       <strong>luvas</strong> (um bônus de assinatura) e acerta o contrato com o jogador.</p>`
-    : `<p class="vazio">Contratar tem duas etapas. <strong>1.</strong> Proposta ao clube: ele aceita, pede mais
+    : `<p>Contratar tem duas etapas. <strong>1.</strong> Proposta ao clube: ele aceita, pede mais
       (contraproposta) ou recusa — até ${m.max_propostas} propostas por jogador em cada janela; cobrindo a
       <strong>multa rescisória</strong>, o clube não pode recusar, e do rival (${icone("rival")}) tudo sai mais caro.
       <strong>2.</strong> Contrato com o jogador (salário, anos, multa e papel), antes de jogar a rodada.</p>`;
 
-  return `<div class="mercado-filtros">
-      ${filtro("origem", "Jogadores", [["clubes", "de outros clubes"], ["livres", `sem clube (${m.livres.length})`]])}
+  return `<button type="button" class="secondary outline tr-abrir-filtros" data-filtros
+        aria-expanded="${tela.filtros}">${icone("lista")} Filtros${ativos ? ` (${ativos} ativo${ativos === 1 ? "" : "s"})` : ""}</button>
+    <div class="mercado-filtros tr-filtros${tela.filtros ? " aberto" : ""}">
+      ${filtro("origem", "Jogadores", [["clubes", "outros clubes"], ["livres", `sem clube (${m.livres.length})`]])}
       ${!livres && ligas.length > 1 ? filtro("liga", "Liga", [["", "as duas"], ...ligas.map((l) => [l, nomeLiga(l)])]) : ""}
       ${livres ? "" : filtro("clube", "Clube", [["", "todos"], ...clubes.map((c) => [c, c])])}
       ${filtro("posicao", "Posição", POSICOES)}
@@ -224,9 +262,9 @@ function abaBuscar() {
       ${filtro("pot", "Pot. mín.", NOTAS)}
       ${filtro("valor", "Valor", TETOS)}
     </div>
-    ${explica}
-    <div class="el-grade">
-      <div class="el-lista">
+    ${explica ? `<details class="tr-ajuda"><summary>Como contratar?</summary>${explica}</details>` : ""}
+    <div class="el-grade${tela.aberta ? " ficha-aberta" : ""}">
+      <div class="el-lista tr-lista ${livres ? "tr-livres" : "tr-clubes"}">
         ${tabela(linhas, colunas, (f) => (f.nome === tela.selecionado ? "sel" : ""))}
         ${lista.length > LIMITE_LINHAS
           ? `<p class="vazio">Mostrando os ${LIMITE_LINHAS} melhores de ${lista.length} — use os filtros.</p>`
@@ -262,10 +300,10 @@ function abaObservados() {
     };
   });
   const sel = lista.find((o) => o.nome === tela.selecionado);
-  return `<p>${lista.length} de ${observados.limite} na lista · a diferença ao lado do OVR e do valor é desde que
+  return `<p class="tr-nota">${lista.length} de ${observados.limite} na lista · a diferença ao lado do OVR e do valor é desde que
       ele entrou nela.</p>
-    <div class="el-grade">
-      <div class="el-lista">${tabela(linhas, [
+    <div class="el-grade${tela.aberta ? " ficha-aberta" : ""}">
+      <div class="el-lista tr-lista tr-obs">${tabela(linhas, [
         ["obs", ""], ["jogador_fmt", "Jogador"], ["onde", "Onde está"], ["pos", "Pos."], ["idade", "Idade"],
         ["ovr", "OVR"], ["valor", "Valor"], ["desde", "Desde"],
       ], (o) => (o.nome === tela.selecionado ? "sel" : ""))}</div>
@@ -286,6 +324,22 @@ function pendentes(m) {
   };
 }
 
+// um cartão de negociação: quem e com quem à esquerda, o valor e a situação
+// no meio, as ações à direita
+function cartao({ jogador, sub, valor, situacao, acoes = "", classe = "" }) {
+  return `<article class="tr-cartao ${classe}">
+    <div class="tr-cartao-quem"><b>${jogador}</b><small>${sub}</small></div>
+    <div class="tr-cartao-valor"><strong>${valor}</strong>${situacao}</div>
+    <div class="tr-cartao-acoes">${acoes}</div>
+  </article>`;
+}
+
+const STATUS_OFERTA = {
+  aberta: ["chip-perto", "Esperando você"], aceita: ["chip-batida", "Vendido"],
+  recusada: ["", "Recusada"], retirada: ["chip-longe", "Retirada"], expirada: ["", "Expirou"],
+};
+const chip = ([classe, rotulo]) => `<span class="chip ${classe}">${rotulo}</span>`;
+
 function abaNegociacoes() {
   const m = mercado;
   if (!m.janela_aberta) {
@@ -295,40 +349,42 @@ function abaNegociacoes() {
       tabelaEmprestimos(m);
   }
   const { propostas } = pendentes(m);
-  const STATUS_OFERTA = {
-    aberta: ["chip-perto", "Esperando você"], aceita: ["chip-batida", "Vendido"],
-    recusada: ["", "Recusada"], retirada: ["chip-longe", "Retirada"], expirada: ["", "Expirou"],
-  };
-  // as ofertas da CPU pelos seus jogadores (v1.7): as abertas primeiro
-  const ofertas = [...m.ofertas_recebidas].sort((a, b) =>
-    (a.status === "aberta" ? 0 : 1) - (b.status === "aberta" ? 0 : 1));
-  let html = `<h3 class="secao">Ofertas pelos seus jogadores</h3>`;
-  html += ofertas.length
-    ? tabela(ofertas.map((o) => ({
-      jogador: o.jogador + (o.espontanea ? ` <span class="chip chip-perto" title="Ele não estava à venda">Assédio</span>` : ""),
-      clube_fmt: `${o.rival ? `${icone("rival", "rival")} ` : ""}${o.clube}`,
-      valor_fmt: `${dinheiro(o.valor)}${o.pedido ? ` <small class="bloqueio">pedimos ${dinheiro(o.pedido)}</small>` : ""}`,
-      detalhe: `<small>${detalheOferta(o)}</small>`,
-      situacao: `<span class="chip ${STATUS_OFERTA[o.status][0]}">${STATUS_OFERTA[o.status][1]}</span>`,
-      acao: o.status === "aberta" ? acoesOferta(o) : "",
-    })), [["jogador", "Jogador"], ["clube_fmt", "Clube"], ["valor_fmt", "Oferta"], ["detalhe", ""],
-          ["situacao", "Situação"], ["acao", ""]])
-    : `<p class="vazio">Nenhuma oferta nesta janela. Ponha jogadores na lista de transferências (na Central
-      do Elenco) e os clubes olham na hora.</p>`;
+  const secao = (titulo, cartoes, vazio) =>
+    `<h3 class="secao">${titulo}</h3>` +
+    (cartoes.length ? `<div class="tr-cartoes">${cartoes.join("")}</div>` : `<p class="vazio">${vazio}</p>`);
 
-  html += `<h3 class="secao">Propostas aos clubes</h3>`;
-  html += propostas.length
-    ? tabela(propostas.map((f) => ({
-      jogador: f.nome,
-      clube_fmt: clubeFmt(f),
-      feitas: `${m.max_propostas - f.propostas_restantes} de ${m.max_propostas}`,
-      situacao: f.contraproposta
-        ? `<span class="chip chip-perto">Pede ${dinheiro(f.contraproposta)}</span>`
-        : `<span class="chip chip-longe">Recusada</span>`,
-      acao: acaoCompra(f),
-    })), [["jogador", "Jogador"], ["clube_fmt", "Clube"], ["feitas", "Propostas"],
-          ["situacao", "Resposta"], ["acao", ""]])
-    : `<p class="vazio">Nenhuma proposta recusada ou com contraproposta nesta janela.</p>`;
+  // as ofertas da CPU pelos seus jogadores (v1.7)
+  const ofertas = m.ofertas_recebidas.filter((o) => o.status === "aberta").map((o) => cartao({
+    jogador: o.jogador + (o.espontanea ? ` <span class="chip chip-perto" title="Ele não estava à venda">Assédio</span>` : ""),
+    sub: `${o.rival ? `${icone("rival", "rival")} ` : ""}${o.clube}` +
+      `${detalheOferta(o) ? ` · ${detalheOferta(o)}` : ""}`,
+    valor: reais(o.valor) + (o.pedido ? ` <small class="bloqueio">pedimos ${reais(o.pedido)}</small>` : ""),
+    situacao: chip(STATUS_OFERTA.aberta),
+    acoes: acoesOferta(o),
+    classe: "tr-cartao-oferta",
+  }));
+  let html = secao("Ofertas pelos seus jogadores", ofertas,
+    "Nenhuma oferta aberta. Ponha jogadores na lista de transferências (na Central do Elenco) e os clubes olham na hora.");
+
+  html += secao("Propostas aos clubes", propostas.map((f) => cartao({
+    jogador: f.nome,
+    sub: `${clubeFmt(f)} · ${m.max_propostas - f.propostas_restantes} de ${m.max_propostas} propostas`,
+    valor: f.contraproposta ? `pede ${reais(f.contraproposta)}` : reais(f.valor_mercado),
+    situacao: f.contraproposta ? chip(["chip-perto", "Contraproposta"]) : chip(["chip-longe", "Recusada"]),
+    acoes: acaoCompra(f),
+  })), "Nenhuma proposta recusada ou com contraproposta nesta janela.");
+
+  const abertas = m.negociacoes.filter((n) => n.status === "aberta");
+  html += secao("Contratos com o jogador", abertas.map((n) => cartao({
+    jogador: n.jogador,
+    sub: n.clube ? `acordo com o ${n.clube}` : "sem clube",
+    valor: `${reais(n.valor)}${n.clube ? "" : " <small>luvas</small>"}`,
+    situacao: chip(STATUS_NEG[n.status]),
+    acoes: `<button class="transf" data-acao="negociacao" data-neg="${n.negociacao_id}">${icone("contrato")} Acertar contrato</button>` +
+      `<small class="bloqueio">${n.tentativas_restantes} tentativa${n.tentativas_restantes === 1 ? "" : "s"}</small>`,
+    classe: "tr-cartao-contrato",
+  })), "Quando um clube aceita a proposta (ou um livre topa conversar), o contrato aparece aqui. " +
+    "O acordo cai se a rodada for jogada sem ele assinar.");
 
   // pedidos de empréstimo com contraproposta ou recusados (v1.7)
   const pedidos = m.disponiveis.filter((f) =>
@@ -345,21 +401,22 @@ function abaNegociacoes() {
     })), [["jogador", "Jogador"], ["clube_fmt", "Clube"], ["feitos", "Pedidos"], ["situacao", "Resposta"]]);
   }
 
-  html += `<h3 class="secao">Contratos com o jogador</h3>`;
-  html += m.negociacoes.length
-    ? tabela(m.negociacoes.map((n) => ({
-      jogador: n.jogador,
-      de: n.clube || "sem clube",
-      valor_fmt: n.clube ? dinheiro(n.valor) : `${dinheiro(n.valor)} (luvas)`,
-      status_fmt: `<span class="chip ${STATUS_NEG[n.status][0]}">${STATUS_NEG[n.status][1]}</span>`,
-      acao: n.status === "aberta"
-        ? `<button class="transf" data-acao="negociacao" data-neg="${n.negociacao_id}">Acertar contrato</button> ` +
-          `<small class="bloqueio">${n.tentativas_restantes} tentativa${n.tentativas_restantes === 1 ? "" : "s"}</small>`
-        : "",
-    })), [["jogador", "Jogador"], ["de", "De"], ["valor_fmt", "Valor acertado"],
-          ["status_fmt", "Situação"], ["acao", ""]])
-    : `<p class="vazio">Quando um clube aceita a proposta (ou um livre topa conversar), o contrato aparece
-      aqui. O acordo cai se a rodada for jogada sem ele assinar.</p>`;
+  // o que já acabou nesta janela: ofertas respondidas e contratos fechados
+  const encerradas = [
+    ...m.ofertas_recebidas.filter((o) => o.status !== "aberta").map((o) => ({
+      jogador: o.jogador, tipo: "Oferta recebida", clube: o.clube, valor: dinheiro(o.valor),
+      situacao: chip(STATUS_OFERTA[o.status]),
+    })),
+    ...m.negociacoes.filter((n) => n.status !== "aberta").map((n) => ({
+      jogador: n.jogador, tipo: "Contrato", clube: n.clube || "sem clube", valor: dinheiro(n.valor),
+      situacao: chip(STATUS_NEG[n.status]),
+    })),
+  ];
+  if (encerradas.length) {
+    html += `<h3 class="secao">Encerradas</h3>` + tabela(encerradas, [
+      ["jogador", "Jogador"], ["tipo", "Tipo"], ["clube", "Clube"], ["valor", "Valor"], ["situacao", "Situação"],
+    ]);
+  }
   return html + tabelaEmprestimos(m);
 }
 
@@ -431,10 +488,10 @@ async function carregarHistorico() {
 function desenhar() {
   const m = mercado;
   const prox = m.janelas.find((r) => r > m.rodada);
-  const status = m.janela_aberta
-    ? `<span class="luz-aberta"></span> Janela aberta`
-    : `${icone("cadeado")} Janela fechada — ${prox ? `reabre antes da rodada ${prox}` : "só na próxima temporada"}`;
-  const rivais = m.rivais.length ? ` · ${icone("rival")} rival: ${m.rivais.join(", ")}` : "";
+  const janela = m.janela_aberta
+    ? blocoResumo("Janela", `<span class="luz-aberta"></span> Aberta`, "propostas valem até jogar a rodada")
+    : blocoResumo("Janela", `${icone("cadeado")} Fechada`,
+      prox ? `reabre antes da rodada ${prox}` : "só na próxima temporada");
   const alerta = pendentes(m).alerta;
   const conta = {
     observados: `${observados.observados.length}`,
@@ -448,8 +505,13 @@ function desenhar() {
 
   const box = $("r-mercado");
   box.innerHTML = `
-    <p>${status} · caixa <strong class="${m.caixa < 0 ? "negativo" : ""}">${reais(m.caixa)}</strong> ·
-      elenco ${m.elenco.length} (mín. ${m.elenco_min}, máx. ${m.elenco_max})${rivais}</p>
+    <div class="tiles el-resumo">
+      ${janela}
+      ${blocoResumo("Caixa", reais(m.caixa), "para contratar", m.caixa < 0 ? "negativo" : "")}
+      ${blocoResumo("Elenco", `${m.elenco.length}<small>/${m.elenco_max}</small>`, `mínimo ${m.elenco_min}`)}
+      ${blocoResumo("Rival", m.rivais.length ? `${icone("rival")} ${m.rivais.join(", ")}` : "nenhum",
+        m.rivais.length ? "dele, tudo sai mais caro" : "sem clássico na liga")}
+    </div>
     <nav class="abas el-abas">${abas}</nav>
     ${corpo}`;
   ligar(box);
@@ -457,8 +519,20 @@ function desenhar() {
 
 function ligar(box) {
   box.querySelectorAll("[data-aba]").forEach((b) =>
-    b.addEventListener("click", () => { tela.aba = b.dataset.aba; desenhar(); })
+    b.addEventListener("click", () => { tela.aba = b.dataset.aba; tela.aberta = false; desenhar(); })
   );
+  box.querySelectorAll("[data-aba-ficha]").forEach((b) =>
+    b.addEventListener("click", () => { tela.abaFicha = b.dataset.abaFicha; desenhar(); })
+  );
+  box.querySelector("[data-filtros]")?.addEventListener("click", () => {
+    tela.filtros = !tela.filtros;
+    desenhar();
+  });
+  box.querySelector(".el-fechar")?.addEventListener("click", () => {
+    tela.aberta = false;
+    desenhar();
+    box.querySelector(`[data-sel="${CSS.escape(tela.selecionado)}"]`)?.scrollIntoView({ block: "center" });
+  });
   box.querySelectorAll("[data-busca]").forEach((s) =>
     s.addEventListener("change", () => {
       busca[s.dataset.busca] = s.value;
@@ -473,9 +547,10 @@ function ligar(box) {
   box.querySelectorAll("[data-sel]").forEach((b) =>
     b.addEventListener("click", () => {
       tela.selecionado = b.dataset.sel;
+      // em tela estreita a ficha ocupa o lugar da lista
+      tela.aberta = telaEstreita();
       desenhar();
-      // no celular a ficha fica embaixo da lista
-      $("r-mercado").querySelector(".el-ficha")?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      if (tela.aberta) $("r-mercado").scrollIntoView({ block: "start" });
     })
   );
   box.querySelectorAll("[data-obs]").forEach((b) =>

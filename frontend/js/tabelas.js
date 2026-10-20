@@ -91,3 +91,8 @@ export function reais(v) {
   const s = dinheiro(v);
   return s.startsWith("-") ? `-R$ ${s.slice(1)}` : `R$ ${s}`;
 }
+
+// um bloco do resumo das centrais (v1.8): rótulo, valor grande e detalhe
+export const blocoResumo = (rotulo, valor, detalhe, classe = "") =>
+  `<div class="tile"><span class="tile-rotulo">${rotulo}</span>` +
+  `<span class="tile-valor ${classe}">${valor}</span><span class="tile-detalhe">${detalhe}</span></div>`;
