@@ -9,9 +9,11 @@ Docs interativas:  http://localhost:8000/docs
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from app.api.contas import exigir_dono
+from app.api.contas import router as contas_router
 from app.api.routes import router
 from app.core.config import FRONTEND_DIR
 from app.db.conexao import init_db
@@ -41,7 +43,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.include_router(router)
+app.include_router(contas_router)
+# toda rota do jogo pede login e confere o dono do save (v2.1)
+app.include_router(router, dependencies=[Depends(exigir_dono)])
 
 # O frontend é servido pela própria API: mesmo endereço, então não
 # precisa de CORS. Montado por último, as rotas da API têm prioridade;

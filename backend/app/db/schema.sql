@@ -384,3 +384,18 @@ CREATE TABLE IF NOT EXISTS pedido_emprestimo (
     resposta      TEXT NOT NULL,      -- aceita | contraproposta | recusada
     taxa_pedida   INTEGER             -- só nas contrapropostas
 );
+
+-- Contas (v2.1): cada técnico vê e mexe só nos próprios saves.
+CREATE TABLE IF NOT EXISTS usuario (
+    id          INTEGER PRIMARY KEY,
+    nome        TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    senha_hash  TEXT NOT NULL,         -- scrypt: "sal$hash" em hex
+    criado_em   TEXT NOT NULL          -- ISO 8601 (UTC)
+);
+
+-- Sessões de login: o cookie leva o token; aqui fica só o sha256 dele.
+CREATE TABLE IF NOT EXISTS sessao (
+    token_hash  TEXT PRIMARY KEY,
+    usuario_id  INTEGER NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
+    expira_em   TEXT NOT NULL          -- ISO 8601 (UTC)
+);

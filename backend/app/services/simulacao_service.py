@@ -635,11 +635,12 @@ def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
         conn.close()
 
 
-def listar_simulacoes():
+def listar_simulacoes(usuario_id=None):
+    """`usuario_id`: só os saves desse técnico (None = todos)."""
     conn = conectar()
     try:
         sims = []
-        for r in simulacao_repo.listar(conn):
+        for r in simulacao_repo.listar(conn, usuario_id):
             cargo = cargo_da_temporada(conn, r)
             sims.append({
                 **dict(r),
