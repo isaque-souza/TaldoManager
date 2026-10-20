@@ -337,6 +337,30 @@ def assedio(jogador, oferta):
     )
 
 
+def oferta_do_sonho(jogador, oferta):
+    """O clube do sonho do jogador quer ele (v1.9)."""
+    return _mensagem(
+        "Diretor de futebol", f"O {oferta.clube.nome}, clube do sonho de {jogador.nome}",
+        f"O {oferta.clube.nome} ofereceu {_dinheiro(oferta.valor)} por "
+        f"{jogador.nome} ({_dinheiro(jogador.valor_mercado())} é o valor de "
+        "mercado dele). É o clube do sonho dele: se não vendermos — recusando, "
+        "pedindo demais ou deixando a oferta expirar —, ele vai ficar chateado.",
+    )
+
+
+def sonho_recusado(jogador, clube):
+    """O técnico não vendeu o jogador ao clube do sonho (v1.9)."""
+    humor = {
+        "incomodado": "Está incomodado",
+        "quer_sair": "Agora quer sair e foi para a lista de transferências",
+    }.get(jogador.humor, "Ficou chateado")
+    return _mensagem(
+        "Auxiliar técnico", f"{jogador.nome} queria o {clube}",
+        f"{jogador.nome} esperava ir para o {clube}, o clube do sonho dele. "
+        f"{humor}.",
+    )
+
+
 def oferta_retirada(jogador, clube, pedido):
     """O clube não topou a contraproposta do técnico (v1.7)."""
     return _mensagem(

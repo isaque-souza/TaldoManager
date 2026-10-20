@@ -255,3 +255,33 @@ def interesse(jogador, comprador, vendedor, clubes, prest=None):
     else:
         nivel = RESISTENTE
     return Interesse(pontos, nivel, round(fator, 2), textos, bloqueio)
+
+
+# ---------------------------------------------------------------------------
+# vontade no clube (passo 4)
+# ---------------------------------------------------------------------------
+
+def no_clube_do_sonho(jogador, clube):
+    return clube is not None and jogador.sonho == clube.nome
+
+
+def quer_encerrar_fora(jogador, clube):
+    """Veterano que sonha encerrar a carreira em outro clube."""
+    return (
+        jogador.idade >= IDADE_APOSENTADORIA
+        and jogador.sonho is not None
+        and not no_clube_do_sonho(jogador, clube)
+    )
+
+
+def recusou_o_sonho(jogador):
+    """O técnico não vendeu o jogador ao clube do sonho dele: o humor piora
+    um passo (quem passa a querer sair vai para a lista, como em
+    `papeis.checar`). Devolve True se piorou."""
+    i = papeis.HUMORES.index(jogador.humor)
+    if i == len(papeis.HUMORES) - 1:
+        return False
+    jogador.humor = papeis.HUMORES[i + 1]
+    if jogador.humor == papeis.QUER_SAIR and not jogador.emprestimo:
+        jogador.a_venda = True
+    return True

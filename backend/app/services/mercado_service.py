@@ -185,6 +185,7 @@ def _ficha(jogador, jogador_id, clube):
         "fama": jogador.fama,
         "idolo": fama.idolo(jogador),
         "a_venda": jogador.a_venda,
+        "sonho": jogador.sonho,             # clube do sonho (v1.9)
         # a temporada até aqui (ficha da Central do Elenco, v1.7)
         "numero": jogador.numero,
         "partidas": jogador.partidas,
@@ -568,6 +569,7 @@ def _oferta(ctx, r):
         "valor": r["valor"],
         "status": r["status"],
         "espontanea": bool(r["espontanea"]),
+        "sonho": bool(r["sonho"]),          # v1.9
         "pedido": r["pedido"],
         "rival": clube is not None and mercado.sao_rivais(ctx.alvo, clube),
         "seria_titular": None,
@@ -801,6 +803,16 @@ def aceitar_oferta(simulacao_id, oferta_id):
         conn.close()
 
 
+def _chateado_com_o_sonho(ctx, jogador, clube):
+    """O técnico não vendeu o jogador ao clube do sonho (v1.9): o humor
+    piora, o estado é regravado e ele avisa. Dentro da transação."""
+    if vontade.recusou_o_sonho(jogador):
+        ctx.gravar()
+    mensagem_repo.inserir(ctx.conn, ctx.sim["id"], ctx.rodada, [
+        caixa.sonho_recusado(jogador, clube),
+    ])
+
+
 def recusar_oferta(simulacao_id, oferta_id):
     """Recusa uma oferta da CPU. None se a simulação ou a oferta não
     existem."""
@@ -813,9 +825,11 @@ def recusar_oferta(simulacao_id, oferta_id):
         achada = _oferta_de_pe(ctx, oferta_id)
         if achada is None:
             return None
-        r, _, _ = achada
+        r, jogador, _ = achada
         with conn:
             oferta_repo.responder(conn, oferta_id, "recusada")
+            if r["sonho"]:
+                _chateado_com_o_sonho(ctx, jogador, r["clube"])
         return {"oferta_id": oferta_id, "jogador": r["jogador"], "clube": r["clube"],
                 "status": "recusada"}
     finally:
@@ -846,6 +860,8 @@ def contrapropor_oferta(simulacao_id, oferta_id, valor):
             mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
                 caixa.oferta_retirada(r["jogador"], r["clube"], valor),
             ])
+            if r["sonho"]:
+                _chateado_com_o_sonho(ctx, jogador, r["clube"])
         return {"resposta": "retirada", "transferencia": None, "caixa": ctx.alvo.dinheiro}
     finally:
         conn.close()

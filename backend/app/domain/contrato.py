@@ -19,6 +19,11 @@ FATOR_ULTIMO_ANO = 1.1     # contrato acabando: o jogador tem a faca e o queijo
 FAIXA_CONTRAPROPOSTA = 0.9
 MAX_TENTATIVAS = 3         # por jogador, por rodada
 
+# vontade na renovação (v1.9)
+FATOR_INCOMODADO = 1.10    # anda pouco satisfeito com o tempo de jogo
+FATOR_CLUBE_DO_SONHO = 0.90
+FATOR_ENCERRAR_FORA = 1.10 # veterano que sonha encerrar em outro clube
+
 DURACAO_MAX = 5
 DURACAO_MAX_VETERANO = 2
 IDADE_VETERANO = 32
@@ -84,8 +89,24 @@ def salario_pedido(jogador, clube, opcao_multa, papel=None):
 
     salario *= MULTAS[opcao_multa][1]
     salario *= fator_papel(jogador, papel)
+    for fator, _ in vontade_na_renovacao(jogador, clube):
+        salario *= fator
 
     return max(1_000, round(salario / 1_000) * 1_000)
+
+
+def vontade_na_renovacao(jogador, clube):
+    """(fator, motivo) do que a vontade dele pesa no salário (v1.9)."""
+    from app.domain import vontade   # aqui: vontade importa este módulo
+
+    pesos = []
+    if jogador.humor == papeis.INCOMODADO:
+        pesos.append((FATOR_INCOMODADO, "anda incomodado com o tempo de jogo"))
+    if vontade.no_clube_do_sonho(jogador, clube):
+        pesos.append((FATOR_CLUBE_DO_SONHO, "está no clube do sonho"))
+    elif vontade.quer_encerrar_fora(jogador, clube):
+        pesos.append((FATOR_ENCERRAR_FORA, f"pensa em encerrar a carreira no {jogador.sonho}"))
+    return pesos
 
 
 def validar(jogador, anos, opcao_multa, papel=None):
@@ -116,15 +137,18 @@ def avaliar_renovacao(jogador, clube, salario, anos, opcao_multa, papel=None):
             "recusada", pedido,
             f"{jogador.nome} quer sair do clube e não aceita renovar",
         )
+    # o que pesa contra, dito pelo jogador (v1.9)
+    contra = [m for f, m in vontade_na_renovacao(jogador, clube) if f > 1]
+    comentario = f" — ele {' e '.join(contra)}" if contra else ""
     if salario >= pedido:
         return Resposta("aceita", salario, f"{jogador.nome} aceitou renovar")
     if salario >= FAIXA_CONTRAPROPOSTA * pedido:
         return Resposta(
             "contraproposta", pedido,
-            f"{jogador.nome} topa renovar, mas quer um salário maior",
+            f"{jogador.nome} topa renovar, mas quer um salário maior{comentario}",
         )
     return Resposta(
-        "recusada", pedido, f"{jogador.nome} achou a proposta baixa demais",
+        "recusada", pedido, f"{jogador.nome} achou a proposta baixa demais{comentario}",
     )
 
 

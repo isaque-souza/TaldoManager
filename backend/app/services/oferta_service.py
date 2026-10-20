@@ -27,6 +27,7 @@ def _gravar(conn, simulacao_id, rodada, jogador_id, lista):
     for o in lista:
         oferta_repo.inserir(
             conn, simulacao_id, rodada, jogador_id, o.clube.nome, o.valor, o.teto, o.espontanea,
+            o.sonho,
         )
 
 
@@ -54,7 +55,15 @@ def abrir_janela(conn, simulacao_id, rodada, campeonato, clube_usuario, rodada_m
     if achado and ids[achado[0].nome] not in ja:
         jogador, oferta = achado
         _gravar(conn, simulacao_id, rodada, ids[jogador.nome], [oferta])
+        ja.add(ids[jogador.nome])
         mensagens.append(caixa.assedio(jogador, oferta))
+
+    # o clube do sonho de alguém vai atrás dele (v1.9)
+    achado = ofertas.do_sonho(alvo, campeonato.clubes, ofertas.semente(simulacao_id, rodada, "sonho"))
+    if achado and ids[achado[0].nome] not in ja:
+        jogador, oferta = achado
+        _gravar(conn, simulacao_id, rodada, ids[jogador.nome], [oferta])
+        mensagens.append(caixa.oferta_do_sonho(jogador, oferta))
 
     mensagem_repo.inserir(conn, simulacao_id, rodada_msg, mensagens)
 

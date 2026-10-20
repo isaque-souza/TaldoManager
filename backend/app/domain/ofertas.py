@@ -11,6 +11,11 @@ quem toma a iniciativa é a CPU:
   da lista) receber uma oferta alta de um clube mais forte — ou, se o
   técnico já tem o elenco mais forte, de um dos 3 que vêm logo abaixo.
 
+- SONHO (v1.9): em cada janela, uma chance de o clube do sonho de um dos
+  jogadores (um clube da CPU que precisa dele e pode pagar) fazer uma
+  oferta justa. Não vender — recusar, pedir demais ou deixar expirar —
+  deixa o jogador chateado (`vontade.recusou_o_sonho`).
+
 O técnico aceita, recusa ou contrapropõe uma vez: o clube aceita até um teto
 que ele não vê e, acima dele, retira a oferta. Por enquanto a CPU não paga
 a multa rescisória: toda oferta fica abaixo dela.
@@ -34,6 +39,8 @@ CRAQUES_ASSEDIADOS = 3           # o assédio mira um dos 3 melhores
 ASSEDIADORES_DO_MAIS_FORTE = 3   # sem clube mais forte: os 3 logo abaixo
 FAIXA_ASSEDIO = (1.2, 1.5)
 FAIXA_TETO = (1.05, 1.25)        # até quanto o clube aceita na contraproposta
+CHANCE_SONHO = 0.3               # por janela (v1.9)
+FAIXA_SONHO = (1.0, 1.3)         # o clube do sonho paga o justo
 
 
 @dataclass
@@ -42,6 +49,7 @@ class OfertaCpu:
     valor: int
     teto: int            # o máximo que ele aceita numa contraproposta
     espontanea: bool     # assédio (o jogador não estava à venda)
+    sonho: bool = False  # é o clube do sonho do jogador (v1.9)
 
 
 def semente(simulacao_id, rodada, nome=""):
@@ -65,12 +73,12 @@ def _precisa(clube, jogador):
     return na_posicao < 2 * mercado.vagas(clube, jogador.posicao)
 
 
-def _oferta(rng, clube, jogador, valor, espontanea):
+def _oferta(rng, clube, jogador, valor, espontanea, sonho=False):
     valor = _abaixo_da_multa(jogador, mercado._arredondar(valor))
     if valor <= 0 or mercado.motivo_entrada_bloqueada(clube, valor):
         return None
     teto = mercado._arredondar(valor * rng.uniform(*FAIXA_TETO))
-    return OfertaCpu(clube, valor, _abaixo_da_multa(jogador, teto), espontanea)
+    return OfertaCpu(clube, valor, _abaixo_da_multa(jogador, teto), espontanea, sonho)
 
 
 def para_venda(jogador, vendedor, clubes, rng):
@@ -125,6 +133,31 @@ def assedio(vendedor, clubes, rng):
     valor = jogador.valor_mercado() * rng.uniform(*FAIXA_ASSEDIO)
     for clube in maiores:
         oferta = _oferta(rng, clube, jogador, valor, espontanea=True)
+        if oferta:
+            return jogador, oferta
+    return None
+
+
+def do_sonho(vendedor, clubes, rng):
+    """(jogador, oferta) — o clube do sonho de um jogador do `vendedor` vai
+    atrás dele — ou None (sem sorte, ou ninguém sonha com um clube que
+    precisa dele e pode pagar)."""
+
+    if rng.random() >= CHANCE_SONHO:
+        return None
+    por_nome = {c.nome: c for c in clubes if c is not vendedor}
+    candidatos = sorted(
+        (j for j in vendedor.jogadores
+         if j.sonho in por_nome
+         and not mercado.motivo_saida_bloqueada(vendedor, j)
+         and _precisa(por_nome[j.sonho], j)),
+        key=lambda j: j.nome,   # ordem estável antes do sorteio
+    )
+    rng.shuffle(candidatos)
+    for jogador in candidatos:
+        valor = jogador.valor_mercado() * rng.uniform(*FAIXA_SONHO)
+        oferta = _oferta(rng, por_nome[jogador.sonho], jogador, valor,
+                         espontanea=not jogador.a_venda, sonho=True)
         if oferta:
             return jogador, oferta
     return None

@@ -10,6 +10,7 @@ promessa ou reserva — e cobra o tempo de jogo que ele promete:
 - a cada 5 rodadas, a partir da 10, o humor anda um passo: abaixo da meta,
   contente → incomodado → quer sair; na meta, volta um passo.
 - quem quer sair se põe na lista de transferências e não renova.
+- no clube do sonho (v1.9) ele tem paciência: o humor para em incomodado.
 - rebaixar o papel incomoda na hora; promover deixa contente.
 - papel e humor são do clube: quem sai começa do zero no próximo
   (`mercado.tirar_do_elenco`, `livres.ficar_livre`).
@@ -121,7 +122,9 @@ def checar(clube):
             continue
         i = HUMORES.index(jogador.humor)
         if fracao < META[jogador.papel][1]:
-            jogador.humor = HUMORES[min(i + 1, len(HUMORES) - 1)]
+            # no clube do sonho (v1.9), não chega a querer sair
+            teto = HUMORES.index(INCOMODADO) if jogador.sonho == clube.nome else len(HUMORES) - 1
+            jogador.humor = HUMORES[max(i, min(i + 1, teto))]
         else:
             jogador.humor = HUMORES[max(i - 1, 0)]
         # emprestado (v1.7): a lista é do clube de origem

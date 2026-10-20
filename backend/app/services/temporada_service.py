@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 
 from app.db.conexao import conectar
 from app.domain import caixa, contrato, copa, disputa, emprestimo, fama, mercado, mercado_cpu, posicoes
+from app.domain import vontade
 from app.domain.temporada import (
     livres_para_json, restaurar_estado, snapshot_estado,
 )
@@ -460,6 +461,13 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
         # disputas que o técnico não fechou a tempo (v1.9): o jogador assina
         # com o concorrente, como os negócios da CPU, depois da rodada
         perdidas = _resolver_disputas(conn, simulacao_id, rodada_jogada, campeonato)
+        # ignorar a oferta do clube do sonho também chateia (v1.9): antes de
+        # gravar o elenco, com o humor novo
+        for r in oferta_repo.listar_do_sonho_abertas(conn, simulacao_id, rodada_jogada):
+            jogador = next((j for j in alvo.jogadores if j.nome == r["jogador"]), None)
+            if jogador is not None:
+                vontade.recusou_o_sonho(jogador)
+                mensagens.append(caixa.sonho_recusado(jogador, r["clube"]))
 
         # a janela do meio da temporada abre: a CPU negocia entre si (v1.7)
         negocios_cpu = []

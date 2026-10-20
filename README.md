@@ -1019,7 +1019,21 @@ resultados de um mesmo seed).
         mensagem na caixa de entrada
       - A CPU também respeita a vontade nos negócios entre si: não compra
         quem "não vem" e o jogador resistente recusa metade das vezes
-* [ ] Vontade no clube (proposta do clube do sonho, desconto na renovação)
+* [x] Vontade no seu clube
+      - **Chamado do clube do sonho**: a cada janela, 30% de chance de o
+        clube do sonho de um dos seus jogadores (da CPU, que precisa dele e
+        pode pagar) oferecer o justo (1× a 1,3× o valor), mesmo sem ele
+        estar à venda. Não vender — recusar, pedir demais ou deixar expirar —
+        piora o humor dele um passo
+      - **No clube do sonho** (o sonho dele é o seu clube): o humor para em
+        "incomodado", nunca chega a querer sair, e ele renova 10% mais
+        barato; selo "Clube do sonho" no elenco
+      - **Renovação**: incomodado pede 10% a mais; o veterano (31+) que
+        sonha encerrar a carreira em outro clube também, e diz por quê
+      - **Encerrar a carreira**: o veterano que sai livre na virada vai para
+        o clube do sonho se ele tem vaga — "voltou para encerrar a carreira
+        no X, que o formou". Quem sai livre assina no máximo o que a idade
+        permite (2 temporadas aos 32+)
 * [ ] Equilíbrio e acabamento
 
 ---
@@ -1040,7 +1054,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 817 testes (domain, db, repositories, services, api)
+│   └── tests/              # 826 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

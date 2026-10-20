@@ -135,6 +135,8 @@ _COLUNAS_NOVAS = {
         ("concorrente_salario", "INTEGER"),
         ("concorrente_fator", "REAL"),
     ),
+    # oferta do clube do sonho do jogador (v1.9)
+    "oferta_recebida": (("sonho", "INTEGER NOT NULL DEFAULT 0"),),
     "partida": (
         ("finalizacoes_gol_mandante", "INTEGER NOT NULL DEFAULT 0"),
         ("finalizacoes_gol_visitante", "INTEGER NOT NULL DEFAULT 0"),
