@@ -934,7 +934,21 @@ mudar as regras:
       - No celular a ficha ocupa o lugar da lista, com "← Elenco" para
         voltar; o Voltar do navegador também fecha a ficha
         (`data-voltar-local`)
-* [ ] Central de Transferências
+* [x] Central de Transferências — no topo, blocos (janela, caixa,
+      elenco, rival) no lugar da linha de texto; os oito filtros numa faixa
+      só, com o rótulo em cima, e a explicação em "Como contratar?". A
+      ficha segue a do Elenco: OVR/POT grandes, Observar e Página completa
+      do mesmo tamanho e abas **Contratar** (proposta com o campo largo e o
+      Propor embaixo; empréstimo), Resumo e Atributos
+      - **Negociações em cartões**: cada oferta, proposta ou contrato com o
+        jogador num cartão (quem, valor e situação, ações à direita); o que
+        já acabou vai para a tabela "Encerradas"
+      - O contrato com o jogador tem rótulos em cima, borda verde e as
+        dicas em itens
+      - Até 1100px (tablet e celular), nas duas centrais, a ficha ocupa o
+        lugar da lista, com "← Lista"/"← Elenco". Em telas médias saem as
+        colunas Liga e Multa; no celular ficam ★, Jogador, Pos., OVR e
+        Valor, e os filtros ficam atrás do botão "Filtros (N ativos)"
 * [ ] Acabamento das outras telas
 
 ---
