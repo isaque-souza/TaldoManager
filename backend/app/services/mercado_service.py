@@ -25,7 +25,7 @@ import random
 
 from app.db.conexao import conectar
 from app.domain import caixa, contrato, emprestimo, fama, livres, mercado, ofertas as ofertas_cpu
-from app.domain import papeis, torcida
+from app.domain import papeis, torcida, vontade
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
@@ -338,11 +338,27 @@ class _Janela:
         self.aberta = mercado.janela_aberta(ctx.rodada)
         self.fechada = None if self.aberta else "Janela de transferências fechada"
         self.observados = {r["nome"] for r in observado_repo.listar(conn, sid)}
+        # o prestígio dos clubes, para o interesse de cada um em vir (v1.9)
+        self.prestigio = vontade.prestigio(ctx.campeonato.clubes)
         # pedidos de empréstimo desta janela (v1.7), por jogador
         self.pedidos = {}
         for p in emprestimo_repo.listar_pedidos_da_janela(conn, sid, ctx.rodada):
             self.pedidos.setdefault(p["jogador_id"], []).append(p)
         self.total_rodadas = len(ctx.campeonato.calendario)
+
+
+def _interesse(ctx, jogador, vendedor, prest=None):
+    """O interesse do jogador em vir para o clube do técnico (v1.9)."""
+    return vontade.interesse(jogador, ctx.alvo, vendedor, ctx.campeonato.clubes, prest)
+
+
+def _interesse_dict(interesse):
+    return {
+        "nivel": interesse.nivel,
+        "pontos": interesse.pontos,
+        "motivos": interesse.motivos,
+        "bloqueio": interesse.bloqueio,
+    }
 
 
 def _ficha_de_compra(ctx, janela, j, clube):
@@ -351,7 +367,10 @@ def _ficha_de_compra(ctx, janela, j, clube):
     alvo = ctx.alvo
     feitas = janela.propostas.get(janela.ids[j.nome], [])
     ultima = feitas[-1] if feitas else None
-    bloqueio = janela.fechada or mercado.motivo_saida_bloqueada(clube, j)
+    interesse = _interesse(ctx, j, clube, janela.prestigio)
+    bloqueio = (
+        janela.fechada or mercado.motivo_saida_bloqueada(clube, j) or interesse.bloqueio
+    )
     if bloqueio is None and len(alvo.jogadores) >= mercado.ELENCO_MAX:
         bloqueio = f"Seu elenco já tem {mercado.ELENCO_MAX} jogadores"
     return {
@@ -366,6 +385,7 @@ def _ficha_de_compra(ctx, janela, j, clube):
         ),
         "negociacao": janela.por_nome.get(j.nome),
         "observado": j.nome in janela.observados,
+        "interesse": _interesse_dict(interesse),
         "pedir_emprestado": _pedido_de_emprestimo(ctx, janela, j, clube),
     }
 
@@ -413,12 +433,17 @@ def _ficha_de_livre(ctx, janela, j):
     """Um jogador sem clube: não tem linha na tabela `jogador` (nem id), vai
     pelo nome."""
     luvas = mercado.luvas(j)
+    interesse = _interesse(ctx, j, None, janela.prestigio)
     return {
         **_ficha(j, None, None),
         "luvas": luvas,
-        "bloqueio": janela.fechada or mercado.motivo_entrada_bloqueada(ctx.alvo, luvas),
+        "bloqueio": (
+            janela.fechada or mercado.motivo_entrada_bloqueada(ctx.alvo, luvas)
+            or interesse.bloqueio
+        ),
         "negociacao": janela.por_nome.get(j.nome),
         "observado": j.nome in janela.observados,
+        "interesse": _interesse_dict(interesse),
     }
 
 
@@ -622,6 +647,7 @@ def propor(simulacao_id, jogador_id, valor):
         motivo = (
             mercado.motivo_saida_bloqueada(vendedor, jogador)
             or mercado.motivo_entrada_bloqueada(comprador, valor)
+            or _interesse(ctx, jogador, vendedor).bloqueio   # v1.9
         )
         if motivo:
             raise bloqueada(motivo)
@@ -818,7 +844,10 @@ def contratar_livre(simulacao_id, nome):
             return None
 
         clube = ctx.alvo
-        motivo = mercado.motivo_entrada_bloqueada(clube, mercado.luvas(jogador))
+        motivo = (
+            mercado.motivo_entrada_bloqueada(clube, mercado.luvas(jogador))
+            or _interesse(ctx, jogador, None).bloqueio   # v1.9
+        )
         if motivo:
             with conn:
                 mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [
@@ -950,9 +979,7 @@ def ver_negociacao(simulacao_id, negociacao_id):
                 if papeis.motivo_papel_bloqueado(jogador, p) is None
             ],
             "papel_esperado": contrato.papel_esperado(ctx.alvo, jogador),
-            "clube_mais_fraco": (
-                vendedor is not None and contrato.clube_mais_fraco(ctx.alvo, vendedor)
-            ),
+            "interesse": _interesse_dict(_interesse(ctx, jogador, vendedor)),
         }
     finally:
         conn.close()
@@ -1008,7 +1035,8 @@ def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=Non
             )
 
         resposta = contrato.avaliar_chegada(
-            jogador, comprador, vendedor, salario, anos, multa, papel
+            jogador, comprador, vendedor, salario, anos, multa, papel,
+            _interesse(ctx, jogador, vendedor),
         )
         restantes = max(0, contrato.MAX_TENTATIVAS - neg["tentativas"] - 1)
         if resposta.fechou:

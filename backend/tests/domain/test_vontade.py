@@ -168,3 +168,74 @@ def test_snapshot_guarda_a_vontade():
     restaurar_estado(novo, blob)
     copia = next(j for c in novo.clubes for j in c.jogadores if j.nome == jogador.nome)
     assert (copia.formador, copia.clube_historia, copia.sonho) == ("A", "B", "C")
+
+
+# --- interesse em vir (passo 2) ---------------------------------------------
+
+def test_reserva_de_clube_pequeno_quer_vir_para_o_grande():
+    liga = _liga()
+    inter, empoli = _clube_de(liga, "Inter"), _clube_de(liga, "Empoli")
+    reserva = Jogador("Reserva", 24, "Atacante", 64)   # pior que os titulares do Empoli
+    empoli.contratar_jogador(reserva)
+    reserva.overall = 90                               # mas seria titular na Inter
+    i = vontade.interesse(reserva, inter, empoli, liga.clubes)
+    assert i.nivel == vontade.QUER_VIR
+    assert i.fator < 1
+    assert "seria titular" in i.motivos
+
+
+def test_titular_de_clube_grande_resiste_a_descer():
+    liga = _liga()
+    inter, empoli = _clube_de(liga, "Inter"), _clube_de(liga, "Empoli")
+    craque = Jogador("Craque", 27, "Atacante", 88)
+    inter.contratar_jogador(craque)
+    i = vontade.interesse(craque, empoli, inter, liga.clubes)
+    assert i.nivel == vontade.RESISTENTE
+    assert i.fator > 1
+    assert i.motivos[0] == "o clube atual tem mais prestígio"   # o motivo mais forte primeiro
+
+
+def test_clube_do_sonho_pesa_e_quem_ja_esta_nele_nao_quer_sair():
+    liga = _liga()
+    milan, bahia = _clube_de(liga, "Milan"), _clube_de(liga, "Bahia")
+    j = Jogador("Sonhador", 25, "Atacante", 80)
+    bahia.contratar_jogador(j)
+    j.sonho = "Milan"
+    sonhando = vontade.interesse(j, milan, bahia, liga.clubes)
+    j.sonho = "Bahia"
+    em_casa = vontade.interesse(j, milan, bahia, liga.clubes)
+    assert sonhando.pontos - em_casa.pontos == 4
+    assert "é o clube do sonho" in sonhando.motivos
+
+
+def test_o_fator_tem_limites():
+    liga = _liga()
+    inter, empoli = _clube_de(liga, "Inter"), _clube_de(liga, "Empoli")
+    j = Jogador("Qualquer", 25, "Atacante", 80)
+    empoli.contratar_jogador(j)
+    for sonho in ("Inter", "Empoli"):
+        j.sonho = sonho
+        for comprador, vendedor in ((inter, empoli), (empoli, inter)):
+            fator = vontade.interesse(j, comprador, vendedor, liga.clubes).fator
+            assert vontade.FATOR_MIN <= fator <= vontade.FATOR_MAX
+
+
+def test_idolo_nao_joga_no_rival_nem_anos_depois():
+    liga = _liga()
+    inter, milan, city = (_clube_de(liga, n) for n in ("Inter", "Milan", "City"))
+    inter.rivais = {"Milan"}
+    j = Jogador("Lenda", 33, "Atacante", 82)
+    city.contratar_jogador(j)
+    j.clube_historia = "Inter"   # fez história na Inter e hoje está no City
+    i = vontade.interesse(j, milan, city, liga.clubes)
+    assert i.nivel == vontade.NAO_VEM
+    assert i.bloqueio == "Ídolo do Inter: não joga no rival"
+    # para quem não é rival, tudo normal
+    assert vontade.interesse(j, _clube_de(liga, "Bahia"), city, liga.clubes).bloqueio is None
+
+
+def test_livre_quer_voltar_a_jogar():
+    liga = _liga()
+    livre = Jogador("Livre", 28, "Atacante", 70)
+    i = vontade.interesse(livre, _clube_de(liga, "Bahia"), None, liga.clubes)
+    assert "quer voltar a jogar" in i.motivos

@@ -74,7 +74,10 @@ def _pedido(sid, neg_id, papel):
         ctx = mercado_service._carregar(conn, sid)
         neg = mercado_service._buscar_negociacao(ctx, neg_id)
         jogador, vendedor = mercado_service._partes(ctx, neg)
-        return contrato.salario_pedido_chegada(jogador, ctx.alvo, vendedor, "3x", papel)
+        interesse = mercado_service._interesse(ctx, jogador, vendedor)   # v1.9
+        return contrato.salario_pedido_chegada(
+            jogador, ctx.alvo, vendedor, "3x", papel, interesse,
+        )
     finally:
         conn.close()
 

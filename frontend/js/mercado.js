@@ -374,7 +374,9 @@ export async function abrirNegociacao(negId) {
     d.salario_atual != null ? `hoje ganha ${reais(d.salario_atual)} e não aceita menos` : null,
     `o mercado paga ${reais(d.salario_referencia)} a esse overall`,
     `ele espera ser ${PAPEL_ROTULO[d.papel_esperado].toLowerCase()} aqui: prometer mais baixa o pedido`,
-    d.clube ? `trocar de clube tem preço${d.clube_mais_fraco ? "; descer para um mais fraco, mais ainda" : ""}` : null,
+    d.clube ? "trocar de clube tem preço" : null,
+    d.interesse?.nivel === "quer_vir" ? `ele quer vir (${d.interesse.motivos.join(", ")}): pede menos` : null,
+    d.interesse?.nivel === "resistente" ? `ele resiste à mudança (${d.interesse.motivos.join(", ")}): pede mais` : null,
     `${d.tentativas_restantes} tentativa${d.tentativas_restantes === 1 ? "" : "s"}: na última recusa ele desiste`,
     "jogar a rodada sem contrato desfaz o acordo",
   ].filter(Boolean).map((t) => `<li>${t}</li>`).join("");

@@ -1,5 +1,7 @@
 """O contrato de quem chega (v1.7): a etapa 2 da negociação."""
 
+from types import SimpleNamespace
+
 import pytest
 
 from app.domain import contrato, papeis
@@ -16,6 +18,10 @@ def _clube(nome, overall):
     return clube
 
 
+def _Interesse(fator, nivel="aberto", bloqueio=None):
+    return SimpleNamespace(fator=fator, nivel=nivel, bloqueio=bloqueio)
+
+
 def _reforco(salario=None):
     return Jogador("Reforço", 25, "Atacante", 80, salario=salario)
 
@@ -28,15 +34,22 @@ def test_mudar_de_clube_custa_10_por_cento_e_livre_nao():
     assert mudanca == round(livre * contrato.FATOR_MUDANCA / 1_000) * 1_000
 
 
-def test_descer_para_clube_mais_fraco_custa_mais():
-    forte, fraco = _clube("A", 85), _clube("B", 70)
+def test_o_interesse_mexe_no_salario_pedido():
+    a, b = _clube("A", 85), _clube("B", 85)
     j = _reforco(salario=1)
-    subir = contrato.salario_pedido_chegada(j, forte, fraco, "3x")
-    descer = contrato.salario_pedido_chegada(j, fraco, forte, "3x")
-    assert contrato.clube_mais_fraco(fraco, forte)
-    assert not contrato.clube_mais_fraco(forte, fraco)
-    # no fraco ele ainda seria craque (pede mais por isso também)
-    assert descer > subir * contrato.FATOR_PRESTIGIO
+    neutro = contrato.salario_pedido_chegada(j, a, b, "3x")
+    animado = contrato.salario_pedido_chegada(j, a, b, "3x", interesse=_Interesse(0.85))
+    sem_vontade = contrato.salario_pedido_chegada(j, a, b, "3x", interesse=_Interesse(1.4))
+    assert animado < neutro < sem_vontade
+
+
+def test_nao_vem_nem_avalia_o_contrato():
+    a, b = _clube("A", 85), _clube("B", 85)
+    with pytest.raises(contrato.ContratoInvalido, match="rival"):
+        contrato.avaliar_chegada(
+            _reforco(), a, b, 10**9, 2, "3x", papeis.ROTACAO,
+            _Interesse(1.0, "nao_vem", "Ídolo do B: não joga no rival"),
+        )
 
 
 def test_nunca_aceita_ganhar_menos_do_que_ja_ganha():
@@ -81,5 +94,5 @@ def test_sugestao_parte_do_mercado_com_a_mudanca_e_nao_revela_o_resto():
     sugestao = contrato.salario_sugerido_chegada(j, a, b)
     ref = j.salario_referencia()
     assert sugestao == round(ref * contrato.FATOR_TITULAR * contrato.FATOR_MUDANCA / 1_000) * 1_000
-    # o pedido real (craque num clube mais fraco) fica acima
+    # o pedido real (craque no clube A) fica acima
     assert contrato.salario_pedido_chegada(j, a, b, "3x") > sugestao

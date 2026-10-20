@@ -14,6 +14,10 @@
   - a partir de 31, encerrar a carreira no clube formador ou no da história.
   É recalculado na virada de temporada (`virada`), não a cada rodada:
   comprar um reforço não muda o sonho de ninguém no meio da temporada.
+- INTERESSE em vir para um clube (`interesse`): prestígio, papel, sonho,
+  ídolo, rivalidade viram pontos; os pontos viram um fator no salário que
+  ele pede (`contrato.salario_pedido_chegada`). Bloqueia só o ídolo que
+  iria para o rival do clube onde fez história.
 
 Como a fama, tudo aqui é determinístico (crc32 do nome, nada de `random`):
 não mexe na sequência aleatória nem nos resultados de um mesmo seed.
@@ -21,8 +25,9 @@ não mexe na sequência aleatória nem nos resultados de um mesmo seed.
 
 import math
 import zlib
+from dataclasses import dataclass
 
-from app.domain import diretoria, fama
+from app.domain import contrato, diretoria, fama, mercado, papeis
 
 # prestígio: peso da força do elenco (o resto é a torcida)
 PESO_FORCA = 0.6
@@ -160,3 +165,93 @@ def virada(campeonato):
     prest = prestigio(campeonato.clubes)
     for jogador, _ in _todos(campeonato):
         jogador.sonho = sonho(jogador, campeonato.clubes, prest)
+
+
+# ---------------------------------------------------------------------------
+# interesse em vir (passo 2)
+# ---------------------------------------------------------------------------
+#
+# Uma pontuação do quanto o jogador quer vir para o `comprador`: prestígio
+# comparado com o clube atual, o papel que teria, o sonho, se é ídolo onde
+# está, rivalidade. Ela vira um fator no salário que ele pede (cada ponto,
+# 8%) e um selo na tela. Bloqueia só um caso: o clube da história dele é
+# rival do comprador ("um ídolo do Real não joga no Barça").
+
+PONTOS_POR_PRESTIGIO = 15   # cada 15 pontos de diferença vale 1 ponto
+LIMITE_PRESTIGIO = 3
+PRESTIGIO_LIVRE = 50        # quem está livre compara com um clube médio
+FATOR_POR_PONTO = 0.08
+FATOR_MIN, FATOR_MAX = 0.85, 1.5
+PONTOS_NEUTROS = 1          # "aberto" com 1 ponto pede o normal
+
+QUER_VIR, ABERTO, RESISTENTE, NAO_VEM = "quer_vir", "aberto", "resistente", "nao_vem"
+
+
+@dataclass
+class Interesse:
+    pontos: int
+    nivel: str
+    fator: float          # no salário pedido
+    motivos: list         # textos curtos, do mais forte ao mais fraco
+    bloqueio: str | None  # só com NAO_VEM
+
+
+def _rivais(a, b):
+    return b.nome in a.rivais or a.nome in b.rivais
+
+
+def motivo_nao_vem(jogador, comprador, clubes):
+    """Por que ele não joga no `comprador` de jeito nenhum (None = joga)."""
+    historia = next((c for c in clubes if c.nome == jogador.clube_historia), None)
+    if historia is not None and historia is not comprador and _rivais(historia, comprador):
+        return f"Ídolo do {historia.nome}: não joga no rival"
+    return None
+
+
+def interesse(jogador, comprador, vendedor, clubes, prest=None):
+    """O `Interesse` do jogador em sair do `vendedor` (None = está livre)
+    para o `comprador`. `prest`: o `prestigio(clubes)`, se já calculado."""
+    prest = prest if prest is not None else prestigio(clubes)
+    motivos = []   # (peso, texto)
+
+    atual = prest[vendedor.nome] if vendedor is not None else PRESTIGIO_LIVRE
+    diferenca = prest[comprador.nome] - atual
+    p_prestigio = max(-LIMITE_PRESTIGIO, min(LIMITE_PRESTIGIO, int(diferenca / PONTOS_POR_PRESTIGIO)))
+    if p_prestigio > 0:
+        motivos.append((p_prestigio, "clube de mais prestígio"))
+    elif p_prestigio < 0:
+        motivos.append((p_prestigio, "o clube atual tem mais prestígio"))
+
+    if mercado.seria_titular(comprador, jogador):
+        motivos.append((1, "seria titular"))
+    elif contrato.papel_esperado(comprador, jogador) == papeis.RESERVA:
+        motivos.append((-1, "seria reserva"))
+
+    if vendedor is None:
+        motivos.append((1, "quer voltar a jogar"))
+    else:
+        if not mercado.seria_titular(vendedor, jogador):
+            motivos.append((1, "está no banco onde está"))
+        if fama.idolo(jogador):
+            motivos.append((-1, f"é ídolo do {vendedor.nome}"))
+        if _rivais(vendedor, comprador):
+            motivos.append((-1, "seria ir para o rival"))
+        if jogador.sonho == vendedor.nome:
+            motivos.append((-2, "já está no clube do sonho"))
+    if jogador.sonho == comprador.nome:
+        motivos.append((2, "é o clube do sonho"))
+
+    pontos = sum(p for p, _ in motivos)
+    textos = [t for _, t in sorted(motivos, key=lambda m: -abs(m[0]))]
+    fator = max(FATOR_MIN, min(FATOR_MAX, 1 - FATOR_POR_PONTO * (pontos - PONTOS_NEUTROS)))
+
+    bloqueio = motivo_nao_vem(jogador, comprador, clubes)
+    if bloqueio:
+        nivel = NAO_VEM
+    elif pontos >= 3:
+        nivel = QUER_VIR
+    elif pontos >= 1:
+        nivel = ABERTO
+    else:
+        nivel = RESISTENTE
+    return Interesse(pontos, nivel, round(fator, 2), textos, bloqueio)

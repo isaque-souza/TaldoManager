@@ -102,9 +102,21 @@ function estrela(f) {
     `aria-pressed="${f.observado}">${icone("estrela")}</button>`;
 }
 
+// o interesse em vir (v1.9): "aberto" não ganha selo, para não poluir a lista
+const INTERESSE_ROTULO = {
+  quer_vir: "Quer vir", aberto: "Aberto", resistente: "Resistente", nao_vem: "Não vem",
+};
+
+function seloInteresse(i, sempre = false) {
+  if (!i || (i.nivel === "aberto" && !sempre)) return "";
+  const dica = i.bloqueio || i.motivos.join(" · ");
+  return `<span class="interesse ${i.nivel}" title="${dica}">` +
+    `${i.nivel === "nao_vem" ? `${icone("proibido")} ` : ""}${INTERESSE_ROTULO[i.nivel]}</span>`;
+}
+
 const nomeBotao = (f) =>
   `<button type="button" class="el-nome" data-sel="${f.nome}">${f.nome}</button>` +
-  (f.idolo ? ` ${seloIdolo()}` : "");
+  (f.idolo ? ` ${seloIdolo()}` : "") + (f.interesse ? ` ${seloInteresse(f.interesse)}` : "");
 
 const clubeFmt = (f) => f.clube
   ? `${f.rival ? `${icone("rival", "rival")} ` : ""}${f.clube}`
@@ -153,7 +165,7 @@ function ficha(f, o = null) {
         <h3>${f.nome}</h3>
         <small>${f.funcao || f.posicao} · ${f.idade} anos</small>
         <small class="tr-clube">${livre ? "Sem clube" : `${clubeFmt(f)} · ${nomeLiga(f.liga)}`}</small>
-        <div class="el-selos">${f.idolo ? seloIdolo() : ""}</div>
+        <div class="el-selos">${f.idolo ? seloIdolo() : ""}${seloInteresse(f.interesse, true)}</div>
       </div>
       <dl class="el-notas">
         <div><dt>OVR</dt><dd>${f.overall}</dd></div>
@@ -173,13 +185,22 @@ function ficha(f, o = null) {
 }
 
 // a proposta ao clube (ou as luvas do livre) e o pedido de empréstimo
+// por que ele quer (ou não) vir: o motivo mais forte primeiro
+function linhaInteresse(f) {
+  const i = f.interesse;
+  if (!i || i.bloqueio) return "";
+  return `<p class="tr-interesse">${seloInteresse(i, true)} ${i.motivos.join(" · ") || "nada pesa contra nem a favor"}</p>`;
+}
+
 function abaContratar(f) {
   if (!f.clube) {
     return `<h4 class="secao">${icone("assinou")} Sem clube: sem transferência</h4>
+      ${linhaInteresse(f)}
       <p class="tr-nota">O clube paga só as luvas (${reais(f.luvas)}) e acerta o contrato com ele.</p>
       <div class="tr-compra">${acaoLivre(f)}</div>`;
   }
   return `<h4 class="secao">${icone("troca")} Proposta ao ${f.clube}</h4>
+    ${linhaInteresse(f)}
     <p class="tr-nota">Valor ${reais(f.valor_mercado)} · multa ${f.multa_rescisoria ? reais(f.multa_rescisoria) : "não tem"}` +
     `${f.rival ? ` · ${icone("rival", "rival")} rival: tudo sai mais caro` : ""}</p>
     <div class="tr-compra">${acaoCompra(f)}</div>
