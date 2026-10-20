@@ -81,7 +81,7 @@ def gerar_jovem(clube, proibidos, rng):
     overall = max(OVERALL_MIN, overall)
     potencial = min(99, overall + rng.randint(*MARGEM_POTENCIAL))
     funcao = posicao_carente(clube, rng)
-    return Jogador(
+    jovem = Jogador(
         gerar_nome(proibidos, rng),
         rng.randint(IDADE_MIN, IDADE_MAX),
         posicoes.SETOR[funcao],
@@ -90,6 +90,8 @@ def gerar_jovem(clube, proibidos, rng):
         contrato_anos=mercado.CONTRATO_PADRAO_ANOS,
         funcao=funcao,
     )
+    jovem.formador = clube.nome   # cria da casa (v1.9)
+    return jovem
 
 
 def subir_jovens(campeonato, nomes_usados, rng):

@@ -118,6 +118,10 @@ _COLUNAS_NOVAS = {
         ("humor", "TEXT NOT NULL DEFAULT 'contente'"),
         ("titularidades", "INTEGER NOT NULL DEFAULT 0"),
         ("jogos_disponivel", "INTEGER NOT NULL DEFAULT 0"),
+        # vontade (v1.9): nomes de clubes; NULL em saves antigos
+        ("formador", "TEXT"),
+        ("clube_historia", "TEXT"),
+        ("sonho", "TEXT"),
     ),
     # onde o técnico pôs cada titular no plano (v1.3), JSON
     "plano": (("posicionamento", "TEXT"),),

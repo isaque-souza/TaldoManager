@@ -75,6 +75,10 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
         if final.get("fama") is not None:
             jogador.fama = final["fama"]
             jogador.temporadas_no_clube = final["temporadas_no_clube"]
+        # vontade (v1.9); antes dela (None), `vontade.completar` preenche
+        for campo in ("formador", "clube_historia", "sonho"):
+            if final.get(campo) is not None:
+                setattr(jogador, campo, final[campo])
         por_clube[final["clube"]].jogadores.append(jogador)
 
     # temporadas de antes da v1.1 não guardam número

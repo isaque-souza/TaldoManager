@@ -61,10 +61,20 @@ export async function abrirJogador(jogadorId) {
     j.fama != null ? bloco("Fama", `${j.fama}/100`) : "",
     j.fama != null ? bloco("No clube", `${casa} temp.`) : "",
   ].join("");
+  // de onde ele vem e para onde quer ir (v1.9); saves antigos vêm sem
+  const pais = j.formador_pais ? ` (${j.formador_pais})` : "";
+  const sonhoAqui = j.sonho === j.clube ? " · <em>está lá</em>" : "";
+  const carreira = [
+    j.formador ? `<li><span>Formado no</span> <strong>${j.formador}</strong>${pais}</li>` : "",
+    j.clube_historia ? `<li><span>Fez história no</span> <strong>${j.clube_historia}</strong></li>` : "",
+    j.sonho ? `<li><span>${j.sonho_encerrar ? "Quer encerrar a carreira no" : "Sonha jogar no"}</span> ` +
+      `<strong>${j.sonho}</strong>${sonhoAqui}</li>` : "",
+  ].join("");
   $("jogador-blocos").innerHTML = `
     <h3 class="secao">Temporada</h3>
     <dl class="jg-blocos">${temporada}</dl>
-    ${contrato ? `<h3 class="secao">Contrato</h3><dl class="jg-blocos">${contrato}</dl>` : ""}`;
+    ${contrato ? `<h3 class="secao">Contrato</h3><dl class="jg-blocos">${contrato}</dl>` : ""}
+    ${carreira ? `<h3 class="secao">Carreira</h3><ul class="jg-carreira">${carreira}</ul>` : ""}`;
 
   $("jogador-atributos").innerHTML = barrasAtributos(j.atributos);
 

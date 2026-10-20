@@ -110,6 +110,9 @@ CREATE TABLE IF NOT EXISTS jogador (
     humor           TEXT NOT NULL DEFAULT 'contente',
     titularidades   INTEGER NOT NULL DEFAULT 0,  -- jogos como titular (liga)
     jogos_disponivel INTEGER NOT NULL DEFAULT 0, -- jogos do clube em que podia jogar
+    formador        TEXT,                        -- clube formador (v1.9); NULL em saves antigos
+    clube_historia  TEXT,                        -- onde foi ídolo por último
+    sonho           TEXT,                        -- clube do sonho (muda na virada)
     -- dispensado no meio da temporada (v1.7): está nos livres, mas a linha
     -- fica (lances e atuações apontam para ela); o clube_id é o do clube
     -- por onde jogou

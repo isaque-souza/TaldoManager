@@ -11,11 +11,15 @@ CAMPOS = (
     "multa_rescisoria", "numero", "funcao", "secundarias",
     "fama", "temporadas_no_clube", "a_venda",
     "papel", "humor", "titularidades", "jogos_disponivel",
+    "formador", "clube_historia", "sonho",
 )
 
-# campos que dados de antes da v1.3 (posição) e da v1.4 (fama) não trazem
-# (ficam NULL)
-_OPCIONAIS = ("funcao", "secundarias", "fama", "temporadas_no_clube")
+# campos que dados de antes da v1.3 (posição), da v1.4 (fama) e da v1.9
+# (vontade) não trazem (ficam NULL)
+_OPCIONAIS = (
+    "funcao", "secundarias", "fama", "temporadas_no_clube",
+    "formador", "clube_historia", "sonho",
+)
 
 
 # v1.7: NOT NULL, então quem não traz fica com o padrão

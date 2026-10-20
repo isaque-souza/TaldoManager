@@ -1680,6 +1680,10 @@ input.campo-dinheiro {
 .jg-blocos { display: grid; grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr)); gap: .5rem; margin: 0 0 1rem; }
 .jg-blocos div { padding: .45rem .6rem; background: var(--superficie-2); border-radius: 4px; min-width: 0; }
 .jg-blocos dt { color: var(--texto-2); font-family: var(--fonte-tarja); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jg-carreira { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .35rem; }
+.jg-carreira li { margin: 0; padding: .45rem .6rem; background: var(--superficie-2); border-radius: 4px; }
+.jg-carreira span { color: var(--texto-2); }
+.jg-carreira em { color: var(--gramado-claro); font-style: normal; }
 .jg-blocos dd { margin: 0; font-family: var(--fonte-tarja); font-size: 1.25rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #jogador-log figure { overflow-x: auto; }
 @media (max-width: 900px) {
