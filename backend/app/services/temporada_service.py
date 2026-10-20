@@ -17,7 +17,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, copa, emprestimo, fama, mercado, posicoes
+from app.domain import caixa, copa, emprestimo, fama, mercado, mercado_cpu, posicoes
 from app.domain.temporada import (
     livres_para_json, restaurar_estado, snapshot_estado,
 )
@@ -111,6 +111,12 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
     simulacao_service._configurar_clube(alvo, tatica, formacao, xi_preferido)
 
     xi_ef = list(dict.fromkeys(xi_preferido)) if xi_preferido else None
+    # a meta nasce do elenco de antes da janela (como na temporada contínua)
+    meta = simulacao_service.meta_inicial(campeonato, clube_usuario)
+    # a janela da pré-temporada abre: a CPU negocia entre si (v1.7)
+    negocios_cpu = mercado_cpu.negociar(
+        campeonato.clubes, clube_usuario, mercado_cpu.semente(seed, 1, 1),
+    )
     cru = simulacao_service._serializar(
         campeonato, seed, clube_usuario, tatica, formacao, xi_ef
     )
@@ -134,11 +140,10 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
                 rodada_atual=1,
                 estado_json=json.dumps(snapshot_estado(campeonato)),
                 ligas=ligas if tuple(ligas) != LIGA_PADRAO else None,
-                **simulacao_service.meta_inicial(campeonato, clube_usuario),
+                **meta,
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
             jogador_repo.inserir(conn, sim_id, mapa, cru["jogadores"])
-            meta = simulacao_service.meta_inicial(campeonato, clube_usuario)
             if meta:
                 mensagem_repo.inserir(conn, sim_id, None, [caixa.meta_da_temporada(
                     clube_usuario, meta["meta_posicao"], meta["ranking_forca"],
@@ -146,7 +151,8 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
             mensagem_repo.inserir(conn, sim_id, None, [
                 copa_service.mensagem_de_inicio(campeonato, clube_usuario),
             ])
-            # a janela da pré-temporada abre: a CPU faz ofertas (v1.7)
+            # a janela da pré-temporada abre: a CPU negociou e faz ofertas (v1.7)
+            oferta_service.registrar_cpu(conn, sim_id, 1, negocios_cpu, mapa, alvo, None)
             oferta_service.abrir_janela(conn, sim_id, 1, campeonato, clube_usuario, None)
         return sim_id
     finally:
@@ -419,6 +425,15 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             if p["rodada"] == rodada_jogada
         ]
 
+        # a janela do meio da temporada abre: a CPU negocia entre si (v1.7)
+        negocios_cpu = []
+        if (campeonato.rodada <= len(campeonato.calendario)
+                and mercado.janela_aberta(campeonato.rodada)):
+            negocios_cpu = mercado_cpu.negociar(
+                campeonato.clubes, clube_usuario,
+                mercado_cpu.semente(seed, sim["temporada"], campeonato.rodada),
+            )
+
         cru = simulacao_service._serializar(
             campeonato, seed, clube_usuario,
             nova_tatica, nova_formacao, xi_ef,
@@ -465,6 +480,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             # tinha emprestado (v1.7): os lances dele são de lá
             for j, tomador, cedente in campeonato.devolvidos:
                 mapa_jog[(tomador.nome, j.nome)] = mapa_jog[(cedente.nome, j.nome)]
+            # e quem a CPU vendeu depois da rodada jogou por quem vendeu
+            for n in negocios_cpu:
+                chave = (n.comprador.nome, n.jogador.nome)
+                mapa_jog[(n.vendedor.nome, n.jogador.nome)] = mapa_jog[chave]
             partida_ids = partida_repo.inserir(conn, simulacao_id, mapa, novas)
             lance_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
             atuacao_repo.inserir(conn, partida_ids, mapa, mapa_jog, novas)
@@ -476,6 +495,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             mensagem_repo.inserir(conn, simulacao_id, rodada_jogada, mensagens)
             # a janela do meio da temporada abre: a CPU faz ofertas (v1.7)
             if not concluida and mercado.janela_aberta(campeonato.rodada):
+                oferta_service.registrar_cpu(
+                    conn, simulacao_id, campeonato.rodada, negocios_cpu, mapa, alvo,
+                    rodada_jogada,
+                )
                 oferta_service.abrir_janela(
                     conn, simulacao_id, campeonato.rodada, campeonato,
                     clube_usuario, rodada_jogada,

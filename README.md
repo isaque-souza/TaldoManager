@@ -148,7 +148,7 @@ Este projeto tem como objetivo estudar:
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 710 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 782 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -744,7 +744,7 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
 
 ---
 
-# 🚧 Central de Transferências (v1.7) — Em andamento
+# ✅ Central de Transferências (v1.7) — Concluída
 
 Mercado e elenco como no FIFA: uma central para decidir o que fazer com cada
 jogador e outra para buscar, negociar e acompanhar as negociações. As
@@ -869,7 +869,17 @@ etapas (o clube e depois o jogador):
         `POST /simulacoes/{id}/emprestimos/ceder`; `pedir_emprestado`,
         `emprestar` e `emprestimo` na ficha do mercado; `emprestimos` em
         `GET /mercado`
-* [ ] Clubes da CPU negociam entre si
+* [x] Clubes da CPU negociam entre si — quando a janela abre (pré-temporada
+      e depois da rodada 19), antes de você mexer, cada clube da CPU tem 35%
+      de chance de buscar **um** reforço: alguém pelo menos 2 de overall
+      acima do pior titular da posição, pelo preço que o vendedor pede e
+      sem passar de 40% do caixa. Ninguém vende o craque nem um ídolo,
+      rival não negocia com rival, emprestado não sai; até 10 negócios por
+      janela. O diretor de futebol conta na caixa de entrada (os da sua liga
+      primeiro, e avisa quando o rival se reforça); quem você observa e mudou
+      de clube aparece nos Observados. Sorteio próprio por save, temporada e
+      rodada; a temporada contínua faz os mesmos negócios
+      (`app/domain/mercado_cpu.py`)
 
 ---
 
@@ -889,7 +899,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 620 testes (domain, db, repositories, services, api)
+│   └── tests/              # 782 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

@@ -2,6 +2,7 @@ import pytest
 
 from app.db.conexao import conectar
 from app.services import carreira_service, simulacao_service, temporada_service
+from app.repositories import transferencia_repository as transferencia_repo
 from app.services.carreira_service import CarreiraInvalida
 from tests.negociar import fechar, oferecer
 
@@ -53,13 +54,24 @@ def test_temporada_2_zera_estatisticas_e_herda_o_caixa():
     assert all(c["jogos"] == 0 and c["pontos"] == 0 for c in t2["classificacao"])
     assert t2["artilharia"] == []
 
+    # na largada, só os negócios da pré-temporada entre a CPU (v1.7) mexem
+    # na receita: as vendas de cada clube
+    conn = conectar()
+    try:
+        vendas = {}
+        for r in transferencia_repo.listar_por_simulacao(conn, nova):
+            vendas[r["de_clube"]] = vendas.get(r["de_clube"], 0) + r["valor"]
+    finally:
+        conn.close()
+    assert vendas
+
     final = {f["clube"]: f for f in t1["financas"]}
     for f in t2["financas"]:
         assert f["caixa_inicial"] == final[f["clube"]]["caixa"]
-        assert f["receitas"] == 0
-        # a única despesa da largada é a obra que a CPU pagou na virada (v1.5)
-        assert f["caixa"] == f["caixa_inicial"] - f["despesas"]
-        assert f["saldo"] == -f["despesas"]
+        assert f["receitas"] == vendas.get(f["clube"], 0)
+        # despesas: a obra que a CPU pagou na virada (v1.5) e as compras
+        assert f["caixa"] == f["caixa_inicial"] + f["receitas"] - f["despesas"]
+        assert f["saldo"] == f["receitas"] - f["despesas"]
 
 
 def test_jogador_transferido_continua_no_clube_novo():

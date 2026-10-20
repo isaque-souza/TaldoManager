@@ -628,6 +628,26 @@ def obra_concluida(lugares, capacidade):
     )
 
 
+def mercado_da_cpu(negocios, liga, rivais=()):
+    """A janela abriu e os clubes da CPU negociaram entre si (v1.7).
+    `negocios`: [(jogador, overall, de, para, valor, liga_do_comprador)];
+    os da liga do técnico primeiro (e os do rival em destaque)."""
+    if not negocios:
+        return None
+    ordem = sorted(negocios, key=lambda n: (n[5] != liga, -n[4]))
+    itens = [
+        f"{nome} ({ovr}): {de} → {para}, {_dinheiro(valor)}"
+        + (" — o rival se reforçou" if para in rivais else "")
+        for nome, ovr, de, para, valor, _ in ordem[:8]
+    ]
+    resto = len(negocios) - len(itens)
+    return _mensagem(
+        "Diretor de futebol", "Movimentações do mercado",
+        "A janela abriu e os outros clubes já se mexeram: " + "; ".join(itens)
+        + (f". E mais {resto} negócio{'s' if resto > 1 else ''}." if resto else "."),
+    )
+
+
 def obras_na_liga(obras):
     """Virada (v1.5): os clubes da CPU que começaram a ampliar o estádio.
     `obras`: [(clube, lugares)]."""
