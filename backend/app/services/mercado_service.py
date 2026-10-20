@@ -25,7 +25,7 @@ import random
 
 from app.db.conexao import conectar
 from app.domain import caixa, contrato, disputa, emprestimo, fama, livres, mercado, ofertas as ofertas_cpu
-from app.domain import olheiro, papeis, torcida, vontade
+from app.domain import olheiro, papeis, relatorio, torcida, vontade
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
 from app.domain.temporada import restaurar_estado, snapshot_estado
@@ -37,6 +37,7 @@ from app.repositories import negociacao_repository as negociacao_repo
 from app.repositories import observado_repository as observado_repo
 from app.repositories import oferta_repository as oferta_repo
 from app.repositories import proposta_repository as proposta_repo
+from app.repositories import relatorio_repository as relatorio_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.repositories import transferencia_repository as transferencia_repo
 from app.services import oferta_service, simulacao_service
@@ -355,6 +356,8 @@ class _Janela:
         for p in emprestimo_repo.listar_pedidos_da_janela(conn, sid, ctx.rodada):
             self.pedidos.setdefault(p["jogador_id"], []).append(p)
         self.total_rodadas = len(ctx.campeonato.calendario)
+        # relatórios do olheiro (v2.0), por nome
+        self.relatorios = {r["nome"]: r for r in relatorio_repo.listar(conn, sid)}
 
 
 def _interesse(ctx, jogador, vendedor, prest=None):
@@ -388,6 +391,32 @@ def _interesse_dict(interesse):
     }
 
 
+def _relatorio(ctx, janela, j, vendedor, interesse):
+    """O relatório do olheiro sobre `j` (v2.0): None (não pedido), em
+    andamento ou pronto — com a situação de agora. `vendedor` None = livre."""
+    r = janela.relatorios.get(j.nome)
+    if r is None:
+        return None
+    if not r["pronto"]:
+        return {"status": "andamento", "pronto_em": r["pronto_em"]}
+    alvo = ctx.alvo
+    preco = mercado.preco_pedido(j, vendedor, alvo) if vendedor else mercado.luvas(j)
+    salario = contrato.salario_pedido_chegada(j, alvo, vendedor, "3x", interesse=interesse)
+    return {
+        "status": "pronto",
+        "pronto_em": r["pronto_em"],
+        **relatorio.montar(j, vendedor, alvo, interesse, preco, salario, alvo.nivel_olheiro),
+    }
+
+
+def _vontade_visivel(interesse, rel):
+    """Sem relatório pronto, a vontade fica escondida — menos o "não vem",
+    que bloqueia a proposta (v2.0)."""
+    if interesse.bloqueio or (rel and rel["status"] == "pronto"):
+        return _interesse_dict(interesse)
+    return None
+
+
 def _ficha_de_compra(ctx, janela, j, clube):
     """Um jogador de outro clube na lista de compra: o motivo de bloqueio e
     as propostas que ainda dá para fazer."""
@@ -400,6 +429,7 @@ def _ficha_de_compra(ctx, janela, j, clube):
     )
     if bloqueio is None and len(alvo.jogadores) >= mercado.ELENCO_MAX:
         bloqueio = f"Seu elenco já tem {mercado.ELENCO_MAX} jogadores"
+    rel = _relatorio(ctx, janela, j, clube, interesse)
     return {
         **_ficha(j, janela.ids[j.nome], clube),
         **_estimativa(ctx, j),
@@ -413,7 +443,8 @@ def _ficha_de_compra(ctx, janela, j, clube):
         ),
         "negociacao": janela.por_nome.get(j.nome),
         "observado": j.nome in janela.observados,
-        "interesse": _interesse_dict(interesse),
+        "interesse": _vontade_visivel(interesse, rel),
+        "relatorio": rel,
         "pedir_emprestado": _pedido_de_emprestimo(ctx, janela, j, clube),
     }
 
@@ -462,6 +493,7 @@ def _ficha_de_livre(ctx, janela, j):
     pelo nome."""
     luvas = mercado.luvas(j)
     interesse = _interesse(ctx, j, None, janela.prestigio)
+    rel = _relatorio(ctx, janela, j, None, interesse)
     return {
         **_ficha(j, None, None),
         **_estimativa(ctx, j),
@@ -472,7 +504,8 @@ def _ficha_de_livre(ctx, janela, j):
         ),
         "negociacao": janela.por_nome.get(j.nome),
         "observado": j.nome in janela.observados,
-        "interesse": _interesse_dict(interesse),
+        "interesse": _vontade_visivel(interesse, rel),
+        "relatorio": rel,
     }
 
 
@@ -552,7 +585,15 @@ def ver_mercado(simulacao_id, posicao=None, valor_max=None):
             "transferencias": _historico(conn, simulacao_id),
             "emprestimos": _emprestimos(ctx),
             "partes_salario": list(emprestimo.PARTES_SALARIO),
-            "olheiro": olheiro.resumo(alvo, ctx.rodada - 1, janela.total_rodadas),
+            "olheiro": {
+                **olheiro.resumo(alvo, ctx.rodada - 1, janela.total_rodadas),
+                # relatórios de contratação (v2.0)
+                "relatorios_em_andamento": sum(
+                    1 for r in janela.relatorios.values() if not r["pronto"]
+                ),
+                "relatorios_limite": relatorio.limite(alvo.nivel_olheiro),
+                "relatorio_dias": relatorio.DIAS[alvo.nivel_olheiro],
+            },
         }
     finally:
         conn.close()

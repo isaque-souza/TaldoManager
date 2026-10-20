@@ -9,6 +9,7 @@ rodada (`temporada_service.avancar`, que leva o calendário até ele).
 from app.db.conexao import conectar
 from app.domain import calendario, mercado
 from app.repositories import simulacao_repository as simulacao_repo
+from app.services import relatorio_service
 from app.services.temporada_service import TemporadaConcluida, exigir_sem_transmissao
 
 
@@ -53,7 +54,8 @@ def ver(simulacao_id):
 
 
 def _andar(simulacao_id, proximo):
-    """Grava o dia `proximo(hoje, temporada, rodada)` e devolve a visão."""
+    """Grava o dia `proximo(conn, simulacao_id, hoje, temporada, rodada)`, entrega o que
+    ficou pronto até ele e devolve a visão."""
     conn = conectar()
     try:
         sim = _carregar(conn, simulacao_id)
@@ -61,8 +63,11 @@ def _andar(simulacao_id, proximo):
             return None
         temporada, rodada = sim["temporada"], sim["rodada_atual"]
         hoje = calendario.data_atual(temporada, rodada, sim["data_atual"])
+        dia = proximo(conn, simulacao_id, hoje, temporada, rodada)
         with conn:
-            simulacao_repo.definir_data(conn, simulacao_id, proximo(hoje, temporada, rodada))
+            simulacao_repo.definir_data(conn, simulacao_id, dia)
+            # relatórios do olheiro que ficaram prontos no caminho (v2.0)
+            relatorio_service.entregar(conn, simulacao_id, dia, rodada)
         return visao(simulacao_repo.buscar(conn, simulacao_id))
     finally:
         conn.close()
@@ -70,12 +75,19 @@ def _andar(simulacao_id, proximo):
 
 def avancar_dia(simulacao_id):
     """Um dia a mais (sem passar do dia do jogo)."""
-    return _andar(simulacao_id, calendario.avancar_um_dia)
+    return _andar(
+        simulacao_id,
+        lambda conn, sid, hoje, temporada, rodada: calendario.avancar_um_dia(hoje, temporada, rodada),
+    )
+
+
+def _proximo_evento(conn, simulacao_id, hoje, temporada, rodada):
+    """O dia do próximo jogo, ou antes, o de um relatório que fica pronto."""
+    jogo = max(hoje, calendario.data_da_rodada(temporada, rodada))
+    relatorio = relatorio_service.proximo_pronto(conn, simulacao_id)
+    return min(jogo, relatorio) if relatorio and relatorio > hoje else jogo
 
 
 def continuar(simulacao_id):
-    """Até o próximo evento — por enquanto, o dia do próximo jogo."""
-    return _andar(
-        simulacao_id,
-        lambda hoje, temporada, rodada: max(hoje, calendario.data_da_rodada(temporada, rodada)),
-    )
+    """Até o próximo evento: o dia do jogo ou um relatório pronto."""
+    return _andar(simulacao_id, _proximo_evento)

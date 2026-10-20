@@ -52,6 +52,8 @@ from app.api.schemas import (
     Calendario,
     Olheiro,
     NovoNivelOlheiro,
+    NovoRelatorio,
+    RelatorioPedido,
     NovaCampanha,
     Transmissao,
     NovaListaTransferencia,
@@ -85,6 +87,7 @@ from app.services import (
     mercado_service,
     observado_service,
     olheiro_service,
+    relatorio_service,
     plano_service,
     simulacao_service,
     temporada_service,
@@ -94,6 +97,7 @@ from app.services.carreira_service import CarreiraInvalida
 from app.services.estadio_service import IngressoInvalido, ObraInvalida
 from app.services.marketing_service import CampanhaInvalida
 from app.services.olheiro_service import TrocaInvalida
+from app.services.relatorio_service import PedidoInvalido
 from app.services.plano_service import PlanoInvalido
 from app.services.temporada_service import PartidaEmAndamento, TemporadaConcluida
 from app.services.transmissao_service import TransmissaoInvalida
@@ -771,6 +775,24 @@ def ver_olheiro(simulacao_id: int):
     try:
         dados = olheiro_service.ver(simulacao_id)
     except TemporadaConcluida as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/relatorios",
+    response_model=RelatorioPedido,
+    status_code=201,
+    tags=["mercado"],
+)
+def pedir_relatorio(simulacao_id: int, pedido: NovoRelatorio):
+    """Pede ao olheiro o relatório de contratação de um observado (v2.0):
+    fica pronto em alguns dias, pelo nível dele."""
+    try:
+        dados = relatorio_service.pedir(simulacao_id, pedido.nome)
+    except (TemporadaConcluida, PartidaEmAndamento, PedidoInvalido) as e:
         raise _erro_de_mercado(e) from e
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")

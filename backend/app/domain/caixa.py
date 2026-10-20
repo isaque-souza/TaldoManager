@@ -361,6 +361,21 @@ def sonho_recusado(jogador, clube):
     )
 
 
+def relatorios_prontos(nomes):
+    """O olheiro terminou relatórios de contratação (v2.0)."""
+    if not nomes:
+        return None
+    if len(nomes) == 1:
+        assunto, corpo = (f"Relatório pronto: {nomes[0]}",
+                          f"Terminei o relatório sobre {nomes[0]}: preço, salário, "
+                          "se ele quer vir e a dificuldade estão na ficha dele.")
+    else:
+        lista = ", ".join(nomes[:-1]) + f" e {nomes[-1]}"
+        assunto, corpo = (f"{len(nomes)} relatórios prontos",
+                          f"Terminei os relatórios sobre {lista}: estão nas fichas deles.")
+    return _mensagem("Olheiro", assunto, corpo)
+
+
 def oferta_retirada(jogador, clube, pedido):
     """O clube não topou a contraproposta do técnico (v1.7)."""
     return _mensagem(

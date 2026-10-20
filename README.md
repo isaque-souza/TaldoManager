@@ -1081,7 +1081,19 @@ olheiros que buscam jovens pelo mundo. Regras em `app/domain/olheiro.py`
       - A data na faixa da rodada e nas mensagens da caixa de entrada
       - Por enquanto a fase da copa é jogada junto com a rodada do fim de
         semana (o motor não muda); ela só leva a data da quarta
-* [ ] Relatório de contratação (faixa de preço, interesse e dificuldade)
+* [x] Relatório de contratação
+      - Na ficha de um **observado**, "Pedir relatório ao olheiro": fica
+        pronto em 10, 8, 6, 4 ou 2 dias (pelo nível) e o olheiro faz até
+        tantos ao mesmo tempo quanto o nível dele. Pronto, chega uma
+        mensagem do olheiro, e o "Continuar" do calendário para nesse dia
+      - O relatório mostra a **faixa do preço** pedido (ou das luvas) e do
+        **salário** que ele pediria (±25% no nível 1 até ±5% no 5, sempre
+        contendo o valor certo), a **vontade** de vir com os motivos, a
+        **dificuldade** (Fácil, Média, Difícil ou Impossível, com o porquê)
+        e a chance de outro clube entrar na disputa
+      - **Sem relatório, a vontade fica escondida** ("?"); só o "não vem"
+        continua aparecendo, porque bloqueia a proposta
+      - Vale até o fim da temporada, sempre com a situação de agora
 * [ ] Módulo da base
 * [ ] Olheiros da base (regiões, duração e relatórios mensais)
 * [ ] Equilíbrio e acabamento
@@ -1104,7 +1116,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 866 testes (domain, db, repositories, services, api)
+│   └── tests/              # 881 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

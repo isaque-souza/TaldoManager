@@ -9,6 +9,7 @@ import { icone } from "./icones.js";
 import { dataCurta } from "./calendario.js";
 
 const ICONE_SETOR = {
+  "Olheiro": "alvo",
   "Diretor de futebol": "troca",
   "Departamento médico": "lesao",
   "Auxiliar técnico": "prancheta",
