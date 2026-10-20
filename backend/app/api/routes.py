@@ -1,6 +1,6 @@
 """Rotas HTTP da API do Taldo Manager."""
 
-from fastapi import APIRouter, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
 from app.api.schemas import (
     CessaoFeita,
@@ -93,7 +93,10 @@ from app.services import (
     temporada_service,
     transmissao_service,
 )
+from app.api.contas import id_do_usuario
+from app.services import conta_service
 from app.services.carreira_service import CarreiraInvalida
+from app.services.conta_service import LimiteDeJogos
 from app.services.estadio_service import IngressoInvalido, ObraInvalida
 from app.services.marketing_service import CampanhaInvalida
 from app.services.olheiro_service import TrocaInvalida
@@ -158,9 +161,9 @@ def simulacao_rapida(
 
 
 @router.get("/simulacoes", response_model=list[SimulacaoResumo], tags=["simulacoes"])
-def listar_simulacoes():
-    """Lista as simulações salvas, da jogada por último para a mais antiga."""
-    return simulacao_service.listar_simulacoes()
+def listar_simulacoes(usuario: int | None = Depends(id_do_usuario)):
+    """Lista os saves do técnico, do jogado por último para o mais antigo."""
+    return simulacao_service.listar_simulacoes(usuario)
 
 
 @router.post(
@@ -169,7 +172,10 @@ def listar_simulacoes():
     status_code=201,
     tags=["simulacoes"],
 )
-def criar_simulacao(cfg: NovaSimulacao | None = None):
+def criar_simulacao(
+    cfg: NovaSimulacao | None = None,
+    usuario: int | None = Depends(id_do_usuario),
+):
     """Roda uma temporada, salva no banco e devolve o id.
 
     Corpo JSON opcional: `seed`, `clube`, `tatica`, `formacao`, `xi`
@@ -179,6 +185,14 @@ def criar_simulacao(cfg: NovaSimulacao | None = None):
     rodada 1, exige `clube`) — avance com `POST /simulacoes/{id}/rodadas`.
     """
     cfg = cfg or NovaSimulacao()
+    try:
+        conta_service.exigir_vaga_de_jogo(usuario)
+    except LimiteDeJogos as e:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Limite de {conta_service.LIMITE_JOGOS} jogos por conta: "
+                   "apague um para começar outro",
+        ) from e
     # todo jogo novo tem todas as ligas (v1.6), na ordem de LIGAS
     ligas = tuple(l for l in TODAS_AS_LIGAS if l in (cfg.ligas or TODAS_AS_LIGAS))
     try:
@@ -202,6 +216,7 @@ def criar_simulacao(cfg: NovaSimulacao | None = None):
             )
     except ValueError as e:
         raise _erro_de_valor(e) from e
+    conta_service.definir_dono(sim_id, usuario)
     return {"id": sim_id}
 
 
@@ -856,7 +871,9 @@ def ampliar_estadio(simulacao_id: int, obra: NovaObra):
     status_code=201,
     tags=["carreira"],
 )
-def continuar_carreira(simulacao_id: int):
+def continuar_carreira(
+    simulacao_id: int, usuario: int | None = Depends(id_do_usuario)
+):
     """Modo carreira: cria a temporada seguinte de uma temporada concluída
     (com clube dirigido). Elencos, contratos e caixa são herdados; o resto
     começa do zero. Na primeira vez, a carreira é criada e esta temporada
@@ -867,6 +884,7 @@ def continuar_carreira(simulacao_id: int):
         raise HTTPException(status_code=409, detail=str(e)) from e
     if criada is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    conta_service.definir_dono(criada["simulacao_id"], usuario)
     return criada
 
 

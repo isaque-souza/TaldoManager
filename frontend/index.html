@@ -22,6 +22,10 @@
       <span class="marca-bug">TALDO</span>
       <span class="marca-nome">Manager</span>
     </div>
+    <div id="usuario" class="usuario" hidden>
+      <span id="usuario-nome" class="usuario-nome"></span>
+      <button id="sair" class="secondary outline" type="button">Sair</button>
+    </div>
     <button id="menu" class="secondary outline" hidden><span data-icone="casa"></span> Menu</button>
     <button id="abrir-lateral" class="secondary outline" aria-controls="lateral"
       aria-expanded="false" hidden><span data-icone="menu"></span> Seções</button>
@@ -42,6 +46,29 @@
 
   <p id="status" aria-busy="false"></p>
   <p id="erro"></p>
+
+  <!-- conta (v2.1): entrar ou criar conta antes de jogar -->
+  <section id="conta" hidden>
+    <h1 class="abertura">Assuma um clube e faça história na Liga Taldo.</h1>
+    <form id="conta-form" class="conta-cartao" novalidate>
+      <nav class="abas" id="conta-abas">
+        <button type="button" data-conta="entrar" class="ativa">Entrar</button>
+        <button type="button" data-conta="registrar">Criar conta</button>
+      </nav>
+      <label>Nome de técnico
+        <input id="conta-nome" name="nome" autocomplete="username" required
+          minlength="3" maxlength="20" autocapitalize="none" spellcheck="false" />
+      </label>
+      <label>Senha
+        <input id="conta-senha" name="senha" type="password" required minlength="6"
+          autocomplete="current-password" />
+      </label>
+      <small id="conta-dica" class="conta-dica" hidden>De 3 a 20 letras, números, ponto, hífen ou _.
+        Senha com pelo menos 6 caracteres — guarde bem: não tem como recuperar.</small>
+      <p id="conta-erro" class="conta-erro" role="alert"></p>
+      <button id="conta-enviar" type="submit">Entrar</button>
+    </form>
+  </section>
 
   <!-- tela inicial (v1.0): continuar / novo jogo / carregar -->
   <section id="inicio" hidden>

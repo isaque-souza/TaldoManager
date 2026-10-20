@@ -85,17 +85,28 @@ def definir_plano_em_uso(conn, simulacao_id, plano_id):
     )
 
 
-def listar(conn):
+def listar(conn, usuario_id=None):
+    """`usuario_id`: só os saves desse técnico (None = todos)."""
     # sem `estado_json` — o blob não interessa numa listagem
+    filtro = "" if usuario_id is None else "WHERE usuario_id = ?"
     return conn.execute(
-        """
+        f"""
         SELECT id, seed, criada_em, campeao, rodadas, clube_usuario,
                tatica, formacao, xi_preferido, estado, rodada_atual,
                carreira_id, temporada, atualizada_em, meta_posicao
         FROM simulacao
+        {filtro}
         ORDER BY atualizada_em DESC, id DESC
-        """
+        """,
+        () if usuario_id is None else (usuario_id,),
     ).fetchall()
+
+
+def definir_dono(conn, simulacao_id, usuario_id):
+    conn.execute(
+        "UPDATE simulacao SET usuario_id = ? WHERE id = ?",
+        (usuario_id, simulacao_id),
+    )
 
 
 def buscar(conn, simulacao_id):

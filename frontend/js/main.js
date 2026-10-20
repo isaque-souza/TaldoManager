@@ -6,6 +6,7 @@ import { novaTemporada } from "./escalacao.js";
 import { mostrarInicio } from "./inicio.js";
 import { carregarIdentidades } from "./identidade.js";
 import { preencherIcones } from "./icones.js";
+import { iniciarConta, mostrarUsuario, pedirLogin, quemSou } from "./conta.js";
 import "./navegacao.js";
 
 // modo dev (seed, simular tudo, lista crua de saves): só com ?dev no endereço
@@ -21,4 +22,13 @@ preencherIcones();
 
 // escudos e camisas antes da primeira tela (os cards do menu já usam)
 await carregarIdentidades();
-mostrarInicio();
+
+// contas (v2.1): sem login, a primeira tela é a de entrar
+iniciarConta(mostrarInicio);
+const usuario = await quemSou();
+if (usuario) {
+  mostrarUsuario(usuario);
+  mostrarInicio();
+} else {
+  pedirLogin();
+}

@@ -1100,6 +1100,38 @@ olheiros que buscam jovens pelo mundo. Regras em `app/domain/olheiro.py`
 
 ---
 
+# 🌐 Contas e jogo online (v2.1)
+
+Cada técnico tem a própria conta, e um não vê nem mexe nos saves do outro.
+
+* **Criar conta / Entrar** é a primeira tela; o cadastro é aberto (nome de
+  3 a 20 caracteres e senha de 6 ou mais). Não há como recuperar a senha
+* O login fica num cookie HttpOnly por 30 dias; o banco guarda a senha em
+  hash scrypt e só o sha256 do token da sessão
+* Todas as rotas do jogo pedem login, e as de um save
+  (`/simulacoes/{id}/...`) ou de uma carreira só respondem ao dono. Para
+  os outros técnicos, esse save responde 404, como se não existisse.
+  `/health` e `/clubes` (a seed) são públicas
+* Freios: 10 senhas erradas em 15 min ou 5 cadastros por hora travam o
+  IP; até 10 jogos por conta (uma carreira conta como um)
+* Saves de antes das contas ficam sem dono e invisíveis; para passar todos
+  para uma conta: `python -m scripts.dar_saves <nome>` (na pasta backend)
+
+Publicar numa VPS Ubuntu (ex.: Hostinger KVM 1), com HTTPS pelo Caddy e
+backup diário do banco:
+
+```bash
+# na VPS, uma vez (sem domínio, o endereço vira <ip>.sslip.io)
+curl -fsSL https://raw.githubusercontent.com/isaque-souza/TaldoManager/main/deploy/instalar.sh | sudo bash
+# a cada versão nova na main
+sudo bash /opt/taldo/deploy/atualizar.sh
+```
+
+O código fica em `/opt/taldo`, o banco e os backups em `/var/lib/taldo`
+e o serviço é `taldo` (`journalctl -u taldo -f` para ver o log).
+
+---
+
 # 📁 Estrutura
 
 ```text
@@ -1116,7 +1148,9 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 881 testes (domain, db, repositories, services, api)
+│   └── tests/              # 892 testes (domain, db, repositories, services, api)
+│
+├── deploy/                 # instalar/atualizar na VPS, systemd e Caddy
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

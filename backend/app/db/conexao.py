@@ -18,7 +18,9 @@ def conectar():
     if caminho != ":memory:":
         Path(caminho).parent.mkdir(parents=True, exist_ok=True)
 
-    conn = sqlite3.connect(caminho)
+    # timeout: com vários técnicos jogando ao mesmo tempo, uma escrita
+    # espera a outra terminar em vez de falhar com "database is locked"
+    conn = sqlite3.connect(caminho, timeout=15)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
@@ -69,6 +71,8 @@ _COLUNAS_NOVAS = {
         # a copa entre as ligas no fim da temporada (v1.6), JSON: o
         # estado_json é apagado ao concluir; NULL = sem copa
         ("copa_json", "TEXT"),
+        # dono do save (v2.1); NULL = save de antes das contas
+        ("usuario_id", "INTEGER REFERENCES usuario(id) ON DELETE CASCADE"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")

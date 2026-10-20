@@ -29,7 +29,7 @@ export const estado = {
 };
 export const pilhaVoltar = [];   // thunks para o botão "← Voltar"
 
-export const SECOES = ["inicio", "prejogo", "aovivo", "temporada", "rodada", "clube", "partida", "jogador", "carreira"];
+export const SECOES = ["conta", "inicio", "prejogo", "aovivo", "temporada", "rodada", "clube", "partida", "jogador", "carreira"];
 
 export function esconderTudo() {
   SECOES.forEach((id) => ($(id).hidden = true));
@@ -75,6 +75,7 @@ export function ocupado(ligado, texto = "") {
 export async function pedir(caminho, opcoes) {
   try {
     const resp = await fetch(api() + caminho, opcoes);
+    if (resp.status === 401) return null;   // conta.js já voltou para o login
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     return resp.status === 204 ? true : await resp.json();
   } catch (e) {
