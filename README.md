@@ -1066,6 +1066,21 @@ olheiros que buscam jovens pelo mundo. Regras em `app/domain/olheiro.py`
       - Aba **Olheiro** na Central de Transferências
       - O valor de mercado segue usando o potencial verdadeiro: preço alto
         ainda "denuncia" um jovem bom
+* [x] Calendário
+      - Datas no modelo europeu: a temporada 1 é a 2026/27; a rodada 1 é
+        no primeiro sábado a partir de 8 de agosto e a liga joga um fim de
+        semana por rodada (a 38ª cai em maio); a copa leva a data da quarta
+        depois da rodada dela
+      - **Pré-temporada** de 4 semanas antes da rodada 1 e **pausa do meio**
+        de 2 semanas antes da rodada 20 (a janela de janeiro): dias sem
+        jogo, com a janela aberta
+      - **Continuar** faz os dias passarem na tela até o próximo evento
+        (por enquanto, o dia do jogo) e **Avançar 1 dia** vai devagar; no
+        dia do jogo o botão volta a ser "Jogar a rodada". O motor e as
+        finanças seguem por rodada; jogar leva o calendário ao dia do jogo
+      - A data na faixa da rodada e nas mensagens da caixa de entrada
+      - Por enquanto a fase da copa é jogada junto com a rodada do fim de
+        semana (o motor não muda); ela só leva a data da quarta
 * [ ] Relatório de contratação (faixa de preço, interesse e dificuldade)
 * [ ] Módulo da base
 * [ ] Olheiros da base (regiões, duração e relatórios mensais)
@@ -1089,7 +1104,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 851 testes (domain, db, repositories, services, api)
+│   └── tests/              # 866 testes (domain, db, repositories, services, api)
 │
 ├── frontend/
 │   ├── index.html          # marcação das telas

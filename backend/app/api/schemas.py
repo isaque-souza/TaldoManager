@@ -354,6 +354,18 @@ class ElencoSituacao(BaseModel):
     rodadas_lesao: int = 0
 
 
+class Calendario(BaseModel):
+    """O dia do save (v2.0)."""
+    temporada: str                         # "2026/27"
+    data: str                              # ISO
+    data_fmt: str                          # "sáb, 8 ago 2026"
+    periodo: Literal["pre_temporada", "pausa", "temporada", "dia_de_jogo", "concluida"]
+    rodada: int | None
+    data_do_jogo: str | None
+    dias_ate_o_jogo: int | None
+    janela_aberta: bool
+
+
 class ProximaRodada(BaseModel):
     concluida: bool
     rodada: int | None
@@ -369,6 +381,7 @@ class ProximaRodada(BaseModel):
     elenco: list[ElencoSituacao]
     transmissao_ativa: bool = False   # v1.2: a partida já começou
     escalacao: "EscalacaoPreJogo | None" = None   # v1.2: como o motor vai escalar
+    calendario: Calendario | None = None   # v2.0
 
 
 class ResultadoRodada(BaseModel):
@@ -1399,6 +1412,7 @@ class Mensagem(BaseModel):
     corpo: str
     lida: bool
     criada_em: str
+    data: str | None = None      # o dia no calendário (v2.0), ISO
 
 
 class CaixaDeEntrada(BaseModel):

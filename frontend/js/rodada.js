@@ -18,6 +18,7 @@ import { carregarMarketing } from "./marketing.js";
 import { carregarEstadio } from "./estadio.js";
 import { carregarCopa, renderCopaDaRodada } from "./copa.js";
 import { porLiga } from "./ligas.js";
+import { avancarDia, continuar, ehDiaDeJogo, rotuloContinuar, textoCalendario } from "./calendario.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -201,12 +202,21 @@ export function renderRodadaAntes() {
     (lista) => tabela(lista, [["mandante", "Mandante"], ["visitante", "Visitante"]], marcarEu)
   );
 
+  // calendário (v2.0): fora do dia do jogo, o botão principal faz os dias
+  // passarem; "Avançar 1 dia" vai devagar
+  const cal = info.calendario;
+  $("rodada-data").innerHTML = cal ? textoCalendario(cal) : "";
+  const noDia = info.transmissao_ativa || ehDiaDeJogo(cal);
   $("r-jogar").innerHTML = info.transmissao_ativa
     ? `${icone("play")} Voltar para a partida`
-    : info.adversario
-      ? `${icone("play")} Jogar a rodada ${info.rodada}`
-      : `${icone("play")} Avançar a rodada ${info.rodada}`;
+    : !noDia
+      ? rotuloContinuar(cal)
+      : info.adversario
+        ? `${icone("play")} Jogar a rodada ${info.rodada}`
+        : `${icone("play")} Avançar a rodada ${info.rodada}`;
   $("r-jogar").disabled = false;
+  $("r-dia").hidden = noDia;
+  $("r-dia").innerHTML = `${icone("calendario")} Avançar 1 dia`;
 
   renderHub(info);
   renderSecaoRodada();
@@ -418,9 +428,13 @@ $("r-tatica").addEventListener("change", () => gravarEConferir());
 
 // "Jogar a rodada" passa pelo pré-jogo (v1.1), que chama jogarRodada; com a
 // partida já rolando (v1.2), volta direto para ela
-$("r-jogar").addEventListener("click", () =>
-  estado.rodadaInfo.transmissao_ativa ? jogarAoVivo() : abrirPreJogo()
-);
+$("r-jogar").addEventListener("click", () => {
+  const info = estado.rodadaInfo;
+  if (info.transmissao_ativa) return jogarAoVivo();
+  if (!ehDiaDeJogo(info.calendario)) return continuar(carregarProximaRodada);
+  return abrirPreJogo();
+});
+$("r-dia").addEventListener("click", () => avancarDia(carregarProximaRodada));
 $("r-proxima").addEventListener("click", avancarAposResultado);
 document.querySelectorAll("#r-hub [data-abrir]").forEach((b) =>
   b.addEventListener("click", () => {

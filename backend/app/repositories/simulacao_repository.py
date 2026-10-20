@@ -12,22 +12,23 @@ def criar(conn, seed, campeao, rodadas, criada_em,
           clube_usuario=None, tatica=None, formacao=None, xi_preferido=None,
           estado="concluida", rodada_atual=None, estado_json=None,
           carreira_id=None, temporada=1, meta_posicao=None, ranking_forca=None,
-          ligas=None):
-    """`ligas`: as ligas do save (v1.6), lista; None = só a Taldo."""
+          ligas=None, data_atual=None):
+    """`ligas`: as ligas do save (v1.6), lista; None = só a Taldo.
+    `data_atual`: o dia do calendário (v2.0), ISO."""
     cur = conn.execute(
         """
         INSERT INTO simulacao
             (seed, criada_em, campeao, rodadas,
              clube_usuario, tatica, formacao, xi_preferido,
              estado, rodada_atual, estado_json, carreira_id, temporada,
-             atualizada_em, meta_posicao, ranking_forca, ligas)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             atualizada_em, meta_posicao, ranking_forca, ligas, data_atual)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (seed, criada_em, campeao, rodadas,
          clube_usuario, tatica, formacao, xi_preferido,
          estado, rodada_atual, estado_json, carreira_id, temporada,
          criada_em, meta_posicao, ranking_forca,
-         json.dumps(list(ligas)) if ligas else None),
+         json.dumps(list(ligas)) if ligas else None, data_atual),
     )
     return cur.lastrowid
 
@@ -143,3 +144,11 @@ def antecessora(conn, simulacao_id):
         """,
         (simulacao_id,),
     ).fetchone()
+
+
+def definir_data(conn, simulacao_id, dia):
+    """O dia do calendário em que o save está (v2.0)."""
+    conn.execute(
+        "UPDATE simulacao SET data_atual = ? WHERE id = ?",
+        (dia.isoformat() if dia else None, simulacao_id),
+    )

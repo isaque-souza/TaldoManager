@@ -6,6 +6,7 @@
 
 import { $, estado, pedir } from "./nucleo.js";
 import { icone } from "./icones.js";
+import { dataCurta } from "./calendario.js";
 
 const ICONE_SETOR = {
   "Diretor de futebol": "troca",
@@ -29,7 +30,8 @@ export async function carregarCaixa() {
 }
 
 function quando(m) {
-  return m.rodada == null ? "Pré-temporada" : `Rodada ${m.rodada}`;
+  const rodada = m.rodada == null ? "Pré-temporada" : `Rodada ${m.rodada}`;
+  return m.data ? `${dataCurta(m.data)} · ${rodada}` : rodada;   // a data (v2.0)
 }
 
 function renderHubCaixa() {

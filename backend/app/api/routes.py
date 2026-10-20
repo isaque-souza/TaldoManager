@@ -49,6 +49,7 @@ from app.api.schemas import (
     Estadio,
     NovaObra,
     NovoIngresso,
+    Calendario,
     Olheiro,
     NovoNivelOlheiro,
     NovaCampanha,
@@ -72,6 +73,7 @@ from app.api.schemas import (
 from app.domain.contrato import ContratoInvalido
 from app.domain.mercado import TransferenciaInvalida
 from app.services import (
+    calendario_service,
     carreira_service,
     contrato_service,
     copa_service,
@@ -207,6 +209,53 @@ def criar_simulacao(cfg: NovaSimulacao | None = None):
 def obter_proxima_rodada(simulacao_id: int):
     """Confrontos da próxima rodada e a situação do elenco dirigido."""
     dados = temporada_service.proxima_rodada(simulacao_id)
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    dados["calendario"] = calendario_service.ver(simulacao_id)
+    return dados
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/calendario",
+    response_model=Calendario,
+    tags=["calendario"],
+)
+def ver_calendario(simulacao_id: int):
+    """O dia em que o save está (v2.0): a data, o período da temporada e
+    quantos dias faltam para o próximo jogo."""
+    dados = calendario_service.ver(simulacao_id)
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/calendario/dia",
+    response_model=Calendario,
+    tags=["calendario"],
+)
+def avancar_um_dia(simulacao_id: int):
+    """Avança um dia (sem passar do dia do jogo, que precisa ser jogado)."""
+    try:
+        dados = calendario_service.avancar_dia(simulacao_id)
+    except (TemporadaConcluida, PartidaEmAndamento) as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/calendario/continuar",
+    response_model=Calendario,
+    tags=["calendario"],
+)
+def continuar_calendario(simulacao_id: int):
+    """Avança até o próximo evento (por enquanto, o dia do próximo jogo)."""
+    try:
+        dados = calendario_service.continuar(simulacao_id)
+    except (TemporadaConcluida, PartidaEmAndamento) as e:
+        raise _erro_de_mercado(e) from e
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
     return dados

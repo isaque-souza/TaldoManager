@@ -33,7 +33,10 @@ CREATE TABLE IF NOT EXISTS simulacao (
     -- dirigido ou em saves antigos): posição mínima cobrada e o ranking
     -- de força do clube que a definiu
     meta_posicao   INTEGER,
-    ranking_forca  INTEGER
+    ranking_forca  INTEGER,
+    -- calendário (v2.0): o dia em que o save está (ISO); NULL = o dia da
+    -- próxima rodada (saves antigos)
+    data_atual     TEXT
 );
 
 CREATE TABLE IF NOT EXISTS clube (
@@ -296,7 +299,8 @@ CREATE TABLE IF NOT EXISTS mensagem (
     assunto       TEXT NOT NULL,
     corpo         TEXT NOT NULL,
     lida          INTEGER NOT NULL DEFAULT 0,
-    criada_em     TEXT NOT NULL                 -- ISO 8601 (UTC)
+    criada_em     TEXT NOT NULL,                -- ISO 8601 (UTC)
+    data          TEXT                          -- o dia no calendário (v2.0)
 );
 CREATE INDEX IF NOT EXISTS ix_mensagem_simulacao ON mensagem(simulacao_id);
 
