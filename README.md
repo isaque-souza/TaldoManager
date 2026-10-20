@@ -1131,7 +1131,7 @@ docker exec proxy-caddy-1 caddy reload --config /etc/caddy/Caddyfile
 bash ~/taldo/deploy/atualizar.sh
 ```
 
-O banco fica no volume `deploy_dados` (atualizar não apaga os saves);
+O banco fica no volume `taldo_dados` (atualizar não apaga os saves);
 `deploy/backup.sh` copia para `~/taldo-backups` (o cron roda todo dia) e
 `docker logs -f taldo-app` mostra o log.
 
