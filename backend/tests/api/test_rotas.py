@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+from app.domain import mercado
 from app.main import app
 from tests.negociar import oferecer
 
@@ -174,7 +175,8 @@ def test_detalhe_do_clube():
 
     corpo = resp.json()
     assert corpo["clube"]["nome"] == campeao["clube"]
-    assert len(corpo["elenco"]) == 23
+    # 23 no começo; os negócios entre clubes da CPU (v1.7) mexem nisso
+    assert mercado.ELENCO_MIN <= len(corpo["elenco"]) <= mercado.ELENCO_MAX
     assert len(corpo["jogos"]) == 38
 
     assert client.get(f"/simulacoes/{sid}/clubes/9999").status_code == 404

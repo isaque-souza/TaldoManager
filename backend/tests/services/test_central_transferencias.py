@@ -211,7 +211,9 @@ def test_historico_tem_compra_venda_livre_e_dispensa_com_o_saldo():
     assert h["total"] == {k: t[k] for k in ("gasto", "arrecadado", "saldo")}
 
     # a lista da temporada no mercado mostra os mesmos, com o tipo cru
-    tipos = [t["tipo"] for t in mercado_service.ver_mercado(sid)["transferencias"]]
+    # (sem os negócios entre clubes da CPU, v1.7)
+    tipos = [t["tipo"] for t in mercado_service.ver_mercado(sid)["transferencias"]
+             if CLUBE in (t["de_clube"], t["para_clube"])]
     assert tipos == ["transferencia", "dispensa", "livre", "transferencia"]
 
 

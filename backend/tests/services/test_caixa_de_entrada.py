@@ -44,8 +44,15 @@ def _pedido(sid, jogador_id):
         conn.close()
 
 
+# o resumo dos negócios entre clubes da CPU (v1.7) chega em toda janela
+NOTICIA_DO_MERCADO = "Movimentações do mercado"
+
+
 def _do_setor(sid, setor):
-    return [m for m in mensagem_service.listar(sid)["mensagens"] if m["setor"] == setor]
+    return [
+        m for m in mensagem_service.listar(sid)["mensagens"]
+        if m["setor"] == setor and m["assunto"] != NOTICIA_DO_MERCADO
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -55,8 +62,8 @@ def _do_setor(sid, setor):
 def test_temporada_nova_traz_a_meta_da_diretoria():
     sid = _iniciar()
     caixa_ = mensagem_service.listar(sid)
-    assert caixa_["nao_lidas"] == 1
-    (meta,) = caixa_["mensagens"]
+    assert caixa_["nao_lidas"] == 2
+    (meta,) = [m for m in caixa_["mensagens"] if m["assunto"] != NOTICIA_DO_MERCADO]
     assert meta["setor"] == "Diretoria" and meta["rodada"] is None
     assert "Real Taldo" in meta["corpo"]
 

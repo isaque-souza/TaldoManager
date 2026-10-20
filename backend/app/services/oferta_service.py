@@ -8,6 +8,10 @@ Dois gatilhos, sempre dentro da transação de quem chama:
 - `ao_listar`: o técnico pôs alguém na lista com a janela aberta — as ofertas
   por ele chegam na hora
 
+E os negócios entre os clubes da CPU (`app.domain.mercado_cpu`): quem chama
+os faz no estado vivo antes de gravá-lo; `registrar_cpu` grava o histórico
+e o aviso.
+
 Este módulo não importa outros serviços: o `temporada_service` o chama, e o
 `mercado_service` importa o `temporada_service`.
 """
@@ -16,6 +20,7 @@ from app.domain import caixa, ofertas
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import oferta_repository as oferta_repo
+from app.repositories import transferencia_repository as transferencia_repo
 
 
 def _gravar(conn, simulacao_id, rodada, jogador_id, lista):
@@ -69,3 +74,22 @@ def ao_listar(conn, simulacao_id, rodada, campeonato, alvo, jogador, jogador_id)
         caixa.ofertas_pela_lista([(jogador, lista)]),
     ])
     return lista
+
+
+def registrar_cpu(conn, simulacao_id, rodada, negocios, mapa_clubes, alvo, rodada_msg):
+    """Grava os negócios da CPU desta janela (já feitos no estado vivo e
+    gravados nos jogadores) no histórico de transferências e avisa o
+    técnico."""
+    if not negocios:
+        return
+    ids = {r["nome"]: r["id"] for r in jogador_repo.listar_por_simulacao(conn, simulacao_id)}
+    for n in negocios:
+        transferencia_repo.inserir(
+            conn, simulacao_id, rodada, ids[n.jogador.nome],
+            mapa_clubes[n.vendedor.nome], mapa_clubes[n.comprador.nome], n.valor,
+        )
+    mensagem_repo.inserir(conn, simulacao_id, rodada_msg, [caixa.mercado_da_cpu(
+        [(n.jogador.nome, n.jogador.overall, n.vendedor.nome, n.comprador.nome, n.valor,
+          n.comprador.liga) for n in negocios],
+        alvo.liga, alvo.rivais,
+    )])

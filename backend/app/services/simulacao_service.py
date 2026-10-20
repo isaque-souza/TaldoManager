@@ -16,7 +16,7 @@ from contextlib import redirect_stdout
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import atributos, copa, diretoria, fama, posicoes
+from app.domain import atributos, copa, diretoria, fama, mercado, mercado_cpu, posicoes
 from app.domain import historico as historico_carreira
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
@@ -28,6 +28,7 @@ from app.repositories import lance_repository as lance_repo
 from app.repositories import movimento_repository as movimento_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
+from app.repositories import transferencia_repository as transferencia_repo
 from scripts.data_loader import (
     LIGA_PADRAO, LIGAS, TODAS_AS_LIGAS, carregar_campeonato,
 )
@@ -140,9 +141,23 @@ def _rodar(seed, clube_usuario=None, tatica="equilibrado",
             raise ValueError(f"Clube desconhecido: {clube_usuario!r}")
         _configurar_clube(alvo, tatica, formacao, xi_preferido)
 
+    # as janelas: a CPU negocia entre si (v1.7) nos mesmos pontos do save
+    # rodada a rodada, para as duas temporadas saírem iguais
+    def janela():
+        negocios = mercado_cpu.negociar(
+            campeonato.clubes, clube_usuario,
+            mercado_cpu.semente(seed, 1, campeonato.rodada),
+        )
+        campeonato.negocios_cpu += [(campeonato.rodada, n) for n in negocios]
+
+    campeonato.negocios_cpu = []
+    janela()
     with redirect_stdout(io.StringIO()):
         while campeonato.rodada <= len(campeonato.calendario):
             campeonato.jogar_rodada(clube_usuario)
+            if (campeonato.rodada <= len(campeonato.calendario)
+                    and mercado.janela_aberta(campeonato.rodada)):
+                janela()
 
     return campeonato
 
@@ -537,9 +552,15 @@ def _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido,
         tatica_ef = formacao_ef = xi_ef = None
 
     campeonato = _rodar(seed, clube_usuario, tatica, formacao, xi_preferido, ligas)
-    return _serializar(
+    cru = _serializar(
         campeonato, seed, clube_usuario, tatica_ef, formacao_ef, xi_ef
     )
+    # (rodada, jogador, de, para, valor) dos negócios da CPU (v1.7)
+    cru["negocios_cpu"] = [
+        (rodada, n.jogador.nome, n.vendedor.nome, n.comprador.nome, n.valor)
+        for rodada, n in campeonato.negocios_cpu
+    ]
+    return cru
 
 
 def simular_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
@@ -581,6 +602,14 @@ def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
             mapa_jog = jogador_repo.inserir(conn, sim_id, mapa, cru["jogadores"])
+            # quem a CPU vendeu jogou as rodadas de antes pelo clube de lá
+            # (v1.7); de trás para a frente, para quem mudou duas vezes
+            for _, nome, de, para, _ in reversed(cru["negocios_cpu"]):
+                mapa_jog[(de, nome)] = mapa_jog[(para, nome)]
+            for rodada, nome, de, para, valor in cru["negocios_cpu"]:
+                transferencia_repo.inserir(
+                    conn, sim_id, rodada, mapa_jog[(para, nome)], mapa[de], mapa[para], valor,
+                )
             partida_ids = partida_repo.inserir(conn, sim_id, mapa, cru["partidas"])
             lance_repo.inserir(
                 conn, partida_ids, mapa, mapa_jog, cru["partidas"]

@@ -1,5 +1,6 @@
 import pytest
 
+from app.domain import mercado
 from app.services import simulacao_service
 from app.services.simulacao_service import simular_temporada
 
@@ -269,7 +270,8 @@ def test_detalhe_clube():
 
     det = simulacao_service.detalhe_clube(sid, campeao_id)
 
-    assert len(det["elenco"]) == 23
+    # 23 no começo; os negócios entre clubes da CPU (v1.7) mexem nisso
+    assert mercado.ELENCO_MIN <= len(det["elenco"]) <= mercado.ELENCO_MAX
     assert len(det["jogos"]) == 38
     assert det["clube"]["posicao_final"] == 1
     # pontos batem com o aproveitamento nos jogos

@@ -10,7 +10,7 @@ import random
 from datetime import datetime, timezone
 
 from app.db.conexao import conectar
-from app.domain import caixa, copa, estadio, fama, historico, livres
+from app.domain import caixa, copa, estadio, fama, historico, livres, mercado_cpu
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -177,6 +177,10 @@ def proxima_temporada(simulacao_id):
             xi = [n for n in xi if n in elenco] or None
             simulacao_service._configurar_clube(alvo, tatica, formacao, xi)
 
+            # a janela da pré-temporada abre: a CPU negocia entre si (v1.7)
+            negocios_cpu = mercado_cpu.negociar(
+                campeonato.clubes, clube_usuario, mercado_cpu.semente(seed, temporada, 1),
+            )
             cru = simulacao_service._serializar(
                 campeonato, seed, clube_usuario,
                 alvo.tatica, alvo.formacao, xi,
@@ -220,7 +224,8 @@ def proxima_temporada(simulacao_id):
                 ]),
                 copa_service.mensagem_de_inicio(campeonato, clube_usuario),
             ])
-            # a janela da pré-temporada abre: a CPU faz ofertas (v1.7)
+            # a janela da pré-temporada abre: a CPU negociou e faz ofertas (v1.7)
+            oferta_service.registrar_cpu(conn, nova_id, 1, negocios_cpu, mapa, alvo, None)
             oferta_service.abrir_janela(conn, nova_id, 1, campeonato, clube_usuario, None)
             # os planos de jogo seguem para a temporada nova (v1.2)
             plano_service.copiar(conn, simulacao_id, nova_id, alvo)
