@@ -51,8 +51,12 @@ def test_pedir_e_receber_quando_os_dias_passam():
     assert andamento["relatorio"] == {"status": "andamento", "pronto_em": r["pronto_em"]}
     assert andamento["interesse"] is None
 
-    # "Continuar" para no dia em que o relatório fica pronto
-    v = calendario_service.continuar(sid)
+    # dia a dia, a tela sabe quando chega a mensagem (e para o relógio)
+    pronto = date.fromisoformat(r["pronto_em"])
+    while (hoje := hoje + timedelta(days=1)) < pronto:
+        assert calendario_service.avancar_dia(sid)["chegou_mensagem"] is False
+    v = calendario_service.avancar_dia(sid)
+    assert v["chegou_mensagem"] is True
     assert v["data"] == r["pronto_em"] and v["periodo"] == "pre_temporada"
     ultima = mensagem_service.listar(sid)["mensagens"][0]
     assert ultima["setor"] == "Olheiro" and nome in ultima["assunto"]

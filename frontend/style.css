@@ -1781,3 +1781,6 @@ input.campo-dinheiro {
   .mj-time:first-child img, .mj-time:first-child svg { order: 0; }
   .mj-time b { font-size: .95rem; }
 }
+
+/* Continuar dia a dia (v2.0): o aviso de quando o tempo para sozinho */
+.r-pausa { margin: .25rem 0 0; font-size: .85rem; color: var(--pico-muted-color); }

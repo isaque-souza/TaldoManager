@@ -364,6 +364,7 @@ class Calendario(BaseModel):
     data_do_jogo: str | None
     dias_ate_o_jogo: int | None
     janela_aberta: bool
+    chegou_mensagem: bool = False          # ao avançar: entrou mensagem na caixa
 
 
 class ProximaRodada(BaseModel):
