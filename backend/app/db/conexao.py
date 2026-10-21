@@ -73,8 +73,8 @@ _COLUNAS_NOVAS = {
         ("copa_json", "TEXT"),
         # dono do save (v2.1); NULL = save de antes das contas
         ("usuario_id", "INTEGER REFERENCES usuario(id) ON DELETE CASCADE"),
-        # a peneira da base (v2.0) já aconteceu nesta temporada
-        ("peneira_feita", "INTEGER NOT NULL DEFAULT 0"),
+        # o dia da última peneira da base (v2.0) nesta temporada (ISO)
+        ("ultima_peneira", "TEXT"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")

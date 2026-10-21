@@ -531,9 +531,8 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             simulacao_repo.definir_data(conn, simulacao_id, dia_do_jogo)
             # relatórios do olheiro prontos até o dia do jogo (v2.0)
             relatorio_service.entregar(conn, simulacao_id, dia_do_jogo, rodada_jogada)
-            # a base (v2.0): a peneira, se o dia dela passou, e o treino da rodada
+            # a base (v2.0): uma rodada de treino para os jovens
             from app.services import base_service   # aqui: evita import circular
-            base_service.peneira(conn, sim, dia_do_jogo, rodada_jogada)
             base_service.treinar(conn, simulacao_id, alvo.nivel_base, len(campeonato.calendario))
             mapa = clube_repo.atualizar(conn, simulacao_id, cru["clubes"])
             mapa_jog = jogador_repo.atualizar(

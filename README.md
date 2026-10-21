@@ -1098,14 +1098,16 @@ olheiros que buscam jovens pelo mundo. Regras em `app/domain/olheiro.py`
       - O seu clube tem uma **Base** (seção na barra lateral), separada do
         elenco: até 15 jovens de 15 a 19 anos, que não jogam a liga nem
         recebem salário. Um jogo novo começa com 4
-      - **Peneira** em 1º de março: chegam de 3 a 6 jovens (os que não
-        cabem ficam de fora), com mensagem das Categorias de base; o
-        "Continuar" do calendário para nesse dia
+      - **Peneira**: o técnico faz quando quiser, uma a cada 90 dias no
+        calendário (3 ou 4 por temporada; a temporada nova começa com ela
+        liberada). O nível da base diz quantos jovens vêm (2–3 no nível 1
+        até 4–6 no 5) e quão bons; precisa de vaga na base. Chega mensagem
+        das Categorias de base
       - Os jovens **treinam a cada rodada jogada** e crescem até o
         potencial (a barrinha mostra quanto falta para o próximo ponto)
       - **Nível da base** 1 a 5 (grátis, R$ 500 mil, 1 mi, 2 mi e 4 mi por
         temporada): mais nível, mais crescimento (de 60% a 130% do de um
-        titular jovem) e peneiras com mais talento. Contrato como o do
+        titular jovem) e peneiras com mais jovens e mais talento. Contrato como o do
         olheiro (subir paga a diferença, descer não devolve; linha "Base"
         nas finanças)
       - **Promover** leva ao elenco com contrato de 3 temporadas (precisa
@@ -1174,7 +1176,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 910 testes (domain, db, repositories, services, api)
+│   └── tests/              # 912 testes (domain, db, repositories, services, api)
 │
 ├── deploy/                 # docker compose, atualizar e backup na VPS
 │

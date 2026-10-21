@@ -1,6 +1,6 @@
-"""Categorias de base do técnico (v2.0): a base inicial, a peneira no
-calendário, o treino a cada rodada, promover, dispensar, o nível e a
-virada."""
+"""Categorias de base do técnico (v2.0): a base inicial, a peneira que o
+técnico faz a cada 90 dias, o treino a cada rodada, promover, dispensar, o
+nível e a virada."""
 
 import random
 from datetime import date, timedelta
@@ -14,7 +14,7 @@ from app.domain.base import Jovem
 from app.main import app
 from app.repositories import jovem_base_repository as jovem_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import base_service, calendario_service, mensagem_service, temporada_service
+from app.services import base_service, mensagem_service, temporada_service
 from app.services.base_service import AcaoInvalida
 
 client = TestClient(app)
@@ -24,19 +24,11 @@ def _iniciar(seed=11):
     return temporada_service.iniciar(seed=seed, clube_usuario="Real Taldo")
 
 
-def _sim(sid):
-    conn = conectar()
-    try:
-        return simulacao_repo.buscar(conn, sid)
-    finally:
-        conn.close()
-
-
-def _peneira(sid, dia):
+def _no_dia(sid, dia):
     conn = conectar()
     try:
         with conn:
-            return base_service.peneira(conn, _sim(sid), dia, 1)
+            simulacao_repo.definir_data(conn, sid, dia)
     finally:
         conn.close()
 
@@ -66,12 +58,23 @@ def test_nivel_maior_cresce_mais():
     assert finais == sorted(finais) and finais[0] < finais[-1]
 
 
-def test_peneira_respeita_as_vagas():
+def test_peneira_respeita_as_vagas_e_o_nivel():
     rng = random.Random(1)
     for _ in range(50):
-        ficam, de_fora = base.quantos_na_peneira(13, rng)
-        assert ficam <= 2 and ficam + de_fora >= base.POR_PENEIRA[0]
-    assert base.quantos_na_peneira(base.VAGAS, rng)[0] == 0
+        ficam, de_fora = base.quantos_na_peneira(13, 5, rng)
+        assert ficam <= 2 and ficam + de_fora >= base.NIVEIS[5][4][0]
+    assert base.quantos_na_peneira(base.VAGAS, 1, rng)[0] == 0
+    for nivel, (*_, (minimo, maximo)) in base.NIVEIS.items():
+        for _ in range(30):
+            assert minimo <= base.quantos_na_peneira(0, nivel, rng)[0] <= maximo
+
+
+def test_peneira_bloqueada_ate_passarem_90_dias_ou_com_a_base_cheia():
+    hoje = date(2026, 9, 1)
+    assert base.motivo_peneira_bloqueada(None, hoje, 0) is None
+    assert "89 dias" in base.motivo_peneira_bloqueada(date(2026, 8, 31), hoje, 0)
+    assert base.motivo_peneira_bloqueada(hoje - timedelta(days=90), hoje, 0) is None
+    assert "cheia" in base.motivo_peneira_bloqueada(None, hoje, base.VAGAS)
 
 
 def test_clube_do_tecnico_so_ganha_jovens_gerados_abaixo_do_minimo():
@@ -93,58 +96,73 @@ def test_ultimo_ano_e_envelhecer():
 
 # --- serviço ---
 
-def test_jogo_novo_comeca_com_a_base_inicial():
+def test_jogo_novo_comeca_com_a_base_inicial_e_a_peneira_liberada():
     dados = base_service.ver(_iniciar())
     assert len(dados["jovens"]) == base.JOVENS_INICIAIS
     assert all(base.IDADE_INICIAL[0] <= j["idade"] <= base.IDADE_INICIAL[1] for j in dados["jovens"])
-    assert dados["nivel"] == 1 and dados["peneira"]["feita"] is False
-    assert dados["peneira"]["data"] == "2027-03-01"
+    assert dados["nivel"] == 1
+    assert dados["peneira"]["bloqueio"] is None and dados["peneira"]["liberada_em"] is None
+    assert dados["peneira"]["por_peneira"] == list(base.NIVEIS[1][4])
 
 
-def test_peneira_so_no_dia_e_uma_vez_por_temporada():
+def test_fazer_peneira_e_esperar_90_dias_pela_proxima():
     sid = _iniciar()
-    assert _peneira(sid, date(2027, 2, 28)) == []
-    novos = _peneira(sid, date(2027, 3, 1))
-    assert base.POR_PENEIRA[0] <= len(novos) <= base.POR_PENEIRA[1]
-    assert all(base.IDADE_PENEIRA[0] <= j.idade <= base.IDADE_PENEIRA[1] for j in novos)
-    assert _peneira(sid, date(2027, 3, 2)) == []           # já foi
+    feita = base_service.fazer_peneira(sid)
+    minimo, maximo = base.NIVEIS[1][4]
+    assert minimo <= len(feita["novos"]) <= maximo
+    dados = feita["base"]
+    assert len(dados["jovens"]) == base.JOVENS_INICIAIS + len(feita["novos"])
+    novos = [j for j in dados["jovens"] if j["nome"] in feita["novos"]]
+    assert all(base.IDADE_PENEIRA[0] <= j["idade"] <= base.IDADE_PENEIRA[1] for j in novos)
+    assert "90 dias" in dados["peneira"]["bloqueio"]
+    assert dados["peneira"]["liberada_fmt"]
 
-    dados = base_service.ver(sid)
-    assert dados["peneira"]["feita"] and len(dados["jovens"]) == base.JOVENS_INICIAIS + len(novos)
-    assunto = [m["assunto"] for m in mensagem_service.listar(sid)["mensagens"]
-               if m["setor"] == "Categorias de base"]
-    assert assunto == ["Peneira: jovens novos na base"]
+    with pytest.raises(AcaoInvalida, match="só em"):
+        base_service.fazer_peneira(sid)
+    inicio = date.fromisoformat(dados["peneira"]["liberada_em"]) - timedelta(days=90)
+    _no_dia(sid, inicio + timedelta(days=89))
+    with pytest.raises(AcaoInvalida):
+        base_service.fazer_peneira(sid)
+    _no_dia(sid, inicio + timedelta(days=90))
+    assert base_service.fazer_peneira(sid)["novos"]
+
+    assuntos = [m["assunto"] for m in mensagem_service.listar(sid)["mensagens"]
+                if m["setor"] == "Categorias de base"]
+    assert assuntos == ["Peneira: jovens novos na base"] * 2
+
+
+def test_nivel_alto_traz_mais_jovens_na_peneira():
+    sid = _iniciar()
+    base_service.trocar_nivel(sid, 5)
+    assert len(base_service.fazer_peneira(sid)["novos"]) >= base.NIVEIS[5][4][0]
+
+
+def test_peneira_com_a_base_cheia_e_recusada():
+    sid = _iniciar()
+    conn = conectar()
+    try:
+        with conn:
+            jovem_repo.inserir(conn, sid, [
+                Jovem(f"Enchedor {i}", 16, "Zagueiro", 60.0, 70)
+                for i in range(base.VAGAS - base.JOVENS_INICIAIS)
+            ], "2026-07-11")
+    finally:
+        conn.close()
+    with pytest.raises(AcaoInvalida, match="cheia"):
+        base_service.fazer_peneira(sid)
 
 
 def test_peneira_e_a_base_nao_mexem_no_random_das_partidas():
     sid = _iniciar()
     estado = random.getstate()
-    _peneira(sid, date(2027, 3, 1))
+    base_service.fazer_peneira(sid)
     base_service.promover(sid, base_service.ver(sid)["jovens"][0]["id"])
     assert random.getstate() == estado
 
 
 def test_peneira_e_a_mesma_se_o_save_for_recarregado():
     a, b = _iniciar(seed=5), _iniciar(seed=5)
-    nomes = lambda sid: [j.nome for j in _peneira(sid, date(2027, 3, 1))]
-    assert nomes(a) == nomes(b)
-
-
-def test_continuar_para_no_dia_da_peneira():
-    sid = _iniciar()
-    conn = conectar()
-    try:
-        with conn:
-            # o save parado em fevereiro, antes da rodada do começo de março
-            conn.execute("UPDATE simulacao SET rodada_atual = 29 WHERE id = ?", (sid,))
-            simulacao_repo.definir_data(conn, sid, date(2027, 2, 20))
-    finally:
-        conn.close()
-    cal = calendario_service.continuar(sid)
-    assert cal["data"] == "2027-03-01"
-    assert base_service.ver(sid)["peneira"]["feita"]
-    # e o próximo continuar vai até o jogo
-    assert calendario_service.continuar(sid)["dias_ate_o_jogo"] == 0
+    assert base_service.fazer_peneira(a)["novos"] == base_service.fazer_peneira(b)["novos"]
 
 
 def test_jovens_treinam_a_cada_rodada():
@@ -237,6 +255,8 @@ def test_virar_envelhece_e_quem_faz_20_vai_embora():
 def test_rotas_da_base():
     sid = _iniciar()
     assert client.get(f"/simulacoes/{sid}/base").status_code == 200
+    assert client.post(f"/simulacoes/{sid}/base/peneira").status_code == 200
+    assert client.post(f"/simulacoes/{sid}/base/peneira").status_code == 400
     assert client.post(f"/simulacoes/{sid}/base/nivel", json={"nivel": 7}).status_code == 400
     jovem = client.get(f"/simulacoes/{sid}/base").json()["jovens"][0]
     resp = client.post(f"/simulacoes/{sid}/base/{jovem['id']}/promover")

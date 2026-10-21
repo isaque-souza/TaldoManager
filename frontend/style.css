@@ -1236,6 +1236,7 @@ body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .
 /* ---------- categorias de base (v2.0) ---------- */
 .tile-valor.ruim { color: var(--ao-vivo); }
 .bs-tabela td { vertical-align: middle; }
+.bs-peneira button { width: 100%; margin: .35rem 0 .2rem; padding: .5rem .8rem; }
 .bs-ovr { min-width: 4.5rem; }
 .bs-progresso { width: 3.2rem; height: 4px; margin: .3rem 0 0 auto; }
 .bs-acoes { display: flex; gap: .5rem; justify-content: flex-end; }

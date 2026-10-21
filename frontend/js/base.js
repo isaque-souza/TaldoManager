@@ -1,6 +1,7 @@
 // Categorias de base (v2.0): os jovens do clube, fora do elenco até serem
-// promovidos. A peneira traz jovens novos num dia do calendário; eles
-// crescem um pouco a cada rodada, mais rápido com a base de nível alto.
+// promovidos. O técnico faz uma peneira a cada 90 dias (quantos e quão bons
+// vêm depende do nível da base); os jovens crescem um pouco a cada rodada,
+// mais rápido com a base de nível alto.
 // Promover e dispensar não têm volta: dois cliques, como nas obras.
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
@@ -55,8 +56,9 @@ function cardNivel(n, atual) {
       <header><strong>Nível ${n.nivel}</strong>${eAtual ? ` <span class="chip chip-batida">Atual</span>` : ""}</header>
       <dl class="mk-ficha">
         <div><dt>Crescimento</dt><dd>${ritmo(n.ritmo)}</dd></div>
-        <div><dt>Custo</dt><dd>${custo}</dd></div>
+        <div><dt>Peneira</dt><dd>${n.por_peneira[0]}–${n.por_peneira[1]}</dd></div>
       </dl>
+      <dl class="mk-ficha"><div><dt>Custo</dt><dd>${custo}</dd></div></dl>
       ${agora}${motivo}
       ${eAtual ? "" : `<button type="button" class="secondary outline bs-nivel" data-nivel="${n.nivel}" ${n.bloqueio ? "disabled" : ""}>
         ${n.nivel > atual ? "Investir" : "Reduzir"}</button>`}
@@ -66,24 +68,31 @@ function cardNivel(n, atual) {
 function renderBase() {
   const d = bs.dados;
   const nivel = d.niveis.find((n) => n.nivel === d.nivel);
-  const peneira = d.peneira.feita
-    ? blocoResumo("Peneira", "Já foi", `a próxima, em mar ${+d.peneira.data.slice(0, 4) + 1}`)
-    : blocoResumo("Próxima peneira", d.peneira.data_fmt, "de 3 a 6 jovens chegam à base");
+  const p = d.peneira;
+  const faixa = `${p.por_peneira[0]} a ${p.por_peneira[1]} jovens`;
+  const peneira = `<div class="tile bs-peneira">
+      <span class="tile-rotulo">Peneira</span>
+      <button type="button" id="bs-peneira" ${p.bloqueio ? "disabled" : ""}>${icone("base")} Fazer peneira</button>
+      <span class="tile-detalhe" title="${p.bloqueio || ""}">${p.liberada_fmt
+        ? `liberada em ${p.liberada_fmt}`
+        : p.bloqueio ? "base cheia" : `traz ${faixa}`}</span>
+    </div>`;
   const cheia = d.jovens.length >= d.vagas;
   const lista = d.jovens.length
     ? `<figure><table class="bs-tabela"><thead><tr>
         <th>Jovem</th><th>Pos.</th><th class="num">Idade</th><th class="num">OVR</th>
         <th class="num">POT</th><th></th></tr></thead>
         <tbody>${d.jovens.map((j) => linhaJovem(j, d.bloqueio_promocao)).join("")}</tbody></table></figure>`
-    : `<p class="vazio">Nenhum jovem na base. A peneira de ${d.peneira.data_fmt} traz os próximos.</p>`;
+    : `<p class="vazio">Nenhum jovem na base. Faça uma peneira para trazer os próximos.</p>`;
 
   $("r-base").innerHTML = `
     <div class="tiles">
       ${blocoResumo("Nível", d.nivel, `ritmo de crescimento: ${ritmo(nivel.ritmo)}`)}
-      ${blocoResumo("Jovens", `${d.jovens.length}/${d.vagas}`, cheia ? "base cheia: a peneira não terá vaga" : "vagas na base", cheia ? "ruim" : "")}
+      ${blocoResumo("Jovens", `${d.jovens.length}/${d.vagas}`, cheia ? "base cheia: sem vaga para peneira" : "vagas na base", cheia ? "ruim" : "")}
       ${peneira}
     </div>
-    <p class="mk-intro">Os jovens treinam a cada rodada e crescem até o potencial; a barrinha
+    <p class="mk-intro">A peneira traz ${faixa} (pelo nível da base), e a próxima só
+      ${p.intervalo_dias} dias depois. Os jovens treinam a cada rodada e crescem até o potencial; a barrinha
       mostra quanto falta para o próximo ponto. Na base eles não jogam nem recebem salário.
       Quem faz ${d.idade_limite} anos sem ser promovido vai embora na virada. Promovido, ele
       vai para o elenco (${d.elenco.jogadores}/${d.elenco.maximo}) com contrato de 3 temporadas.</p>
@@ -93,11 +102,12 @@ function renderBase() {
     ${lista}
     <h3 class="es-titulo">${icone("base")} Investimento na base</h3>
     <p class="mk-intro">Nível maior faz os jovens crescerem mais rápido e traz peneiras com
-      mais talento. Como o olheiro: subir paga na hora a diferença pelas rodadas que faltam;
+      mais jovens e mais talento. Como o olheiro: subir paga na hora a diferença pelas rodadas que faltam;
       descer não devolve nada. Na virada, renova pela temporada cheia.
       Gasto nesta temporada: <strong>${reais(d.gasto_temporada)}</strong>.</p>
     <div class="mk-campanhas">${d.niveis.map((n) => cardNivel(n, d.nivel)).join("")}</div>`;
 
+  $("bs-peneira").addEventListener("click", fazerPeneira);
   $("r-base").querySelectorAll(".bs-promover:not([disabled])").forEach((b) =>
     b.addEventListener("click", () => doisCliques(b, "Confirmar?", () => promover(+b.dataset.id)))
   );
@@ -142,6 +152,21 @@ async function mandar(metodo, sufixo, corpo, texto) {
   } finally {
     ocupado(false);
   }
+}
+
+async function fazerPeneira() {
+  const { dados, erro } = await mandar("POST", "/peneira", null, "Fazendo a peneira…");
+  if (erro) {
+    avisar(`${icone("nao")} Não deu: ${erro}.`, true);
+    return carregarBase();
+  }
+  bs.dados = dados.base;
+  const fora = dados.de_fora ? ` ${dados.de_fora} ficou de fora por falta de vaga.` : "";
+  avisar(dados.novos.length
+    ? `${icone("ok")} A peneira trouxe ${dados.novos.length}: ${dados.novos.join(", ")}.${fora}`
+    : `A peneira não trouxe ninguém.${fora}`);
+  renderBase();
+  carregarCaixa();
 }
 
 async function promover(id) {

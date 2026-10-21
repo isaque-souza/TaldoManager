@@ -1558,6 +1558,7 @@ class NivelBase(BaseModel):
     nivel: int
     ritmo: float                 # 1 = cresce como um jovem titular
     margem_max: int              # até quanto o potencial passa do overall
+    por_peneira: list[int]       # [mín, máx] de jovens por peneira
     custo_temporada: int
     custo_agora: int
     bloqueio: str | None = None
@@ -1577,9 +1578,11 @@ class JovemBase(BaseModel):
 
 
 class PeneiraBase(BaseModel):
-    data: str
-    data_fmt: str
-    feita: bool
+    bloqueio: str | None = None          # por que não dá para fazer agora
+    liberada_em: str | None = None       # None = disponível desde o começo da temporada
+    liberada_fmt: str | None = None      # só enquanto ainda não liberou
+    por_peneira: list[int]               # [mín, máx] de jovens pelo nível
+    intervalo_dias: int
 
 
 class ElencoBase(BaseModel):
@@ -1606,4 +1609,10 @@ class NovoNivelBase(BaseModel):
 
 class Promovido(BaseModel):
     jogador: str
+    base: Base
+
+
+class PeneiraFeita(BaseModel):
+    novos: list[str]
+    de_fora: int
     base: Base

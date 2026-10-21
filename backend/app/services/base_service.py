@@ -1,10 +1,8 @@
-"""Categorias de base do técnico (v2.0, passo 4): ver a base, trocar o
-nível, promover e dispensar jovens. As regras ficam em `app.domain.base`.
+"""Categorias de base do técnico (v2.0, passo 4): ver a base, fazer uma
+peneira (a cada 90 dias), trocar o nível, promover e dispensar jovens. As
+regras ficam em `app.domain.base`.
 
-Os acontecimentos da base andam com o calendário e com as rodadas, dentro
-da transação de quem os chama:
-- `peneira`: no dia da peneira, chegam os jovens do ano (`calendario_service`
-  e `temporada_service.avancar`, como os relatórios do olheiro)
+O que anda sozinho roda dentro da transação de quem chama:
 - `treinar`: a cada rodada jogada, os jovens crescem um pouco
 - `semear`: a base com que um jogo novo começa (`temporada_service.iniciar`)
 - `virar`: a base passa para a temporada seguinte (`carreira_service`)
@@ -13,10 +11,10 @@ Nada aqui usa o `random` do processo: a sequência das partidas não muda.
 """
 
 import random
+from datetime import date
 
 from app.db.conexao import conectar
 from app.domain import base, caixa, calendario, mercado, posicoes
-from app.repositories import clube_repository as clube_repo
 from app.repositories import jovem_base_repository as jovem_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import simulacao_repository as simulacao_repo
@@ -28,23 +26,8 @@ class AcaoInvalida(ValueError):
 
 
 # ---------------------------------------------------------------------------
-# o que anda com o calendário e as rodadas
+# o que anda com as rodadas e a virada
 # ---------------------------------------------------------------------------
-
-def _clube_do_tecnico(conn, sim):
-    return next(
-        c for c in clube_repo.listar_por_simulacao(conn, sim["id"])
-        if c["nome"] == sim["clube_usuario"]
-    )
-
-
-def _media_do_elenco(conn, clube_id):
-    r = conn.execute(
-        "SELECT AVG(overall) FROM jogador WHERE clube_id = ? AND livre = 0",
-        (clube_id,),
-    ).fetchone()
-    return r[0] or base.OVERALL_MIN
-
 
 def _nomes_proibidos(conn, sim):
     """Quem já existe no save (elencos, dispensados e a base) e, numa
@@ -59,33 +42,12 @@ def _nomes_proibidos(conn, sim):
     return nomes
 
 
-def proxima_peneira(sim):
-    """O dia (date) da peneira desta temporada, ou None se já foi."""
-    if sim["peneira_feita"] or not sim["clube_usuario"]:
-        return None
-    return base.data_da_peneira(sim["temporada"])
+def _hoje(sim):
+    return calendario.data_atual(sim["temporada"], sim["rodada_atual"], sim["data_atual"])
 
 
-def peneira(conn, sim, dia, rodada):
-    """Se `dia` chegou ao da peneira, os jovens do ano entram na base e
-    chega a mensagem. Devolve os jovens novos."""
-    data = proxima_peneira(sim)
-    if data is None or dia < data:
-        return []
-    clube = _clube_do_tecnico(conn, sim)
-    rng = base.rng_da_peneira(sim["seed"], sim["id"], sim["temporada"])
-    proibidos = _nomes_proibidos(conn, sim)
-    quantos, de_fora = base.quantos_na_peneira(jovem_repo.contar(conn, sim["id"]), rng)
-    media = _media_do_elenco(conn, clube["id"])
-    jovens = [base.gerar_da_peneira(media, clube["nivel_base"], proibidos, rng)
-              for _ in range(quantos)]
-    jovem_repo.inserir(conn, sim["id"], jovens, data.isoformat())
-    simulacao_repo.marcar_peneira(conn, sim["id"])
-    mensagem_repo.inserir(conn, sim["id"], rodada, [caixa.peneira(
-        [(j.nome, j.idade, j.funcao, int(j.overall), j.potencial) for j in jovens],
-        de_fora,
-    )])
-    return jovens
+def _ultima_peneira(sim):
+    return date.fromisoformat(sim["ultima_peneira"]) if sim["ultima_peneira"] else None
 
 
 def treinar(conn, simulacao_id, nivel, total_rodadas):
@@ -129,7 +91,8 @@ def virar(conn, de_id, para_id, seed, temporada):
 
 def _visao(ctx):
     conn, sim, alvo = ctx.conn, ctx.sim, ctx.alvo
-    peneira_em = base.data_da_peneira(sim["temporada"])
+    hoje = _hoje(sim)
+    liberada = base.peneira_liberada_em(_ultima_peneira(sim))
     bloqueio = base.motivo_promocao_bloqueada(alvo)
     jovens = []
     for j, chegou_em in jovem_repo.listar(conn, sim["id"]):
@@ -155,9 +118,14 @@ def _visao(ctx):
         "vagas": base.VAGAS,
         "idade_limite": base.IDADE_LIMITE,
         "peneira": {
-            "data": peneira_em.isoformat(),
-            "data_fmt": calendario.formatar(peneira_em, com_semana=False),
-            "feita": bool(sim["peneira_feita"]),
+            "bloqueio": base.motivo_peneira_bloqueada(
+                _ultima_peneira(sim), hoje, len(jovens),
+            ),
+            "liberada_em": liberada.isoformat() if liberada else None,
+            "liberada_fmt": (calendario.formatar(liberada, com_semana=False)
+                             if liberada and liberada > hoje else None),
+            "por_peneira": list(base.NIVEIS[alvo.nivel_base][4]),
+            "intervalo_dias": base.INTERVALO_PENEIRA.days,
         },
         "elenco": {"jogadores": len(alvo.jogadores), "maximo": mercado.ELENCO_MAX},
         "bloqueio_promocao": bloqueio,
@@ -206,6 +174,44 @@ def trocar_nivel(simulacao_id, nivel):
         with conn:
             ctx.gravar()
         return _visao(ctx)
+    finally:
+        conn.close()
+
+
+def fazer_peneira(simulacao_id):
+    """O técnico faz uma peneira: chegam jovens pelo nível da base, e a
+    próxima só depois de INTERVALO_PENEIRA. Devolve {novos, de_fora, base};
+    None se a simulação não existe; `AcaoInvalida` se não dá agora."""
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, simulacao_id)
+        if ctx is None:
+            return None
+        sim = ctx.sim
+        exigir_sem_transmissao(sim)
+        hoje = _hoje(sim)
+        ocupadas = jovem_repo.contar(conn, simulacao_id)
+        motivo = base.motivo_peneira_bloqueada(_ultima_peneira(sim), hoje, ocupadas)
+        if motivo:
+            raise AcaoInvalida(motivo)
+
+        nivel = ctx.alvo.nivel_base
+        rng = base.rng_da_peneira(sim["seed"], simulacao_id, f"{sim['temporada']}:{hoje}")
+        quantos, de_fora = base.quantos_na_peneira(ocupadas, nivel, rng)
+        media = sum(j.overall for j in ctx.alvo.jogadores) / len(ctx.alvo.jogadores)
+        proibidos = _nomes_proibidos(conn, sim) | {
+            j.nome for c in ctx.campeonato.clubes for j in c.jogadores
+        } | {j.nome for j in ctx.campeonato.livres}
+        jovens = [base.gerar_da_peneira(media, nivel, proibidos, rng) for _ in range(quantos)]
+        with conn:
+            jovem_repo.inserir(conn, simulacao_id, jovens, hoje.isoformat())
+            simulacao_repo.marcar_peneira(conn, simulacao_id, hoje)
+            mensagem_repo.inserir(conn, simulacao_id, ctx.rodada, [caixa.peneira(
+                [(j.nome, j.idade, j.funcao, int(j.overall), j.potencial) for j in jovens],
+                de_fora,
+            )])
+        ctx.sim = simulacao_repo.buscar(conn, simulacao_id)
+        return {"novos": [j.nome for j in jovens], "de_fora": de_fora, "base": _visao(ctx)}
     finally:
         conn.close()
 

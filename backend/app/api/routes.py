@@ -52,6 +52,7 @@ from app.api.schemas import (
     Calendario,
     Base,
     NovoNivelBase,
+    PeneiraFeita,
     Promovido,
     Olheiro,
     NovoNivelOlheiro,
@@ -850,7 +851,7 @@ def _resposta_base(acao, nao_achou="Simulação não encontrada"):
 
 @router.get("/simulacoes/{simulacao_id}/base", response_model=Base, tags=["base"])
 def ver_base(simulacao_id: int):
-    """A base do clube dirigido: os jovens, o nível e a próxima peneira."""
+    """A base do clube dirigido: os jovens, o nível e a peneira."""
     return _resposta_base(lambda: base_service.ver(simulacao_id))
 
 
@@ -859,6 +860,15 @@ def trocar_nivel_base(simulacao_id: int, novo: NovoNivelBase):
     """Troca o nível da base (1 a 5): subir paga na hora a diferença até o
     fim da temporada; descer é de graça."""
     return _resposta_base(lambda: base_service.trocar_nivel(simulacao_id, novo.nivel))
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/base/peneira", response_model=PeneiraFeita, tags=["base"]
+)
+def fazer_peneira(simulacao_id: int):
+    """Faz uma peneira: chegam jovens pelo nível da base. A próxima só
+    depois de 90 dias no calendário."""
+    return _resposta_base(lambda: base_service.fazer_peneira(simulacao_id))
 
 
 @router.post(

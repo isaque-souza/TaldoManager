@@ -165,8 +165,9 @@ def definir_data(conn, simulacao_id, dia):
     )
 
 
-def marcar_peneira(conn, simulacao_id):
-    """A peneira da base (v2.0) desta temporada já aconteceu."""
+def marcar_peneira(conn, simulacao_id, dia):
+    """O dia da última peneira da base (v2.0)."""
     conn.execute(
-        "UPDATE simulacao SET peneira_feita = 1 WHERE id = ?", (simulacao_id,)
+        "UPDATE simulacao SET ultima_peneira = ? WHERE id = ?",
+        (dia.isoformat(), simulacao_id),
     )

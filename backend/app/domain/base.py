@@ -6,18 +6,18 @@ A posição (específica, v1.3) é a mais carente do elenco, comparando com a
 composição da seed, então nenhum clube fica sem goleiro.
 
 O clube do técnico (v2.0, passo 4) tem uma base de verdade, separada do
-elenco: os jovens chegam na peneira (um dia fixo do calendário), crescem um
-pouco a cada rodada jogada e só sobem quando o técnico os promove — ver a
+elenco: os jovens chegam nas peneiras que ele faz (uma a cada 90 dias),
+crescem um pouco a cada rodada jogada e só sobem quando ele os promove — ver a
 segunda metade do módulo. Na virada, o clube dele só ganha jovens gerados
 se o elenco cair abaixo do mínimo (`quantos_sobem`).
 """
 
 import random
 from dataclasses import dataclass
-from datetime import date
+from datetime import timedelta
 from itertools import product
 
-from app.domain import calendario, mercado, posicoes
+from app.domain import mercado, posicoes
 from app.domain.evolucao import revisar_potencial
 from app.domain.jogador import Jogador
 from app.domain.nomes import NOMES, SOBRENOMES
@@ -140,19 +140,19 @@ VAGAS = 15
 IDADE_LIMITE = 20             # quem chega a essa idade na base vai embora
 IDADE_PENEIRA = (15, 17)
 IDADE_INICIAL = (15, 18)      # a base com que um jogo novo começa
-POR_PENEIRA = (3, 6)
 JOVENS_INICIAIS = 4
-DIA_DA_PENEIRA = (3, 1)       # 1º de março: meio da temporada europeia
+INTERVALO_PENEIRA = timedelta(days=90)   # uma peneira a cada 3 meses
 
 # nível: (desconto no overall, margem do potencial, ritmo, custo por
-# temporada). Ritmo 1 = cresce na temporada como um jovem titular (a fração
-# da margem de `evolucao`); o 0,6 do nível 1 é o de quem quase não joga
+# temporada, jovens por peneira). Ritmo 1 = cresce na temporada como um
+# jovem titular (a fração da margem de `evolucao`); o 0,6 do nível 1 é o de
+# quem quase não joga
 NIVEIS = {
-    1: (14, (8, 20), 0.6, 0),
-    2: (13, (9, 22), 0.8, 500_000),
-    3: (12, (10, 24), 1.0, 1_000_000),
-    4: (11, (11, 26), 1.15, 2_000_000),
-    5: (10, (12, 28), 1.3, 4_000_000),
+    1: (14, (8, 20), 0.6, 0, (2, 3)),
+    2: (13, (9, 22), 0.8, 500_000, (2, 4)),
+    3: (12, (10, 24), 1.0, 1_000_000, (3, 4)),
+    4: (11, (11, 26), 1.15, 2_000_000, (3, 5)),
+    5: (10, (12, 28), 1.3, 4_000_000, (4, 6)),
 }
 NIVEL_INICIAL = 1
 CRESCIMENTO_TEMPORADA = 0.35  # a fração de `evolucao` até os 20 anos
@@ -204,12 +204,13 @@ def motivo_troca_bloqueada(clube, para, custo):
 
 def resumo_niveis(clube, rodadas_jogadas, total_rodadas):
     niveis = []
-    for nivel, (_, margem, ritmo, custo) in NIVEIS.items():
+    for nivel, (_, margem, ritmo, custo, por_peneira) in NIVEIS.items():
         agora = custo_da_troca(clube.nivel_base, nivel, rodadas_jogadas, total_rodadas)
         niveis.append({
             "nivel": nivel,
             "ritmo": ritmo,
             "margem_max": margem[1],
+            "por_peneira": list(por_peneira),
             "custo_temporada": custo,
             "custo_agora": agora,
             "bloqueio": motivo_troca_bloqueada(clube, nivel, agora),
@@ -217,16 +218,27 @@ def resumo_niveis(clube, rodadas_jogadas, total_rodadas):
     return niveis
 
 
-def data_da_peneira(temporada):
-    mes, dia = DIA_DA_PENEIRA
-    return date(calendario.ano_inicial(temporada) + 1, mes, dia)
+def peneira_liberada_em(ultima):
+    """O dia em que a próxima peneira fica disponível; None = já está
+    (nenhuma feita nesta temporada)."""
+    return None if ultima is None else ultima + INTERVALO_PENEIRA
 
 
-def rng_da_peneira(seed, simulacao_id, temporada):
+def motivo_peneira_bloqueada(ultima, hoje, ocupadas):
+    liberada = peneira_liberada_em(ultima)
+    if liberada and hoje < liberada:
+        return f"A próxima peneira só em {(liberada - hoje).days} dias"
+    if ocupadas >= VAGAS:
+        return f"A base está cheia ({VAGAS} jovens): promova ou dispense alguém"
+    return None
+
+
+def rng_da_peneira(seed, simulacao_id, momento):
     """Sorteio próprio da base: não mexe na sequência das partidas e dá o
-    mesmo resultado se o save for recarregado."""
+    mesmo resultado se o save for recarregado. `momento`: o que distingue
+    um sorteio do outro (a temporada e o dia da peneira, a virada...)."""
     origem = seed if seed is not None else f"s{simulacao_id}"
-    return random.Random(f"base:{origem}:{temporada}")
+    return random.Random(f"base:{origem}:{momento}")
 
 
 def _funcao(rng):
@@ -237,7 +249,7 @@ def _funcao(rng):
 
 def gerar_da_peneira(media_elenco, nivel, proibidos, rng, idades=IDADE_PENEIRA):
     """Um jovem que chega à base do técnico (`proibidos` é atualizado)."""
-    desconto, margem, _, _ = NIVEIS[nivel]
+    desconto, margem = NIVEIS[nivel][:2]
     overall = max(OVERALL_MIN, round(media_elenco) - desconto
                   + rng.randint(-VARIACAO_OVERALL, VARIACAO_OVERALL))
     return Jovem(
@@ -249,9 +261,10 @@ def gerar_da_peneira(media_elenco, nivel, proibidos, rng, idades=IDADE_PENEIRA):
     )
 
 
-def quantos_na_peneira(ocupadas, rng):
-    """(quantos ficam, quantos não cabem na base)."""
-    chegam = rng.randint(*POR_PENEIRA)
+def quantos_na_peneira(ocupadas, nivel, rng):
+    """(quantos ficam, quantos não cabem na base). O nível diz quantos a
+    peneira acha."""
+    chegam = rng.randint(*NIVEIS[nivel][4])
     cabem = max(0, VAGAS - ocupadas)
     return min(chegam, cabem), max(0, chegam - cabem)
 
