@@ -50,6 +50,9 @@ from app.api.schemas import (
     NovaObra,
     NovoIngresso,
     Calendario,
+    Base,
+    NovoNivelBase,
+    Promovido,
     Olheiro,
     NovoNivelOlheiro,
     NovoRelatorio,
@@ -86,6 +89,7 @@ from app.services import (
     mensagem_service,
     mercado_service,
     observado_service,
+    base_service,
     olheiro_service,
     relatorio_service,
     plano_service,
@@ -99,6 +103,7 @@ from app.services.carreira_service import CarreiraInvalida
 from app.services.conta_service import LimiteDeJogos
 from app.services.estadio_service import IngressoInvalido, ObraInvalida
 from app.services.marketing_service import CampanhaInvalida
+from app.services.base_service import AcaoInvalida
 from app.services.olheiro_service import TrocaInvalida
 from app.services.relatorio_service import PedidoInvalido
 from app.services.plano_service import PlanoInvalido
@@ -829,6 +834,53 @@ def trocar_olheiro(simulacao_id: int, novo: NovoNivelOlheiro):
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")
     return dados
+
+
+# --- categorias de base do técnico (v2.0) ---
+
+def _resposta_base(acao, nao_achou="Simulação não encontrada"):
+    try:
+        dados = acao()
+    except (TemporadaConcluida, PartidaEmAndamento, AcaoInvalida) as e:
+        raise _erro_de_mercado(e) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail=nao_achou)
+    return dados
+
+
+@router.get("/simulacoes/{simulacao_id}/base", response_model=Base, tags=["base"])
+def ver_base(simulacao_id: int):
+    """A base do clube dirigido: os jovens, o nível e a próxima peneira."""
+    return _resposta_base(lambda: base_service.ver(simulacao_id))
+
+
+@router.post("/simulacoes/{simulacao_id}/base/nivel", response_model=Base, tags=["base"])
+def trocar_nivel_base(simulacao_id: int, novo: NovoNivelBase):
+    """Troca o nível da base (1 a 5): subir paga na hora a diferença até o
+    fim da temporada; descer é de graça."""
+    return _resposta_base(lambda: base_service.trocar_nivel(simulacao_id, novo.nivel))
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/base/{jovem_id}/promover",
+    response_model=Promovido,
+    tags=["base"],
+)
+def promover_jovem(simulacao_id: int, jovem_id: int):
+    """Sobe o jovem ao elenco, com o contrato padrão (3 temporadas)."""
+    return _resposta_base(
+        lambda: base_service.promover(simulacao_id, jovem_id), "Jovem não encontrado"
+    )
+
+
+@router.delete(
+    "/simulacoes/{simulacao_id}/base/{jovem_id}", response_model=Base, tags=["base"]
+)
+def dispensar_jovem(simulacao_id: int, jovem_id: int):
+    """Tira o jovem da base."""
+    return _resposta_base(
+        lambda: base_service.dispensar(simulacao_id, jovem_id), "Jovem não encontrado"
+    )
 
 
 @router.post(

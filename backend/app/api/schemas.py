@@ -592,6 +592,7 @@ class ClubeInfo(BaseModel):
     despesa_marketing: int = 0
     despesa_estadio: int = 0             # obras e manutenção (v1.5)
     despesa_olheiros: int = 0            # salário do olheiro (v2.0)
+    despesa_base: int = 0                # categorias de base (v2.0)
 
 
 class JogoResumo(BaseModel):
@@ -1547,3 +1548,62 @@ class NovaObra(BaseModel):
 
 class NovoIngresso(BaseModel):
     faixa: str
+
+
+# ---------------------------------------------------------------------------
+# categorias de base do técnico (v2.0)
+# ---------------------------------------------------------------------------
+
+class NivelBase(BaseModel):
+    nivel: int
+    ritmo: float                 # 1 = cresce como um jovem titular
+    margem_max: int              # até quanto o potencial passa do overall
+    custo_temporada: int
+    custo_agora: int
+    bloqueio: str | None = None
+
+
+class JovemBase(BaseModel):
+    id: int
+    nome: str
+    idade: int
+    funcao: str
+    posicao: str
+    overall: int
+    progresso: float             # fração até o próximo ponto de overall
+    potencial: int
+    chegou_em: str
+    ultimo_ano: bool             # faz 20 na virada: promova ou ele vai embora
+
+
+class PeneiraBase(BaseModel):
+    data: str
+    data_fmt: str
+    feita: bool
+
+
+class ElencoBase(BaseModel):
+    jogadores: int
+    maximo: int
+
+
+class Base(BaseModel):
+    nivel: int
+    caixa: int
+    gasto_temporada: int
+    niveis: list[NivelBase]
+    vagas: int
+    idade_limite: int
+    peneira: PeneiraBase
+    elenco: ElencoBase
+    bloqueio_promocao: str | None = None
+    jovens: list[JovemBase]
+
+
+class NovoNivelBase(BaseModel):
+    nivel: int
+
+
+class Promovido(BaseModel):
+    jogador: str
+    base: Base

@@ -178,6 +178,7 @@ function barrasFluxo(clube) {
     ["Marketing", clube.despesa_marketing, "despesa", false, "torcida"],
     ["Estádio", clube.despesa_estadio || 0, "despesa", false, "obra"],
     ["Olheiros", clube.despesa_olheiros || 0, "despesa", false, "alvo"],
+    ["Base", clube.despesa_base || 0, "despesa", false, "base"],
   ].filter(([, v, , sempre]) => sempre || v > 0);
 
   const max = Math.max(...itens.map(([, v]) => v), 1);

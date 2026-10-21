@@ -9,7 +9,7 @@ rodada (`temporada_service.avancar`, que leva o calendário até ele).
 from app.db.conexao import conectar
 from app.domain import calendario, mercado
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import relatorio_service
+from app.services import base_service, relatorio_service
 from app.services.temporada_service import TemporadaConcluida, exigir_sem_transmissao
 
 
@@ -68,6 +68,8 @@ def _andar(simulacao_id, proximo):
             simulacao_repo.definir_data(conn, simulacao_id, dia)
             # relatórios do olheiro que ficaram prontos no caminho (v2.0)
             relatorio_service.entregar(conn, simulacao_id, dia, rodada)
+            # e a peneira da base (v2.0), se o dia dela chegou
+            base_service.peneira(conn, sim, dia, rodada)
         return visao(simulacao_repo.buscar(conn, simulacao_id))
     finally:
         conn.close()
@@ -82,12 +84,16 @@ def avancar_dia(simulacao_id):
 
 
 def _proximo_evento(conn, simulacao_id, hoje, temporada, rodada):
-    """O dia do próximo jogo, ou antes, o de um relatório que fica pronto."""
+    """O dia do próximo jogo, ou antes, o de um relatório que fica pronto
+    ou o da peneira da base (v2.0)."""
     jogo = max(hoje, calendario.data_da_rodada(temporada, rodada))
-    relatorio = relatorio_service.proximo_pronto(conn, simulacao_id)
-    return min(jogo, relatorio) if relatorio and relatorio > hoje else jogo
+    eventos = [
+        relatorio_service.proximo_pronto(conn, simulacao_id),
+        base_service.proxima_peneira(simulacao_repo.buscar(conn, simulacao_id)),
+    ]
+    return min([jogo] + [e for e in eventos if e and e > hoje])
 
 
 def continuar(simulacao_id):
-    """Até o próximo evento: o dia do jogo ou um relatório pronto."""
+    """Até o próximo evento: o dia do jogo, um relatório pronto ou a peneira."""
     return _andar(simulacao_id, _proximo_evento)

@@ -1094,7 +1094,26 @@ olheiros que buscam jovens pelo mundo. Regras em `app/domain/olheiro.py`
       - **Sem relatório, a vontade fica escondida** ("?"); só o "não vem"
         continua aparecendo, porque bloqueia a proposta
       - Vale até o fim da temporada, sempre com a situação de agora
-* [ ] Módulo da base
+* [x] Módulo da base
+      - O seu clube tem uma **Base** (seção na barra lateral), separada do
+        elenco: até 15 jovens de 15 a 19 anos, que não jogam a liga nem
+        recebem salário. Um jogo novo começa com 4
+      - **Peneira** em 1º de março: chegam de 3 a 6 jovens (os que não
+        cabem ficam de fora), com mensagem das Categorias de base; o
+        "Continuar" do calendário para nesse dia
+      - Os jovens **treinam a cada rodada jogada** e crescem até o
+        potencial (a barrinha mostra quanto falta para o próximo ponto)
+      - **Nível da base** 1 a 5 (grátis, R$ 500 mil, 1 mi, 2 mi e 4 mi por
+        temporada): mais nível, mais crescimento (de 60% a 130% do de um
+        titular jovem) e peneiras com mais talento. Contrato como o do
+        olheiro (subir paga a diferença, descer não devolve; linha "Base"
+        nas finanças)
+      - **Promover** leva ao elenco com contrato de 3 temporadas (precisa
+        de vaga); **Dispensar** tira da base. Quem faz 20 anos na base vai
+        embora na virada (o "último ano" fica marcado)
+      - Na virada, o seu clube só ganha jovens gerados se o elenco cair
+        abaixo de 16; os clubes da CPU seguem como antes
+      - Sorteios próprios: a base não mexe na sequência das partidas
 * [ ] Olheiros da base (regiões, duração e relatórios mensais)
 * [ ] Equilíbrio e acabamento
 
@@ -1155,7 +1174,7 @@ TaldoManager/
 │   │   └── main.py         # app FastAPI
 │   ├── data/               # seed JSON + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 892 testes (domain, db, repositories, services, api)
+│   └── tests/              # 910 testes (domain, db, repositories, services, api)
 │
 ├── deploy/                 # docker compose, atualizar e backup na VPS
 │

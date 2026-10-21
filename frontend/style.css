@@ -1233,6 +1233,14 @@ body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .
 .es-progresso span { display: block; height: 100%; background: var(--gramado-claro); }
 .es-obra { margin: auto 0 0; }
 
+/* ---------- categorias de base (v2.0) ---------- */
+.tile-valor.ruim { color: var(--ao-vivo); }
+.bs-tabela td { vertical-align: middle; }
+.bs-ovr { min-width: 4.5rem; }
+.bs-progresso { width: 3.2rem; height: 4px; margin: .3rem 0 0 auto; }
+.bs-acoes { display: flex; gap: .5rem; justify-content: flex-end; }
+.bs-acoes button { width: auto; margin: 0; padding: .35rem .75rem; font-size: .85rem; white-space: nowrap; }
+
 /* ligas (v1.6): a outra liga da rodada, recolhida */
 details.outra-liga { margin-top: 1rem; }
 

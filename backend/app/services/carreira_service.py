@@ -25,10 +25,11 @@ from app.repositories import clube_repository as clube_repo
 from app.repositories import jogador_repository as jogador_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import movimento_repository as movimento_repo
+from app.repositories import jovem_base_repository as jovem_repo
 from app.repositories import observado_repository as observado_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import copa_service, oferta_service, plano_service, simulacao_service
+from app.services import base_service, copa_service, oferta_service, plano_service, simulacao_service
 from scripts.data_loader import (
     LIGA_PADRAO, TODAS_AS_LIGAS, carregar_campeonato_do_save, carregar_jogadores,
     carregar_livres, ligas_do_save,
@@ -155,8 +156,10 @@ def proxima_temporada(simulacao_id):
             # a base repõe quem saiu; nomes não se repetem na carreira
             usados = _nomes_usados(conn, carreira_id) | {
                 j.nome for j in campeonato.livres
-            }
-            movimentos += subir_jovens(campeonato, usados, random)
+            } | jovem_repo.nomes(conn, simulacao_id)
+            # o clube do técnico promove da base dele (v2.0): só ganha
+            # jovens gerados se o elenco cair abaixo do mínimo
+            movimentos += subir_jovens(campeonato, usados, random, clube_usuario)
             livres.completar(campeonato, usados, random)
             # todo mundo revê o sonho: ficou mais velho, o prestígio mudou (v1.9)
             vontade.virada(campeonato)
@@ -238,6 +241,10 @@ def proxima_temporada(simulacao_id):
             plano_service.copiar(conn, simulacao_id, nova_id, alvo)
             # e os observados do técnico (v1.7)
             observado_repo.copiar(conn, simulacao_id, nova_id)
+            # e a base dele (v2.0), um ano mais velha
+            mensagem_repo.inserir(conn, nova_id, None, [
+                base_service.virar(conn, simulacao_id, nova_id, seed, temporada),
+            ])
 
         return {
             "simulacao_id": nova_id,

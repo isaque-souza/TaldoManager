@@ -179,6 +179,14 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
             jogador_repo.inserir(conn, sim_id, mapa, cru["jogadores"])
+            # a base do técnico (v2.0) começa com alguns jovens
+            from app.services import base_service   # aqui: evita import circular
+            base_service.semear(
+                conn, sim_id, seed, alvo,
+                {j.nome for c in campeonato.clubes for j in c.jogadores}
+                | {j.nome for j in campeonato.livres},
+                calendario.inicio(1),
+            )
             if meta:
                 mensagem_repo.inserir(conn, sim_id, None, [caixa.meta_da_temporada(
                     clube_usuario, meta["meta_posicao"], meta["ranking_forca"],
@@ -523,6 +531,10 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             simulacao_repo.definir_data(conn, simulacao_id, dia_do_jogo)
             # relatórios do olheiro prontos até o dia do jogo (v2.0)
             relatorio_service.entregar(conn, simulacao_id, dia_do_jogo, rodada_jogada)
+            # a base (v2.0): a peneira, se o dia dela passou, e o treino da rodada
+            from app.services import base_service   # aqui: evita import circular
+            base_service.peneira(conn, sim, dia_do_jogo, rodada_jogada)
+            base_service.treinar(conn, simulacao_id, alvo.nivel_base, len(campeonato.calendario))
             mapa = clube_repo.atualizar(conn, simulacao_id, cru["clubes"])
             mapa_jog = jogador_repo.atualizar(
                 conn, simulacao_id, mapa, cru["jogadores"]

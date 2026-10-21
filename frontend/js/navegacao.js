@@ -16,6 +16,7 @@ const ITENS = [
   ["hub", "Início", "casa"],
   ["partida", "Escalação", "camisa"],
   ["elenco", "Elenco", "prancheta"],
+  ["base", "Base", "base"],
   ["mercado", "Transferências", "troca"],
   ["caixa", "Caixa de entrada", "email"],
   ["tabela", "Tabela", "lista"],

@@ -75,7 +75,9 @@ CREATE TABLE IF NOT EXISTS clube (
     lugares_ampliados  INTEGER NOT NULL DEFAULT 0,
     despesa_estadio    INTEGER NOT NULL DEFAULT 0,   -- obras + manutenção
     nivel_olheiro      INTEGER NOT NULL DEFAULT 1,   -- olheiro profissional (v2.0)
-    despesa_olheiros   INTEGER NOT NULL DEFAULT 0
+    despesa_olheiros   INTEGER NOT NULL DEFAULT 0,
+    nivel_base         INTEGER NOT NULL DEFAULT 1,   -- categorias de base (v2.0)
+    despesa_base       INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS jogador (
@@ -398,4 +400,18 @@ CREATE TABLE IF NOT EXISTS sessao (
     token_hash  TEXT PRIMARY KEY,
     usuario_id  INTEGER NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
     expira_em   TEXT NOT NULL          -- ISO 8601 (UTC)
+);
+
+-- Base do técnico (v2.0): os jovens das categorias de base do clube dirigido,
+-- fora do elenco até serem promovidos. Copiados para a temporada seguinte na
+-- virada da carreira.
+CREATE TABLE IF NOT EXISTS jovem_base (
+    id             INTEGER PRIMARY KEY,
+    simulacao_id   INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    nome           TEXT NOT NULL,
+    idade          INTEGER NOT NULL,
+    funcao         TEXT NOT NULL,     -- posição específica (v1.3)
+    overall        REAL NOT NULL,     -- fracionário: cresce a cada rodada
+    potencial      INTEGER NOT NULL,
+    chegou_em      TEXT NOT NULL      -- dia (ISO) em que entrou na base
 );
