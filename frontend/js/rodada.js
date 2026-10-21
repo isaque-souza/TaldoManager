@@ -16,6 +16,7 @@ import { posicaoDe } from "./posicoes.js";
 import { carregarCaixa } from "./caixa.js";
 import { carregarMarketing } from "./marketing.js";
 import { carregarEstadio } from "./estadio.js";
+import { carregarBase } from "./base.js";
 import { carregarCopa, renderCopaDaRodada } from "./copa.js";
 import { porLiga } from "./ligas.js";
 import { avancarDia, continuar, ehDiaDeJogo, rotuloContinuar, textoCalendario } from "./calendario.js";
@@ -224,6 +225,7 @@ export function renderRodadaAntes() {
   carregarCaixa();
   carregarMarketing();
   carregarEstadio();
+  carregarBase();
   carregarCopa();
   if (estado.abaRodada === "financas") carregarFinancasRodada();
 }

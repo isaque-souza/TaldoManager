@@ -163,3 +163,11 @@ def definir_data(conn, simulacao_id, dia):
         "UPDATE simulacao SET data_atual = ? WHERE id = ?",
         (dia.isoformat() if dia else None, simulacao_id),
     )
+
+
+def marcar_peneira(conn, simulacao_id, dia):
+    """O dia da última peneira da base (v2.0)."""
+    conn.execute(
+        "UPDATE simulacao SET ultima_peneira = ? WHERE id = ?",
+        (dia.isoformat(), simulacao_id),
+    )

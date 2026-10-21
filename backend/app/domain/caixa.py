@@ -376,6 +376,43 @@ def relatorios_prontos(nomes):
     return _mensagem("Olheiro", assunto, corpo)
 
 
+def _e(nomes):
+    return nomes[0] if len(nomes) == 1 else ", ".join(nomes[:-1]) + f" e {nomes[-1]}"
+
+
+def peneira(jovens, de_fora):
+    """A peneira da base (v2.0): quem chegou e quantos não couberam.
+    `jovens`: [(nome, idade, funcao, overall, potencial)]."""
+    if not jovens and not de_fora:
+        return None
+    if jovens:
+        linhas = "; ".join(
+            f"{n} ({i} anos, {f.lower()}, overall {o}, potencial {p})"
+            for n, i, f, o, p in jovens
+        )
+        corpo = f"A peneira deste ano trouxe {len(jovens)} para a base: {linhas}."
+    else:
+        corpo = "A peneira deste ano achou jovens, mas a base está cheia."
+    if de_fora:
+        corpo += (f" {de_fora} {'ficou' if de_fora == 1 else 'ficaram'} de fora por falta de "
+                  "vaga: promova ou dispense alguém antes da próxima.")
+    return _mensagem("Categorias de base", "Peneira: jovens novos na base", corpo)
+
+
+def base_na_virada(sairam, ultimo_ano):
+    """A base na temporada nova (v2.0): quem fez 20 anos sem ser promovido
+    foi embora, e quem está no último ano."""
+    partes = []
+    if sairam:
+        partes.append(f"Deixaram a base sem subir ao profissional: {_e(sairam)}.")
+    if ultimo_ano:
+        partes.append(f"Último ano na base: {_e(ultimo_ano)}. Promova até o fim da "
+                      "temporada ou eles vão embora.")
+    if not partes:
+        return None
+    return _mensagem("Categorias de base", "A base na temporada nova", " ".join(partes))
+
+
 def oferta_retirada(jogador, clube, pedido):
     """O clube não topou a contraproposta do técnico (v1.7)."""
     return _mensagem(

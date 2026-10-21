@@ -259,6 +259,8 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
             "despesa_estadio": clube.despesa_estadio,
             "nivel_olheiro": clube.nivel_olheiro,
             "despesa_olheiros": clube.despesa_olheiros,
+            "nivel_base": clube.nivel_base,
+            "despesa_base": clube.despesa_base,
         })
 
         for jogador in clube.jogadores:
@@ -364,7 +366,7 @@ def _financas_da_liga(clubes, jogadores):
                     + c.get("receita_premiacao", 0) + c.get("receita_vendas", 0))
         despesas = (c.get("despesa_salarios", 0) + c.get("despesa_compras", 0)
                     + c.get("despesa_marketing", 0) + c.get("despesa_estadio", 0)
-                    + c.get("despesa_olheiros", 0))
+                    + c.get("despesa_olheiros", 0) + c.get("despesa_base", 0))
         linhas.append({
             "id": c.get("id"),
             "posicao": c["posicao_final"],

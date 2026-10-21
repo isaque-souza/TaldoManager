@@ -11,7 +11,7 @@ não do `estado_json` (que é apagado quando a temporada termina): o banco é a
 fonte da verdade.
 """
 
-from app.domain import contrato, livres, mercado, numeros, olheiro, vontade
+from app.domain import base, contrato, livres, mercado, numeros, olheiro, vontade
 from app.domain.base import TAMANHO_ALVO
 from app.domain.evolucao import evoluir
 from app.domain.temporada import criar_jogador
@@ -33,7 +33,7 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
     `clubes_finais`: dicts com `nome`, `dinheiro` (caixa final),
     `torcedores` (torcida final), `torcedores_base` (tamanho natural),
     `capacidade`, `ingresso`, `obra_lugares`, `obra_rodadas` e
-    `lugares_ampliados` (estádio), `nivel_olheiro` (v2.0).
+    `lugares_ampliados` (estádio), `nivel_olheiro` e `nivel_base` (v2.0).
     `jogadores_finais`: dicts com `nome`, `clube`, `idade`, `overall`,
     `potencial`, `salario`, `contrato_anos`, `multa_rescisoria`, `fama` e
     `temporadas_no_clube`, na ordem do elenco.
@@ -109,6 +109,9 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
         # o olheiro renova pela temporada cheia (v2.0)
         clube.nivel_olheiro = final.get("nivel_olheiro") or 1
         clube.lancar("despesa_olheiros", olheiro.custo_temporada(clube.nivel_olheiro))
+        # e a base também (v2.0)
+        clube.nivel_base = final.get("nivel_base") or 1
+        clube.lancar("despesa_base", base.custo_temporada(clube.nivel_base))
 
     # livres (v1.6): os do fim da temporada anterior; sem registro, os da
     # seed — nos dois casos, menos quem já está num clube

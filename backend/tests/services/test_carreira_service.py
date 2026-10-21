@@ -361,12 +361,14 @@ def _jovens_da_base(sid):
             if m["tipo"] == "subiu_da_base"]
 
 
-def test_virada_sobe_jovens_em_todos_os_clubes():
+def test_virada_sobe_jovens_em_todos_os_clubes_da_cpu():
     _, nova = _virada()
     jovens = _jovens_da_base(nova)
+    visao = simulacao_service.carregar_temporada(nova)
 
+    # o clube do técnico promove da base dele (v2.0): fora do mínimo, nada
     assert {m["clube"] for m in jovens} == {
-        c["clube"] for c in simulacao_service.carregar_temporada(nova)["classificacao"]
+        c["clube"] for c in visao["classificacao"] if c["clube"] != visao["clube_usuario"]
     }
     t2 = _jogadores(nova)
     for m in jovens:
@@ -388,8 +390,19 @@ def test_jovem_da_base_sobrevive_as_rodadas_e_a_proxima_virada():
 
 def test_jovem_da_base_pode_ser_renovado_e_vendido():
     _, nova = _virada()
-    clube = simulacao_service.carregar_temporada(nova)["clube_usuario"]
-    meu_jovem = next(m["jogador"] for m in _jovens_da_base(nova) if m["clube"] == clube)
+    # o técnico promove da base dele (v2.0)
+    from app.domain.base import Jovem
+    from app.repositories import jovem_base_repository as jovem_repo
+    from app.services import base_service
+    conn = conectar()
+    try:
+        with conn:
+            jovem_repo.inserir(conn, nova, [Jovem("Cria Dacasa", 18, "Ponta", 70.0, 84)],
+                               "2027-08-01")
+    finally:
+        conn.close()
+    jovem_id = next(j["id"] for j in base_service.ver(nova)["jovens"] if j["nome"] == "Cria Dacasa")
+    meu_jovem = base_service.promover(nova, jovem_id)["jogador"]
 
     elenco = mercado_service.ver_mercado(nova)["elenco"]
     ficha = next(f for f in elenco if f["nome"] == meu_jovem)
