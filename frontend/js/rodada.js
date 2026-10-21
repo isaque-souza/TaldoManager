@@ -19,7 +19,7 @@ import { carregarEstadio } from "./estadio.js";
 import { carregarBase } from "./base.js";
 import { carregarCopa, renderCopaDaRodada } from "./copa.js";
 import { porLiga } from "./ligas.js";
-import { avancarDia, continuar, ehDiaDeJogo, rotuloContinuar, textoCalendario } from "./calendario.js";
+import { avancarDia, ehDiaDeJogo, passarDias, pausar, relogioRodando, rotuloContinuar, textoCalendario } from "./calendario.js";
 
 // ---------- visão rodada a rodada ----------
 
@@ -218,6 +218,7 @@ export function renderRodadaAntes() {
   $("r-jogar").disabled = false;
   $("r-dia").hidden = noDia;
   $("r-dia").innerHTML = `${icone("calendario")} Avançar 1 dia`;
+  $("r-pausa").hidden = true;
 
   renderHub(info);
   renderSecaoRodada();
@@ -433,7 +434,8 @@ $("r-tatica").addEventListener("change", () => gravarEConferir());
 $("r-jogar").addEventListener("click", () => {
   const info = estado.rodadaInfo;
   if (info.transmissao_ativa) return jogarAoVivo();
-  if (!ehDiaDeJogo(info.calendario)) return continuar(carregarProximaRodada);
+  if (relogioRodando()) return pausar();
+  if (!ehDiaDeJogo(info.calendario)) return passarDias(carregarProximaRodada);
   return abrirPreJogo();
 });
 $("r-dia").addEventListener("click", () => avancarDia(carregarProximaRodada));

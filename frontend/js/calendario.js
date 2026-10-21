@@ -1,6 +1,7 @@
 // Calendário (v2.0): a data do save na faixa da rodada, "Avançar 1 dia" e
-// "Continuar" (até o próximo evento — por enquanto, o dia do jogo). Os dias
-// passam na tela um a um, como um relógio, antes de a rodada recarregar.
+// "Continuar". Continuar passa os dias um a um, como o relógio do Football
+// Manager: o botão vira "Pausar" e o tempo para sozinho no dia do jogo ou
+// quando chega mensagem na caixa de entrada.
 
 import { $, estado, ocupado, pedir } from "./nucleo.js";
 import { icone } from "./icones.js";
@@ -12,6 +13,7 @@ const PERIODO = {
   temporada: "Temporada", dia_de_jogo: "Dia de jogo", concluida: "Temporada encerrada",
 };
 const ANIMACAO_MS = 1200;   // o tempo total dos dias correndo
+const DIA_MS = 600;         // Continuar: um dia a cada 0,6 s, dá tempo de pausar
 
 // "2026-08-08" -> Date no fuso local (sem o "dia anterior" do UTC)
 const paraData = (iso) => {
@@ -75,4 +77,54 @@ async function andar(caminho, texto, recarregar) {
 }
 
 export const avancarDia = (recarregar) => andar("dia", "Avançando um dia…", recarregar);
-export const continuar = (recarregar) => andar("continuar", "O tempo passa…", recarregar);
+
+// ---------- Continuar: os dias passando, com pausa ----------
+
+const relogio = { rodando: false, parar: false };
+
+export const relogioRodando = () => relogio.rodando;
+export const pausar = () => { relogio.parar = true; };
+
+function avisoDaPausa(chegou) {
+  const el = $("r-pausa");
+  el.innerHTML = chegou
+    ? `${icone("email")} Tempo pausado: chegou mensagem. <button class="link-caixa" type="button">Ler agora</button>`
+    : `${icone("pausa")} Tempo pausado.`;
+  el.hidden = false;
+  el.querySelector(".link-caixa")?.addEventListener("click", () =>
+    document.querySelector('#r-hub [data-abrir="caixa"]').click()
+  );
+}
+
+// `recarregar`: a rodada de novo, quando o tempo para. Sair da tela da
+// rodada (ou trocar de save) também para o relógio.
+export async function passarDias(recarregar) {
+  if (relogio.rodando) return;
+  Object.assign(relogio, { rodando: true, parar: false });
+  const simId = estado.simId;
+  const botao = $("r-jogar");
+  botao.innerHTML = `${icone("pausa")} Pausar`;
+  $("r-dia").disabled = true;
+  $("r-pausa").hidden = true;
+  let chegou = false, pausado = false, noJogo = false;
+  try {
+    for (;;) {
+      const cal = await pedir(`/simulacoes/${estado.simId}/calendario/dia`, { method: "POST" });
+      if (!cal || estado.simId !== simId) return;
+      estado.rodadaInfo.calendario = cal;
+      $("rodada-data").innerHTML = textoCalendario(cal);
+      noJogo = ehDiaDeJogo(cal);
+      chegou = cal.chegou_mensagem;
+      if (noJogo || chegou) break;
+      botao.innerHTML = `${icone("pausa")} Pausar <small>(${cal.dias_ate_o_jogo === 1 ? "1 dia" : `${cal.dias_ate_o_jogo} dias`} até o jogo)</small>`;
+      await new Promise((r) => setTimeout(r, DIA_MS));
+      if (relogio.parar || !botao.offsetParent) { pausado = true; break; }
+    }
+  } finally {
+    relogio.rodando = false;
+    $("r-dia").disabled = false;
+  }
+  if (estado.simId !== simId) return;
+  await recarregar();
+  if (chegou || (pausado && !noJogo)) avisoDaPausa(chegou);
+}

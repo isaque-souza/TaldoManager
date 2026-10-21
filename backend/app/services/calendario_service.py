@@ -55,7 +55,7 @@ def ver(simulacao_id):
 
 def _andar(simulacao_id, proximo):
     """Grava o dia `proximo(conn, simulacao_id, hoje, temporada, rodada)`, entrega o que
-    ficou pronto até ele e devolve a visão."""
+    ficou pronto até ele e devolve a visão (com `chegou_mensagem`)."""
     conn = conectar()
     try:
         sim = _carregar(conn, simulacao_id)
@@ -67,8 +67,10 @@ def _andar(simulacao_id, proximo):
         with conn:
             simulacao_repo.definir_data(conn, simulacao_id, dia)
             # relatórios do olheiro que ficaram prontos no caminho (v2.0)
-            relatorio_service.entregar(conn, simulacao_id, dia, rodada)
-        return visao(simulacao_repo.buscar(conn, simulacao_id))
+            prontos = relatorio_service.entregar(conn, simulacao_id, dia, rodada)
+        # a tela passa os dias um a um e para quando chega mensagem
+        return {**visao(simulacao_repo.buscar(conn, simulacao_id)),
+                "chegou_mensagem": bool(prontos)}
     finally:
         conn.close()
 
