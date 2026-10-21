@@ -63,6 +63,7 @@ window.addEventListener("resize", () => marcarAbasQueRolam());
 
 function atualizar() {
   marcarAbasQueRolam();
+  atualizarVoltar();
   const tela = secaoVisivel();
   const visivel = emJogo() && !SEM_BARRA.includes(tela);
   document.body.classList.toggle("com-lateral", visivel);
@@ -235,6 +236,31 @@ function voltarNoJogo() {
   else mostrarInicio();
   return true;
 }
+
+// o "← Voltar" do topo (e da barra lateral): o mesmo Voltar do navegador,
+// em toda tela que tem para onde voltar. Some onde só levaria ao menu
+// (lá o botão Menu já faz isso) e durante a partida ao vivo.
+function temParaOndeVoltar() {
+  const tela = secaoVisivel();
+  if (!tela || ["conta", "inicio", "aovivo"].includes(tela)) return false;
+  if (tela === "rodada") {
+    return estado.faseRodada === "antes" && estado.abaRodada !== "hub";
+  }
+  return true;
+}
+
+function atualizarVoltar() {
+  const mostrar = temParaOndeVoltar();
+  $("voltar-topo").hidden = !mostrar;
+  $("voltar-lateral").hidden = !mostrar;
+}
+
+["voltar-topo", "voltar-lateral"].forEach((id) =>
+  $(id).addEventListener("click", () => {
+    voltarNoJogo();
+    window.scrollTo(0, 0);
+  })
+);
 
 if (history.state?.taldo !== "guarda") {
   history.replaceState({ taldo: "base" }, "");

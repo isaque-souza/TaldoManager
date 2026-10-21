@@ -18,6 +18,8 @@
 </head>
 <body>
   <header class="topo">
+    <button id="voltar-topo" class="secondary outline topo-voltar" type="button" aria-label="Voltar"
+      title="Voltar" hidden><span data-icone="voltar"></span><span class="topo-rotulo">Voltar</span></button>
     <div class="marca">
       <span class="marca-bug">TALDO</span>
       <span class="marca-nome">Manager</span>
@@ -26,9 +28,9 @@
       <span id="usuario-nome" class="usuario-nome"></span>
       <button id="sair" class="secondary outline" type="button">Sair</button>
     </div>
-    <button id="menu" class="secondary outline" hidden><span data-icone="casa"></span> Menu</button>
-    <button id="abrir-lateral" class="secondary outline" aria-controls="lateral"
-      aria-expanded="false" hidden><span data-icone="menu"></span> Seções</button>
+    <button id="menu" class="secondary outline" aria-label="Menu" hidden><span data-icone="casa"></span><span class="topo-rotulo">Menu</span></button>
+    <button id="abrir-lateral" class="secondary outline" aria-controls="lateral" aria-label="Seções"
+      aria-expanded="false" hidden><span data-icone="menu"></span><span class="topo-rotulo">Seções</span></button>
   </header>
 
   <!-- barra lateral (v1.8): as seções do clube, durante o jogo -->
@@ -38,6 +40,8 @@
       <span class="marca-nome">Manager</span>
     </div>
     <div id="lateral-clube" class="lateral-clube"></div>
+    <button id="voltar-lateral" type="button" class="lateral-voltar" hidden>
+      <span data-icone="voltar"></span> Voltar</button>
     <nav id="lateral-nav" class="lateral-nav"></nav>
     <button id="lateral-menu" type="button" class="lateral-sair">
       <span data-icone="pasta"></span> Menu principal</button>

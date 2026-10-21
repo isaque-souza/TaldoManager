@@ -83,7 +83,7 @@ export async function renovar(jogadorId, salario, anos, multa, papel) {
       `como ${PAPEL_ROTULO[r.contrato.papel].toLowerCase()}.`;
     $("c-form").innerHTML = "";
   }
-  $("r-contrato-msg").textContent = msg;
+  $("r-contrato-msg").innerHTML = msg;
   if (r.contrato) await carregarMercado();
   else await abrirContrato(jogadorId);
 }
