@@ -943,6 +943,7 @@ button.hub-card:hover, button.hub-card:focus-visible {
   background: #fff; color: var(--noite); border-radius: 2px; font-variant-numeric: tabular-nums;
 }
 .pt-gols i { font-style: normal; color: var(--texto-2); font-weight: 700; }
+.pt-penaltis { color: #fff; font-weight: 700; letter-spacing: .04em; }
 .pt-relogio {
   margin-left: auto; font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums;
   color: var(--refletor); min-width: 5ch; justify-content: flex-end;

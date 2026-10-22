@@ -52,10 +52,13 @@ class PartidaEmAndamento(Exception):
 # ---------------------------------------------------------------------------
 
 def transmissao_ativa(sim):
-    """Há uma partida do técnico sendo transmitida nesta rodada?"""
+    """Há uma partida do técnico sendo transmitida nesta rodada (ou no jogo
+    da copa que espera por ele)?"""
     if not sim["ao_vivo_json"]:
         return False
-    return json.loads(sim["ao_vivo_json"])["rodada"] == sim["rodada_atual"]
+    ao_vivo = json.loads(sim["ao_vivo_json"])
+    return (ao_vivo["rodada"] == sim["rodada_atual"]
+            and ao_vivo.get("copa") == sim["copa_pendente"])
 
 
 def decisoes_ao_vivo(sim):
@@ -108,6 +111,29 @@ def _resolver_disputas(conn, simulacao_id, rodada, campeonato):
             continue
         feitas.append((neg, jogador, vendedor, concorrente))
     return feitas
+
+
+def proximo_confronto(sim, campeonato, nome):
+    """(adversário, mando, copa) do próximo jogo do clube: o da fase da
+    copa que espera por ele (copa = {"fase", "nome"}) ou o da rodada da liga
+    (copa = None; adversário None na folga)."""
+    fase = sim["copa_pendente"]
+    if fase:
+        adversario, mando = _jogo_da_copa(campeonato, fase, nome)
+        return adversario, mando, {"fase": fase, "nome": copa_service.NOMES[fase]}
+    adversario, mando = _confronto_do_clube(
+        campeonato.calendario[campeonato.rodada - 1], nome
+    )
+    return adversario, mando, None
+
+
+def _jogo_da_copa(campeonato, fase, nome):
+    for j in campeonato.copa.fases.get(fase) or []:
+        if j["mandante"] == nome:
+            return j["visitante"], "casa"
+        if j["visitante"] == nome:
+            return j["mandante"], "fora"
+    return None, None
 
 
 def _confronto_do_clube(rodada, nome):
@@ -242,9 +268,20 @@ def proxima_rodada(simulacao_id):
             random.setstate(estado_rng)
 
         r = campeonato.rodada
-        rodada = campeonato.calendario[r - 1]
         alvo = _achar_clube(campeonato, sim["clube_usuario"])
-        adversario, mando = _confronto_do_clube(rodada, alvo.nome)
+        adversario, mando, na_copa = proximo_confronto(sim, campeonato, alvo.nome)
+        if na_copa:
+            liga_de = {c.nome: c.liga for c in campeonato.clubes}
+            confrontos = [
+                {"mandante": j["mandante"], "visitante": j["visitante"],
+                 "liga": liga_de[j["mandante"]]}
+                for j in campeonato.copa.fases[na_copa["fase"]]
+            ]
+        else:
+            confrontos = [
+                {"mandante": m.nome, "visitante": v.nome, "liga": m.liga}
+                for m, v in campeonato.calendario[r - 1]
+            ]
 
         return {
             "concluida": False,
@@ -261,10 +298,9 @@ def proxima_rodada(simulacao_id):
             "transmissao_ativa": transmissao_ativa(sim),
             # o time como o motor vai escalar (editor no campo, v1.2)
             "escalacao": _escalacao(alvo),
-            "confrontos": [
-                {"mandante": m.nome, "visitante": v.nome, "liga": m.liga}
-                for m, v in rodada
-            ],
+            "confrontos": confrontos,
+            # o próximo jogo é o da copa, no meio da semana (v2.0)
+            "copa": na_copa,
             "elenco": [
                 {
                     "nome": j.nome,
@@ -370,7 +406,7 @@ def pre_jogo(simulacao_id):
 
     r = campeonato.rodada
     alvo = _achar_clube(campeonato, sim["clube_usuario"])
-    adversario, mando = _confronto_do_clube(campeonato.calendario[r - 1], alvo.nome)
+    adversario, mando, na_copa = proximo_confronto(sim, campeonato, alvo.nome)
 
     base = {
         "rodada": r,
@@ -378,6 +414,7 @@ def pre_jogo(simulacao_id):
         "clube_usuario": alvo.nome,
         "adversario": adversario,
         "mando": mando,
+        "copa": na_copa,
     }
     if adversario is None:
         return {**base, "mandante": None, "visitante": None}
@@ -405,6 +442,9 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             raise TemporadaConcluida(
                 "Esta temporada já foi concluída"
             )
+
+        if sim["copa_pendente"]:
+            return _avancar_copa(conn, sim, tatica, formacao, xi_preferido, posicionamento)
 
         seed = sim["seed"]
         clube_usuario = sim["clube_usuario"]
@@ -440,7 +480,8 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             campeonato.calendario[rodada_jogada - 1], alvo.nome
         )
         with redirect_stdout(io.StringIO()):
-            campeonato.jogar_rodada(clube_usuario, decisoes)
+            # a fase da copa em que o técnico joga fica para a quarta (v2.0)
+            campeonato.jogar_rodada(clube_usuario, decisoes, adiar_copa=True)
         mensagens = caixa.depois_da_rodada(antes, caixa.foto_do_elenco(alvo), adversario)
         # empréstimos (v1.7): quem voltou ao clube de origem e, faltando
         # poucas rodadas, o aviso da opção de compra
@@ -580,6 +621,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
                 )
             if ao_vivo:
                 simulacao_repo.definir_ao_vivo(conn, simulacao_id, None)
+            simulacao_repo.definir_copa_pendente(conn, simulacao_id, campeonato.copa_adiada)
 
             if concluida:
                 simulacao_repo.atualizar_estado(
@@ -631,10 +673,100 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
                 }
                 for pid, p in zip(partida_ids, novas)
             ],
-            "copa": copa_service.jogos_da_rodada(
+            # a fase que ficou para a quarta ainda não tem resultado
+            "copa": None if campeonato.copa_adiada else copa_service.jogos_da_rodada(
                 campeonato.copa and campeonato.copa.para_dict(), rodada_jogada, liga_de,
             ),
             **visao,
         }
     finally:
         conn.close()
+
+
+def _avancar_copa(conn, sim, tatica, formacao, xi_preferido, posicionamento):
+    """Joga a fase da copa que esperava o técnico (v2.0), na quarta depois
+    da rodada dela. Os outros jogos da fase saem junto; a liga não anda
+    (rodada_atual fica). Devolve o formato de `avancar`, com `resultados`
+    vazio, `copa` com a fase e `copa_jogada` True."""
+
+    simulacao_id = sim["id"]
+    clube_usuario = sim["clube_usuario"]
+    fase = sim["copa_pendente"]
+    ao_vivo = transmissao_ativa(sim)
+    decisoes = decisoes_ao_vivo(sim)
+    if ao_vivo:
+        tatica = formacao = xi_preferido = posicionamento = None
+
+    campeonato = carregar_campeonato_do_save(sim)
+    restaurar_estado(campeonato, json.loads(sim["estado_json"]))
+
+    alvo = _achar_clube(campeonato, clube_usuario)
+    nova_tatica = tatica or alvo.tatica
+    nova_formacao = formacao or alvo.formacao
+    simulacao_service._configurar_clube(
+        alvo, nova_tatica, nova_formacao, xi_preferido, posicionamento
+    )
+    if xi_preferido is not None:
+        xi_ef = list(dict.fromkeys(xi_preferido)) or None
+    else:
+        xi_ef = sorted(j.nome for j in alvo.xi_preferido) or None
+
+    rodada_da_fase = copa.DATAS[fase]
+    antes = caixa.foto_do_elenco(alvo)
+    with redirect_stdout(io.StringIO()):
+        campeonato.jogar_copa_adiada(fase, clube_usuario, decisoes)
+    # sem adversário: lesão e suspensão não andam num jogo de copa, só as
+    # lesões novas contam
+    mensagens = caixa.depois_da_rodada(antes, caixa.foto_do_elenco(alvo), None)
+    mensagens.append(
+        copa_service.mensagem_da_rodada(campeonato, rodada_da_fase, clube_usuario)
+    )
+
+    cru = simulacao_service._serializar(
+        campeonato, sim["seed"], clube_usuario, nova_tatica, nova_formacao, xi_ef,
+    )
+    xi_json = json.dumps(xi_ef, ensure_ascii=False) if xi_ef else None
+
+    # a rodada da liga começa no plano de jogo padrão, como depois de um
+    # jogo da liga. Nada aqui sorteia.
+    from app.services import plano_service   # aqui: evita import circular
+    aplicado = plano_service.aplicar_padrao(conn, simulacao_id, alvo)
+    if aplicado:
+        nova_tatica, nova_formacao, xi_padrao = aplicado
+        xi_json = json.dumps(xi_padrao, ensure_ascii=False) if xi_padrao else None
+
+    with conn:
+        dia_do_jogo = calendario.data_da_copa(sim["temporada"], rodada_da_fase)
+        simulacao_repo.definir_data(conn, simulacao_id, dia_do_jogo)
+        relatorio_service.entregar(conn, simulacao_id, dia_do_jogo, rodada_da_fase)
+        # prêmio, bilheteria, cansaço e lesões novas (o resto a copa isola)
+        mapa = clube_repo.atualizar(conn, simulacao_id, cru["clubes"])
+        jogador_repo.atualizar(conn, simulacao_id, mapa, cru["jogadores"])
+        mensagem_repo.inserir(conn, simulacao_id, rodada_da_fase, mensagens)
+        simulacao_repo.definir_ao_vivo(conn, simulacao_id, None)
+        simulacao_repo.definir_copa_pendente(conn, simulacao_id, None)
+        simulacao_repo.atualizar_estado(
+            conn, simulacao_id,
+            estado="em_andamento",
+            rodada_atual=campeonato.rodada,
+            estado_json=json.dumps(snapshot_estado(campeonato)),
+            campeao="",
+            tatica=nova_tatica,
+            formacao=nova_formacao,
+            xi_preferido=xi_json,
+        )
+
+    visao = simulacao_service._montar_visao(
+        simulacao_service._cru_do_banco(conn, simulacao_id)
+    )
+    liga_de = {c.nome: c.liga for c in campeonato.clubes}
+    return {
+        "rodada_jogada": rodada_da_fase,
+        "concluida": False,
+        "copa_jogada": True,
+        "resultados": [],
+        "copa": copa_service.jogos_da_rodada(
+            campeonato.copa.para_dict(), rodada_da_fase, liga_de,
+        ),
+        **visao,
+    }

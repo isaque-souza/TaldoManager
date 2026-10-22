@@ -697,8 +697,32 @@ def test_copa_da_temporada_e_jogo_do_tecnico():
 
     for rodada in range(1, 9):
         res = client.post(f"/simulacoes/{sid}/rodadas").json()
-        assert (res["copa"] is not None) == (rodada == 8)
+        assert res["copa"] is None and not res["copa_jogada"]
+
+    # o técnico está nas oitavas: a fase espera a quarta, com o jogo dele
+    cal = client.get(f"/simulacoes/{sid}/calendario").json()
+    assert cal["copa"] and cal["rodada"] == 9 and cal["dias_ate_o_jogo"] == 4
+    prox = client.get(f"/simulacoes/{sid}/rodadas/proxima").json()
+    assert prox["copa"] == {"fase": "oitavas", "nome": "Oitavas de final"}
+    assert prox["mando"] == "casa" and len(prox["confrontos"]) == 8
+    pj = client.get(f"/simulacoes/{sid}/pre-jogo").json()
+    assert pj["copa"]["fase"] == "oitavas" and pj["mandante"]["clube"] == "Manchester City"
+    # ainda não é dia de jogo
+    assert client.post(f"/simulacoes/{sid}/calendario/continuar").json()["periodo"] == "dia_de_jogo"
+
+    t = client.post(f"/simulacoes/{sid}/transmissao", json={}).json()
+    assert t["copa"]["fase"] == "oitavas" and len(t["outros"]) == 7
+    gols = [sum(1 for e in t["eventos"] if e["tipo"] in ("gol", "penalti") and e["clube"] == c)
+            for c in (t["mandante"]["clube"], t["visitante"]["clube"])]
+    assert bool(t["penaltis"]) == (gols[0] == gols[1])
+
+    res = client.post(f"/simulacoes/{sid}/rodadas").json()
+    assert res["copa_jogada"] and res["resultados"] == [] and res["rodada_atual"] == 9
     assert res["copa"]["fase"] == "oitavas" and len(res["copa"]["jogos"]) == 8
+    meu = next(j for j in res["copa"]["jogos"] if j["mandante"] == "Manchester City")
+    # o placar gravado é o da transmissão
+    assert [meu["gols_mandante"], meu["gols_visitante"]] == gols
+    assert not client.get(f"/simulacoes/{sid}/calendario").json()["copa"]
     assert all(j["vencedor"] for j in res["copa"]["jogos"])
 
     copa = client.get(f"/simulacoes/{sid}/copa").json()["copa"]

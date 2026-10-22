@@ -75,7 +75,8 @@ function escolherVelocidade(v) {
 }
 
 // minuto assistido, para retomar de onde parou ao voltar para a partida
-const chaveMinuto = () => `taldo:transmissao:${estado.simId}:${jogo.rodada}`;
+const chaveMinuto = () =>
+  `taldo:transmissao:${estado.simId}:${jogo.rodada}${jogo.copa ? `:${jogo.copa.fase}` : ""}`;
 function lembrarMinuto() {
   try { localStorage.setItem(chaveMinuto(), String(jogo.minuto)); } catch { /* segue */ }
 }
@@ -121,6 +122,9 @@ function iniciar(t) {
     decisoes: t.decisoes,
     outros: t.outros,
     desenhos: t.desenhos || {},   // v1.3: para redesenhar ao mudar a formação
+    copa: t.copa,                 // v2.0: jogo da copa (com pênaltis no empate)
+    penaltis: t.penaltis || [],
+    penaltisPlacar: null,
     minuto: 0,
     placar: [0, 0],
     velocidade: lerVelocidade(),
@@ -564,6 +568,7 @@ async function confirmar() {
   jogo.minutos = t.minutos;
   jogo.eventos = t.eventos;
   jogo.decisoes = t.decisoes;
+  jogo.penaltis = t.penaltis || [];   // a mudança pode desfazer (ou criar) o empate
   jogo.pendentes = mudancas;
   jogo.confirmadas = JSON.stringify(mudancas);
   jogo.selecao = null;
@@ -587,29 +592,52 @@ async function encerrar() {
   $("av-faixa").classList.remove("visivel");
   adicionarLinha(relogio(jogo.fim), "Fim de jogo!", "apito");
   renderTudo();
+  await disputaDePenaltis();
   await gravar();
+}
+
+// copa (v2.0): empatou, vai para os pênaltis — uma cobrança de cada vez
+async function disputaDePenaltis() {
+  if (!jogo.penaltis.length) return;
+  adicionarLinha("PÊN", "Empate! A vaga sai nos pênaltis", "apito");
+  const placar = [0, 0];
+  for (const c of jogo.penaltis) {
+    await new Promise((r) => setTimeout(r, 1400 / jogo.velocidade));
+    const lado = c.lado === "mandante" ? 0 : 1;
+    const clube = (lado === 0 ? jogo.mandante : jogo.visitante).clube;
+    if (c.gol) placar[lado] += 1;
+    adicionarLinha("PÊN", c.gol
+      ? `<b>Converte!</b> ${c.jogador} (${clube}) · ${placar[0]} x ${placar[1]}`
+      : `<b>Perdeu!</b> ${c.jogador} (${clube}) desperdiça · ${placar[0]} x ${placar[1]}`,
+    c.gol ? "gol" : "perdido");
+  }
+  jogo.penaltisPlacar = placar;
+  const venceu = placar[0] > placar[1] ? jogo.mandante.clube : jogo.visitante.clube;
+  adicionarLinha("PÊN", `<b>${venceu}</b> vence nos pênaltis por ${Math.max(...placar)} x ${Math.min(...placar)}`, "apito");
+  renderPlacar("fim");
 }
 
 // o apito final grava a rodada inteira (com as decisões do técnico)
 async function gravar() {
   $("av-fim").hidden = false;
   $("av-resultados").disabled = true;
-  $("av-fim-msg").textContent = "Gravando a rodada…";
+  $("av-fim-msg").textContent = jogo.copa ? "Gravando o jogo da copa…" : "Gravando a rodada…";
   const res = await enviarRodada();
   $("av-resultados").disabled = false;
   if (!res) {
-    $("av-fim-msg").textContent = "Não deu para gravar a rodada.";
+    $("av-fim-msg").textContent = jogo.copa ? "Não deu para gravar o jogo." : "Não deu para gravar a rodada.";
     $("av-resultados").innerHTML = `${icone("play")} Tentar de novo`;
     $("av-resultados").dataset.acao = "gravar";
     return;
   }
   esquecerMinuto();
   estado.rodadaInfo.transmissao_ativa = false;
-  const minha = res.resultados.find((r) => r.mandante === jogo.meu || r.visitante === jogo.meu);
+  const jogos = res.copa_jogada ? res.copa.jogos : res.resultados;
+  const minha = jogos.find((r) => r.mandante === jogo.meu || r.visitante === jogo.meu);
   if (minha) jogo.placar = [minha.gols_mandante, minha.gols_visitante];   // o placar oficial
   renderPlacar("fim");
   $("av-fim-msg").textContent = "";
-  $("av-resultados").innerHTML = `${icone("play")} Ver resultados da rodada`;
+  $("av-resultados").innerHTML = `${icone("play")} ${res.copa_jogada ? "Ver resultados da copa" : "Ver resultados da rodada"}`;
   $("av-resultados").dataset.acao = "resultados";
 }
 
@@ -641,9 +669,10 @@ function renderPlacar(fase) {
   const v = jogo.visitante.clube;
   const tempo = fase === "intervalo" ? "INT" : relogio(jogo.minuto);
   $("av-placar").innerHTML = `
-    <span class="pt-rodada">Rodada ${jogo.rodada}</span>
+    <span class="pt-rodada">${jogo.copa ? `Copa · ${jogo.copa.nome}` : `Rodada ${jogo.rodada}`}</span>
     <span class="pt-time">${escudo(m, 30)}<b>${identidade(m).sigla}</b></span>
-    <span class="pt-gols"><b>${jogo.placar[0]}</b><i>x</i><b>${jogo.placar[1]}</b></span>
+    <span class="pt-gols"><b>${jogo.placar[0]}</b><i>x</i><b>${jogo.placar[1]}</b>${
+      jogo.penaltisPlacar ? `<small class="pt-penaltis">pên. ${jogo.penaltisPlacar[0]} x ${jogo.penaltisPlacar[1]}</small>` : ""}</span>
     <span class="pt-time pt-time-fora"><b>${identidade(v).sigla}</b>${escudo(v, 30)}</span>
     <span class="pt-relogio">${tempo}</span>
     ${SELO[fase]}`;

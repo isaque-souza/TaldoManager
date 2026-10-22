@@ -33,8 +33,9 @@ function dataLonga(d) {
 const diasAte = (n) => (n === 1 ? "amanhã" : `em ${n} dias`);
 
 export function textoCalendario(cal, quando = paraData(cal.data)) {
-  const jogo = cal.periodo === "dia_de_jogo" ? "jogo hoje"
-    : cal.dias_ate_o_jogo != null ? `jogo ${diasAte(cal.dias_ate_o_jogo)}` : "";
+  const qual = cal.copa ? "jogo da copa" : "jogo";
+  const jogo = cal.periodo === "dia_de_jogo" ? `${qual} hoje`
+    : cal.dias_ate_o_jogo != null ? `${qual} ${diasAte(cal.dias_ate_o_jogo)}` : "";
   return `${icone("calendario")} <b>${dataLonga(quando)}</b>` +
     ` <small>${cal.temporada} · ${PERIODO[cal.periodo] ?? ""}${jogo ? ` · ${jogo}` : ""}</small>`;
 }

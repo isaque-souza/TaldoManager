@@ -77,6 +77,14 @@ def definir_ao_vivo(conn, simulacao_id, ao_vivo_json):
     )
 
 
+def definir_copa_pendente(conn, simulacao_id, fase):
+    """A fase da copa que espera o jogo do técnico (v2.0), ou None."""
+    conn.execute(
+        "UPDATE simulacao SET copa_pendente = ? WHERE id = ?",
+        (fase, simulacao_id),
+    )
+
+
 def definir_plano_em_uso(conn, simulacao_id, plano_id):
     """O plano carregado para a próxima partida (None = nenhum)."""
     conn.execute(

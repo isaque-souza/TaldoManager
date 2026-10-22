@@ -1,7 +1,8 @@
 // Copa entre as ligas (v1.6): 16 clubes (8 de cada liga) em mata-mata, no
 // meio da semana depois das rodadas 8, 17, 26 e 35. Aqui só se mostra: o
 // card do hub, o chaveamento e os jogos da copa no resultado da rodada. O
-// jogo do técnico na copa é simulado junto com a rodada.
+// jogo do técnico na copa (v2.0) é na quarta, com pré-jogo e transmissão
+// como os da liga (rodada.js / aovivo.js); os outros saem junto com ele.
 
 import { $, estado, pedir } from "./nucleo.js";
 import { escudo } from "./identidade.js";

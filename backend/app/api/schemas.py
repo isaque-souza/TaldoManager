@@ -365,6 +365,13 @@ class Calendario(BaseModel):
     dias_ate_o_jogo: int | None
     janela_aberta: bool
     chegou_mensagem: bool = False          # ao avançar: entrou mensagem na caixa
+    copa: bool = False                     # o próximo jogo é o da copa, na quarta
+
+
+class FaseDoJogo(BaseModel):
+    """O jogo do técnico é da copa (v2.0): a fase dele."""
+    fase: str                              # oitavas | quartas | semi | final
+    nome: str                              # "Oitavas de final"
 
 
 class ProximaRodada(BaseModel):
@@ -383,6 +390,7 @@ class ProximaRodada(BaseModel):
     transmissao_ativa: bool = False   # v1.2: a partida já começou
     escalacao: "EscalacaoPreJogo | None" = None   # v1.2: como o motor vai escalar
     calendario: Calendario | None = None   # v2.0
+    copa: FaseDoJogo | None = None         # v2.0: o próximo jogo é da copa
 
 
 class ResultadoRodada(BaseModel):
@@ -435,6 +443,7 @@ class PreJogo(BaseModel):
     mando: Literal["casa", "fora"] | None
     mandante: EscalacaoPreJogo | None
     visitante: EscalacaoPreJogo | None
+    copa: FaseDoJogo | None = None   # v2.0: jogo da copa
 
 
 class GolAoVivo(BaseModel):
@@ -490,6 +499,8 @@ class RodadaJogada(SimulacaoResponse):
     resultados: list[ResultadoRodada]
     # a fase da copa jogada no meio da semana (v1.6), se teve
     copa: CopaDaRodada | None = None
+    # v2.0: foi o jogo da copa do técnico, não uma rodada da liga
+    copa_jogada: bool = False
 
 
 class FaseCopa(BaseModel):
@@ -1302,6 +1313,12 @@ class OutroJogo(BaseModel):
     gols: list[GolAoVivo]
 
 
+class CobrancaPenalti(BaseModel):
+    lado: Literal["mandante", "visitante"]
+    jogador: str
+    gol: bool
+
+
 class Transmissao(BaseModel):
     """POST/GET /simulacoes/{id}/transmissao: a partida do técnico inteira,
     como sai com as decisões até aqui. Decisões novas só mudam do minuto
@@ -1318,6 +1335,8 @@ class Transmissao(BaseModel):
     # v1.3: o desenho de cada formação, para redesenhar o time quando ela
     # muda no meio do jogo — {formação: [{funcao, x, y, rotulo}]}
     desenhos: dict[str, list[dict]] = {}
+    copa: FaseDoJogo | None = None             # v2.0: jogo da copa
+    penaltis: list[CobrancaPenalti] = []       # v2.0: a disputa, no empate da copa
 
 
 class MudancaNaPausa(BaseModel):

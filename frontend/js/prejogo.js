@@ -35,7 +35,9 @@ function renderPreJogo(pj) {
   $("prejogo").hidden = false;
   window.scrollTo(0, 0);
 
-  $("pj-titulo").textContent = `Rodada ${pj.rodada} de ${pj.total_rodadas}`;
+  $("pj-titulo").textContent = pj.copa
+    ? `Copa · ${pj.copa.nome}`
+    : `Rodada ${pj.rodada} de ${pj.total_rodadas}`;
   $("pj-confronto").innerHTML =
     `${escudo(eu.clube, 28)} <strong>${eu.clube}</strong> <span class="x">x</span> ` +
     `${escudo(rival.clube, 28)} <strong>${rival.clube}</strong> <small>(${local})</small> ` +

@@ -6,6 +6,8 @@ na simulação. O dia do jogo é o limite — dele em diante, só jogando a
 rodada (`temporada_service.avancar`, que leva o calendário até ele).
 """
 
+from datetime import timedelta
+
 from app.db.conexao import conectar
 from app.domain import calendario, mercado
 from app.repositories import simulacao_repository as simulacao_repo
@@ -19,15 +21,19 @@ def visao(sim):
     temporada = sim["temporada"]
     concluida = sim["estado"] != "em_andamento"
     rodada = sim["rodadas"] if concluida else sim["rodada_atual"]
+    na_copa = not concluida and bool(sim["copa_pendente"])
     hoje = (calendario.data_da_rodada(temporada, rodada) if concluida
             else calendario.data_atual(temporada, rodada, sim["data_atual"]))
-    jogo = calendario.data_da_rodada(temporada, rodada)
+    jogo = calendario.data_do_jogo(temporada, rodada, na_copa)
     return {
         "temporada": calendario.nome_da_temporada(temporada),
         "data": hoje.isoformat(),
         "data_fmt": calendario.formatar(hoje),
-        "periodo": "concluida" if concluida else calendario.periodo(hoje, temporada, rodada),
+        "periodo": ("concluida" if concluida
+                    else calendario.periodo(hoje, temporada, rodada, na_copa)),
         "rodada": None if concluida else rodada,
+        # o próximo jogo é o da copa, na quarta (v2.0)
+        "copa": na_copa,
         "data_do_jogo": None if concluida else jogo.isoformat(),
         "dias_ate_o_jogo": None if concluida else (jogo - hoje).days,
         "janela_aberta": not concluida and mercado.janela_aberta(rodada),
@@ -54,7 +60,7 @@ def ver(simulacao_id):
 
 
 def _andar(simulacao_id, proximo):
-    """Grava o dia `proximo(conn, simulacao_id, hoje, temporada, rodada)`, entrega o que
+    """Grava o dia `proximo(conn, simulacao_id, hoje, dia_do_jogo)`, entrega o que
     ficou pronto até ele e devolve a visão (com `chegou_mensagem`)."""
     conn = conectar()
     try:
@@ -62,8 +68,9 @@ def _andar(simulacao_id, proximo):
         if sim is None:
             return None
         temporada, rodada = sim["temporada"], sim["rodada_atual"]
+        na_copa = bool(sim["copa_pendente"])
         hoje = calendario.data_atual(temporada, rodada, sim["data_atual"])
-        dia = proximo(conn, simulacao_id, hoje, temporada, rodada)
+        dia = proximo(conn, simulacao_id, hoje, calendario.data_do_jogo(temporada, rodada, na_copa))
         with conn:
             simulacao_repo.definir_data(conn, simulacao_id, dia)
             # relatórios do olheiro que ficaram prontos no caminho (v2.0)
@@ -79,13 +86,13 @@ def avancar_dia(simulacao_id):
     """Um dia a mais (sem passar do dia do jogo)."""
     return _andar(
         simulacao_id,
-        lambda conn, sid, hoje, temporada, rodada: calendario.avancar_um_dia(hoje, temporada, rodada),
+        lambda conn, sid, hoje, jogo: min(hoje + timedelta(days=1), max(hoje, jogo)),
     )
 
 
-def _proximo_evento(conn, simulacao_id, hoje, temporada, rodada):
+def _proximo_evento(conn, simulacao_id, hoje, jogo):
     """O dia do próximo jogo, ou antes, o de um relatório que fica pronto."""
-    jogo = max(hoje, calendario.data_da_rodada(temporada, rodada))
+    jogo = max(hoje, jogo)
     relatorio = relatorio_service.proximo_pronto(conn, simulacao_id)
     return min(jogo, relatorio) if relatorio and relatorio > hoje else jogo
 

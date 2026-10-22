@@ -8,9 +8,10 @@ temporada (`SEMANAS_PAUSA` semanas a mais sem jogo, a janela do meio). A
 fase da copa é na quarta depois da rodada dela (`app.domain.copa.DATAS`).
 
 O motor e as finanças continuam contando rodadas: o calendário só dá uma
-data a cada uma e deixa os dias passarem entre elas. Por enquanto a fase da
-copa é jogada junto com a rodada do fim de semana (o motor não muda); ela só
-leva a data da quarta.
+data a cada uma e deixa os dias passarem entre elas. Quando o clube do
+técnico está na fase da copa, ela espera a quarta (`na_copa`): o próximo
+jogo é o dela, não o da rodada `rodada`. Fora dela, a fase é jogada junto
+com a rodada do fim de semana e só leva a data da quarta.
 
 Tudo aqui é determinístico (só `datetime.date`): nada de `random`.
 """
@@ -64,6 +65,14 @@ def data_da_copa(temporada, rodada):
     return data_da_rodada(temporada, rodada) + timedelta(days=DIAS_ATE_A_COPA)
 
 
+def data_do_jogo(temporada, rodada, na_copa=False):
+    """O dia do próximo jogo do técnico: o sábado da rodada `rodada` ou,
+    com a copa esperando (`na_copa`), a quarta depois da rodada anterior."""
+    if na_copa:
+        return data_da_copa(temporada, rodada - 1)
+    return data_da_rodada(temporada, rodada)
+
+
 def data_atual(temporada, rodada_atual, salva=None):
     """O dia em que o save está. `salva` é a data gravada (ISO); saves de
     antes do calendário não têm e ficam no dia da próxima rodada."""
@@ -72,21 +81,23 @@ def data_atual(temporada, rodada_atual, salva=None):
     return data_da_rodada(temporada, rodada_atual or 1)
 
 
-def dias_ate_o_jogo(hoje, temporada, rodada):
-    return (data_da_rodada(temporada, rodada) - hoje).days
+def dias_ate_o_jogo(hoje, temporada, rodada, na_copa=False):
+    return (data_do_jogo(temporada, rodada, na_copa) - hoje).days
 
 
-def avancar_um_dia(hoje, temporada, rodada):
+def avancar_um_dia(hoje, temporada, rodada, na_copa=False):
     """O dia seguinte — mas não passa do dia do jogo: ele precisa ser
     jogado antes."""
-    return min(hoje + timedelta(days=1), data_da_rodada(temporada, rodada))
+    return min(hoje + timedelta(days=1), data_do_jogo(temporada, rodada, na_copa))
 
 
-def periodo(hoje, temporada, rodada):
+def periodo(hoje, temporada, rodada, na_copa=False):
     """Em que parte da temporada o dia está: "pre_temporada", "pausa"
     (a do meio), "dia_de_jogo" ou "temporada"."""
-    if hoje >= data_da_rodada(temporada, rodada):
+    if hoje >= data_do_jogo(temporada, rodada, na_copa):
         return "dia_de_jogo"
+    if na_copa:
+        return "temporada"
     if rodada == 1:
         return "pre_temporada"
     if rodada == RODADA_DA_PAUSA and hoje > data_da_rodada(temporada, rodada - 1) + timedelta(
