@@ -273,7 +273,18 @@ button, [role="button"] {
   letter-spacing: .1em; padding: .42rem .7rem .38rem 1rem; margin-left: -8px; font-size: 1.15rem;
   clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%);
 }
-.topo button { width: auto; margin: 0; padding: .45rem .9rem; font-size: .9rem; }
+.topo button { width: auto; margin: 0; padding: .45rem .9rem; font-size: .9rem; flex: none; }
+.topo button[hidden] { display: none; }
+.topo .marca { flex: none; }
+.topo-voltar + .marca { margin-right: auto; }
+/* celular: o topo cabe numa linha — marca menor, botões só com o ícone */
+@media (max-width: 640px) {
+  .topo { gap: .5rem; }
+  .topo .marca-bug, .topo .marca-nome { font-size: .9rem; letter-spacing: .08em; }
+  .topo button { padding: .45rem .6rem; font-size: .85rem; }
+  .topo-rotulo, .usuario-nome { display: none; }
+  .usuario { gap: .5rem; }
+}
 
 /* ---------- conta (v2.1) ---------- */
 .usuario { display: flex; align-items: center; gap: .75rem; margin-left: auto; }
@@ -303,7 +314,8 @@ button, [role="button"] {
 .abas button small { font-family: var(--fonte-texto); text-transform: none; letter-spacing: 0; }
 
 /* ---------- tabelas: placar de estatística da TV ---------- */
-figure { margin-bottom: 1rem; }
+/* tabela larga rola dentro da figura, não empurra a página para o lado */
+figure { margin-bottom: 1rem; max-width: 100%; overflow-x: auto; }
 table { font-size: .9rem; }
 th {
   text-transform: uppercase; letter-spacing: .07em; font-weight: 700; font-size: .82rem;
@@ -624,11 +636,12 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 @media (max-width: 760px) {
   .editor { grid-template-columns: 1fr; }
   /* estreito: o campo fica mais comprido e o boneco, menor (camisa menor,
-     sem a barra de energia — ela segue no banco e no elenco) */
+     e a barra de energia mais curta) */
   .ed-campo { aspect-ratio: 100 / 150; max-height: none; }
   .ed-jog { width: 4rem; padding: .1rem 0; }
   .ed-jog .camisa { width: 30px; height: 30px; }
-  .ed-jog .ed-energia { display: none; }
+  .ed-jog .ed-info { gap: .2rem; font-size: .7rem; }
+  .ed-jog .ed-energia { width: 1.1rem; }
   .ed-nome { font-size: .68rem; }
   .ed-imp { font-size: .52rem; }
   .pl-acoes { margin-left: 0; }
@@ -826,7 +839,7 @@ button.hub-card:hover, button.hub-card:focus-visible {
 }
 .pj-tarja-rival { flex-direction: row-reverse; text-align: right; }
 .pj-tarja-nome { font-weight: 800; font-size: 1.15rem; }
-.pj-tarja-esquema {
+.pj-tarja-esquema { white-space: nowrap;
   background: #fff; color: var(--noite); font-weight: 800; padding: .05rem .4rem; border-radius: 2px;
   font-variant-numeric: tabular-nums;
 }
@@ -1481,6 +1494,13 @@ body.com-lateral #rodada .hub { margin-bottom: 0; }
 .lateral-selo[hidden] { display: none; }
 .lateral-sair { margin-top: auto; border-top: 1px solid var(--linha); border-radius: 0; padding-top: .9rem; }
 .lateral-fundo { display: none; }
+.lateral-voltar {
+  display: flex; justify-content: flex-start; align-items: center; gap: .7rem; width: 100%;
+  margin: 0; padding: .5rem .65rem; border: 1px solid var(--linha); border-radius: 6px;
+  background: transparent; color: var(--texto); font-size: .95rem; font-weight: 600;
+}
+.lateral-voltar:hover { background: rgba(255, 255, 255, .05); border-color: var(--linha-forte); color: var(--texto); }
+.lateral-voltar[hidden] { display: none; }
 
 /* ---------- faixa da rodada: rodada · confronto · meta · ação ---------- */
 .faixa-rodada { align-items: center; }
@@ -1524,6 +1544,7 @@ body.com-lateral #temporada-voltar { display: none; }
     display: block; position: fixed; inset: 0; z-index: 15; background: rgba(0, 0, 0, .55);
   }
   body.com-lateral #menu { display: none; }
+  .lateral .lateral-voltar { display: none; }   /* no celular, o do topo */
   .faixa-rodada .meta { border-left: 0; border-top: 1px solid var(--linha); flex-basis: 100%; }
   .faixa-rodada > hgroup { flex: 1 1 100%; flex-wrap: wrap; }
   .faixa-rodada #rodada-titulo { flex: 1 1 100%; clip-path: none; padding: .5rem .9rem; font-size: 1.15rem; }
