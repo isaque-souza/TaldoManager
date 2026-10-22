@@ -125,6 +125,10 @@ def test_a_copa_anda_no_save_e_fica_guardada_no_fim():
     sid = temporada_service.iniciar(seed=6, clube_usuario="Arsenal", ligas=DUAS)
     for _ in range(8):
         temporada_service.avancar(sid)
+    # o Arsenal está nas oitavas: a fase espera o jogo dele, na quarta
+    assert all(j["vencedor"] is None for j in _copa_do_estado(sid)["fases"]["oitavas"])
+    res = temporada_service.avancar(sid)
+    assert res["copa_jogada"] and res["rodada_jogada"] == 8 and res["rodada_atual"] == 9
     oitavas = _copa_do_estado(sid)["fases"]["oitavas"]
     assert all(j["vencedor"] for j in oitavas)          # jogou depois da 8ª
     assert all(j["vencedor"] is None for j in _copa_do_estado(sid)["fases"]["quartas"])

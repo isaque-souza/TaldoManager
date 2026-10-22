@@ -30,10 +30,10 @@ from app.domain.clube import Clube
 from app.domain.partida import motivo_goleiro, motivo_troca_de_posicao
 from app.domain.temporada import restaurar_estado
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import escalacao_service
+from app.services import copa_service, escalacao_service
 from app.services.temporada_service import (
-    TemporadaConcluida, _achar_clube, _confronto_do_clube, _escalacao,
-    decisoes_ao_vivo, transmissao_ativa,
+    TemporadaConcluida, _achar_clube, _escalacao, decisoes_ao_vivo,
+    proximo_confronto, transmissao_ativa,
 )
 from scripts.data_loader import carregar_campeonato_do_save
 
@@ -63,7 +63,14 @@ def _simular(sim, decisoes, capturar_em=None):
         campeonato = _restaurado(sim)
         rodada = campeonato.rodada
         with redirect_stdout(io.StringIO()):
-            campeonato.jogar_rodada(sim["clube_usuario"], decisoes, capturar_em)
+            if sim["copa_pendente"]:   # o jogo da copa, na quarta (v2.0)
+                campeonato.jogar_copa_adiada(
+                    sim["copa_pendente"], sim["clube_usuario"], decisoes, capturar_em,
+                )
+            else:
+                campeonato.jogar_rodada(
+                    sim["clube_usuario"], decisoes, capturar_em, adiar_copa=True,
+                )
     finally:
         random.setstate(estado_rng)
     return campeonato, rodada
@@ -77,9 +84,8 @@ def _escalacoes(sim):
         campeonato = _restaurado(sim)
     finally:
         random.setstate(estado_rng)
-    r = campeonato.rodada
     alvo = _achar_clube(campeonato, sim["clube_usuario"])
-    adversario, mando = _confronto_do_clube(campeonato.calendario[r - 1], alvo.nome)
+    adversario, mando, _ = proximo_confronto(sim, campeonato, alvo.nome)
     if adversario is None:
         raise TransmissaoInvalida("O seu clube folga nesta rodada")
     rival = _achar_clube(campeonato, adversario)
@@ -113,10 +119,22 @@ def _montar(sim, campeonato, rodada, decisoes):
         })
 
     # os outros jogos da liga do técnico (v1.6): a outra liga joga na mesma
-    # rodada, mas não mexe na tabela dele
+    # rodada, mas não mexe na tabela dele. Na copa, os outros jogos da fase
+    fase = sim["copa_pendente"]
     da_liga = {c.nome for c in campeonato.clubes_da_liga(p.clube1.liga)}
     outros = []
-    for jogo in campeonato.partidas_jogadas:
+    for jogo in campeonato.copa.fases[fase] if fase else []:
+        if jogo["mandante"] == p.clube1.nome:
+            continue
+        outros.append({
+            "mandante": jogo["mandante"],
+            "visitante": jogo["visitante"],
+            "gols": [
+                {"minuto": g["minuto"], "clube": g["clube"]}
+                for g in jogo["gols"] if g["tipo"] in TIPOS_GOL
+            ],
+        })
+    for jogo in [] if fase else campeonato.partidas_jogadas:
         if (jogo["rodada"] != rodada or jogo["mandante"] == p.clube1.nome
                 or jogo["mandante"] not in da_liga):
             continue
@@ -141,6 +159,11 @@ def _montar(sim, campeonato, rodada, decisoes):
         "decisoes": decisoes,
         "outros": outros,
         "desenhos": desenhos_das_formacoes(),
+        # jogo da copa (v2.0): a fase e, no empate, os pênaltis
+        "copa": {"fase": fase, "nome": copa_service.NOMES[fase]} if fase else None,
+        "penaltis": [
+            {**c, "lado": lado[c["lado"]]} for c in getattr(p, "cobrancas", [])
+        ] if fase else [],
     }
 
 
@@ -201,7 +224,8 @@ def iniciar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
         with conn:
             simulacao_repo.definir_ao_vivo(
                 conn, simulacao_id,
-                json.dumps({"rodada": sim["rodada_atual"], "decisoes": []}),
+                json.dumps({"rodada": sim["rodada_atual"], "decisoes": [],
+                            "copa": sim["copa_pendente"]}),
             )
         sim = simulacao_repo.buscar(conn, simulacao_id)
         return _transmissao(sim, [])
@@ -356,8 +380,8 @@ def pausa(simulacao_id, minuto, mudancas):
         with conn:
             simulacao_repo.definir_ao_vivo(
                 conn, simulacao_id,
-                json.dumps({"rodada": sim["rodada_atual"], "decisoes": decisoes},
-                           ensure_ascii=False),
+                json.dumps({"rodada": sim["rodada_atual"], "decisoes": decisoes,
+                            "copa": sim["copa_pendente"]}, ensure_ascii=False),
             )
         return _transmissao(sim, decisoes)
     finally:

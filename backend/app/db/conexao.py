@@ -75,6 +75,9 @@ _COLUNAS_NOVAS = {
         ("usuario_id", "INTEGER REFERENCES usuario(id) ON DELETE CASCADE"),
         # o dia da última peneira da base (v2.0) nesta temporada (ISO)
         ("ultima_peneira", "TEXT"),
+        # a fase da copa que espera o jogo do técnico na quarta (v2.0);
+        # NULL = a próxima partida é a da liga
+        ("copa_pendente", "TEXT"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")

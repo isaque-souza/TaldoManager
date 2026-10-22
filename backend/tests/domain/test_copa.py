@@ -215,3 +215,58 @@ def test_ate_onde_cada_clube_foi(temporada_com_copa):
                 if not any(c.nome in n for n in dados["classificados"].values()))
     assert copa.ate_onde(dados, fora) is None
     assert copa.ate_onde(None, campeao) is None and copa.campeao_de(None) is None
+
+
+def test_penaltis_guardam_as_cobrancas():
+    random.seed(3)
+    camp = carregar_campeonato(DUAS)
+    a, b = camp.clubes_da_liga("taldo")[0], camp.clubes_da_liga("premier")[0]
+    partida = Partida(a, b)
+    _quieto(partida.simular_partida)
+    for _ in range(50):
+        placar = copa.disputa_de_penaltis(partida)
+        assert [sum(c["gol"] for c in partida.cobrancas if c["lado"] == lado)
+                for lado in (1, 2)] == placar
+        # alternadas, começando pelo mandante
+        assert [c["lado"] for c in partida.cobrancas[:2]] == [1, 2]
+
+
+def test_copa_adiada_para_o_jogo_do_tecnico():
+    """Com `adiar_copa`, a fase em que o técnico joga espera; jogada à
+    parte, as decisões dele valem só no jogo dele."""
+    random.seed(7)
+    camp = carregar_campeonato(DUAS)
+    c = camp.iniciar_copa(_classificados(camp))
+    meu = c.fases["oitavas"][0]["mandante"]
+    while camp.rodada < copa.DATAS["oitavas"]:
+        _quieto(camp.jogar_rodada)
+    _quieto(lambda: camp.jogar_rodada(meu, adiar_copa=True))
+    assert camp.copa_adiada == "oitavas"
+    assert all(j["vencedor"] is None for j in c.fases["oitavas"])
+
+    from app.domain.temporada import restaurar_estado, snapshot_estado
+    foto = json.loads(json.dumps(snapshot_estado(camp)))
+
+    def jogar(decisoes):
+        outro = carregar_campeonato(DUAS)
+        restaurar_estado(outro, foto)
+        _quieto(lambda: outro.jogar_copa_adiada("oitavas", meu, decisoes))
+        return outro.copa.fases["oitavas"], outro.partida_usuario
+
+    jogos, partida = jogar([])
+    assert all(j["vencedor"] for j in jogos) and partida.clube1.nome == meu
+    assert jogar([])[0] == jogos   # determinística a partir do snapshot
+    mudou, _ = jogar([{"minuto": 1, "clube": meu, "tatica": "ofensivo"}])
+    # os outros jogos da fase não mudam com a decisão do técnico
+    assert mudou[1:] == jogos[1:]
+
+
+def test_sem_o_tecnico_na_fase_a_copa_nao_espera():
+    random.seed(8)
+    camp = carregar_campeonato(DUAS)
+    c = camp.iniciar_copa(_classificados(camp))
+    fora = next(cl.nome for cl in camp.clubes
+                if all(cl.nome not in (j["mandante"], j["visitante"]) for j in c.fases["oitavas"]))
+    while camp.rodada <= copa.DATAS["oitavas"]:
+        _quieto(lambda: camp.jogar_rodada(fora, adiar_copa=True))
+    assert camp.copa_adiada is None and all(j["vencedor"] for j in c.fases["oitavas"])

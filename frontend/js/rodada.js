@@ -96,8 +96,10 @@ function renderHub(info) {
   const t = estado.temporada;
   const loc = info.mando === "casa" ? "em casa" : "fora";
   // a rodada já está na faixa: aqui vai onde o adversário está na tabela
+  // (no jogo da copa, a fase)
   const rival = t && t.classificacao.find((c) => c.clube === info.adversario);
-  const onde = rival && rival.jogos > 0 ? ` · ${info.adversario} é o ${rival.posicao}º` : "";
+  const onde = info.copa ? ` · Copa, ${info.copa.nome.toLowerCase()}`
+    : rival && rival.jogos > 0 ? ` · ${info.adversario} é o ${rival.posicao}º` : "";
   $("hub-jogo").innerHTML = info.adversario
     ? `<div class="hub-confronto">
          <span>${escudo(info.clube_usuario, 36)}<b>${info.clube_usuario}</b></span>
@@ -149,14 +151,16 @@ export function renderRodadaAntes() {
   $("rodada-antes").hidden = false;
   $("rodada-depois").hidden = true;
 
-  $("rodada-titulo").textContent =
-    `Rodada ${info.rodada} de ${info.total_rodadas}`;
+  // o jogo da copa (v2.0) vem antes da próxima rodada, no meio da semana
+  $("rodada-titulo").textContent = info.copa
+    ? `Copa · ${info.copa.nome}`
+    : `Rodada ${info.rodada} de ${info.total_rodadas}`;
   if (info.adversario) {
     const loc = info.mando === "casa" ? "em casa" : "fora";
     $("rodada-confronto").innerHTML =
       `<span class="confronto">${escudo(info.clube_usuario, 28)} <strong>${info.clube_usuario}</strong>` +
       ` <span class="x">x</span> ${escudo(info.adversario, 28)} <strong>${info.adversario}</strong>` +
-      ` <small>(${loc})</small></span> <span class="chip">Pré-jogo</span>`;
+      ` <small>(${loc})</small></span> <span class="chip">${info.copa ? `${icone("trofeu")} Copa` : "Pré-jogo"}</span>`;
   } else {
     $("rodada-confronto").textContent =
       `${info.clube_usuario} folga nesta rodada`;
@@ -198,6 +202,8 @@ export function renderRodadaAntes() {
   // as duas ligas jogam a mesma rodada (v1.6): a do técnico primeiro
   const ligaDe = (lista, meu) =>
     lista.find((c) => c.mandante === meu || c.visitante === meu)?.liga;
+  $("r-confrontos-titulo").textContent = info.copa
+    ? `Outros jogos da copa · ${info.copa.nome}` : "Outros jogos da rodada";
   $("r-confrontos").innerHTML = porLiga(
     info.confrontos, ligaDe(info.confrontos, info.clube_usuario),
     (lista) => tabela(lista, [["mandante", "Mandante"], ["visitante", "Visitante"]], marcarEu)
@@ -212,7 +218,9 @@ export function renderRodadaAntes() {
     ? `${icone("play")} Voltar para a partida`
     : !noDia
       ? rotuloContinuar(cal)
-      : info.adversario
+      : info.copa
+        ? `${icone("play")} Jogar a copa · ${info.copa.nome}`
+        : info.adversario
         ? `${icone("play")} Jogar a rodada ${info.rodada}`
         : `${icone("play")} Avançar a rodada ${info.rodada}`;
   $("r-jogar").disabled = false;
@@ -236,7 +244,15 @@ function meuJogo(r, meu) {
   if (!r) return "";
   const pro = r.mandante === meu ? r.gols_mandante : r.gols_visitante;
   const contra = r.mandante === meu ? r.gols_visitante : r.gols_mandante;
-  const [classe, rotulo] = pro > contra ? ["v", "Vitória"] : pro < contra ? ["d", "Derrota"] : ["e", "Empate"];
+  let [classe, rotulo] = pro > contra ? ["v", "Vitória"] : pro < contra ? ["d", "Derrota"] : ["e", "Empate"];
+  // mata-mata da copa: o empate se decide nos pênaltis
+  if (r.penaltis) {
+    const [pm, pv] = r.penaltis;
+    const placar = r.mandante === meu ? `${pm} x ${pv}` : `${pv} x ${pm}`;
+    [classe, rotulo] = r.vencedor === meu
+      ? ["v", `Classificado nos pênaltis (${placar})`]
+      : ["d", `Eliminado nos pênaltis (${placar})`];
+  }
   const time = (nome) => `<span class="mj-time${nome === meu ? " mj-eu" : ""}">${escudo(nome, 44)}<b>${nome}</b></span>`;
   return `<article class="meu-jogo mj-${classe}">
     <span class="mj-resultado">${rotulo}</span>
@@ -256,12 +272,16 @@ export function renderRodadaDepois() {
 
   $("rodada-titulo").textContent = res.concluida
     ? "Temporada encerrada"
-    : `Rodada ${res.rodada_jogada} — resultados`;
+    : res.copa_jogada
+      ? `Copa · ${res.copa.nome} — resultados`
+      : `Rodada ${res.rodada_jogada} — resultados`;
   $("rodada-confronto").innerHTML = res.concluida
     ? `${res.campeao} é o campeão <span class="chip chip-batida">Fim de temporada</span>`
     : `<span class="chip">Encerrada</span>`;
   const meu = res.clube_usuario;
-  $("r-meu-jogo").innerHTML = meuJogo(res.resultados.find((r) => r.mandante === meu || r.visitante === meu), meu);
+  // o jogo da copa (v2.0): o placar vem da fase, sem página da partida
+  const jogos = res.copa_jogada ? res.copa.jogos : res.resultados;
+  $("r-meu-jogo").innerHTML = meuJogo(jogos.find((r) => r.mandante === meu || r.visitante === meu), meu);
   ligarLinks($("r-meu-jogo"));
 
   const linhas = res.resultados.map((r) => ({
@@ -274,7 +294,7 @@ export function renderRodadaDepois() {
   const marcarEu = (r) =>
     r.mandante === meu || r.visitante === meu ? "eu" : "";
   const minha = linhas.find((r) => r.mandante === meu || r.visitante === meu)?.liga;
-  $("r-resultados").innerHTML = porLiga(linhas, minha, (lista) => tabela(
+  $("r-resultados").innerHTML = !linhas.length ? "" : porLiga(linhas, minha, (lista) => tabela(
     lista,
     [["mandante", "Mandante"], ["placar", "Placar"], ["visitante", "Visitante"]],
     marcarEu
@@ -312,7 +332,9 @@ export async function enviarRodada() {
   $("r-mercado-msg").textContent = "";
   $("r-contrato-msg").textContent = "";
   $("c-form").innerHTML = "";
-  ocupado(true, `Jogando a rodada ${estado.rodadaInfo.rodada}…`);
+  ocupado(true, estado.rodadaInfo.copa
+    ? `Jogando a copa · ${estado.rodadaInfo.copa.nome}…`
+    : `Jogando a rodada ${estado.rodadaInfo.rodada}…`);
   const res = await pedir(`/simulacoes/${estado.simId}/rodadas`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -121,16 +121,28 @@ class Copa:
             if nome in (jogo["mandante"], jogo["visitante"])
         ]
 
-    def jogar_fase(self, fase, clubes):
+    def jogar_fase(self, fase, clubes, ao_vivo=None):
         """Joga os jogos da fase (`clubes`: {nome: Clube}), paga prêmio e
-        bilheteria e monta a próxima. Devolve os jogos jogados."""
+        bilheteria e monta a próxima. Devolve os jogos jogados.
 
+        `ao_vivo` (o jogo do técnico, transmitido): {"clube", "decisoes",
+        "capturar_em", "semente"}. O jogo dele roda na corrente de RNG da
+        `semente`, como na liga (`Campeonato.jogar_rodada`), e a Partida
+        fica em `self.partida_usuario`."""
+
+        self.partida_usuario = None
         jogos = self.fases.get(fase)
         if not jogos or jogos[0]["vencedor"]:
             return []
 
         for jogo in jogos:
-            _disputar(jogo, clubes[jogo["mandante"]], clubes[jogo["visitante"]])
+            dele = ao_vivo and ao_vivo["clube"] in (jogo["mandante"], jogo["visitante"])
+            partida = _disputar(
+                jogo, clubes[jogo["mandante"]], clubes[jogo["visitante"]],
+                ao_vivo if dele else None,
+            )
+            if dele:
+                self.partida_usuario = partida
             clubes[jogo["vencedor"]].lancar("receita_premiacao", PREMIOS[fase])
 
         proxima = FASES.index(fase) + 1
@@ -181,15 +193,25 @@ def _jogo(mandante, visitante):
     }
 
 
-def _disputar(jogo, mandante, visitante):
+def _disputar(jogo, mandante, visitante, ao_vivo=None):
     partida = Partida(mandante, visitante)
     partida.publico = publico(mandante, visitante)
 
-    with _isolar_da_liga(mandante, visitante):
-        partida.simular_partida()
-        penaltis = None
-        if partida.gols_c1 == partida.gols_c2:
-            penaltis = disputa_de_penaltis(partida)
+    fora = None
+    if ao_vivo:
+        partida.decisoes = ao_vivo.get("decisoes") or []
+        partida.capturar_em = ao_vivo.get("capturar_em")
+        fora = random.getstate()
+        random.seed(ao_vivo["semente"])
+    try:
+        with _isolar_da_liga(mandante, visitante):
+            partida.simular_partida()
+            penaltis = None
+            if partida.gols_c1 == partida.gols_c2:
+                penaltis = disputa_de_penaltis(partida)
+    finally:
+        if fora is not None:
+            random.setstate(fora)
 
     mandante.lancar(
         "receita_bilheteria", financas.bilheteria(mandante, partida.publico)
@@ -208,6 +230,7 @@ def _disputar(jogo, mandante, visitante):
         for e in partida.resumo_eventos()
         if e["tipo"] in ("gol", "penalti")
     ]
+    return partida
 
 
 class _isolar_da_liga:
@@ -248,19 +271,25 @@ def _numeros(obj):
 def disputa_de_penaltis(partida):
     """5 cobranças para cada lado, alternadas, e depois uma a uma até
     alguém errar. Cobra quem terminou em campo, dos melhores finalizadores
-    para os piores, e volta ao primeiro se precisar. Devolve [c1, c2]."""
+    para os piores, e volta ao primeiro se precisar. Devolve [c1, c2]; as
+    cobranças, uma a uma, ficam em `partida.cobrancas`."""
 
     filas = [_cobradores(partida, c) for c in (partida.clube1, partida.clube2)]
     goleiros = [partida._goleiro(partida.clube2), partida._goleiro(partida.clube1)]
     placar = [0, 0]
     cobradas = [0, 0]
+    # a sequência, para a transmissão: [{lado (1 mandante, 2 visitante),
+    # jogador, gol}]
+    partida.cobrancas = []
 
     def cobrar(lado):
         fila = filas[lado]
         cobrador = fila[cobradas[lado] % len(fila)]
         cobradas[lado] += 1
-        if random.random() < _chance_de_converter(partida, cobrador, goleiros[lado]):
+        gol = random.random() < _chance_de_converter(partida, cobrador, goleiros[lado])
+        if gol:
             placar[lado] += 1
+        partida.cobrancas.append({"lado": lado + 1, "jogador": cobrador.nome, "gol": gol})
 
     for _ in range(COBRANCAS):
         for lado in (0, 1):

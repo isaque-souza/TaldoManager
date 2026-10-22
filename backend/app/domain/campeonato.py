@@ -23,6 +23,9 @@ class Campeonato:
         self.historico = []
         self.partidas_jogadas = []
         self.partida_usuario = None   # a do técnico na última rodada
+        # a fase da copa que ficou para a quarta (jogar_rodada com
+        # adiar_copa): o técnico joga a dele à parte (jogar_copa_adiada)
+        self.copa_adiada = None
         self.devolvidos = []          # empréstimos que acabaram na última (v1.7)
         self.versao_calendario = self.CALENDARIO_ATUAL
         self.calendario = self.gerar_calendario()
@@ -37,12 +40,17 @@ class Campeonato:
             }
         }
             
-    def jogar_rodada(self, clube_usuario=None, decisoes=None, capturar_em=None):
+    def jogar_rodada(self, clube_usuario=None, decisoes=None, capturar_em=None,
+                     adiar_copa=False):
         """Joga a rodada. Com `clube_usuario`, a partida dele roda numa
         corrente de RNG própria (semente sorteada antes de tudo): decisões
         do técnico no meio do jogo (simulação interativa, v1.2) mudam só
         aquele jogo, nunca os outros da rodada. A Partida dele fica em
-        `self.partida_usuario`."""
+        `self.partida_usuario`.
+
+        `adiar_copa`: se a rodada tem fase da copa e o clube do técnico
+        joga nela, a fase não é jogada aqui — fica em `self.copa_adiada`
+        para `jogar_copa_adiada` (o técnico comanda o jogo na quarta)."""
 
         self.mostrar_cabecalho()
 
@@ -95,7 +103,11 @@ class Campeonato:
         for clube in self.clubes:
             estadio.avancar_obra(clube)
 
-        self.jogar_copa()
+        self.copa_adiada = None
+        if adiar_copa and self._joga_a_copa(clube_usuario):
+            self.copa_adiada = self.copa.fase_da_rodada(self.rodada)
+        else:
+            self.jogar_copa()
 
         # o humor do elenco do técnico anda a cada 5 rodadas (v1.7)
         if clube_usuario and papeis.eh_checagem(self.rodada):
@@ -127,6 +139,30 @@ class Campeonato:
         if fase is None:
             return []
         return self.copa.jogar_fase(fase, {c.nome: c for c in self.clubes})
+
+    def _joga_a_copa(self, clube):
+        """O clube está num jogo da fase da copa desta rodada?"""
+        if self.copa is None or clube is None:
+            return False
+        fase = self.copa.fase_da_rodada(self.rodada)
+        return any(
+            clube in (j["mandante"], j["visitante"]) and not j["vencedor"]
+            for j in self.copa.fases.get(fase) or []
+        )
+
+    def jogar_copa_adiada(self, fase, clube_usuario, decisoes=None, capturar_em=None):
+        """A fase da copa que `jogar_rodada(adiar_copa=True)` deixou para a
+        quarta. O jogo do técnico roda numa corrente de RNG própria (como o
+        da liga); a Partida dele fica em `self.partida_usuario`. Devolve os
+        jogos jogados."""
+        semente = random.getrandbits(64)
+        jogos = self.copa.jogar_fase(
+            fase, {c.nome: c for c in self.clubes},
+            ao_vivo={"clube": clube_usuario, "decisoes": decisoes or [],
+                     "capturar_em": capturar_em, "semente": semente},
+        )
+        self.partida_usuario = self.copa.partida_usuario
+        return jogos
 
     def iniciar_copa(self, classificados):
         """Monta a copa com {liga: [nomes do 1º ao 8º]}. Só com duas
