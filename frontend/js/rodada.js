@@ -12,6 +12,7 @@ import { escudo } from "./identidade.js";
 import { icone } from "./icones.js";
 import { abrirPreJogo } from "./prejogo.js";
 import { jogarAoVivo } from "./aovivo.js";
+import { abrirPosJogo } from "./posjogo.js";
 import { posicaoDe } from "./posicoes.js";
 import { carregarCaixa } from "./caixa.js";
 import { carregarMarketing } from "./marketing.js";
@@ -115,6 +116,8 @@ function renderHub(info) {
   const linha = t && t.classificacao.find((c) => c.clube === info.clube_usuario);
   const comecou = linha && linha.jogos > 0;
   $("hub-tabela").textContent = comecou ? `${linha.posicao}º lugar` : "Pré-temporada";
+  // o relatório do último jogo (v2.2): só depois do primeiro jogo da liga
+  $("hub-ultimo").hidden = !comecou;
   $("hub-tabela-info").textContent = comecou
     ? `${linha.pontos} pts em ${linha.jogos} ${linha.jogos === 1 ? "jogo" : "jogos"} · saldo ${linha.saldo_gols > 0 ? "+" : ""}${linha.saldo_gols}`
     : "a liga ainda não começou";
@@ -261,7 +264,10 @@ function meuJogo(r, meu) {
       <strong>${r.gols_mandante} <small>x</small> ${r.gols_visitante}</strong>
       ${time(r.visitante)}
     </div>
-    ${r.partida_id != null ? `<a class="partida mj-link" data-partida="${r.partida_id}">Ver a partida →</a>` : ""}
+    <span class="mj-links">
+      <a class="mj-link" data-relatorio href="#">Relatório do jogo →</a>
+      ${r.partida_id != null ? `<a class="partida mj-link" data-partida="${r.partida_id}">Ver a partida →</a>` : ""}
+    </span>
   </article>`;
 }
 
@@ -283,6 +289,10 @@ export function renderRodadaDepois() {
   const jogos = res.copa_jogada ? res.copa.jogos : res.resultados;
   $("r-meu-jogo").innerHTML = meuJogo(jogos.find((r) => r.mandante === meu || r.visitante === meu), meu);
   ligarLinks($("r-meu-jogo"));
+  $("r-meu-jogo").querySelector("[data-relatorio]")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    abrirPosJogo();
+  });
 
   const linhas = res.resultados.map((r) => ({
     partida_id: r.partida_id,
@@ -462,6 +472,10 @@ $("r-jogar").addEventListener("click", () => {
 });
 $("r-dia").addEventListener("click", () => avancarDia(carregarProximaRodada));
 $("r-proxima").addEventListener("click", avancarAposResultado);
+$("hub-ultimo").addEventListener("click", (ev) => {
+  ev.preventDefault();
+  abrirPosJogo();
+});
 document.querySelectorAll("#r-hub [data-abrir]").forEach((b) =>
   b.addEventListener("click", () => {
     if (b.dataset.abrir === "tabela") navegarPara(mostrarTemporada);

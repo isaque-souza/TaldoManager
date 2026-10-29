@@ -10,6 +10,7 @@ import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.j
 import { decisaoParaEnviar, enviarRodada, mostrarRodadaTela } from "./rodada.js";
 import { camisa, corDoTexto, escudo, identidade } from "./identidade.js";
 import { icone } from "./icones.js";
+import { abrirPosJogo } from "./posjogo.js";
 import { barrasAtributos } from "./atributos.js";
 import { SETOR, ehGoleiro, naTela, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
 
@@ -637,8 +638,9 @@ async function gravar() {
   if (minha) jogo.placar = [minha.gols_mandante, minha.gols_visitante];   // o placar oficial
   renderPlacar("fim");
   $("av-fim-msg").textContent = "";
-  $("av-resultados").innerHTML = `${icone("play")} ${res.copa_jogada ? "Ver resultados da copa" : "Ver resultados da rodada"}`;
-  $("av-resultados").dataset.acao = "resultados";
+  // o relatório pós-jogo (v2.2); os resultados da rodada ficam a um clique dele
+  $("av-resultados").innerHTML = `${icone("play")} Ver o relatório do jogo`;
+  $("av-resultados").dataset.acao = "relatorio";
 }
 
 // pular: narra de uma vez tudo o que faltava e apita o fim
@@ -934,5 +936,5 @@ $("av-resultados").addEventListener("click", () => {
   if ($("av-resultados").dataset.acao === "gravar") { gravar(); return; }
   pararRelogio();
   jogo = null;
-  mostrarRodadaTela();   // faseRodada já é "depois": a tela de resultados
+  abrirPosJogo();   // faseRodada já é "depois": de lá, os resultados ou a próxima
 });

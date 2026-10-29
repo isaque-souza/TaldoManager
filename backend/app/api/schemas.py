@@ -446,6 +446,145 @@ class PreJogo(BaseModel):
     copa: FaseDoJogo | None = None   # v2.0: jogo da copa
 
 
+# --- relatório pós-jogo (v2.2) ------------------------------------------------
+
+class LancePosJogo(BaseModel):
+    minuto: int
+    tipo: str
+    jogador: str | None
+    clube: str | None
+    detalhe: str | None = None
+
+
+class MomentoDecisivo(BaseModel):
+    minuto: int
+    tipo: str
+    jogador: str | None
+    clube: str | None
+    # gol_da_vitoria | gol_do_empate | penalti_perdido | penalti_defendido | expulsao
+    tipo_momento: str
+
+
+class AtuacaoPosJogo(BaseModel):
+    jogador: str
+    jogador_id: int | None = None   # None no jogo da copa (não vai para o banco)
+    clube: str
+    posicao: str
+    titular: bool
+    gols: int
+    assistencias: int
+    nota: float
+
+
+class Destaques(BaseModel):
+    melhor_em_campo: AtuacaoPosJogo | None
+    melhor_do_time: AtuacaoPosJogo | None
+    pior_do_time: AtuacaoPosJogo | None
+
+
+class EstatisticasPosJogo(BaseModel):
+    posse_mandante: int
+    finalizacoes_mandante: int
+    finalizacoes_visitante: int
+    finalizacoes_gol_mandante: int
+    finalizacoes_gol_visitante: int
+    escanteios_mandante: int
+    escanteios_visitante: int
+    acrescimos: int | None
+
+
+class Desempenho(BaseModel):
+    nivel: Literal["muito_acima", "acima", "esperado", "abaixo", "muito_abaixo"]
+    texto: str
+
+
+class Expectativa(BaseModel):
+    nivel: Literal["favorito", "equilibrado", "azarao"]
+    texto: str
+    vantagem: float              # diferença de força já com o mando
+    forca: float
+    forca_adversario: float
+    desempenho: Desempenho
+
+
+class MetaPosJogo(BaseModel):
+    posicao: int
+    descricao: str
+    situacao_antes: Literal["batida", "perto", "longe"]
+    situacao: Literal["batida", "perto", "longe"]
+
+
+class TabelaPosJogo(BaseModel):
+    posicao_antes: int
+    posicao: int
+    pontos_antes: int
+    pontos: int
+    pontos_ganhos: int
+    total_clubes: int
+    meta: MetaPosJogo | None
+
+
+class PenaltisPosJogo(BaseModel):
+    pro: int
+    contra: int
+
+
+class CopaPosJogo(BaseModel):
+    fase: str
+    nome: str
+    penaltis: PenaltisPosJogo | None
+    classificado: bool
+    campeao: bool
+    proxima_fase: FaseDoJogo | None
+    premio: int
+
+
+class MensagemPosJogo(BaseModel):
+    id: int
+    setor: str
+    assunto: str
+    corpo: str
+
+
+class ProximoCompromisso(BaseModel):
+    adversario: str | None        # None = folga
+    mando: Literal["casa", "fora"] | None
+    rodada: int
+    copa: FaseDoJogo | None
+    data: str                     # ISO
+
+
+class PosJogo(BaseModel):
+    """GET /simulacoes/{id}/pos-jogo (v2.2): o último jogo do técnico."""
+    competicao: Literal["liga", "copa"]
+    liga: str
+    rodada: int
+    total_rodadas: int
+    copa: CopaPosJogo | None
+    data: str
+    partida_id: int | None        # None no jogo da copa
+    clube: str
+    adversario: str
+    mando: Literal["casa", "fora"]
+    mandante: str
+    visitante: str
+    gols_mandante: int
+    gols_visitante: int
+    resultado: Literal["vitoria", "empate", "derrota"]
+    publico: int | None
+    eventos: list[LancePosJogo]
+    estatisticas: EstatisticasPosJogo | None   # None em jogos de copa antigos
+    atuacoes: list[AtuacaoPosJogo]
+    expectativa: Expectativa
+    momento_decisivo: MomentoDecisivo | None
+    destaques: Destaques
+    tabela: TabelaPosJogo | None  # None no jogo da copa
+    mensagens: list[MensagemPosJogo]
+    proximo: ProximoCompromisso | None   # None com a temporada encerrada
+    temporada_concluida: bool
+    cargo: Cargo | None
+
+
 class GolAoVivo(BaseModel):
     minuto: int
     clube: str

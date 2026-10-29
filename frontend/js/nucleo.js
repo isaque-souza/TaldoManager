@@ -6,6 +6,7 @@ import { abrirClube } from "./clube.js";
 import { abrirPartida } from "./partida.js";
 import { abrirJogador } from "./jogador.js";
 import { mostrarCarreira } from "./carreira.js";
+import { reabrirPosJogo } from "./posjogo.js";
 
 export function $(id) { return document.getElementById(id); }
 // a API serve o próprio frontend: caminhos relativos ao mesmo endereço
@@ -29,7 +30,7 @@ export const estado = {
 };
 export const pilhaVoltar = [];   // thunks para o botão "← Voltar"
 
-export const SECOES = ["conta", "inicio", "prejogo", "aovivo", "temporada", "rodada", "clube", "partida", "jogador", "carreira"];
+export const SECOES = ["conta", "inicio", "prejogo", "aovivo", "posjogo", "temporada", "rodada", "clube", "partida", "jogador", "carreira"];
 
 export function esconderTudo() {
   SECOES.forEach((id) => ($(id).hidden = true));
@@ -48,6 +49,7 @@ export function thunkAtual() {
     case "jogador": return () => abrirJogador(estado.jogadorAtualId);
     case "rodada": return () => mostrarRodadaTela();
     case "carreira": return () => mostrarCarreira();
+    case "posjogo": return () => reabrirPosJogo();
     default: return () => mostrarTemporada();
   }
 }

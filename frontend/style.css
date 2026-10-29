@@ -448,28 +448,28 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 }
 
 /* a tarja nos cabeçalhos de jogo: rodada e partida */
-.faixa-rodada, #prejogo > hgroup {
+.faixa-rodada, #prejogo > hgroup, #posjogo > hgroup {
   display: flex; flex-wrap: wrap; align-items: stretch; margin-bottom: 1rem; overflow: hidden;
   border: 1px solid var(--linha); border-radius: 4px; background: linear-gradient(180deg, #132033, #0d1724);
 }
-#rodada-titulo, #pj-titulo {
+#rodada-titulo, #pj-titulo, #pg-titulo {
   margin: 0; padding: .7rem 2rem .7rem 1rem; background: var(--gramado); color: #fff;
   font-size: clamp(1.3rem, 2.6vw, 1.6rem); white-space: nowrap;
   clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
 }
-#rodada-confronto, #pj-confronto {
+#rodada-confronto, #pj-confronto, #pg-confronto {
   margin: 0; padding: .55rem 1rem; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
   font-family: var(--fonte-tarja); font-size: 1.15rem; text-transform: uppercase; color: var(--texto);
 }
 #rodada-confronto:empty { display: none; }
-#rodada-confronto small, #pj-confronto small { font-family: var(--fonte-texto); text-transform: none; color: var(--texto-2); font-size: .82rem; }
+#rodada-confronto small, #pj-confronto small, #pg-confronto small { font-family: var(--fonte-texto); text-transform: none; color: var(--texto-2); font-size: .82rem; }
 #partida-placar .placar { font-weight: 800; text-transform: uppercase; gap: .7rem; }
 #partida-placar .placar b {
   background: #fff; color: var(--noite); padding: .05em .45em; border-radius: 2px;
   font-variant-numeric: tabular-nums; letter-spacing: .04em;
 }
 @media (max-width: 640px) {
-  #rodada-titulo, #pj-titulo { clip-path: none; width: 100%; }
+  #rodada-titulo, #pj-titulo, #pg-titulo { clip-path: none; width: 100%; }
 }
 
 /* ficha do clube no card e barra de começar */
@@ -1806,3 +1806,47 @@ input.campo-dinheiro {
 
 /* Continuar dia a dia (v2.0): o aviso de quando o tempo para sozinho */
 .r-pausa { margin: .25rem 0 0; font-size: .85rem; color: var(--pico-muted-color); }
+
+/* ---------- pós-jogo (v2.2): o relatório do último jogo ---------- */
+.mj-links { display: flex; flex-direction: column; align-items: flex-end; gap: .25rem; }
+.pg-publico { justify-self: end; text-align: right; color: var(--texto-2); font-size: .82rem; }
+.pg-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.pg-grade > * { min-width: 0; }
+.pg-grade-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pg-card {
+  display: flex; flex-direction: column; gap: .35rem; margin: 0; padding: .9rem 1rem;
+  background: linear-gradient(180deg, #142133, var(--superficie) 70%);
+  border: 1px solid var(--linha); border-radius: 6px; box-shadow: none;
+}
+.pg-card .hub-rotulo { margin-bottom: .2rem; }
+.pg-card > strong { font-family: var(--fonte-tarja); font-weight: 800; font-size: 1.3rem; text-transform: uppercase; line-height: 1.05; }
+.pg-card > small { color: var(--texto-2); font-size: .9rem; }
+.pg-linha { margin: 0; }
+.pg-linha small { color: var(--texto-2); font-size: .82rem; }
+.pg-detalhe { margin: 0; color: var(--texto-2); font-size: .9rem; }
+.pg-numero { margin: 0; font-family: var(--fonte-tarja); font-weight: 800; font-size: 2rem; line-height: 1; text-transform: uppercase; }
+.pg-numero small { font-size: 1rem; color: var(--texto-2); }
+.pg-ruim { color: var(--texto-alerta); }
+.pg-lados { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--fonte-tarja); text-transform: uppercase; }
+.pg-lances { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
+.pg-lances li { margin: 0; }
+.pg-mensagens { list-style: none; padding: 0; margin: 0 0 1.5rem; display: grid; gap: .6rem; }
+.pg-mensagens li { margin: 0; padding: .7rem 1rem; background: var(--superficie); border: 1px solid var(--linha); border-radius: 4px; }
+.pg-mensagens p { margin: .2rem 0 0; color: var(--texto-2); font-size: .9rem; }
+.pg-setor { font-family: var(--fonte-tarja); font-weight: 700; font-size: .82rem; text-transform: uppercase; letter-spacing: .08em; color: var(--texto-2); }
+.pg-proximo {
+  display: flex; flex-direction: column; gap: .5rem; margin: 0 0 1rem; padding: 1rem 1.25rem;
+  background: var(--superficie); border: 1px solid var(--linha); border-radius: 6px;
+}
+.pg-proximo .hub-rotulo { margin-bottom: 0; color: var(--gramado-claro); }
+.pg-proximo > small { color: var(--texto-2); }
+.pg-acoes { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .75rem; margin-top: .5rem; }
+.pg-acoes button { width: auto; margin: 0; }
+.hub-ultimo { margin-top: .35rem; font-size: .85rem; }
+@media (max-width: 760px) {
+  .pg-grade, .pg-grade-3 { grid-template-columns: minmax(0, 1fr); }
+  .pg-publico { grid-column: 1 / -1; justify-self: start; text-align: left; }
+  .mj-links { align-items: flex-start; }
+  .pg-acoes { flex-direction: column-reverse; align-items: stretch; }
+  .pg-acoes button { width: 100%; }
+}

@@ -46,6 +46,13 @@ FICA_DA_COPA = {"energia", "rodadas_lesao"}
 # disputa de pênaltis
 COBRANCAS = 5
 
+# os lances que o jogo da copa guarda (a liga guarda todos em `lance`; o
+# chute para fora só enche a linha do tempo)
+EVENTOS_DO_RELATORIO = (
+    "gol", "penalti", "penalti_perdido", "penalti_defendido",
+    "cartao_amarelo", "expulsao", "substituicao", "lesao",
+)
+
 
 def classificados_de_inicio(campeonato):
     """Os classificados de um jogo novo: {liga: [nomes do 1º ao 8º]}. A
@@ -225,11 +232,30 @@ def _disputar(jogo, mandante, visitante, ao_vivo=None):
         jogo["vencedor"] = mandante.nome if penaltis[0] > penaltis[1] else visitante.nome
     else:
         jogo["vencedor"] = mandante.nome if partida.gols_c1 > partida.gols_c2 else visitante.nome
+    eventos = partida.resumo_eventos()
     jogo["gols"] = [
         {k: e[k] for k in ("minuto", "jogador", "clube", "tipo")}
-        for e in partida.resumo_eventos()
+        for e in eventos
         if e["tipo"] in ("gol", "penalti")
     ]
+    # para o relatório pós-jogo (v2.2): o que a liga guarda em partida,
+    # lance e atuacao. Jogos de saves anteriores não têm estes três.
+    jogo["estatisticas"] = {
+        "posse_mandante": partida.posse_c1,
+        "finalizacoes_mandante": partida.finalizacoes_c1,
+        "finalizacoes_visitante": partida.finalizacoes_c2,
+        "finalizacoes_gol_mandante": partida.finalizacoes_gol_c1,
+        "finalizacoes_gol_visitante": partida.finalizacoes_gol_c2,
+        "escanteios_mandante": partida.escanteios_c1,
+        "escanteios_visitante": partida.escanteios_c2,
+        "acrescimos": partida.acrescimos,
+    }
+    jogo["eventos"] = [
+        {k: e[k] for k in ("minuto", "tipo", "jogador", "clube", "detalhe")}
+        for e in eventos
+        if e["tipo"] in EVENTOS_DO_RELATORIO
+    ]
+    jogo["atuacoes"] = partida.resumo_escalacao()
     return partida
 
 
