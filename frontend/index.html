@@ -231,6 +231,7 @@
           <button id="r-jogar"></button>
           <button id="r-dia" type="button" class="secondary outline" hidden></button>
           <p id="r-pausa" class="r-pausa" role="status" hidden></p>
+          <a id="hub-ultimo" class="hub-ultimo" href="#" hidden>Relatório do último jogo →</a>
           <!-- a copa (v1.6) vira uma faixa no pé do card do jogo (v1.8): é o
                outro jogo do técnico, e assim a grade fecha em 3 linhas -->
           <button class="hub-card hub-copa" data-abrir="copa" hidden>
@@ -384,6 +385,36 @@
         <button id="r-proxima" style="width: auto; margin: 0"></button>
       </p>
     </div>
+  </section>
+
+  <!-- pós-jogo (v2.2): o relatório do último jogo do técnico -->
+  <section id="posjogo" hidden>
+    <hgroup>
+      <h2 id="pg-titulo"></h2>
+      <p id="pg-confronto"></p>
+    </hgroup>
+    <div id="pg-placar"></div>
+    <div class="pg-grade">
+      <article id="pg-expectativa" class="pg-card"></article>
+      <article id="pg-impacto" class="pg-card"></article>
+    </div>
+    <h3 class="secao">Destaques da partida</h3>
+    <div id="pg-destaques" class="pg-grade pg-grade-3"></div>
+    <div class="pg-grade">
+      <div>
+        <h3 class="secao">Lances</h3>
+        <ol id="pg-lances" class="pg-lances"></ol>
+      </div>
+      <div>
+        <h3 class="secao">Estatísticas</h3>
+        <div id="pg-stats" class="av-stats"></div>
+      </div>
+    </div>
+    <div id="pg-clube-bloco">
+      <h3 class="secao">No clube</h3>
+      <ul id="pg-mensagens" class="pg-mensagens"></ul>
+    </div>
+    <article id="pg-proximo" class="pg-proximo"></article>
   </section>
 
   <!-- pré-jogo (v1.1): as duas escalações no campo, antes do apito -->

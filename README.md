@@ -1160,6 +1160,35 @@ O banco fica no volume `taldo_dados` (atualizar não apaga os saves);
 
 ---
 
+# ⚽ Relatório pós-jogo (v2.2)
+
+O apito final do jogo do técnico (liga ou copa) leva a um relatório da
+partida, montado só com o que a rodada já gravou: abrir de novo, ou depois
+de recarregar o save, mostra o mesmo relatório e não mexe em tabela, caixa
+nem elenco (`GET /simulacoes/{id}/pos-jogo`).
+
+* [x] Resultado — placar, competição, adversário, mando, público e os lances
+      (gols, cartões, substituições, lesões, pênaltis)
+* [x] Análise — melhor em campo, melhor (ou menor nota) do seu time e
+      estatísticas, tudo das notas e números do motor
+* [x] Expectativa × resultado — favorito, equilibrado ou azarão pela força
+      dos elencos e o mando (em casa vale uns 3 pontos de força, calibrado
+      em 12 temporadas), e o resultado comparado com isso
+* [x] Momento decisivo — o gol que pôs o vencedor à frente de vez, o gol do
+      empate, o pênalti perdido ou a expulsão no 0 x 0; na copa, a disputa
+      de pênaltis
+* [x] Impacto na carreira — posição e pontos antes → depois, a meta da
+      diretoria nos dois momentos, o cargo no fim da temporada e o que a
+      caixa de entrada recebeu com o jogo; na copa, classificado, eliminado
+      ou campeão e o prêmio
+* [x] Continuidade — o próximo compromisso (liga ou copa, data e mando) e
+      "Continuar carreira"; os resultados da rodada seguem a um clique
+* [x] O jogo da copa agora guarda estatísticas, lances e notas (jogos de
+      saves anteriores mostram só os gols)
+* [x] Retomada — "Relatório do último jogo" no card do próximo jogo
+
+---
+
 # 📁 Estrutura
 
 ```text

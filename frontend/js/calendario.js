@@ -16,7 +16,7 @@ const ANIMACAO_MS = 1200;   // o tempo total dos dias correndo
 const DIA_MS = 600;         // Continuar: um dia a cada 0,6 s, dá tempo de pausar
 
 // "2026-08-08" -> Date no fuso local (sem o "dia anterior" do UTC)
-const paraData = (iso) => {
+export const paraData = (iso) => {
   const [a, m, d] = iso.split("-").map(Number);
   return new Date(a, m - 1, d);
 };
@@ -26,7 +26,7 @@ export function dataCurta(iso) {
   return `${d.getDate()} ${MESES[d.getMonth()]}`;
 }
 
-function dataLonga(d) {
+export function dataLonga(d) {
   return `${SEMANA[d.getDay()]}, ${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`;
 }
 

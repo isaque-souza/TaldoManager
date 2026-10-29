@@ -32,6 +32,7 @@ from app.api.schemas import (
     OfertasJogador,
     RespostaProposta,
     RespostaRenovacao,
+    PosJogo,
     PreJogo,
     RodadaAoVivo,
     ProximaRodada,
@@ -94,6 +95,7 @@ from app.services import (
     olheiro_service,
     relatorio_service,
     plano_service,
+    pos_jogo_service,
     simulacao_service,
     temporada_service,
     transmissao_service,
@@ -108,6 +110,7 @@ from app.services.base_service import AcaoInvalida
 from app.services.olheiro_service import TrocaInvalida
 from app.services.relatorio_service import PedidoInvalido
 from app.services.plano_service import PlanoInvalido
+from app.services.pos_jogo_service import SemJogo
 from app.services.temporada_service import PartidaEmAndamento, TemporadaConcluida
 from app.services.transmissao_service import TransmissaoInvalida
 from scripts.data_loader import TODAS_AS_LIGAS
@@ -297,6 +300,24 @@ def obter_pre_jogo(simulacao_id: int):
     try:
         dados = temporada_service.pre_jogo(simulacao_id)
     except TemporadaConcluida as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
+    if dados is None:
+        raise HTTPException(status_code=404, detail="Simulação não encontrada")
+    return dados
+
+
+@router.get(
+    "/simulacoes/{simulacao_id}/pos-jogo",
+    response_model=PosJogo,
+    tags=["simulacoes"],
+)
+def obter_pos_jogo(simulacao_id: int):
+    """O relatório do último jogo do técnico (v2.2): resultado, notas,
+    expectativa × resultado, impacto na tabela e na meta e o próximo
+    compromisso. Só lê o que a rodada já gravou: não joga nem grava nada."""
+    try:
+        dados = pos_jogo_service.ver(simulacao_id)
+    except SemJogo as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
     if dados is None:
         raise HTTPException(status_code=404, detail="Simulação não encontrada")

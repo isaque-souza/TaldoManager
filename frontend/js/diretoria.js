@@ -4,7 +4,7 @@ import { $ } from "./nucleo.js";
 import { novoJogo } from "./inicio.js";
 import { icone } from "./icones.js";
 
-const ROTULOS = {
+export const ROTULOS = {
   andamento: { batida: "No caminho", perto: "Em risco", longe: "Longe da meta" },
   fim: { batida: "Meta batida", perto: "Ficou perto", longe: "Ficou longe" },
 };
