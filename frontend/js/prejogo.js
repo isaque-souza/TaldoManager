@@ -1,14 +1,22 @@
 // Pré-jogo (v1.1): as duas escalações no campo, antes do apito.
 // "Jogar a rodada" abre esta tela; "Ir para o jogo" joga de fato. O XI vem
 // de GET /pre-jogo, que roda a mesma escalação do motor: é quem vai entrar.
+// v2.3: com o contexto do jogo — forma recente, desfalques, estádio e
+// público previsto, e a meta da diretoria (tudo lido do save).
 
 import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { abrirSecaoRodada, jogarRodada, salvarEscalacaoAgora } from "./rodada.js";
 import { jogarAoVivo } from "./aovivo.js";
 import { camisa, escudo } from "./identidade.js";
 import { icone } from "./icones.js";
+import { ROTULOS } from "./diretoria.js";
 
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
+const RESULTADO = { V: "Vitória", E: "Empate", D: "Derrota" };
+
+const chip = (classe, texto) => `<span class="chip${classe ? ` chip-${classe}` : ""}">${texto}</span>`;
+const milhar = (n) => n.toLocaleString("pt-BR");
+const pct = (n) => `${Math.round(n * 100)}%`;
 
 export async function abrirPreJogo() {
   limparAviso();
@@ -50,10 +58,87 @@ function renderPreJogo(pj) {
   $("pj-campo").innerHTML =
     MARCAS + metade(eu, "eu") + metade(rival, "rival");
 
+  const ctxEu = pj.contexto_mandante && pj.contexto_mandante.clube === eu.clube
+    ? pj.contexto_mandante : pj.contexto_visitante;
+  const ctxRival = ctxEu === pj.contexto_mandante ? pj.contexto_visitante : pj.contexto_mandante;
+  $("pj-estadio").innerHTML = cartaoEstadio(pj.estadio, pj.mando);
+  $("pj-estadio").hidden = !pj.estadio;
+  $("pj-meta").innerHTML = cartaoMeta(pj.meta, pj.copa);
+  $("pj-meta").hidden = !pj.meta;
+  $("pj-contexto").hidden = !pj.estadio && !pj.meta;
+  $("pj-chega-eu-titulo").textContent = `Como chega — ${eu.clube}`;
+  $("pj-chega-rival-titulo").textContent = `Como chega — ${rival.clube}`;
+  $("pj-chega-eu").innerHTML = comoChega(ctxEu);
+  $("pj-chega-rival").innerHTML = comoChega(ctxRival);
+
   $("pj-banco-eu-titulo").textContent = `Banco — ${eu.clube}`;
   $("pj-banco-rival-titulo").textContent = `Banco — ${rival.clube}`;
   $("pj-banco-eu").innerHTML = banco(eu);
   $("pj-banco-rival").innerHTML = banco(rival);
+}
+
+// ---------- contexto do jogo (v2.3) ----------
+
+function cartaoEstadio(e, mando) {
+  if (!e) return "";
+  const onde = mando === "casa" ? "Em casa" : `Casa do ${e.clube}`;
+  const selos = [
+    e.classico ? chip("longe", "Clássico") : "",
+    e.lotado ? chip("batida", "Lotado") : "",
+  ].join(" ");
+  return `<span class="hub-rotulo">${icone("torcida")} Estádio · ${onde}</span>
+    <p class="pg-numero">${milhar(e.publico_previsto)} <small>torcedores previstos</small></p>
+    <div class="pj-ocupacao" role="img" aria-label="${pct(e.ocupacao)} de ocupação">
+      <span style="width:${Math.min(100, e.ocupacao * 100)}%"></span></div>
+    <p class="pg-detalhe">${pct(e.ocupacao)} de ${milhar(e.capacidade)} lugares · ingresso ${e.ingresso.toLowerCase()}</p>
+    ${selos.trim() ? `<p class="pg-linha">${selos}</p>` : ""}`;
+}
+
+function cartaoMeta(m, naCopa) {
+  if (!m) return "";
+  const onde = m.posicao_atual
+    ? `<p class="pg-numero">${m.posicao_atual}º <small>de ${m.total_clubes}</small></p>`
+    : `<p class="pg-numero">— <small>a tabela começa com este jogo</small></p>`;
+  const situacao = m.situacao ? chip(m.situacao, ROTULOS.andamento[m.situacao]) : "";
+  return `<span class="hub-rotulo">${icone("alvo")} Meta da diretoria${naCopa ? " (na liga)" : ""}</span>
+    ${onde}
+    <p class="pg-linha">${m.descricao} ${situacao}</p>`;
+}
+
+function comoChega(c) {
+  if (!c) return "";
+  const tabela = c.posicao
+    ? `<p class="pg-linha"><b>${c.posicao}º</b> na liga · ${c.pontos} ${c.pontos === 1 ? "ponto" : "pontos"}</p>`
+    : "";
+  return `${tabela}
+    <p class="pg-linha"><b>Últimos jogos</b></p>
+    ${forma(c.forma)}
+    <p class="pg-linha"><b>Desfalques</b></p>
+    ${desfalques(c.desfalques)}`;
+}
+
+function forma(jogos) {
+  if (!jogos.length) return `<p class="pg-detalhe">Ainda não jogou nesta temporada.</p>`;
+  return `<ol class="pj-forma" aria-label="Do mais antigo para o mais recente">${jogos.map((j) => {
+    const onde = j.competicao === "copa" ? `Copa · ${j.fase}` : `Rodada ${j.rodada}`;
+    const pen = j.penaltis
+      ? ` (pên. ${j.penaltis.pro}–${j.penaltis.contra}${j.penaltis.classificou ? ", classificou" : ", eliminado"})` : "";
+    const texto = `${onde}: ${RESULTADO[j.resultado]} ${j.gols_pro}–${j.gols_contra} ` +
+      `${j.mando === "casa" ? "em casa, contra o" : "fora, contra o"} ${j.adversario}${pen}`;
+    return `<li title="${texto}" aria-label="${texto}"><span class="pj-res pj-res-${j.resultado}" aria-hidden="true">${j.resultado}</span>
+      <small aria-hidden="true">${j.gols_pro}–${j.gols_contra}${j.competicao === "copa" ? " · copa" : ""}</small></li>`;
+  }).join("")}</ol>`;
+}
+
+function desfalques(lista) {
+  if (!lista.length) return `<p class="pg-detalhe">Ninguém fora: elenco completo.</p>`;
+  return `<ul class="pj-desfalques">${lista.map((d) => {
+    const motivo = d.motivo === "lesao"
+      ? `${icone("lesao")} lesionado · ${d.jogos} ${d.jogos === 1 ? "rodada" : "rodadas"}`
+      : `<span class="cartao vermelho" aria-hidden="true"></span> suspenso · ${d.jogos} ${d.jogos === 1 ? "jogo" : "jogos"}`;
+    return `<li><span>${d.nome}</span> <small>${d.funcao || d.posicao} · ${d.overall}</small>
+      <span class="pj-motivo pj-motivo-${d.motivo}">${motivo}</span></li>`;
+  }).join("")}</ul>`;
 }
 
 function tarjaTime(t) {

@@ -1189,6 +1189,27 @@ nem elenco (`GET /simulacoes/{id}/pos-jogo`).
 
 ---
 
+# 🏟️ Pré-jogo completo (v2.3)
+
+Antes do apito, o pré-jogo mostra como os dois times chegam ao jogo, além
+das escalações. Tudo é lido do save: abrir a tela não mexe em nada nem
+muda o resultado da rodada (`GET /simulacoes/{id}/pre-jogo`).
+
+* [x] Forma recente — os últimos 5 jogos de cada time, liga e copa, com
+      placar, adversário e mando (na copa, os pênaltis)
+* [x] Desfalques — quem está lesionado ou suspenso e por quantos jogos
+      (nunca aparece no XI nem no banco)
+* [x] Estádio e público — o estádio do mandante, a capacidade e o público
+      previsto, que é o mesmo cálculo do apito (sem sorteio): o público que
+      vai estar lá se o ingresso não mudar; clássico e estádio lotado ganham
+      selo
+* [x] Meta — a meta da diretoria e a posição de hoje na liga (no jogo da
+      copa, a meta continua sendo a da liga)
+* [x] Posição e pontos de cada time na liga dele (o rival da copa pode ser
+      da outra liga)
+
+---
+
 # 📁 Estrutura
 
 ```text

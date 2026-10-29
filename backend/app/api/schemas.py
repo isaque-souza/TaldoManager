@@ -434,6 +434,62 @@ class EscalacaoPreJogo(BaseModel):
     banco: list[JogadorPreJogo]
 
 
+class PenaltisRecentes(BaseModel):
+    pro: int
+    contra: int
+    classificou: bool
+
+
+class JogoRecente(BaseModel):
+    competicao: Literal["liga", "copa"]
+    rodada: int                   # na copa, a rodada da liga depois da qual foi jogada
+    fase: str | None = None       # nome da fase da copa
+    adversario: str
+    mando: Literal["casa", "fora"]
+    gols_pro: int
+    gols_contra: int
+    resultado: Literal["V", "E", "D"]   # no tempo normal
+    penaltis: PenaltisRecentes | None = None
+
+
+class Desfalque(BaseModel):
+    nome: str
+    numero: int | None
+    posicao: str
+    funcao: str | None = None
+    overall: int
+    motivo: Literal["lesao", "suspensao"]
+    jogos: int                    # quantos ainda vai perder, contando este
+
+
+class ContextoPreJogo(BaseModel):
+    """v2.3: como o clube chega ao jogo."""
+    clube: str
+    posicao: int | None           # na liga dele; None antes da 1ª rodada
+    pontos: int
+    total_clubes: int
+    forma: list[JogoRecente]      # do mais antigo para o mais novo
+    desfalques: list[Desfalque]
+
+
+class EstadioPreJogo(BaseModel):
+    clube: str                    # o dono do estádio (o mandante)
+    capacidade: int
+    publico_previsto: int
+    ocupacao: float               # 0–1
+    lotado: bool
+    classico: bool
+    ingresso: str                 # nome da faixa: Popular, Normal, Premium
+
+
+class MetaPreJogo(BaseModel):
+    posicao: int
+    descricao: str
+    posicao_atual: int | None
+    total_clubes: int
+    situacao: Literal["batida", "perto", "longe"] | None
+
+
 class PreJogo(BaseModel):
     """GET /simulacoes/{id}/pre-jogo (v1.1)."""
     rodada: int
@@ -444,6 +500,11 @@ class PreJogo(BaseModel):
     mandante: EscalacaoPreJogo | None
     visitante: EscalacaoPreJogo | None
     copa: FaseDoJogo | None = None   # v2.0: jogo da copa
+    # v2.3: o contexto do jogo (None na folga)
+    contexto_mandante: ContextoPreJogo | None = None
+    contexto_visitante: ContextoPreJogo | None = None
+    estadio: EstadioPreJogo | None = None
+    meta: MetaPreJogo | None = None
 
 
 # --- relatório pós-jogo (v2.2) ------------------------------------------------
