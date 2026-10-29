@@ -32,7 +32,9 @@ from app.repositories import lance_repository as lance_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.repositories import transferencia_repository as transferencia_repo
-from app.services import copa_service, oferta_service, relatorio_service, simulacao_service
+from app.services import (
+    copa_service, oferta_service, pre_jogo_service, relatorio_service, simulacao_service,
+)
 from scripts.data_loader import (
     LIGA_PADRAO, carregar_campeonato, carregar_campeonato_do_save,
 )
@@ -385,7 +387,8 @@ def pre_jogo(simulacao_id):
     """As duas escalações da partida do técnico na próxima rodada, com a
     decisão salva (tática, formação, XI). Só leitura: nada é gravado e o
     gerador aleatório volta ao estado de antes. None se a simulação não
-    existe; `TemporadaConcluida` se já terminou; `adversario` None na folga."""
+    existe; `TemporadaConcluida` se já terminou; `adversario` None na folga.
+    Com jogo, traz também o contexto dele (v2.3, ver pre_jogo_service)."""
 
     conn = conectar()
     try:
@@ -421,7 +424,14 @@ def pre_jogo(simulacao_id):
 
     rival = _achar_clube(campeonato, adversario)
     mandante, visitante = (alvo, rival) if mando == "casa" else (rival, alvo)
-    return {**base, "mandante": _escalacao(mandante), "visitante": _escalacao(visitante)}
+    conn = conectar()
+    try:
+        # v2.3: forma, desfalques, estádio e público, e a meta
+        contexto = pre_jogo_service.contexto(conn, sim, mandante, visitante)
+    finally:
+        conn.close()
+    return {**base, "mandante": _escalacao(mandante),
+            "visitante": _escalacao(visitante), **contexto}
 
 
 # ---------------------------------------------------------------------------

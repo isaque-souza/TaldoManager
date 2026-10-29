@@ -2,7 +2,11 @@
 
 import pytest
 
-from app.services import escalacao_service, simulacao_service, temporada_service
+from types import SimpleNamespace as N
+
+from app.services import (
+    escalacao_service, pos_jogo_service, pre_jogo_service, simulacao_service, temporada_service,
+)
 from app.services.temporada_service import TemporadaConcluida
 
 
@@ -80,3 +84,123 @@ def test_pre_jogo_de_temporada_concluida_levanta():
 
 def test_pre_jogo_de_simulacao_inexistente_e_none():
     assert temporada_service.pre_jogo(999_999) is None
+
+
+# ---------------------------------------------------------------------------
+# contexto do jogo (v2.3): forma, desfalques, estádio e público, meta
+# ---------------------------------------------------------------------------
+
+def _contextos(pj):
+    meu = pj["contexto_mandante"] if pj["mando"] == "casa" else pj["contexto_visitante"]
+    rival = pj["contexto_visitante"] if meu is pj["contexto_mandante"] else pj["contexto_mandante"]
+    return meu, rival
+
+
+def test_na_primeira_rodada_nao_ha_forma_nem_posicao():
+    pj = temporada_service.pre_jogo(_sim())
+    meu, rival = _contextos(pj)
+
+    assert meu["clube"] == pj["clube_usuario"] and rival["clube"] == pj["adversario"]
+    assert meu["forma"] == [] and rival["forma"] == []
+    assert meu["posicao"] is None
+    assert pj["meta"]["posicao_atual"] is None and pj["meta"]["situacao"] is None
+    assert pj["meta"]["descricao"]
+
+
+def test_forma_e_a_dos_jogos_gravados():
+    sid = _sim()
+    jogados = []
+    for _ in range(7):
+        res = temporada_service.avancar(sid)
+        jogados.append(res["rodada_jogada"])
+    pj = temporada_service.pre_jogo(sid)
+    meu, rival = _contextos(pj)
+
+    assert len(meu["forma"]) == 5
+    assert [j["rodada"] for j in meu["forma"]] == sorted(j["rodada"] for j in meu["forma"])
+    for j in meu["forma"]:
+        assert j["resultado"] == (
+            "V" if j["gols_pro"] > j["gols_contra"]
+            else "D" if j["gols_pro"] < j["gols_contra"] else "E"
+        )
+    assert meu["posicao"] is not None and 1 <= meu["posicao"] <= meu["total_clubes"]
+    assert pj["meta"]["posicao_atual"] == meu["posicao"]
+    assert pj["meta"]["situacao"] in ("batida", "perto", "longe")
+    assert len(rival["forma"]) == 5
+
+
+def test_estadio_preve_o_publico_que_o_jogo_tem():
+    sid = _sim()
+    pj = temporada_service.pre_jogo(sid)
+    est = pj["estadio"]
+    assert est["clube"] == pj["mandante"]["clube"]
+    assert 0 < est["publico_previsto"] <= est["capacidade"]
+
+    temporada_service.avancar(sid)
+    rel = pos_jogo_service.ver(sid)
+    assert rel["publico"] == est["publico_previsto"]
+
+
+def test_desfalques_trazem_lesionados_e_suspensos():
+    def jog(nome, overall, lesao=0, susp=0):
+        return N(nome=nome, numero=9, posicao="ATA", funcao="CA", overall=overall,
+                 lesionado=lesao > 0, rodadas_lesao=lesao,
+                 suspenso=susp > 0, jogos_suspensao=susp)
+
+    clube = N(jogadores=[jog("A", 70, lesao=3), jog("B", 80, susp=1), jog("C", 90)])
+    fora = pre_jogo_service.desfalques(clube)
+    assert [(d["nome"], d["motivo"], d["jogos"]) for d in fora] == [
+        ("B", "suspensao", 1), ("A", "lesao", 3),
+    ]
+
+
+def test_desfalque_nao_aparece_no_xi():
+    sid = _sim()
+    for _ in range(12):
+        temporada_service.avancar(sid)
+        pj = temporada_service.pre_jogo(sid)
+        if pj["adversario"] is None:
+            continue
+        for ctx, esc in ((pj["contexto_mandante"], pj["mandante"]),
+                         (pj["contexto_visitante"], pj["visitante"])):
+            fora = {d["nome"] for d in ctx["desfalques"]}
+            em_campo = {j["nome"] for j in esc["titulares"] + esc["banco"]}
+            assert not fora & em_campo
+
+
+def test_contexto_nao_muda_o_resultado_da_rodada_adiante():
+    a, b = _sim(seed=9), _sim(seed=9)
+    for _ in range(5):
+        temporada_service.avancar(a)
+        temporada_service.avancar(b)
+    temporada_service.pre_jogo(a)
+    ra, rb = temporada_service.avancar(a), temporada_service.avancar(b)
+    placar = lambda r: [(x["mandante"], x["gols_mandante"], x["gols_visitante"]) for x in r["resultados"]]
+    assert placar(ra) == placar(rb)
+
+
+def test_jogo_da_copa_tem_contexto_e_entra_na_forma(cargo_garantido):
+    from scripts.data_loader import TODAS_AS_LIGAS
+    sid = temporada_service.iniciar(seed=6, clube_usuario="Arsenal", ligas=TODAS_AS_LIGAS)
+    for _ in range(8):
+        temporada_service.avancar(sid)
+
+    pj = temporada_service.pre_jogo(sid)
+    assert pj["copa"]["fase"] == "oitavas"
+    meu, rival = _contextos(pj)
+    # o rival da copa pode ser da outra liga: posição e total são os da liga dele
+    assert 1 <= rival["posicao"] <= rival["total_clubes"]
+    assert all(j["competicao"] == "liga" for j in meu["forma"])
+    previsto = pj["estadio"]["publico_previsto"]
+
+    res = temporada_service.avancar(sid)
+    jogo = next(j for j in res["copa"]["jogos"] if "Arsenal" in (j["mandante"], j["visitante"]))
+    assert jogo["publico"] == previsto
+
+    depois = temporada_service.pre_jogo(sid)   # rodada 9 da liga
+    assert depois["copa"] is None
+    ultimo = _contextos(depois)[0]["forma"][-1]
+    assert ultimo["competicao"] == "copa" and ultimo["fase"] == pj["copa"]["nome"]
+    assert bool(ultimo["penaltis"]) == (jogo["gols_mandante"] == jogo["gols_visitante"])
+    if ultimo["penaltis"]:
+        assert ultimo["penaltis"]["classificou"] == (jogo["vencedor"] == "Arsenal")
