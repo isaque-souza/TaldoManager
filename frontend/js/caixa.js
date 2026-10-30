@@ -13,7 +13,7 @@ const ICONE_SETOR = {
   "Diretor de futebol": "troca",
   "Departamento médico": "lesao",
   "Auxiliar técnico": "prancheta",
-  Diretoria: "alvo",
+  Diretoria: "hall",
   "Categorias de base": "base",
   "Olheiro da base": "alvo",
   Marketing: "torcida",
@@ -71,7 +71,8 @@ function renderCaixa() {
     <div class="cx-barra">
       <div class="cx-filtros" role="group" aria-label="Filtrar por setor">
         ${chip("todos", "Todas", nao_lidas)}
-        ${setores.map((s) => chip(s, s, naoLidasDo(s))).join("")}
+        ${setores.filter((s) => s === cx.filtro || mensagens.some((m) => m.setor === s))
+          .map((s) => chip(s, s, naoLidasDo(s))).join("")}
       </div>
       ${nao_lidas ? `<button class="secondary outline cx-todas" id="cx-todas">${icone("ok")} Marcar todas como lidas</button>` : ""}
     </div>

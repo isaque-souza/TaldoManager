@@ -20,6 +20,8 @@ SETORES = (
     "Auxiliar técnico",
     "Diretoria",
     "Categorias de base",
+    "Olheiro",
+    "Olheiro da base",
     "Marketing",
 )
 
