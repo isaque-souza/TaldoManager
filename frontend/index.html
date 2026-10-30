@@ -211,14 +211,13 @@
 
   <!-- visão rodada a rodada -->
   <section id="rodada" hidden>
-    <!-- faixa da rodada (v1.8): rodada, confronto, meta e a ação principal -->
+    <!-- faixa da rodada (v1.8): rodada, confronto e a ação principal -->
     <div class="faixa-rodada">
       <hgroup>
         <h2 id="rodada-titulo"></h2>
         <p id="rodada-confronto"></p>
       </hgroup>
       <p id="rodada-data" class="faixa-data"></p>
-      <p id="r-meta" hidden></p>
       <button id="r-acao" type="button" hidden></button>
     </div>
 
@@ -394,11 +393,7 @@
       <p id="pg-confronto"></p>
     </hgroup>
     <div id="pg-placar"></div>
-    <div class="pg-grade">
-      <article id="pg-expectativa" class="pg-card"></article>
-      <article id="pg-impacto" class="pg-card"></article>
-    </div>
-    <h3 class="secao">Destaques da partida</h3>
+    <!-- o impacto (tabela ou copa) e os destaques da partida -->
     <div id="pg-destaques" class="pg-grade pg-grade-3"></div>
     <div class="pg-grade">
       <div>
@@ -429,10 +424,9 @@
       <div id="pj-tarja-rival" class="pj-tarja pj-tarja-rival"></div>
     </div>
 
-    <!-- v2.3: o estádio e o público previsto, e a meta da diretoria -->
-    <div id="pj-contexto" class="pg-grade">
+    <!-- v2.3: o estádio e o público previsto -->
+    <div id="pj-contexto">
       <article id="pj-estadio" class="pg-card"></article>
-      <article id="pj-meta" class="pg-card"></article>
     </div>
 
     <div id="pj-campo" class="campo" role="img"></div>

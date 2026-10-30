@@ -482,14 +482,6 @@ class EstadioPreJogo(BaseModel):
     ingresso: str                 # nome da faixa: Popular, Normal, Premium
 
 
-class MetaPreJogo(BaseModel):
-    posicao: int
-    descricao: str
-    posicao_atual: int | None
-    total_clubes: int
-    situacao: Literal["batida", "perto", "longe"] | None
-
-
 class PreJogo(BaseModel):
     """GET /simulacoes/{id}/pre-jogo (v1.1)."""
     rodada: int
@@ -504,7 +496,6 @@ class PreJogo(BaseModel):
     contexto_mandante: ContextoPreJogo | None = None
     contexto_visitante: ContextoPreJogo | None = None
     estadio: EstadioPreJogo | None = None
-    meta: MetaPreJogo | None = None
 
 
 # --- relatório pós-jogo (v2.2) ------------------------------------------------
@@ -515,15 +506,6 @@ class LancePosJogo(BaseModel):
     jogador: str | None
     clube: str | None
     detalhe: str | None = None
-
-
-class MomentoDecisivo(BaseModel):
-    minuto: int
-    tipo: str
-    jogador: str | None
-    clube: str | None
-    # gol_da_vitoria | gol_do_empate | penalti_perdido | penalti_defendido | expulsao
-    tipo_momento: str
 
 
 class AtuacaoPosJogo(BaseModel):
@@ -540,7 +522,6 @@ class AtuacaoPosJogo(BaseModel):
 class Destaques(BaseModel):
     melhor_em_campo: AtuacaoPosJogo | None
     melhor_do_time: AtuacaoPosJogo | None
-    pior_do_time: AtuacaoPosJogo | None
 
 
 class EstatisticasPosJogo(BaseModel):
@@ -554,27 +535,6 @@ class EstatisticasPosJogo(BaseModel):
     acrescimos: int | None
 
 
-class Desempenho(BaseModel):
-    nivel: Literal["muito_acima", "acima", "esperado", "abaixo", "muito_abaixo"]
-    texto: str
-
-
-class Expectativa(BaseModel):
-    nivel: Literal["favorito", "equilibrado", "azarao"]
-    texto: str
-    vantagem: float              # diferença de força já com o mando
-    forca: float
-    forca_adversario: float
-    desempenho: Desempenho
-
-
-class MetaPosJogo(BaseModel):
-    posicao: int
-    descricao: str
-    situacao_antes: Literal["batida", "perto", "longe"]
-    situacao: Literal["batida", "perto", "longe"]
-
-
 class TabelaPosJogo(BaseModel):
     posicao_antes: int
     posicao: int
@@ -582,7 +542,6 @@ class TabelaPosJogo(BaseModel):
     pontos: int
     pontos_ganhos: int
     total_clubes: int
-    meta: MetaPosJogo | None
 
 
 class PenaltisPosJogo(BaseModel):
@@ -636,8 +595,6 @@ class PosJogo(BaseModel):
     eventos: list[LancePosJogo]
     estatisticas: EstatisticasPosJogo | None   # None em jogos de copa antigos
     atuacoes: list[AtuacaoPosJogo]
-    expectativa: Expectativa
-    momento_decisivo: MomentoDecisivo | None
     destaques: Destaques
     tabela: TabelaPosJogo | None  # None no jogo da copa
     mensagens: list[MensagemPosJogo]

@@ -313,7 +313,7 @@ def obter_pre_jogo(simulacao_id: int):
 )
 def obter_pos_jogo(simulacao_id: int):
     """O relatório do último jogo do técnico (v2.2): resultado, notas,
-    expectativa × resultado, impacto na tabela e na meta e o próximo
+    destaques, impacto na tabela e o próximo
     compromisso. Só lê o que a rodada já gravou: não joga nem grava nada."""
     try:
         dados = pos_jogo_service.ver(simulacao_id)
