@@ -200,3 +200,71 @@ def test_jogo_da_copa_tem_contexto_e_entra_na_forma(cargo_garantido):
     assert bool(ultimo["penaltis"]) == (jogo["gols_mandante"] == jogo["gols_visitante"])
     if ultimo["penaltis"]:
         assert ultimo["penaltis"]["classificou"] == (jogo["vencedor"] == "Arsenal")
+
+
+# ---------------------------------------------------------------------------
+# v2.4: quem decide no rival e o confronto direto
+# ---------------------------------------------------------------------------
+
+def _jogador(nome, overall=70, posicao="Atacante", partidas=0, gols=0, assist=0,
+             nota=0.0, disponivel=True):
+    return N(nome=nome, numero=9, posicao=posicao, funcao="Centroavante", overall=overall,
+             partidas=partidas, gols=gols, assistencias=assist, disponivel=disponivel,
+             nota_media=lambda: nota)
+
+
+def test_perigo_e_quem_mais_decide_entre_os_aptos():
+    clube = N(jogadores=[
+        _jogador("Artilheiro machucado", partidas=9, gols=9, disponivel=False),
+        _jogador("Garçom", partidas=9, gols=1, assist=6, nota=7.0),
+        _jogador("Goleador", partidas=9, gols=5, nota=6.8),
+    ])
+    p = pre_jogo_service.perigo(clube)
+    assert (p["nome"], p["motivo"]) == ("Garçom", "assistencias")
+
+
+def test_perigo_antes_do_primeiro_jogo_e_o_melhor_da_frente():
+    clube = N(jogadores=[
+        _jogador("Zagueirão", overall=90, posicao="Defesa"),
+        _jogador("Centroavante", overall=80),
+    ])
+    p = pre_jogo_service.perigo(clube)
+    assert (p["nome"], p["motivo"]) == ("Centroavante", "overall")
+    assert pre_jogo_service.perigo(N(jogadores=[])) is None
+
+
+def test_pre_jogo_traz_o_perigo_dos_dois_lados():
+    pj = temporada_service.pre_jogo(_sim())
+    for ctx, esc in ((pj["contexto_mandante"], pj["mandante"]),
+                     (pj["contexto_visitante"], pj["visitante"])):
+        assert ctx["perigo"]["nome"] in {j["nome"] for j in esc["titulares"] + esc["banco"]}
+
+
+def test_confronto_direto_conta_os_jogos_da_temporada_do_ponto_de_vista_do_tecnico():
+    sid = _sim()
+    # joga até o rival da próxima rodada já ter enfrentado o técnico
+    for _ in range(38):
+        pj = temporada_service.pre_jogo(sid)
+        if pj["adversario"] and pj["confronto_direto"]["total"]:
+            break
+        temporada_service.avancar(sid)
+    d = pj["confronto_direto"]
+    assert d["clube"] == pj["clube_usuario"] and d["adversario"] == pj["adversario"]
+    assert d["total"] == d["vitorias"] + d["empates"] + d["derrotas"] == len(d["jogos"]) == 1
+    j = d["jogos"][0]
+    assert j["adversario"] == pj["adversario"] and j["temporada"] == 1
+    assert d["gols_pro"] == j["gols_pro"] and d["gols_contra"] == j["gols_contra"]
+    # o jogo de volta troca o mando
+    assert j["mando"] != pj["mando"]
+
+
+def test_api_do_pre_jogo_devolve_os_campos_novos():
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    sid = _sim()
+    r = TestClient(app).get(f"/simulacoes/{sid}/pre-jogo")
+    assert r.status_code == 200
+    corpo = r.json()
+    assert corpo["confronto_direto"]["total"] == 0
+    assert corpo["contexto_mandante"]["perigo"]["motivo"] == "overall"

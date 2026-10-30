@@ -1,4 +1,5 @@
 import json
+from functools import lru_cache
 from pathlib import Path
 
 from app.domain import estadio, fama, livres, vontade
@@ -21,6 +22,18 @@ def ligas_do_save(sim):
     """As ligas de uma simulação (linha da tabela `simulacao`); saves de
     antes da v1.6 (NULL) só têm a Taldo."""
     return tuple(json.loads(sim["ligas"])) if sim["ligas"] else LIGA_PADRAO
+
+
+@lru_cache(maxsize=1)
+def rivais_do_seed():
+    """{nome do clube: frozenset dos rivais} de todas as ligas, lido uma vez
+    (os clássicos não mudam com o save)."""
+    rivais = {}
+    for _, pasta in LIGAS.values():
+        with open(pasta / "clubes.json", encoding="utf-8") as arquivo:
+            for c in json.load(arquivo):
+                rivais[c["nome"]] = frozenset(c.get("rivais", []))
+    return rivais
 
 
 def carregar_jogadores(liga="taldo"):

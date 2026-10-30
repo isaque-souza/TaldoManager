@@ -470,6 +470,39 @@ class ContextoPreJogo(BaseModel):
     total_clubes: int
     forma: list[JogoRecente]      # do mais antigo para o mais novo
     desfalques: list[Desfalque]
+    perigo: "JogadorPerigo | None" = None   # v2.4
+
+
+class JogadorPerigo(BaseModel):
+    """v2.4: quem mais decide no clube nesta temporada (entre os aptos)."""
+    nome: str
+    numero: int | None
+    posicao: str
+    funcao: str | None
+    overall: int
+    partidas: int
+    gols: int
+    assistencias: int
+    nota_media: float
+    motivo: Literal["gols", "assistencias", "nota", "overall"]
+
+
+class JogoDoConfronto(JogoRecente):
+    temporada: int
+
+
+class ConfrontoDireto(BaseModel):
+    """v2.4: os jogos entre os dois clubes na carreira, do ponto de vista
+    do clube do técnico."""
+    clube: str
+    adversario: str
+    jogos: list[JogoDoConfronto]  # os últimos, do mais antigo para o mais novo
+    total: int
+    vitorias: int
+    empates: int
+    derrotas: int
+    gols_pro: int
+    gols_contra: int
 
 
 class EstadioPreJogo(BaseModel):
@@ -496,6 +529,7 @@ class PreJogo(BaseModel):
     contexto_mandante: ContextoPreJogo | None = None
     contexto_visitante: ContextoPreJogo | None = None
     estadio: EstadioPreJogo | None = None
+    confronto_direto: ConfrontoDireto | None = None   # v2.4
 
 
 # --- relatório pós-jogo (v2.2) ------------------------------------------------
@@ -514,6 +548,8 @@ class AtuacaoPosJogo(BaseModel):
     clube: str
     posicao: str
     titular: bool
+    entrou_min: int | None = None   # v2.4
+    saiu_min: int | None = None
     gols: int
     assistencias: int
     nota: float
@@ -542,6 +578,26 @@ class TabelaPosJogo(BaseModel):
     pontos: int
     pontos_ganhos: int
     total_clubes: int
+    vizinhos: list["VizinhoNaTabela"] = []   # v2.4
+
+
+class VizinhoNaTabela(BaseModel):
+    clube: str
+    posicao: int
+    posicao_antes: int
+    pontos: int
+    jogos: int
+    saldo: int
+
+
+class OutroResultado(BaseModel):
+    """v2.4: outro jogo da mesma rodada (ou fase da copa)."""
+    partida_id: int | None
+    mandante: str
+    visitante: str
+    gols_mandante: int
+    gols_visitante: int
+    penaltis: list[int] | None = None   # [mandante, visitante] na copa
 
 
 class PenaltisPosJogo(BaseModel):
@@ -592,11 +648,14 @@ class PosJogo(BaseModel):
     gols_visitante: int
     resultado: Literal["vitoria", "empate", "derrota"]
     publico: int | None
+    ocupacao: float | None = None   # v2.4: 0–1, para o desenho do estádio
+    classico: bool = False
     eventos: list[LancePosJogo]
     estatisticas: EstatisticasPosJogo | None   # None em jogos de copa antigos
     atuacoes: list[AtuacaoPosJogo]
     destaques: Destaques
     tabela: TabelaPosJogo | None  # None no jogo da copa
+    outros_resultados: list[OutroResultado] = []   # v2.4
     mensagens: list[MensagemPosJogo]
     proximo: ProximoCompromisso | None   # None com a temporada encerrada
     temporada_concluida: bool

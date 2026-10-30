@@ -1,15 +1,18 @@
 // Pós-jogo (v2.2): o relatório do último jogo do técnico. Tudo vem de
 // GET /pos-jogo, que só lê o que a rodada já gravou: abrir de novo (ou
 // depois de recarregar a página) mostra o mesmo relatório e não mexe em nada.
+// v2.4: a capa com o estádio (atmosfera.js) e a linha do jogo, as notas do
+// time no campo, a vizinhança na tabela e os outros jogos da rodada.
 
 import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
-import { escudo } from "./identidade.js";
-import { icone } from "./icones.js";
-import { linhaEvento } from "./partida.js";
+import { camisa, escudo } from "./identidade.js";
+import { cartao, icone } from "./icones.js";
+import { linhaEvento, minutoFmt } from "./partida.js";
 import { ligarLinks, reais } from "./tabelas.js";
 import { nomeLiga } from "./ligas.js";
 import { dataLonga, paraData } from "./calendario.js";
 import { avancarAposResultado, mostrarRodadaTela } from "./rodada.js";
+import { estadioNoturno } from "./atmosfera.js";
 
 const RESULTADO = {
   vitoria: ["v", "Vitória"],
@@ -21,6 +24,7 @@ const chip = (classe, texto) => `<span class="chip${classe ? ` chip-${classe}` :
 const decimal = (n) => n.toFixed(1).replace(".", ",");
 const sinal = (n) => (n > 0 ? "+" : "") + (Number.isInteger(n) ? `${n}` : decimal(n));
 const nota = decimal;
+const sobrenome = (nome) => nome.split(" ").slice(-1)[0];
 
 let atual = null;   // o relatório na tela
 
@@ -47,10 +51,12 @@ function render(r) {
     ? `${quando} <small>${r.mando === "casa" ? "em casa" : "fora"}</small>`
     : `Rodada ${r.rodada} de ${r.total_rodadas} <small>${quando} · ${r.mando === "casa" ? "em casa" : "fora"}</small>`;
 
-  $("pg-placar").innerHTML = placar(r);
-  ligarLinks($("pg-placar"));
-  $("pg-destaques").innerHTML =
-    `<article class="pg-card">${r.tabela ? impactoLiga(r) : impactoCopa(r)}</article>` + destaques(r);
+  $("pg-capa").innerHTML = capa(r);
+  ligarLinks($("pg-capa"));
+
+  $("pg-notas").innerHTML = notasDoTime(r);
+  $("pg-impacto").innerHTML = r.tabela ? impactoLiga(r) : impactoCopa(r);
+  $("pg-destaques").innerHTML = destaques(r);
 
   $("pg-lances").innerHTML = r.eventos.length
     ? r.eventos.map(linhaEvento).join("")
@@ -58,6 +64,11 @@ function render(r) {
   $("pg-stats").innerHTML = r.estatisticas
     ? estatisticas(r)
     : `<p class="vazio">Este jogo da copa é de antes do relatório: só os gols ficaram guardados.</p>`;
+
+  $("pg-outros-titulo").textContent = r.copa ? `Outros jogos · ${r.copa.nome}` : "Outros resultados da rodada";
+  $("pg-outros-bloco").hidden = !r.outros_resultados.length;
+  $("pg-outros").innerHTML = r.outros_resultados.map(outroJogo).join("");
+  ligarLinks($("pg-outros"));
 
   $("pg-clube-bloco").hidden = !r.mensagens.length;
   $("pg-mensagens").innerHTML = r.mensagens.map((m) =>
@@ -70,9 +81,9 @@ function render(r) {
   if (res) res.addEventListener("click", verResultados);
 }
 
-// ---------- 1. o resultado ----------
+// ---------- 1. a capa: resultado, estádio e a linha do jogo ----------
 
-function placar(r) {
+function capa(r) {
   let [classe, rotulo] = RESULTADO[r.resultado];
   if (r.copa && r.copa.penaltis) {
     const p = r.copa.penaltis;
@@ -80,33 +91,135 @@ function placar(r) {
       ? ["v", `Classificado nos pênaltis (${p.pro} x ${p.contra})`]
       : ["d", `Eliminado nos pênaltis (${p.pro} x ${p.contra})`];
   }
+  const fundo = estadioNoturno({
+    mandante: r.mandante, visitante: r.visitante,
+    ocupacao: r.ocupacao ?? 0.5, classico: r.classico, lotado: (r.ocupacao ?? 0) >= 1,
+    semente: `pos${r.rodada}${r.copa ? r.copa.fase : ""}`,
+  });
   const time = (nome) =>
-    `<span class="mj-time${nome === r.clube ? " mj-eu" : ""}">${escudo(nome, 44)}<b>${nome}</b></span>`;
+    `<span class="capa-time${nome === r.clube ? " capa-eu" : ""}">${escudo(nome, 64)}<b>${nome}</b></span>`;
   const publico = r.publico ? `${r.publico.toLocaleString("pt-BR")} pagantes` : "";
   const link = r.partida_id != null
-    ? `<a class="partida mj-link" data-partida="${r.partida_id}">Ver a partida completa →</a>`
+    ? `<a class="partida" data-partida="${r.partida_id}">Ver a partida completa</a>`
     : "";
-  return `<article class="meu-jogo mj-${classe}">
-    <span class="mj-resultado">${rotulo}</span>
-    <div class="mj-placar">
-      ${time(r.mandante)}
-      <strong>${r.gols_mandante} <small>x</small> ${r.gols_visitante}</strong>
-      ${time(r.visitante)}
-    </div>
-    <span class="pg-publico">${publico}${link ? `<br>${link}` : ""}</span>
-  </article>`;
+  return `<div class="cartaz-fundo">${fundo}</div>
+    <div class="capa capa-${classe}">
+      <span class="capa-resultado">${rotulo}${r.classico ? ` ${chip("longe", "Clássico")}` : ""}</span>
+      <div class="capa-placar">
+        ${time(r.mandante)}
+        <strong>${r.gols_mandante}<small>x</small>${r.gols_visitante}</strong>
+        ${time(r.visitante)}
+      </div>
+      ${linhaDoJogo(r)}
+      <p class="capa-rodape">${[publico, link].filter(Boolean).join(" · ")}</p>
+    </div>`;
 }
 
-// ---------- 4. impacto na carreira ----------
+// o que entra na linha do jogo e como aparece
+const NA_LINHA = {
+  gol: ["gol", "Gol"],
+  penalti: ["gol", "Gol de pênalti"],
+  penalti_perdido: ["perdido", "Pênalti perdido"],
+  penalti_defendido: ["perdido", "Pênalti defendido"],
+  cartao_amarelo: ["amarelo", "Cartão amarelo"],
+  expulsao: ["vermelho", "Expulsão"],
+  lesao: ["lesao", "Lesão"],
+};
+
+// 0' a 90' (mais os acréscimos): o mandante em cima, o visitante embaixo
+function linhaDoJogo(r) {
+  const fim = Math.max(90, ...r.eventos.map((e) => e.minuto)) + 1;
+  const marcas = r.eventos.filter((e) => NA_LINHA[e.tipo]).map((e) => {
+    const [tipo, nome] = NA_LINHA[e.tipo];
+    const lado = e.clube === r.visitante ? "baixo" : "cima";
+    const desenho = tipo === "gol" || tipo === "perdido"
+      ? icone(tipo === "gol" ? "gol" : "nao")
+      : tipo === "lesao" ? icone("lesao")
+      : cartao(tipo === "vermelho" ? "vermelho" : "");
+    const texto = `${minutoFmt(e.minuto)}' ${nome}${e.jogador ? `: ${e.jogador}` : ""} (${e.clube || ""})`;
+    return `<li class="lj-marca lj-${lado} lj-${tipo}" style="--m:${(e.minuto / fim) * 100}%" title="${texto}">
+      <span class="lj-icone" aria-hidden="true">${desenho}</span>
+      ${tipo === "gol" ? `<span class="lj-quem">${minutoFmt(e.minuto)}' ${e.jogador ? sobrenome(e.jogador) : ""}</span>` : ""}
+      <span class="sr">${texto}</span></li>`;
+  }).join("");
+  const regua = [0, 15, 30, 45, 60, 75, 90].map((m) =>
+    `<span class="lj-tique${m === 45 ? " lj-intervalo" : ""}" style="--m:${(m / fim) * 100}%">${m === 45 ? "Intervalo" : `${m}'`}</span>`
+  ).join("");
+  return `<div class="linha-jogo">
+    <span class="lj-lado lj-lado-cima">${r.mandante}</span>
+    <ol class="lj-trilho" aria-label="Linha do jogo, minuto a minuto">${marcas}</ol>
+    <div class="lj-regua" aria-hidden="true">${regua}</div>
+    <span class="lj-lado lj-lado-baixo">${r.visitante}</span>
+  </div>`;
+}
+
+// ---------- 2. as notas do time, no campo ----------
+
+const SETORES = ["Atacante", "Meio-Campo", "Defesa", "Goleiro"];
+
+function classeNota(n) {
+  if (n >= 7.5) return "nota-boa";
+  if (n < 6) return "nota-ruim";
+  return "";
+}
+
+function notasDoTime(r) {
+  const meus = r.atuacoes.filter((a) => a.clube === r.clube);
+  if (!meus.length) return `<p class="vazio">Sem notas guardadas deste jogo.</p>`;
+  const titulares = meus.filter((a) => a.titular);
+  const entraram = meus.filter((a) => !a.titular);
+  const melhor = Math.max(...meus.map((a) => a.nota));
+
+  const peca = (a) => {
+    const saiu = a.saiu_min != null
+      ? `<span class="nt-saiu" title="Saiu aos ${minutoFmt(a.saiu_min)}'">${icone("troca")}</span>` : "";
+    const fez = a.gols ? `<span class="nt-gols" title="${a.gols} ${a.gols === 1 ? "gol" : "gols"}">${icone("gol")}${a.gols > 1 ? a.gols : ""}</span>` : "";
+    return `<li class="nt-peca${a.nota === melhor ? " nt-melhor" : ""}" title="${a.jogador} · nota ${nota(a.nota)}">
+      <span class="nt-camisa">${camisa(r.clube, { tamanho: 36 })}${saiu}${fez}</span>
+      <span class="nt-nota ${classeNota(a.nota)}">${nota(a.nota)}</span>
+      <span class="nt-nome">${sobrenome(a.jogador)}</span>
+    </li>`;
+  };
+  const linhas = SETORES.map((setor) => {
+    const deles = titulares.filter((a) => a.posicao === setor);
+    return deles.length ? `<ol class="nt-linha">${deles.map(peca).join("")}</ol>` : "";
+  }).join("");
+  const banco = entraram.length
+    ? `<p class="nt-banco"><b>Entraram</b> ${entraram.map((a) =>
+      `<span>${a.jogador}${a.entrou_min != null ? ` <small>${minutoFmt(a.entrou_min)}'</small>` : ""}
+        <span class="nt-nota ${classeNota(a.nota)}">${nota(a.nota)}</span></span>`).join("")}</p>`
+    : "";
+  return `<div class="nt-campo" role="img" aria-label="Notas dos titulares do ${r.clube}, por setor">${linhas}</div>${banco}`;
+}
+
+// ---------- 3. impacto: tabela ou copa ----------
+
+function seta(andou) {
+  if (!andou) return `<span class="viz-seta" aria-label="manteve"></span>`;
+  const sobe = andou > 0;
+  return `<svg class="viz-seta ${sobe ? "sobe" : "desce"}" viewBox="0 0 10 10" width="10" height="10" role="img"
+    aria-label="${sobe ? `subiu ${andou}` : `caiu ${-andou}`}"><path d="${sobe ? "M5 1L9 8H1Z" : "M5 9L1 2H9Z"}"/></svg>`;
+}
 
 function impactoLiga(r) {
   const t = r.tabela;
   const andou = t.posicao_antes - t.posicao;
-  const seta = andou > 0 ? `subiu ${andou}` : andou < 0 ? `caiu ${-andou}` : "manteve a posição";
+  const frase = andou > 0 ? `subiu ${andou}` : andou < 0 ? `caiu ${-andou}` : "manteve a posição";
+  const linhas = t.vizinhos.map((v) => `<tr class="${v.clube === r.clube ? "eu" : ""}">
+      <td class="viz-pos">${v.posicao}º</td>
+      <td>${seta(v.posicao_antes - v.posicao)}</td>
+      <td class="viz-clube">${escudo(v.clube, 16)} ${v.clube}</td>
+      <td class="viz-num">${v.jogos}</td>
+      <td class="viz-num">${v.saldo > 0 ? "+" : ""}${v.saldo}</td>
+      <td class="viz-num"><b>${v.pontos}</b></td>
+    </tr>`).join("");
   return `<span class="hub-rotulo">${icone("trofeu")} Na tabela</span>
     <p class="pg-numero">${t.posicao}º <small>de ${t.total_clubes}</small></p>
-    <p class="pg-detalhe">${t.posicao_antes}º → ${t.posicao}º (${seta}) ·
+    <p class="pg-detalhe">${t.posicao_antes}º → ${t.posicao}º (${frase}) ·
       ${sinal(t.pontos_ganhos)} ${t.pontos_ganhos === 1 ? "ponto" : "pontos"}, agora ${t.pontos}</p>
+    ${linhas ? `<table class="vizinhos"><thead><tr><th></th><th></th><th>Clube</th>
+      <th class="viz-num" title="Jogos">J</th><th class="viz-num" title="Saldo de gols">SG</th><th class="viz-num" title="Pontos">P</th></tr></thead>
+      <tbody>${linhas}</tbody></table>` : ""}
     ${cargo(r)}`;
 }
 
@@ -130,7 +243,7 @@ function cargo(r) {
   return `<p class="pg-linha">${chip(classe, texto)} <small>${r.cargo.motivo || ""}</small></p>`;
 }
 
-// ---------- 2. análise: destaques e números ----------
+// ---------- 4. destaques e números ----------
 
 function destaques(r) {
   const d = r.destaques;
@@ -172,7 +285,20 @@ function estatisticas(r) {
     linha("Escanteios", s.escanteios_mandante, s.escanteios_visitante);
 }
 
-// ---------- 5. continuidade ----------
+// ---------- 5. a rodada ----------
+
+function outroJogo(o) {
+  const pen = o.penaltis ? `<small>pên. ${o.penaltis[0]}–${o.penaltis[1]}</small>` : "";
+  const placar = `<b>${o.gols_mandante}<small>x</small>${o.gols_visitante}</b>`;
+  return `<li>
+    <span class="ou-time">${o.mandante} ${escudo(o.mandante, 18)}</span>
+    ${o.partida_id != null ? `<a class="partida ou-placar" data-partida="${o.partida_id}" title="Ver a partida">${placar}</a>` : `<span class="ou-placar">${placar}</span>`}
+    <span class="ou-time">${escudo(o.visitante, 18)} ${o.visitante}</span>
+    ${pen}
+  </li>`;
+}
+
+// ---------- 6. continuidade ----------
 
 function proximo(r) {
   // "Ver resultados" só existe logo depois de jogar (a tela da rodada

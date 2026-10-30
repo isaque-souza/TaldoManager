@@ -21,7 +21,7 @@ from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import copa_service, simulacao_service
-from scripts.data_loader import carregar_campeonato_do_save
+from scripts.data_loader import carregar_campeonato_do_save, rivais_do_seed
 
 
 class SemJogo(Exception):
@@ -103,6 +103,7 @@ def _da_liga(conn, sim, clubes, p):
         else (p["gols_visitante"], p["gols_mandante"])
     )
     res = pos_jogo.resultado(pro, contra)
+    partidas = partida_repo.listar_por_simulacao(conn, sim["id"])
 
     eventos = [
         {"minuto": r["minuto"], "tipo": r["tipo"], "jogador": r["jogador_nome"],
@@ -113,7 +114,8 @@ def _da_liga(conn, sim, clubes, p):
     atuacoes = [
         {"jogador": r["jogador_nome"], "jogador_id": r["jogador_id"],
          "clube": r["clube_nome"], "posicao": r["jogador_posicao"],
-         "titular": bool(r["titular"]), "gols": r["gols"],
+         "titular": bool(r["titular"]), "entrou_min": r["entrou_min"],
+         "saiu_min": r["saiu_min"], "gols": r["gols"],
          "assistencias": r["assistencias"], "nota": r["nota"]}
         for r in atuacao_repo.listar_por_partida(conn, p["id"])
     ]
@@ -135,11 +137,13 @@ def _da_liga(conn, sim, clubes, p):
         "partida_id": p["id"],
         **_placar(meu, rival, em_casa, mandante, visitante, p["gols_mandante"],
                   p["gols_visitante"], res, p["publico"]),
+        **_atmosfera(clubes, mandante, visitante, p["publico"]),
         "eventos": eventos,
         "estatisticas": estatisticas,
         "atuacoes": atuacoes,
         "destaques": pos_jogo.destaques(atuacoes, meu),
-        "tabela": _impacto_na_tabela(conn, sim, clubes, p, pro, contra),
+        "tabela": _impacto_na_tabela(sim, clubes, p, pro, contra, partidas),
+        "outros_resultados": _outros_da_rodada(clubes, p, partidas),
         "mensagens": _mensagens_do_dia(
             conn, sim["id"], p["rodada"],
             calendario.data_da_rodada(sim["temporada"], p["rodada"]),
@@ -147,9 +151,10 @@ def _da_liga(conn, sim, clubes, p):
     }
 
 
-def _impacto_na_tabela(conn, sim, clubes, p, pro, contra):
-    """A posição e os pontos do clube antes e depois desta rodada. O depois
-    é a tabela gravada."""
+def _impacto_na_tabela(sim, clubes, p, pro, contra, partidas):
+    """A posição e os pontos do clube antes e depois desta rodada, mais a
+    vizinhança dele na tabela (`vizinhos`: até VIZINHOS clubes em volta,
+    com a posição de antes de cada um). O depois é a tabela gravada."""
     meu = sim["clube_usuario"]
     liga = _liga_de(clubes, meu)
     da_liga = [c for c in clubes if c["liga"] == liga]
@@ -162,20 +167,52 @@ def _impacto_na_tabela(conn, sim, clubes, p, pro, contra):
     anteriores = [
         {"mandante": q["mandante_nome"], "visitante": q["visitante_nome"],
          "gols_mandante": q["gols_mandante"], "gols_visitante": q["gols_visitante"]}
-        for q in partida_repo.listar_por_simulacao(conn, sim["id"])
+        for q in partidas
         if q["rodada"] < p["rodada"]
     ]
-    posicao_antes = pos_jogo.tabela(ordem, anteriores)[meu]
+    antes = pos_jogo.tabela(ordem, anteriores)
     ganhos = 3 if pro > contra else 1 if pro == contra else 0
 
     return {
-        "posicao_antes": posicao_antes,
+        "posicao_antes": antes[meu],
         "posicao": linha["posicao_final"],
         "pontos_antes": linha["pontos"] - ganhos,
         "pontos": linha["pontos"],
         "pontos_ganhos": ganhos,
         "total_clubes": total,
+        "vizinhos": _vizinhos(da_liga, linha["posicao_final"], antes),
     }
+
+
+VIZINHOS = 5
+
+
+def _vizinhos(da_liga, posicao, antes):
+    """Os VIZINHOS clubes em volta de `posicao` na tabela atual (o clube no
+    meio, quando dá), com a posição de antes da rodada."""
+    na_ordem = sorted(da_liga, key=lambda c: c["posicao_final"])
+    inicio = max(0, min(posicao - 1 - VIZINHOS // 2, len(na_ordem) - VIZINHOS))
+    return [
+        {"clube": c["nome"], "posicao": c["posicao_final"],
+         "posicao_antes": antes.get(c["nome"], c["posicao_final"]),
+         "pontos": c["pontos"], "jogos": c["jogos"],
+         "saldo": c["gols_marcados"] - c["gols_sofridos"]}
+        for c in na_ordem[inicio:inicio + VIZINHOS]
+    ]
+
+
+def _outros_da_rodada(clubes, p, partidas):
+    """Os outros jogos da liga do técnico na mesma rodada."""
+    liga = {c["nome"]: c["liga"] for c in clubes}
+    minha = liga.get(p["mandante_nome"])
+    return [
+        {"partida_id": q["id"], "mandante": q["mandante_nome"],
+         "visitante": q["visitante_nome"], "gols_mandante": q["gols_mandante"],
+         "gols_visitante": q["gols_visitante"], "penaltis": None}
+        for q in partidas
+        if q["rodada"] == p["rodada"] and q["id"] != p["id"]
+        and liga.get(q["mandante_nome"]) == minha
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -223,12 +260,20 @@ def _da_copa(conn, sim, clubes, fase, j):
         "partida_id": None,
         **_placar(meu, rival, em_casa, mandante, visitante, j["gols_mandante"],
                   j["gols_visitante"], res, j["publico"]),
+        **_atmosfera(clubes, mandante, visitante, j["publico"]),
         "eventos": eventos,
         "estatisticas": j.get("estatisticas"),
         "atuacoes": atuacoes,
         "destaques": pos_jogo.destaques(atuacoes, meu),
         # a copa não mexe na tabela da liga
         "tabela": None,
+        "outros_resultados": [
+            {"partida_id": None, "mandante": o["mandante"], "visitante": o["visitante"],
+             "gols_mandante": o["gols_mandante"], "gols_visitante": o["gols_visitante"],
+             "penaltis": o["penaltis"]}
+            for o in copa_service.estado_da_copa(sim)["fases"].get(fase) or []
+            if o["vencedor"] and meu not in (o["mandante"], o["visitante"])
+        ],
         "mensagens": _mensagens_do_dia(
             conn, sim["id"], rodada, calendario.data_da_copa(sim["temporada"], rodada),
         ),
@@ -261,6 +306,20 @@ def _placar(meu, rival, em_casa, mandante, visitante, gm, gv, res, publico):
         "gols_visitante": gv,
         "resultado": res,
         "publico": publico,
+    }
+
+
+def _atmosfera(clubes, mandante, visitante, publico):
+    """Para o desenho do estádio (v2.4): a ocupação do jogo (None sem
+    público ou sem estádio registrado) e se foi clássico."""
+    casa = next((c for c in clubes if c["nome"] == mandante), None)
+    capacidade = casa["capacidade"] if casa else 0
+    rivais = rivais_do_seed()
+    return {
+        "ocupacao": (round(min(1, publico / capacidade), 3)
+                     if publico and capacidade else None),
+        "classico": (visitante in rivais.get(mandante, ())
+                     or mandante in rivais.get(visitante, ())),
     }
 
 

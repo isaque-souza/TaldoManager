@@ -909,9 +909,7 @@ button.hub-card:hover, button.hub-card:focus-visible {
   background: #f7d117; box-shadow: 0 0 0 1.5px var(--noite);
 }
 /* pré-jogo v2.3: estádio, meta e como cada time chega */
-#pj-contexto { margin-bottom: 1rem; }
 .pj-ocupacao { height: 6px; border-radius: 3px; background: var(--superficie-2); overflow: hidden; margin: .15rem 0 .1rem; }
-.pj-ocupacao span { display: block; height: 100%; background: var(--gramado-claro); }
 .pj-chega { display: grid; gap: .45rem; margin-bottom: 1.2rem; }
 .pj-forma { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
 .pj-forma li { margin: 0; display: flex; flex-direction: column; align-items: center; gap: .15rem; cursor: help; }
@@ -1841,7 +1839,6 @@ input.campo-dinheiro {
 .pg-publico { justify-self: end; text-align: right; color: var(--texto-2); font-size: .82rem; }
 .pg-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
 .pg-grade > * { min-width: 0; }
-.pg-grade-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .pg-card {
   display: flex; flex-direction: column; gap: .35rem; margin: 0; padding: .9rem 1rem;
   background: linear-gradient(180deg, #142133, var(--superficie) 70%);
@@ -1873,9 +1870,254 @@ input.campo-dinheiro {
 .pg-acoes button { width: auto; margin: 0; }
 .hub-ultimo { margin-top: .35rem; font-size: .85rem; }
 @media (max-width: 760px) {
-  .pg-grade, .pg-grade-3 { grid-template-columns: minmax(0, 1fr); }
+  .pg-grade { grid-template-columns: minmax(0, 1fr); }
   .pg-publico { grid-column: 1 / -1; justify-self: start; text-align: left; }
   .mj-links { align-items: flex-start; }
   .pg-acoes { flex-direction: column-reverse; align-items: stretch; }
   .pg-acoes button { width: 100%; }
+}
+
+/* ---------- cartaz e capa (v2.4): o estádio à noite atrás do jogo ----------
+   O fundo é o SVG de atmosfera.js; o véu escurece o meio para o texto ler
+   bem sobre a torcida, sem apagar os refletores lá em cima. */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.cartaz {
+  position: relative; isolation: isolate; overflow: hidden; margin: 0 0 1.5rem;
+  background: #05080d; border: 1px solid var(--linha); border-radius: 6px;
+  box-shadow: 0 24px 48px -28px rgba(0, 0, 0, .9);
+  color: var(--texto);
+}
+.cartaz-fundo { position: absolute; inset: 0; z-index: -1; }
+.cartaz-fundo .atmosfera { display: block; width: 100%; height: 100%; }
+.cartaz-fundo::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(75% 62% at 50% 62%, rgba(5, 8, 13, .78), rgba(5, 8, 13, .25) 80%, transparent),
+    linear-gradient(180deg, rgba(5, 8, 13, 0) 0%, rgba(5, 8, 13, .4) 38%, rgba(5, 8, 13, .72) 100%);
+}
+/* o único movimento da tela: os refletores acendem quando ela abre */
+@keyframes refletor-acende { from { opacity: .2; } to { opacity: 1; } }
+.cartaz .atm-feixe { animation: refletor-acende 1.8s cubic-bezier(.16, 1, .3, 1) both; }
+@media (prefers-reduced-motion: reduce) { .cartaz .atm-feixe { animation: none; } }
+
+.cartaz-palco {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: start;
+  gap: 1rem 2rem; padding: 3.2rem 1.5rem 1.4rem;
+}
+.cartaz-time {
+  display: flex; flex-direction: column; align-items: center; gap: .4rem; min-width: 0;
+  text-align: center; text-shadow: 0 2px 10px rgba(0, 0, 0, .85);
+}
+.cartaz-time .escudo { filter: drop-shadow(0 8px 16px rgba(0, 0, 0, .7)); }
+.cartaz-nome {
+  font-family: var(--fonte-tarja); font-weight: 800; font-size: clamp(1.3rem, 2.6vw, 2rem);
+  line-height: 1; text-transform: uppercase; text-wrap: balance; overflow-wrap: anywhere; color: #fff;
+}
+.cartaz-eu .cartaz-nome { color: var(--refletor); }
+.cartaz-pos { font-size: .9rem; color: var(--texto-2); }
+.cartaz-pos b { color: #fff; font-family: var(--fonte-tarja); font-size: 1.05rem; }
+.cartaz-forma { list-style: none; display: flex; gap: .25rem; margin: .1rem 0 0; padding: 0; }
+.cartaz-forma li { list-style: none; margin: 0; width: 1.45rem; height: 1.45rem; font-size: .82rem; text-shadow: none; cursor: help; }
+.cartaz-forca {
+  font-family: var(--fonte-tarja); font-size: .8rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--texto-2);
+}
+.cartaz-forca b { margin-left: .2rem; font-size: 1.3rem; letter-spacing: 0; color: #fff; }
+.cartaz-forte b { color: var(--gramado-claro); }
+.cartaz-meio { display: flex; flex-direction: column; align-items: center; gap: .5rem; padding-top: 1.4rem; }
+.cartaz-comp {
+  font-family: var(--fonte-tarja); font-size: .8rem; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--refletor); white-space: nowrap;
+}
+.cartaz-x { font-family: var(--fonte-tarja); font-weight: 800; font-size: 3rem; line-height: .9; color: rgba(255, 255, 255, .85); }
+.cartaz-selos { display: flex; flex-wrap: wrap; justify-content: center; gap: .3rem; }
+.cartaz-publico {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .4rem 1.2rem;
+  padding: .7rem 1.25rem; background: rgba(5, 8, 13, .78); border-top: 1px solid rgba(255, 255, 255, .08);
+  font-size: .88rem; color: var(--texto-2);
+}
+.cartaz-publico b { font-family: var(--fonte-tarja); font-size: 1.1rem; color: #fff; }
+.cartaz-onde { display: inline-flex; align-items: center; gap: .4rem; font-weight: 600; color: #fff; }
+.cartaz-publico .pj-ocupacao { display: inline-block; width: 8rem; margin: 0; }
+.pj-ocupacao i { display: block; height: 100%; background: var(--gramado-claro); }
+
+/* pré-jogo: análise do adversário e confronto direto */
+.pg-card > .secao { margin: 0 0 .35rem; }
+.pj-perigo { display: flex; align-items: center; gap: .9rem; }
+.pj-perigo .camisa { flex: none; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .5)); }
+.pj-perigo strong { display: block; font-family: var(--fonte-tarja); font-size: 1.35rem; line-height: 1.05; text-transform: uppercase; }
+.pj-perigo small { color: var(--texto-2); }
+.pj-perigo .pg-linha { margin-top: .3rem; }
+.cd-placar b { font-family: var(--fonte-tarja); font-size: 1.25rem; }
+.cd-placar small { display: block; color: var(--texto-2); font-size: .85rem; }
+.cd-barra { display: flex; gap: 2px; height: 6px; margin: .25rem 0 .5rem; border-radius: 3px; overflow: hidden; }
+.cd-v { background: var(--gramado-claro); }
+.cd-e { background: var(--linha-forte); }
+.cd-d { background: var(--ao-vivo); }
+.cd-jogos { list-style: none; display: grid; gap: .35rem; margin: 0; padding: 0; }
+.cd-jogos li { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .5rem; margin: 0; font-size: .9rem; }
+.cd-jogos .pj-res { width: 1.45rem; height: 1.45rem; font-size: .82rem; }
+.cd-jogos b { font-family: var(--fonte-tarja); font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.cd-jogos small { color: var(--texto-2); }
+
+/* pós-jogo: a capa com o placar e a linha do jogo */
+.capa { display: flex; flex-direction: column; align-items: center; gap: .8rem; padding: 2.6rem 1.5rem 1rem; text-align: center; }
+.capa-resultado {
+  display: inline-flex; align-items: center; gap: .6rem; font-family: var(--fonte-tarja); font-size: 1.05rem;
+  font-weight: 700; letter-spacing: .14em; text-transform: uppercase; text-shadow: 0 2px 10px rgba(0, 0, 0, .85);
+}
+.capa-v .capa-resultado { color: var(--gramado-claro); }
+.capa-e .capa-resultado { color: var(--refletor); }
+.capa-d .capa-resultado { color: var(--texto-alerta); }
+.capa-resultado .chip { letter-spacing: .04em; text-shadow: none; }
+.capa-placar {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center;
+  gap: 1.5rem; width: 100%; max-width: 780px;
+}
+.capa-placar > strong {
+  display: flex; align-items: center; gap: .2em; font-family: var(--fonte-tarja); font-weight: 800;
+  font-size: clamp(3rem, 7vw, 4.8rem); line-height: 1; color: #fff; font-variant-numeric: tabular-nums;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, .85);
+}
+.capa-placar > strong small { font-size: .42em; color: var(--texto-2); }
+.capa-time { display: flex; flex-direction: column; align-items: center; gap: .45rem; min-width: 0; }
+.capa-time .escudo { filter: drop-shadow(0 8px 16px rgba(0, 0, 0, .7)); }
+.capa-time b {
+  font-family: var(--fonte-tarja); font-size: 1.35rem; line-height: 1.05; text-transform: uppercase;
+  text-wrap: balance; overflow-wrap: anywhere; color: #fff; text-shadow: 0 2px 10px rgba(0, 0, 0, .85);
+}
+.capa-eu b { color: var(--refletor); }
+.capa-rodape { margin: 0; font-size: .85rem; color: var(--texto-2); }
+.capa-rodape a { cursor: pointer; }
+
+.linha-jogo {
+  width: 100%; max-width: 900px; margin-top: .3rem; padding: .55rem 1rem .35rem; text-align: left;
+  background: rgba(5, 8, 13, .78); border: 1px solid rgba(255, 255, 255, .08); border-radius: 4px;
+}
+.lj-lado { display: block; font-family: var(--fonte-tarja); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--texto-2); }
+.lj-trilho { position: relative; height: 5rem; margin: 0 .6rem; padding: 0; list-style: none; }
+.lj-trilho::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: rgba(255, 255, 255, .22); }
+.lj-marca {
+  position: absolute; left: var(--m); transform: translateX(-50%); display: flex; align-items: center; gap: .1rem;
+  margin: 0; list-style: none;
+}
+.lj-cima { bottom: calc(50% + 3px); flex-direction: column-reverse; }
+.lj-baixo { top: calc(50% + 3px); flex-direction: column; }
+.lj-icone { display: grid; place-items: center; width: 1.35rem; height: 1.35rem; line-height: 0; }
+.lj-icone .icone { width: 1rem; height: 1rem; }
+.lj-gol .lj-icone { border-radius: 50%; background: #fff; color: var(--noite); }
+.lj-gol .lj-icone .icone { width: .85rem; height: .85rem; }
+.lj-perdido .lj-icone, .lj-lesao .lj-icone { color: var(--texto-alerta); }
+.lj-quem { font-family: var(--fonte-tarja); font-size: .75rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; color: var(--texto); }
+.lj-regua { position: relative; height: 1rem; margin: 0 .6rem; }
+.lj-tique { position: absolute; left: var(--m); transform: translateX(-50%); font-size: .68rem; color: var(--texto-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lj-tique:first-child { transform: none; }
+.lj-intervalo { color: var(--texto-2); }
+
+/* pós-jogo: as notas do time no campo */
+.pg-grade-capa { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.pg-grade-capa h3.secao { margin-top: 0; }
+.pg-lado { display: flex; flex-direction: column; gap: 1rem; }
+.pg-destaques { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.pg-destaques > :only-child { grid-column: 1 / -1; }
+.nt-campo {
+  position: relative; display: flex; flex-direction: column; justify-content: space-around; gap: .8rem;
+  min-height: 23rem; padding: 1.2rem .5rem; overflow: hidden; border: 1px solid #0d3d24; border-radius: 6px;
+  background:
+    radial-gradient(90% 60% at 50% 0%, rgba(255, 255, 255, .1), transparent 60%),
+    repeating-linear-gradient(180deg, #17683b 0 12.5%, #1b7543 12.5% 25%);
+  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, .9);
+}
+.nt-campo::before { content: ""; position: absolute; inset: .6rem; border: 1.5px solid rgba(255, 255, 255, .35); pointer-events: none; }
+/* a grande área do nosso gol, embaixo, onde fica o goleiro */
+.nt-campo::after { content: ""; position: absolute; left: 28%; right: 28%; bottom: .6rem; height: 4.2rem; border: 1.5px solid rgba(255, 255, 255, .35); border-bottom: 0; pointer-events: none; }
+.nt-linha { position: relative; z-index: 1; display: flex; justify-content: space-evenly; margin: 0; padding: 0; list-style: none; }
+.nt-peca { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 4.6rem; margin: 0; list-style: none; }
+.nt-camisa { position: relative; line-height: 0; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .55)); }
+.nt-saiu, .nt-gols {
+  position: absolute; top: -4px; display: inline-flex; align-items: center; justify-content: center;
+  height: 17px; min-width: 17px; padding: 0 2px; border-radius: 9px; background: var(--noite);
+  font-size: .7rem; font-weight: 800; line-height: 1;
+}
+.nt-saiu { left: -10px; color: var(--texto-2); }
+.nt-gols { right: -12px; color: #fff; }
+.nt-saiu .icone, .nt-gols .icone { width: 11px; height: 11px; }
+.nt-nota {
+  font-family: var(--fonte-tarja); font-weight: 800; font-size: .85rem; line-height: 1; padding: .14rem .34rem;
+  border-radius: 2px; background: rgba(255, 255, 255, .9); color: var(--noite); font-variant-numeric: tabular-nums;
+}
+.nt-nota.nota-boa { background: var(--gramado-claro); color: var(--noite); }
+.nt-nota.nota-ruim { background: var(--ao-vivo); color: #fff; }
+.nt-melhor .nt-nota { box-shadow: 0 0 0 2px var(--refletor); }
+.nt-nome {
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--fonte-tarja); font-weight: 700; font-size: .8rem; letter-spacing: .03em; text-transform: uppercase;
+  color: #fff; background: rgba(4, 14, 9, .62); padding: .05rem .35rem; border-radius: 2px;
+}
+.nt-banco { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem 1rem; margin: .7rem 0 0; font-size: .88rem; }
+.nt-banco > b { font-family: var(--fonte-tarja); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--texto-2); }
+.nt-banco > span { display: inline-flex; align-items: center; gap: .35rem; }
+.nt-banco small { color: var(--texto-2); }
+
+/* pós-jogo: a vizinhança na tabela */
+.vizinhos { width: 100%; margin: .45rem 0 0; font-size: .88rem; }
+.vizinhos th, .vizinhos td { padding: .3rem .35rem; background: transparent; border-bottom: 1px solid var(--linha); }
+.vizinhos th { font-size: .72rem; color: var(--texto-2); }
+.viz-pos { width: 2.2rem; font-family: var(--fonte-tarja); font-weight: 700; }
+.viz-num { width: 2.4rem; text-align: right; font-variant-numeric: tabular-nums; }
+.viz-clube { max-width: 0; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.viz-clube .escudo { vertical-align: -4px; }
+.viz-seta { display: inline-block; width: 10px; height: 10px; vertical-align: 0; }
+svg.viz-seta.sobe { fill: var(--gramado-claro); }
+svg.viz-seta.desce { fill: var(--texto-alerta); }
+span.viz-seta::before { content: ""; display: block; width: 8px; height: 2px; margin: 4px auto 0; background: var(--texto-2); }
+
+/* pós-jogo: os outros jogos da rodada */
+.pg-outros { display: grid; margin: 0; padding: 0; list-style: none; }
+.pg-outros li {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: .2rem .6rem;
+  margin: 0; padding: .4rem 0; border-bottom: 1px solid var(--linha); font-size: .9rem; list-style: none;
+}
+.pg-outros li > small { grid-column: 1 / -1; text-align: center; color: var(--texto-2); }
+.ou-time { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ou-time:first-child { text-align: right; }
+.ou-time .escudo { vertical-align: -4px; }
+.ou-placar {
+  padding: .05rem .5rem; border-radius: 2px; background: var(--superficie-2); color: var(--texto);
+  font-family: var(--fonte-tarja); font-size: 1.05rem; font-weight: 800; font-variant-numeric: tabular-nums; text-decoration: none;
+}
+.ou-placar small { margin: 0 .3em; font-size: .8em; color: var(--texto-2); }
+a.ou-placar { cursor: pointer; }
+a.ou-placar:hover, a.ou-placar:focus-visible { background: var(--linha-forte); color: var(--texto); }
+.pg-mensagens li { list-style: none; }
+/* sem mensagens do clube, os outros jogos ocupam a linha toda, em duas colunas */
+.pg-grade:has(> #pg-clube-bloco[hidden]) > #pg-outros-bloco { grid-column: 1 / -1; }
+.pg-grade:has(> #pg-clube-bloco[hidden]) .pg-outros { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2rem; }
+
+@media (max-width: 760px) {
+  .pg-grade-capa { grid-template-columns: minmax(0, 1fr); }
+  .cartaz-palco { gap: .6rem; padding: 2.2rem .7rem 1rem; }
+  .cartaz-time .escudo { width: 46px; height: 55px; }
+  .cartaz-nome { font-size: 1.05rem; }
+  .cartaz-pos { font-size: .8rem; }
+  .cartaz-forma li { width: 1.15rem; height: 1.15rem; font-size: .7rem; }
+  .cartaz-forca { font-size: .7rem; }
+  .cartaz-forca b { font-size: 1.05rem; }
+  .cartaz-meio { padding-top: .8rem; }
+  .cartaz-x { font-size: 2rem; }
+  .cartaz-comp { font-size: .7rem; letter-spacing: .08em; }
+  .cartaz-publico { gap: .3rem .9rem; padding: .6rem .8rem; font-size: .8rem; }
+  .capa { padding: 1.8rem .7rem .8rem; }
+  .capa-placar { gap: .6rem; }
+  .capa-time .escudo { width: 44px; height: 53px; }
+  .capa-time b { font-size: .95rem; }
+  .linha-jogo { padding: .5rem .6rem .3rem; }
+  .lj-quem { display: none; }
+  .lj-trilho { height: 3.4rem; }
+  .pg-destaques { grid-template-columns: minmax(0, 1fr); }
+  .pg-grade:has(> #pg-clube-bloco[hidden]) .pg-outros { grid-template-columns: minmax(0, 1fr); }
+  .nt-campo { min-height: 19rem; padding: 1rem .2rem; }
+  .nt-peca { width: 3.7rem; }
+  .nt-camisa .camisa { width: 30px; height: 30px; }
+  .nt-nome { font-size: .7rem; padding: 0 .2rem; }
 }
