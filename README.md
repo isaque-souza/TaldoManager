@@ -1134,7 +1134,20 @@ olheiros que buscam jovens pelo mundo. Regras em `app/domain/olheiro.py`
         quem não for trazido some com o relatório seguinte
       - Missões e indicados atravessam a virada; as férias entre as
         temporadas não contam
-* [ ] Equilíbrio e acabamento
+* [x] Equilíbrio e acabamento
+      - Simulação de 1.500 jovens por fonte e nível, treinando na base até
+        os 19, num clube grande e num pequeno
+      - **Base nos níveis 4 e 5**: a margem de potencial para de subir no
+        nível 3 (até 24). Antes, no nível 5, 80% dos jovens da peneira tinham
+        potencial de titular até do clube mais forte; agora ~62%. O nível 5
+        segue à frente pelo crescimento, pelos jovens melhores e por mais
+        jovens por peneira
+      - **Olheiros da base**: a Europa custava R$ 350 mil/mês e o "mais
+        pronto" sumia até os 19, rendendo um terço do Brasil por real; agora
+        R$ 250 mil e ainda mais pronta, a região de qualidade (mais
+        potencial de titular que as outras, menos jovens por real). A Ásia
+        passa de R$ 80 mil para R$ 100 mil (rendia demais por real nos
+        níveis altos)
 
 ---
 
