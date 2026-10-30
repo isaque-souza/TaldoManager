@@ -582,6 +582,9 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             simulacao_repo.definir_data(conn, simulacao_id, dia_do_jogo)
             # relatórios do olheiro prontos até o dia do jogo (v2.0)
             relatorio_service.entregar(conn, simulacao_id, dia_do_jogo, rodada_jogada)
+            # e os dos olheiros da base
+            from app.services import olheiro_base_service   # aqui: evita import circular
+            olheiro_base_service.entregar(conn, simulacao_id, dia_do_jogo, rodada_jogada)
             # a base (v2.0): uma rodada de treino para os jovens
             from app.services import base_service   # aqui: evita import circular
             base_service.treinar(conn, simulacao_id, alvo.nivel_base, len(campeonato.calendario))
@@ -749,6 +752,8 @@ def _avancar_copa(conn, sim, tatica, formacao, xi_preferido, posicionamento):
         dia_do_jogo = calendario.data_da_copa(sim["temporada"], rodada_da_fase)
         simulacao_repo.definir_data(conn, simulacao_id, dia_do_jogo)
         relatorio_service.entregar(conn, simulacao_id, dia_do_jogo, rodada_da_fase)
+        from app.services import olheiro_base_service   # aqui: evita import circular
+        olheiro_base_service.entregar(conn, simulacao_id, dia_do_jogo, rodada_da_fase)
         # prêmio, bilheteria, cansaço e lesões novas (o resto a copa isola)
         mapa = clube_repo.atualizar(conn, simulacao_id, cru["clubes"])
         jogador_repo.atualizar(conn, simulacao_id, mapa, cru["jogadores"])

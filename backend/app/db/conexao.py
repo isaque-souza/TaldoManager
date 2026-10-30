@@ -155,6 +155,8 @@ _COLUNAS_NOVAS = {
     # oferta do clube do sonho do jogador (v1.9)
     "oferta_recebida": (("sonho", "INTEGER NOT NULL DEFAULT 0"),),
     "mensagem": (("data", "TEXT"),),   # o dia no calendário (v2.0)
+    # o país dos que vêm dos olheiros da base (v2.0); NULL = da peneira
+    "jovem_base": (("pais", "TEXT"),),
     "partida": (
         ("finalizacoes_gol_mandante", "INTEGER NOT NULL DEFAULT 0"),
         ("finalizacoes_gol_visitante", "INTEGER NOT NULL DEFAULT 0"),

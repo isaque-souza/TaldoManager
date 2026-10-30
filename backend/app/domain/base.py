@@ -66,17 +66,18 @@ def posicao_carente(clube, rng):
     return rng.choice([pos for pos, d in deficit.items() if d == maior])
 
 
-def gerar_nome(proibidos, rng):
+def gerar_nome(proibidos, rng, nomes=NOMES, sobrenomes=SOBRENOMES):
     """Nome que ainda não existe (`proibidos` é atualizado). Sorteia; se a
     sorte não acha, percorre as combinações; esgotadas, numera ("Jr.", "II").
+    `nomes` e `sobrenomes`: as listas (as de uma região, v2.0).
     """
     for _ in range(50):
-        nome = f"{rng.choice(NOMES)} {rng.choice(SOBRENOMES)}"
+        nome = f"{rng.choice(nomes)} {rng.choice(sobrenomes)}"
         if nome not in proibidos:
             proibidos.add(nome)
             return nome
     for sufixo in ("", " Jr.", " II", " III", " IV"):
-        for n, s in product(NOMES, SOBRENOMES):
+        for n, s in product(nomes, sobrenomes):
             nome = f"{n} {s}{sufixo}"
             if nome not in proibidos:
                 proibidos.add(nome)
@@ -173,6 +174,7 @@ class Jovem:
     overall: float
     potencial: int
     id: int | None = None
+    pais: str | None = None   # só os que vêm dos olheiros da base
 
 
 def validar(nivel):

@@ -399,6 +399,22 @@ def peneira(jovens, de_fora):
     return _mensagem("Categorias de base", "Peneira: jovens novos na base", corpo)
 
 
+def relatorio_olheiro_base(de_regiao, indicados, mes, meses):
+    """O relatório mensal de um olheiro da base (v2.0). `de_regiao`: "do
+    Brasil", "da Europa"...; `indicados`: [(nome, idade, funcao, pais)]."""
+    fim = mes >= meses
+    titulo = f"Relatório {de_regiao}"
+    if indicados:
+        linhas = "; ".join(f"{n} ({i} anos, {f.lower()}, {p})" for n, i, f, p in indicados)
+        corpo = (f"Achei {len(indicados)} que vale a pena olhar: {linhas}. Estão na Base, "
+                 "em Indicados: traga quem quiser antes do próximo relatório, ou eles somem.")
+    else:
+        corpo = "Neste mês não achei ninguém que valha a pena."
+    corpo += (" A missão acabou e eu voltei." if fim
+              else f" Mês {mes} de {meses} da missão.")
+    return _mensagem("Olheiro da base", titulo, corpo)
+
+
 def base_na_virada(sairam, ultimo_ano):
     """A base na temporada nova (v2.0): quem fez 20 anos sem ser promovido
     foi embora, e quem está no último ano."""

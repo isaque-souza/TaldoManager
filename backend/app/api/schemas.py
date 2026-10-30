@@ -1752,6 +1752,7 @@ class JovemBase(BaseModel):
     potencial: int
     chegou_em: str
     ultimo_ano: bool             # faz 20 na virada: promova ou ele vai embora
+    pais: str | None = None      # só os que vieram dos olheiros da base
 
 
 class PeneiraBase(BaseModel):
@@ -1767,6 +1768,56 @@ class ElencoBase(BaseModel):
     maximo: int
 
 
+class DuracaoMissao(BaseModel):
+    meses: int
+    custo: int
+    bloqueio: str | None = None
+
+
+class RegiaoOlheiro(BaseModel):
+    id: str
+    nome: str
+    perfil: str
+    paises: list[str]
+    custo_mes: int
+    por_relatorio: list[int]     # [mín, máx] de jovens por relatório
+    idades: list[int]
+    duracoes: list[DuracaoMissao]
+
+
+class MissaoOlheiro(BaseModel):
+    id: int
+    regiao: str
+    meses: int
+    relatorios_feitos: int
+    proximo_relatorio: str
+    proximo_fmt: str
+    dias_ate_o_relatorio: int
+
+
+class IndicadoBase(BaseModel):
+    id: int
+    nome: str
+    idade: int
+    funcao: str
+    posicao: str
+    overall: int
+    potencial: int                       # o meio da faixa do olheiro
+    potencial_faixa: list[int] | None    # estimativa do olheiro profissional
+    pais: str
+    regiao: str
+    expira_em: str
+    dias_restantes: int
+
+
+class OlheirosBase(BaseModel):
+    limite: int                  # quantos podem estar em missão (pelo nível)
+    regioes: list[RegiaoOlheiro]
+    missoes: list[MissaoOlheiro]
+    indicados: list[IndicadoBase]
+    bloqueio_trazer: str | None = None
+
+
 class Base(BaseModel):
     nivel: int
     caixa: int
@@ -1778,6 +1829,17 @@ class Base(BaseModel):
     elenco: ElencoBase
     bloqueio_promocao: str | None = None
     jovens: list[JovemBase]
+    olheiros: OlheirosBase
+
+
+class NovaMissao(BaseModel):
+    regiao: str
+    meses: int
+
+
+class IndicadoTrazido(BaseModel):
+    jovem: str
+    base: Base
 
 
 class NovoNivelBase(BaseModel):

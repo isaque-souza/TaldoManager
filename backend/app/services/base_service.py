@@ -18,6 +18,7 @@ from app.domain import base, caixa, calendario, mercado, posicoes
 from app.repositories import jovem_base_repository as jovem_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import simulacao_repository as simulacao_repo
+from app.services import olheiro_base_service
 from app.services.temporada_service import TemporadaConcluida, exigir_sem_transmissao
 
 
@@ -108,6 +109,7 @@ def _visao(ctx):
             "potencial": j.potencial,
             "chegou_em": chegou_em,
             "ultimo_ano": base.ultimo_ano(j),
+            "pais": j.pais,
         })
     total = len(ctx.campeonato.calendario)
     return {
@@ -130,6 +132,8 @@ def _visao(ctx):
         "elenco": {"jogadores": len(alvo.jogadores), "maximo": mercado.ELENCO_MAX},
         "bloqueio_promocao": bloqueio,
         "jovens": jovens,
+        # os olheiros da base (v2.0, passo 5)
+        "olheiros": olheiro_base_service.visao(conn, sim, alvo, hoje, len(jovens)),
     }
 
 

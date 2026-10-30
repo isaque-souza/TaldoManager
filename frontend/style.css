@@ -1275,6 +1275,15 @@ body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .
 .bs-progresso { width: 3.2rem; height: 4px; margin: .3rem 0 0 auto; }
 .bs-acoes { display: flex; gap: .5rem; justify-content: flex-end; }
 .bs-acoes button { width: auto; margin: 0; padding: .35rem .75rem; font-size: .85rem; white-space: nowrap; }
+/* olheiros da base (v2.0) */
+.bs-pais { color: var(--texto-2); font-size: .78rem; }
+.bs-missoes { padding: 0; margin: .5rem 0 1rem; display: flex; flex-direction: column; gap: .35rem; }
+.bs-missoes li { list-style: none; }
+.bs-missoes small { display: block; color: var(--texto-2); }
+.bs-duracoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin-top: auto; }
+.bs-duracoes button { display: flex; flex-direction: column; align-items: center; margin: 0; padding: .35rem .3rem; font-size: .82rem; line-height: 1.2; white-space: nowrap; }
+.bs-pot { white-space: nowrap; }
+.bs-duracoes button small { display: block; font-size: .72rem; color: var(--texto-2); }
 
 /* ligas (v1.6): a outra liga da rodada, recolhida */
 details.outra-liga { margin-top: 1rem; }

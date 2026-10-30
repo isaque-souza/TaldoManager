@@ -1116,7 +1116,24 @@ olheiros que buscam jovens pelo mundo. Regras em `app/domain/olheiro.py`
       - Na virada, o seu clube só ganha jovens gerados se o elenco cair
         abaixo de 16; os clubes da CPU seguem como antes
       - Sorteios próprios: a base não mexe na sequência das partidas
-* [ ] Olheiros da base (regiões, duração e relatórios mensais)
+* [x] Olheiros da base
+      - Na Base, **mande um olheiro** para uma região por 1, 3 ou 6 meses,
+        pagando a missão na hora (linha "Base" nas finanças). Quantos podem
+        estar fora ao mesmo tempo depende do nível da base (1 no nível 1–2,
+        2 no 3–4, 3 no 5); um por região
+      - Cinco regiões com perfil próprio: **Brasil** (muitos jovens, pontas
+        e meias), **América do Sul** (mais prontos, atacantes e volantes),
+        **Europa** (os mais prontos e mais caros, menos espaço para crescer),
+        **África** (crus, com mais joias) e **Ásia** (a mais barata e a que
+        mais manda nomes). Nomes e país vêm da região; a nacionalidade fica
+        só no jovem
+      - A cada 30 dias o olheiro manda um **relatório** (mensagem do
+        "Olheiro da base"; o "Continuar" para nesse dia) com 1–3
+        **indicados**, com o potencial estimado pelo olheiro profissional.
+        **Trazer** leva à base (precisa de vaga e revela o potencial exato);
+        quem não for trazido some com o relatório seguinte
+      - Missões e indicados atravessam a virada; as férias entre as
+        temporadas não contam
 * [ ] Equilíbrio e acabamento
 
 ---

@@ -3,9 +3,12 @@
 // vêm depende do nível da base); os jovens crescem um pouco a cada rodada,
 // mais rápido com a base de nível alto.
 // Promover e dispensar não têm volta: dois cliques, como nas obras.
+// Olheiros da base (v2.0, passo 5): o técnico manda um olheiro para uma
+// região por 1, 3 ou 6 meses; a cada 30 dias ele manda jovens indicados,
+// que o técnico traz para a base ou deixa sumir no relatório seguinte.
 
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
-import { blocoResumo, reais } from "./tabelas.js";
+import { blocoResumo, potTexto, potTitulo, reais } from "./tabelas.js";
 import { sigla } from "./posicoes.js";
 import { icone } from "./icones.js";
 import { carregarCaixa } from "./caixa.js";
@@ -31,7 +34,7 @@ function linhaJovem(j, bloqueio) {
     ? `${j.idade} <span class="chip chip-perto" title="Faz ${bs.dados.idade_limite} na virada">último ano</span>`
     : `${j.idade}`;
   return `<tr>
-      <td><strong>${j.nome}</strong></td>
+      <td><strong>${j.nome}</strong>${j.pais ? ` <small class="bs-pais">${j.pais}</small>` : ""}</td>
       <td title="${j.funcao}">${sigla(j.funcao)}</td>
       <td class="num">${idade}</td>
       <td class="num bs-ovr">${j.overall}
@@ -100,6 +103,7 @@ function renderBase() {
     ${d.bloqueio_promocao && d.jovens.length
       ? `<p class="mk-bloqueio">${icone("cadeado")} ${d.bloqueio_promocao}: venda ou dispense alguém para promover.</p>` : ""}
     ${lista}
+    ${olheiros(d)}
     <h3 class="es-titulo">${icone("base")} Investimento na base</h3>
     <p class="mk-intro">Nível maior faz os jovens crescerem mais rápido e traz peneiras com
       mais jovens e mais talento. Como o olheiro: subir paga na hora a diferença pelas rodadas que faltam;
@@ -117,6 +121,89 @@ function renderBase() {
   $("r-base").querySelectorAll(".bs-nivel:not([disabled])").forEach((b) =>
     b.addEventListener("click", () => trocarNivel(+b.dataset.nivel))
   );
+  $("r-base").querySelectorAll(".bs-trazer:not([disabled])").forEach((b) =>
+    b.addEventListener("click", () => trazer(+b.dataset.id))
+  );
+  $("r-base").querySelectorAll(".bs-descartar").forEach((b) =>
+    b.addEventListener("click", () => descartar(+b.dataset.id))
+  );
+  $("r-base").querySelectorAll(".bs-enviar:not([disabled])").forEach((b) =>
+    b.addEventListener("click", () =>
+      doisCliques(b, `Pagar ${b.dataset.custo}?`, () => enviar(b.dataset.regiao, +b.dataset.meses)))
+  );
+}
+
+// ---------- olheiros da base ----------
+
+const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+
+function olheiros(d) {
+  const o = d.olheiros;
+  const missoes = o.missoes.length
+    ? `<ul class="bs-missoes">${o.missoes.map((m) => `<li>
+        <strong>${m.regiao}</strong> · mês ${m.relatorios_feitos + 1} de ${m.meses}
+        <small>próximo relatório em ${m.proximo_fmt}
+          (${m.dias_ate_o_relatorio ? `em ${plural(m.dias_ate_o_relatorio, "dia", "dias")}` : "hoje"})</small>
+      </li>`).join("")}</ul>`
+    : "";
+  const indicados = o.indicados.length
+    ? `<figure><table class="bs-tabela"><thead><tr>
+        <th>Indicado</th><th>Pos.</th><th class="num">Idade</th><th class="num">OVR</th>
+        <th class="num">POT</th><th>Olheiro</th><th></th></tr></thead>
+        <tbody>${o.indicados.map((i) => linhaIndicado(i, o.bloqueio_trazer)).join("")}</tbody></table></figure>`
+    : `<p class="vazio">Nenhum indicado agora. ${o.missoes.length
+      ? "Eles chegam com o próximo relatório." : "Mande um olheiro para uma região."}</p>`;
+  return `<h3 class="es-titulo">${icone("alvo")} Olheiros da base</h3>
+    <p class="mk-intro">Mande um olheiro para uma região por 1, 3 ou 6 meses (paga na hora).
+      A cada 30 dias ele manda um relatório com os jovens que achou: traga para a base quem quiser
+      (precisa de vaga); quem você não trouxer some com o relatório seguinte. O potencial é a
+      estimativa do seu olheiro profissional. Com a base de nível ${d.nivel}, até
+      <strong>${plural(o.limite, "olheiro", "olheiros")}</strong> em missão ao mesmo tempo
+      (${o.missoes.length} agora).</p>
+    ${missoes}
+    ${o.bloqueio_trazer && o.indicados.length
+      ? `<p class="mk-bloqueio">${icone("cadeado")} ${o.bloqueio_trazer}: promova ou dispense alguém para trazer.</p>` : ""}
+    ${indicados}
+    <div class="mk-campanhas">${o.regioes.map(cardRegiao).join("")}</div>`;
+}
+
+function linhaIndicado(i, bloqueio) {
+  return `<tr>
+      <td><strong>${i.nome}</strong> <small class="bs-pais">${i.pais}</small></td>
+      <td title="${i.funcao}">${sigla(i.funcao)}</td>
+      <td class="num">${i.idade}</td>
+      <td class="num">${i.overall}</td>
+      <td class="num bs-pot" title="${potTitulo(i)}">${potTexto(i)}</td>
+      <td><small>${i.regiao} · some em ${plural(i.dias_restantes, "dia", "dias")}</small></td>
+      <td class="bs-acoes">
+        <button type="button" class="bs-trazer" data-id="${i.id}" ${bloqueio ? `disabled title="${bloqueio}"` : ""}>
+          ${icone("assinou")} Trazer</button>
+        <button type="button" class="bs-descartar secondary outline" data-id="${i.id}">Descartar</button>
+      </td>
+    </tr>`;
+}
+
+function cardRegiao(r) {
+  const [min, max] = r.por_relatorio;
+  // o mesmo motivo nas três durações (limite, região ocupada): mostra uma vez
+  const motivos = [...new Set(r.duracoes.map((x) => x.bloqueio).filter(Boolean))];
+  const todas = r.duracoes.every((x) => x.bloqueio);
+  return `<article class="mk-campanha">
+      <header><strong>${r.nome}</strong></header>
+      <p>${r.perfil}.</p>
+      <dl class="mk-ficha">
+        <div><dt>Por relatório</dt><dd>${min === max ? min : `${min}–${max}`} <small>jovens</small></dd></div>
+        <div><dt>Idade</dt><dd>${r.idades[0]}–${r.idades[1]}</dd></div>
+        <div><dt>Mês</dt><dd>${reais(r.custo_mes)}</dd></div>
+      </dl>
+      ${todas && motivos.length ? `<small class="mk-bloqueio">${icone("cadeado")} ${motivos[0]}</small>` : ""}
+      <div class="bs-duracoes" role="group" aria-label="Mandar o olheiro: ${r.nome}">
+        ${r.duracoes.map((x) => `<button type="button" class="secondary outline bs-enviar"
+          data-regiao="${r.id}" data-meses="${x.meses}" data-custo="${reais(x.custo)}"
+          ${x.bloqueio ? `disabled title="${x.bloqueio}"` : ""}>
+          ${plural(x.meses, "mês", "meses")}<small>${reais(x.custo)}</small></button>`).join("")}
+      </div>
+    </article>`;
 }
 
 // sem confirm(), que trava a página
@@ -191,6 +278,42 @@ async function dispensar(id) {
   }
   bs.dados = dados;
   avisar(`${nome} deixou a base.`);
+  renderBase();
+}
+
+async function enviar(regiao, meses) {
+  const nome = bs.dados.olheiros.regioes.find((r) => r.id === regiao)?.nome;
+  const { dados, erro } = await mandar("POST", "/olheiros", { regiao, meses }, `Mandando o olheiro: ${nome}…`);
+  if (erro) {
+    avisar(`${icone("nao")} Não deu: ${erro}.`, true);
+    return carregarBase();
+  }
+  bs.dados = dados;
+  avisar(`${icone("ok")} Olheiro a caminho: ${nome}, por ${plural(meses, "mês", "meses")}. O primeiro relatório chega em 30 dias.`);
+  renderBase();
+  await carregarProximaRodada();   // o caixa mudou
+}
+
+async function trazer(id) {
+  const { dados, erro } = await mandar("POST", `/indicados/${id}`, null, "Trazendo para a base…");
+  if (erro) {
+    avisar(`${icone("nao")} Não deu: ${erro}.`, true);
+    return carregarBase();
+  }
+  bs.dados = dados.base;
+  avisar(`${icone("ok")} ${dados.jovem} chegou à base.`);
+  renderBase();
+}
+
+async function descartar(id) {
+  const nome = bs.dados.olheiros.indicados.find((i) => i.id === id)?.nome;
+  const { dados, erro } = await mandar("DELETE", `/indicados/${id}`, null, `Descartando ${nome}…`);
+  if (erro) {
+    avisar(`${icone("nao")} Não deu: ${erro}.`, true);
+    return carregarBase();
+  }
+  bs.dados = dados;
+  avisar(`${nome} saiu dos indicados.`);
   renderBase();
 }
 
