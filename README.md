@@ -1045,7 +1045,7 @@ resultados de um mesmo seed).
 
 ---
 
-# 🚧 Olheiros e Base (v2.0) — Em andamento
+# ✅ Olheiros e Base (v2.0) — Concluída
 
 Contratar deixa de ser à prova de erro: o potencial dos jogadores de fora
 vira uma estimativa do olheiro, e o clube ganha uma base própria com
