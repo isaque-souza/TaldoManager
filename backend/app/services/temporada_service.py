@@ -426,7 +426,7 @@ def pre_jogo(simulacao_id):
     mandante, visitante = (alvo, rival) if mando == "casa" else (rival, alvo)
     conn = conectar()
     try:
-        # v2.3: forma, desfalques, estádio e público, e a meta
+        # v2.3: forma, desfalques, estádio e público
         contexto = pre_jogo_service.contexto(conn, sim, mandante, visitante)
     finally:
         conn.close()

@@ -87,7 +87,7 @@ def test_pre_jogo_de_simulacao_inexistente_e_none():
 
 
 # ---------------------------------------------------------------------------
-# contexto do jogo (v2.3): forma, desfalques, estádio e público, meta
+# contexto do jogo (v2.3): forma, desfalques, estádio e público
 # ---------------------------------------------------------------------------
 
 def _contextos(pj):
@@ -103,8 +103,6 @@ def test_na_primeira_rodada_nao_ha_forma_nem_posicao():
     assert meu["clube"] == pj["clube_usuario"] and rival["clube"] == pj["adversario"]
     assert meu["forma"] == [] and rival["forma"] == []
     assert meu["posicao"] is None
-    assert pj["meta"]["posicao_atual"] is None and pj["meta"]["situacao"] is None
-    assert pj["meta"]["descricao"]
 
 
 def test_forma_e_a_dos_jogos_gravados():
@@ -124,8 +122,6 @@ def test_forma_e_a_dos_jogos_gravados():
             else "D" if j["gols_pro"] < j["gols_contra"] else "E"
         )
     assert meu["posicao"] is not None and 1 <= meu["posicao"] <= meu["total_clubes"]
-    assert pj["meta"]["posicao_atual"] == meu["posicao"]
-    assert pj["meta"]["situacao"] in ("batida", "perto", "longe")
     assert len(rival["forma"]) == 5
 
 

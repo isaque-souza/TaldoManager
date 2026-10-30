@@ -4,20 +4,18 @@ gravado.
 Só lê: a rodada (ou o jogo da copa) já foi jogada e gravada por
 `temporada_service.avancar`, com prêmio, bilheteria, tabela e caixa de
 entrada. Abrir o relatório de novo, ou depois de recarregar o save, devolve
-o mesmo relatório e não mexe em nada. As regras (expectativa, momento
-decisivo, destaques) ficam em `app.domain.pos_jogo`.
+o mesmo relatório e não mexe em nada. As regras (resultado, destaques,
+tabela) ficam em `app.domain.pos_jogo`.
 """
 
 import json
 import random
-from types import SimpleNamespace
 
 from app.db.conexao import conectar
-from app.domain import calendario, copa, diretoria, pos_jogo
+from app.domain import calendario, copa, pos_jogo
 from app.domain.temporada import restaurar_estado
 from app.repositories import atuacao_repository as atuacao_repo
 from app.repositories import clube_repository as clube_repo
-from app.repositories import jogador_repository as jogador_repo
 from app.repositories import lance_repository as lance_repo
 from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import partida_repository as partida_repo
@@ -140,8 +138,7 @@ def _da_liga(conn, sim, clubes, p):
         "eventos": eventos,
         "estatisticas": estatisticas,
         "atuacoes": atuacoes,
-        **_analise(conn, sim, eventos, atuacoes, p["gols_mandante"],
-                   p["gols_visitante"], mandante, meu, rival, em_casa, res),
+        "destaques": pos_jogo.destaques(atuacoes, meu),
         "tabela": _impacto_na_tabela(conn, sim, clubes, p, pro, contra),
         "mensagens": _mensagens_do_dia(
             conn, sim["id"], p["rodada"],
@@ -151,8 +148,8 @@ def _da_liga(conn, sim, clubes, p):
 
 
 def _impacto_na_tabela(conn, sim, clubes, p, pro, contra):
-    """A posição e os pontos do clube antes e depois desta rodada, e a
-    meta da diretoria nos dois momentos. O depois é a tabela gravada."""
+    """A posição e os pontos do clube antes e depois desta rodada. O depois
+    é a tabela gravada."""
     meu = sim["clube_usuario"]
     liga = _liga_de(clubes, meu)
     da_liga = [c for c in clubes if c["liga"] == liga]
@@ -171,7 +168,6 @@ def _impacto_na_tabela(conn, sim, clubes, p, pro, contra):
     posicao_antes = pos_jogo.tabela(ordem, anteriores)[meu]
     ganhos = 3 if pro > contra else 1 if pro == contra else 0
 
-    meta = sim["meta_posicao"]
     return {
         "posicao_antes": posicao_antes,
         "posicao": linha["posicao_final"],
@@ -179,12 +175,6 @@ def _impacto_na_tabela(conn, sim, clubes, p, pro, contra):
         "pontos": linha["pontos"],
         "pontos_ganhos": ganhos,
         "total_clubes": total,
-        "meta": None if meta is None else {
-            "posicao": meta,
-            "descricao": diretoria.descricao_meta(meta),
-            "situacao_antes": diretoria.situacao(posicao_antes, meta, total),
-            "situacao": diretoria.situacao(linha["posicao_final"], meta, total),
-        },
     }
 
 
@@ -236,8 +226,7 @@ def _da_copa(conn, sim, clubes, fase, j):
         "eventos": eventos,
         "estatisticas": j.get("estatisticas"),
         "atuacoes": atuacoes,
-        **_analise(conn, sim, eventos, atuacoes, j["gols_mandante"],
-                   j["gols_visitante"], mandante, meu, rival, em_casa, res),
+        "destaques": pos_jogo.destaques(atuacoes, meu),
         # a copa não mexe na tabela da liga
         "tabela": None,
         "mensagens": _mensagens_do_dia(
@@ -272,36 +261,6 @@ def _placar(meu, rival, em_casa, mandante, visitante, gm, gv, res, publico):
         "gols_visitante": gv,
         "resultado": res,
         "publico": publico,
-    }
-
-
-def _analise(conn, sim, eventos, atuacoes, gm, gv, mandante, meu, rival, em_casa, res):
-    """Expectativa × resultado, momento decisivo e destaques."""
-    forca = _forcas(conn, sim["id"], (meu, rival))
-    exp = pos_jogo.expectativa(forca[meu], forca[rival], "casa" if em_casa else "fora")
-    return {
-        "expectativa": {
-            **exp,
-            "forca": forca[meu],
-            "forca_adversario": forca[rival],
-            "desempenho": pos_jogo.desempenho(res, exp["nivel"]),
-        },
-        "momento_decisivo": pos_jogo.momento_decisivo(eventos, gm, gv, mandante),
-        "destaques": pos_jogo.destaques(atuacoes, meu),
-    }
-
-
-def _forcas(conn, simulacao_id, nomes):
-    """A força do elenco (`diretoria.forca_do_elenco`) de cada clube, com
-    os elencos gravados. É a de agora: o jogo só muda a força se alguém
-    trocou de clube depois dele (a janela da CPU)."""
-    elencos = {n: [] for n in nomes}
-    for j in jogador_repo.listar_por_simulacao(conn, simulacao_id, com_livres=False):
-        if j["clube"] in elencos:
-            elencos[j["clube"]].append(SimpleNamespace(posicao=j["posicao"], overall=j["overall"]))
-    return {
-        n: diretoria.forca_do_elenco(SimpleNamespace(jogadores=js))
-        for n, js in elencos.items()
     }
 
 

@@ -66,7 +66,6 @@ def test_vitoria_empate_e_derrota_batem_com_a_tabela_rodada_a_rodada():
         anterior = t
 
         assert r["destaques"]["melhor_em_campo"]["nota"] == max(a["nota"] for a in r["atuacoes"])
-        assert r["momento_decisivo"] is not None or (pro == contra == 0)
         if res["concluida"]:
             break
     assert vistos == {"vitoria", "empate", "derrota"}

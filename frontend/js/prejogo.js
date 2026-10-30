@@ -2,14 +2,13 @@
 // "Jogar a rodada" abre esta tela; "Ir para o jogo" joga de fato. O XI vem
 // de GET /pre-jogo, que roda a mesma escalação do motor: é quem vai entrar.
 // v2.3: com o contexto do jogo — forma recente, desfalques, estádio e
-// público previsto, e a meta da diretoria (tudo lido do save).
+// público previsto (tudo lido do save).
 
 import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { abrirSecaoRodada, jogarRodada, salvarEscalacaoAgora } from "./rodada.js";
 import { jogarAoVivo } from "./aovivo.js";
 import { camisa, escudo } from "./identidade.js";
 import { icone } from "./icones.js";
-import { ROTULOS } from "./diretoria.js";
 
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
 const RESULTADO = { V: "Vitória", E: "Empate", D: "Derrota" };
@@ -63,9 +62,7 @@ function renderPreJogo(pj) {
   const ctxRival = ctxEu === pj.contexto_mandante ? pj.contexto_visitante : pj.contexto_mandante;
   $("pj-estadio").innerHTML = cartaoEstadio(pj.estadio, pj.mando);
   $("pj-estadio").hidden = !pj.estadio;
-  $("pj-meta").innerHTML = cartaoMeta(pj.meta, pj.copa);
-  $("pj-meta").hidden = !pj.meta;
-  $("pj-contexto").hidden = !pj.estadio && !pj.meta;
+  $("pj-contexto").hidden = !pj.estadio;
   $("pj-chega-eu-titulo").textContent = `Como chega — ${eu.clube}`;
   $("pj-chega-rival-titulo").textContent = `Como chega — ${rival.clube}`;
   $("pj-chega-eu").innerHTML = comoChega(ctxEu);
@@ -92,17 +89,6 @@ function cartaoEstadio(e, mando) {
       <span style="width:${Math.min(100, e.ocupacao * 100)}%"></span></div>
     <p class="pg-detalhe">${pct(e.ocupacao)} de ${milhar(e.capacidade)} lugares · ingresso ${e.ingresso.toLowerCase()}</p>
     ${selos.trim() ? `<p class="pg-linha">${selos}</p>` : ""}`;
-}
-
-function cartaoMeta(m, naCopa) {
-  if (!m) return "";
-  const onde = m.posicao_atual
-    ? `<p class="pg-numero">${m.posicao_atual}º <small>de ${m.total_clubes}</small></p>`
-    : `<p class="pg-numero">— <small>a tabela começa com este jogo</small></p>`;
-  const situacao = m.situacao ? chip(m.situacao, ROTULOS.andamento[m.situacao]) : "";
-  return `<span class="hub-rotulo">${icone("alvo")} Meta da diretoria${naCopa ? " (na liga)" : ""}</span>
-    ${onde}
-    <p class="pg-linha">${m.descricao} ${situacao}</p>`;
 }
 
 function comoChega(c) {

@@ -8,7 +8,6 @@ import { icone } from "./icones.js";
 import { linhaEvento } from "./partida.js";
 import { ligarLinks, reais } from "./tabelas.js";
 import { nomeLiga } from "./ligas.js";
-import { ROTULOS } from "./diretoria.js";
 import { dataLonga, paraData } from "./calendario.js";
 import { avancarAposResultado, mostrarRodadaTela } from "./rodada.js";
 
@@ -18,21 +17,7 @@ const RESULTADO = {
   derrota: ["d", "Derrota"],
 };
 
-// o selo do desempenho: verde acima, neutro no esperado, vermelho abaixo
-const DESEMPENHO_CHIP = {
-  muito_acima: "batida", acima: "batida", esperado: "", abaixo: "perto", muito_abaixo: "longe",
-};
-
-const MOMENTO = {
-  gol_da_vitoria: "Gol da vitória",
-  gol_do_empate: "Gol do empate",
-  penalti_perdido: "Pênalti perdido",
-  penalti_defendido: "Pênalti defendido",
-  expulsao: "Expulsão",
-};
-
 const chip = (classe, texto) => `<span class="chip${classe ? ` chip-${classe}` : ""}">${texto}</span>`;
-const minuto = (m) => (m > 90 ? `90+${m - 90}'` : `${m}'`);
 const decimal = (n) => n.toFixed(1).replace(".", ",");
 const sinal = (n) => (n > 0 ? "+" : "") + (Number.isInteger(n) ? `${n}` : decimal(n));
 const nota = decimal;
@@ -64,9 +49,8 @@ function render(r) {
 
   $("pg-placar").innerHTML = placar(r);
   ligarLinks($("pg-placar"));
-  $("pg-expectativa").innerHTML = expectativa(r);
-  $("pg-impacto").innerHTML = r.tabela ? impactoLiga(r) : impactoCopa(r);
-  $("pg-destaques").innerHTML = destaques(r);
+  $("pg-destaques").innerHTML =
+    `<article class="pg-card">${r.tabela ? impactoLiga(r) : impactoCopa(r)}</article>` + destaques(r);
 
   $("pg-lances").innerHTML = r.eventos.length
     ? r.eventos.map(linhaEvento).join("")
@@ -113,38 +97,17 @@ function placar(r) {
   </article>`;
 }
 
-// ---------- 3. expectativa × resultado ----------
-
-function expectativa(r) {
-  const e = r.expectativa;
-  const vant = e.vantagem > 0 ? "a seu favor" : e.vantagem < 0 ? "contra você" : "nenhuma";
-  return `<span class="hub-rotulo">${icone("alvo")} Expectativa × resultado</span>
-    <p class="pg-linha"><b>Antes do jogo:</b> ${e.texto}</p>
-    <p class="pg-detalhe">Força do elenco ${decimal(e.forca)} contra ${decimal(e.forca_adversario)},
-      ${r.mando === "casa" ? "jogando em casa" : "jogando fora"}
-      (vantagem ${vant}${e.vantagem ? `: ${sinal(e.vantagem)}` : ""}).</p>
-    <p class="pg-linha"><b>Resultado:</b> ${chip(DESEMPENHO_CHIP[e.desempenho.nivel], e.desempenho.texto)}</p>`;
-}
-
 // ---------- 4. impacto na carreira ----------
 
 function impactoLiga(r) {
   const t = r.tabela;
   const andou = t.posicao_antes - t.posicao;
   const seta = andou > 0 ? `subiu ${andou}` : andou < 0 ? `caiu ${-andou}` : "manteve a posição";
-  let meta = "";
-  if (t.meta) {
-    const fim = r.temporada_concluida ? "fim" : "andamento";
-    const rotulo = ROTULOS[fim][t.meta.situacao];
-    const mudou = t.meta.situacao !== t.meta.situacao_antes
-      ? ` <small>antes: ${ROTULOS.andamento[t.meta.situacao_antes].toLowerCase()}</small>` : "";
-    meta = `<p class="pg-linha"><b>Meta:</b> ${t.meta.descricao} ${chip(t.meta.situacao, rotulo)}${mudou}</p>`;
-  }
   return `<span class="hub-rotulo">${icone("trofeu")} Na tabela</span>
     <p class="pg-numero">${t.posicao}º <small>de ${t.total_clubes}</small></p>
     <p class="pg-detalhe">${t.posicao_antes}º → ${t.posicao}º (${seta}) ·
       ${sinal(t.pontos_ganhos)} ${t.pontos_ganhos === 1 ? "ponto" : "pontos"}, agora ${t.pontos}</p>
-    ${meta}${cargo(r)}`;
+    ${cargo(r)}`;
 }
 
 function impactoCopa(r) {
@@ -185,25 +148,10 @@ function destaques(r) {
   cards.push(card("Melhor em campo", "estrela", d.melhor_em_campo
     ? atuacao(d.melhor_em_campo)
     : `<small class="vazio">Sem notas guardadas deste jogo.</small>`));
-  cards.push(card("Momento decisivo", "gol", momento(r)));
   if (d.melhor_do_time && d.melhor_em_campo && d.melhor_do_time.jogador !== d.melhor_em_campo.jogador) {
     cards.push(card("Melhor do time", "camisa", atuacao(d.melhor_do_time)));
-  } else if (d.pior_do_time) {
-    cards.push(card("Menor nota do time", "alerta", atuacao(d.pior_do_time)));
   }
   return cards.join("");
-}
-
-function momento(r) {
-  if (r.copa && r.copa.penaltis) {
-    const p = r.copa.penaltis;
-    return `<strong>Disputa de pênaltis</strong>
-      <small>${p.pro} x ${p.contra} · ${r.copa.classificado ? "a vaga é nossa" : "a vaga ficou com o " + r.adversario}</small>`;
-  }
-  const m = r.momento_decisivo;
-  if (!m) return `<strong>0 x 0</strong><small>Nenhum lance mudou o jogo.</small>`;
-  return `<strong>${MOMENTO[m.tipo_momento]} · ${minuto(m.minuto)}</strong>
-    <small>${m.jogador || ""}${m.clube ? ` (${m.clube})` : ""}</small>`;
 }
 
 function estatisticas(r) {

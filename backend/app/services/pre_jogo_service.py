@@ -1,5 +1,5 @@
 """O que cerca o próximo jogo do técnico, para a tela de pré-jogo (v2.3):
-forma recente, desfalques, estádio e público, e a meta da diretoria.
+forma recente, desfalques, estádio e público.
 
 Só lê: a forma vem das partidas da liga e dos jogos da copa já gravados; os
 desfalques, o estádio e o público, do campeonato restaurado do save (que
@@ -8,7 +8,7 @@ motor faz no apito (`estadio.publico`, sem nada de sorteio), então a
 previsão é o público que vai estar lá, se o técnico não mexer no ingresso.
 """
 
-from app.domain import copa, diretoria, estadio
+from app.domain import copa, estadio
 from app.repositories import clube_repository as clube_repo
 from app.repositories import partida_repository as partida_repo
 from app.services import copa_service
@@ -17,7 +17,7 @@ ULTIMOS = 5
 
 
 def contexto(conn, sim, mandante, visitante):
-    """{contexto_mandante, contexto_visitante, estadio, meta} do jogo entre
+    """{contexto_mandante, contexto_visitante, estadio} do jogo entre
     os clubes (objetos do motor) `mandante` e `visitante`."""
     clubes = {c["nome"]: c for c in clube_repo.listar_por_simulacao(conn, sim["id"])}
     partidas = partida_repo.listar_por_simulacao(conn, sim["id"])
@@ -26,7 +26,6 @@ def contexto(conn, sim, mandante, visitante):
         "contexto_mandante": _do_clube(mandante, clubes, partidas, dados_copa),
         "contexto_visitante": _do_clube(visitante, clubes, partidas, dados_copa),
         "estadio": _estadio(mandante, visitante),
-        "meta": _meta(sim, clubes),
     }
 
 
@@ -138,19 +137,3 @@ def _estadio(mandante, visitante):
         "ingresso": estadio.FAIXAS[mandante.ingresso]["nome"],
     }
 
-
-def _meta(sim, clubes):
-    """A meta da diretoria e onde o clube está hoje. None sem meta."""
-    meta = sim["meta_posicao"]
-    linha = clubes.get(sim["clube_usuario"])
-    if meta is None or linha is None:
-        return None
-    total = sum(1 for c in clubes.values() if c["liga"] == linha["liga"])
-    posicao = linha["posicao_final"] if linha["jogos"] else None
-    return {
-        "posicao": meta,
-        "descricao": diretoria.descricao_meta(meta),
-        "posicao_atual": posicao,
-        "total_clubes": total,
-        "situacao": None if posicao is None else diretoria.situacao(posicao, meta, total),
-    }

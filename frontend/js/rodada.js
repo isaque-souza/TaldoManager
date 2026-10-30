@@ -7,7 +7,6 @@ import { carregarMercado } from "./mercado.js";
 import { carregarLista } from "./saves.js";
 import { carregarPlanos, gravarEConferir, planoEmUso, posicionamentoDoEditor, renderEditor, xiDoEditor } from "./editor.js";
 import { renderDashboard } from "./financas.js";
-import { renderMeta } from "./diretoria.js";
 import { escudo } from "./identidade.js";
 import { icone } from "./icones.js";
 import { abrirPreJogo } from "./prejogo.js";
@@ -140,7 +139,6 @@ export async function carregarFinancasRodada() {
 export function mostrarRodadaTela() {
   esconderTudo();
   $("rodada").hidden = false;
-  renderMeta("r-meta", estado.temporada);
   if (estado.faseRodada === "depois") renderRodadaDepois();
   else renderRodadaAntes();
 }
