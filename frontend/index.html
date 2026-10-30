@@ -386,15 +386,24 @@
     </div>
   </section>
 
-  <!-- pós-jogo (v2.2): o relatório do último jogo do técnico -->
+  <!-- pós-jogo (v2.2): o relatório do último jogo do técnico. v2.4: a capa
+       com o estádio, a linha do jogo, as notas no campo e a rodada -->
   <section id="posjogo" hidden>
     <hgroup>
       <h2 id="pg-titulo"></h2>
       <p id="pg-confronto"></p>
     </hgroup>
-    <div id="pg-placar"></div>
-    <!-- o impacto (tabela ou copa) e os destaques da partida -->
-    <div id="pg-destaques" class="pg-grade pg-grade-3"></div>
+    <div id="pg-capa" class="cartaz"></div>
+    <div class="pg-grade pg-grade-capa">
+      <div>
+        <h3 class="secao">Notas do time</h3>
+        <div id="pg-notas"></div>
+      </div>
+      <div class="pg-lado">
+        <article id="pg-impacto" class="pg-card"></article>
+        <div id="pg-destaques" class="pg-destaques"></div>
+      </div>
+    </div>
     <div class="pg-grade">
       <div>
         <h3 class="secao">Lances</h3>
@@ -405,28 +414,37 @@
         <div id="pg-stats" class="av-stats"></div>
       </div>
     </div>
-    <div id="pg-clube-bloco">
-      <h3 class="secao">No clube</h3>
-      <ul id="pg-mensagens" class="pg-mensagens"></ul>
+    <div class="pg-grade">
+      <div id="pg-outros-bloco">
+        <h3 class="secao" id="pg-outros-titulo">Outros resultados</h3>
+        <ul id="pg-outros" class="pg-outros"></ul>
+      </div>
+      <div id="pg-clube-bloco">
+        <h3 class="secao">No clube</h3>
+        <ul id="pg-mensagens" class="pg-mensagens"></ul>
+      </div>
     </div>
     <article id="pg-proximo" class="pg-proximo"></article>
   </section>
 
-  <!-- pré-jogo (v1.1): as duas escalações no campo, antes do apito -->
+  <!-- pré-jogo (v1.1): as duas escalações no campo, antes do apito. v2.4:
+       o cartaz do jogo, o perigo do rival e o confronto direto -->
   <section id="prejogo" hidden>
     <hgroup>
       <h2 id="pj-titulo"></h2>
       <p id="pj-confronto"></p>
     </hgroup>
 
+    <div id="pj-cartaz" class="cartaz"></div>
+
+    <div class="pg-grade">
+      <article id="pj-perigo" class="pg-card"></article>
+      <article id="pj-direto" class="pg-card"></article>
+    </div>
+
     <div class="pj-times">
       <div id="pj-tarja-eu" class="pj-tarja"></div>
       <div id="pj-tarja-rival" class="pj-tarja pj-tarja-rival"></div>
-    </div>
-
-    <!-- v2.3: o estádio e o público previsto -->
-    <div id="pj-contexto">
-      <article id="pj-estadio" class="pg-card"></article>
     </div>
 
     <div id="pj-campo" class="campo" role="img"></div>

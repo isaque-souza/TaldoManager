@@ -1,5 +1,6 @@
 """O que cerca o próximo jogo do técnico, para a tela de pré-jogo (v2.3):
-forma recente, desfalques, estádio e público.
+forma recente, desfalques, estádio e público. v2.4: o jogador mais
+perigoso de cada lado e o confronto direto na carreira.
 
 Só lê: a forma vem das partidas da liga e dos jogos da copa já gravados; os
 desfalques, o estádio e o público, do campeonato restaurado do save (que
@@ -11,9 +12,11 @@ previsão é o público que vai estar lá, se o técnico não mexer no ingresso.
 from app.domain import copa, estadio
 from app.repositories import clube_repository as clube_repo
 from app.repositories import partida_repository as partida_repo
+from app.repositories import simulacao_repository as simulacao_repo
 from app.services import copa_service
 
 ULTIMOS = 5
+CONFRONTOS = 5   # quantos jogos do confronto direto a tela mostra
 
 
 def contexto(conn, sim, mandante, visitante):
@@ -26,6 +29,9 @@ def contexto(conn, sim, mandante, visitante):
         "contexto_mandante": _do_clube(mandante, clubes, partidas, dados_copa),
         "contexto_visitante": _do_clube(visitante, clubes, partidas, dados_copa),
         "estadio": _estadio(mandante, visitante),
+        "confronto_direto": confronto_direto(
+            conn, sim, mandante.nome, visitante.nome, partidas, dados_copa,
+        ),
     }
 
 
@@ -39,12 +45,13 @@ def _do_clube(clube, clubes, partidas, dados_copa):
         "total_clubes": sum(1 for c in clubes.values() if linha and c["liga"] == linha["liga"]),
         "forma": ultimos_jogos(clube.nome, partidas, dados_copa),
         "desfalques": desfalques(clube),
+        "perigo": perigo(clube),
     }
 
 
 def ultimos_jogos(nome, partidas, dados_copa, n=ULTIMOS):
-    """Os `n` jogos mais recentes do clube (liga e copa), do mais antigo
-    para o mais novo. O jogo da copa vem depois da rodada `copa.DATAS[fase]`
+    """Os `n` jogos mais recentes do clube (liga e copa; todos com `n`
+    None), do mais antigo para o mais novo. O jogo da copa vem depois da rodada `copa.DATAS[fase]`
     da liga (é no meio da semana seguinte)."""
     jogos = []
     for p in partidas:
@@ -67,7 +74,7 @@ def ultimos_jogos(nome, partidas, dados_copa, n=ULTIMOS):
                 penaltis=j["penaltis"], vencedor=j["vencedor"],
             )))
     jogos.sort(key=lambda par: par[0])
-    return [j for _, j in jogos[-n:]]
+    return [j for _, j in (jogos[-n:] if n else jogos)]
 
 
 def _jogo(nome, mandante, visitante, gm, gv, competicao, rodada,
@@ -137,3 +144,82 @@ def _estadio(mandante, visitante):
         "ingresso": estadio.FAIXAS[mandante.ingresso]["nome"],
     }
 
+
+
+def perigo(clube):
+    """O jogador que mais decide no clube nesta temporada, entre os que
+    podem jogar: mais gols + assistências, depois a nota média. Antes do
+    primeiro jogo (ninguém jogou), o melhor overall da frente. None sem
+    ninguém disponível."""
+    aptos = [j for j in clube.jogadores if j.disponivel]
+    if not aptos:
+        return None
+    jogaram = [j for j in aptos if j.partidas]
+    if jogaram:
+        j = max(jogaram, key=lambda j: (j.gols + j.assistencias, j.nota_media(), j.overall))
+        if j.gols + j.assistencias == 0:
+            motivo = "nota"
+        else:
+            motivo = "gols" if j.gols >= j.assistencias else "assistencias"
+    else:
+        frente = [j for j in aptos if j.posicao == "Atacante"] or aptos
+        j = max(frente, key=lambda j: j.overall)
+        motivo = "overall"
+    return {
+        "nome": j.nome,
+        "numero": j.numero,
+        "posicao": j.posicao,
+        "funcao": j.funcao,
+        "overall": j.overall,
+        "partidas": j.partidas,
+        "gols": j.gols,
+        "assistencias": j.assistencias,
+        "nota_media": j.nota_media(),
+        "motivo": motivo,
+    }
+
+
+def confronto_direto(conn, sim, mandante, visitante, partidas, dados_copa):
+    """Os jogos entre os dois clubes na carreira (liga e copa, todas as
+    temporadas), do ponto de vista do clube do técnico (ou do mandante,
+    sem técnico). {jogos (os últimos CONFRONTOS, do mais antigo para o
+    mais novo, com a temporada), vitorias, empates, derrotas, gols_pro,
+    gols_contra, total}."""
+    eu = sim["clube_usuario"] if sim["clube_usuario"] in (mandante, visitante) else mandante
+    rival = visitante if eu == mandante else mandante
+    temporadas = [(sim, partidas, dados_copa)]
+    anterior = sim
+    while (anterior := simulacao_repo.antecessora(conn, anterior["id"])) is not None:
+        temporadas.append((
+            anterior,
+            partida_repo.listar_por_simulacao(conn, anterior["id"]),
+            copa_service.estado_da_copa(anterior),
+        ))
+
+    jogos = []
+    for s, ps, dc in reversed(temporadas):
+        entre = [p for p in ps if {p["mandante_nome"], p["visitante_nome"]} == {eu, rival}]
+        do_rival = {
+            "fases": {
+                fase: [j for j in (dc or {}).get("fases", {}).get(fase) or []
+                       if {j["mandante"], j["visitante"]} == {eu, rival}]
+                for fase in copa.FASES
+            }
+        }
+        for j in ultimos_jogos(eu, entre, do_rival, n=None):
+            jogos.append({**j, "temporada": s["temporada"]})
+
+    def conta(campo, valor):
+        return sum(1 for j in jogos if j[campo] == valor)
+
+    return {
+        "clube": eu,
+        "adversario": rival,
+        "jogos": jogos[-CONFRONTOS:],
+        "total": len(jogos),
+        "vitorias": conta("resultado", "V"),
+        "empates": conta("resultado", "E"),
+        "derrotas": conta("resultado", "D"),
+        "gols_pro": sum(j["gols_pro"] for j in jogos),
+        "gols_contra": sum(j["gols_contra"] for j in jogos),
+    }

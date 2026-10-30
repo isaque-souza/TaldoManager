@@ -65,6 +65,18 @@ def test_vitoria_empate_e_derrota_batem_com_a_tabela_rodada_a_rodada():
             assert (t["posicao_antes"], t["pontos_antes"]) == (anterior["posicao"], anterior["pontos"])
         anterior = t
 
+        # v2.4: a vizinhança na tabela, em ordem, com o clube no meio dela
+        viz = t["vizinhos"]
+        assert [v["posicao"] for v in viz] == list(range(viz[0]["posicao"], viz[0]["posicao"] + 5))
+        assert any(v["clube"] == "Real Taldo" for v in viz)
+        eu = next(v for v in viz if v["clube"] == "Real Taldo")
+        assert eu["posicao_antes"] == t["posicao_antes"]
+        # e os outros jogos da rodada: todos os da liga, menos o nosso
+        outros = r["outros_resultados"]
+        assert len(outros) == t["total_clubes"] // 2 - 1
+        assert all("Real Taldo" not in (o["mandante"], o["visitante"]) for o in outros)
+        assert r["ocupacao"] is None or 0 < r["ocupacao"] <= 1
+
         assert r["destaques"]["melhor_em_campo"]["nota"] == max(a["nota"] for a in r["atuacoes"])
         if res["concluida"]:
             break

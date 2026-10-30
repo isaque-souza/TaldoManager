@@ -1240,6 +1240,31 @@ muda o resultado da rodada (`GET /simulacoes/{id}/pre-jogo`).
 
 ---
 
+# 🌃 Pré-jogo e pós-jogo com atmosfera (v2.4)
+
+As duas telas em volta do jogo ganharam o estádio à noite e mais contexto,
+sem mudar nada no motor. O estádio é um desenho em SVG feito a partir do
+jogo (`frontend/js/atmosfera.js`): a torcida tem as cores do mandante e
+enche a arquibancada na proporção do público, a visita fica num canto com as
+cores dela, clássico acende sinalizadores e estádio lotado levanta
+bandeiras. O mesmo jogo desenha sempre o mesmo estádio.
+
+* [x] Cartaz do pré-jogo — escudos grandes, posição e pontos, a forma
+      recente e a força do XI que vai entrar, com o público previsto embaixo
+* [x] Fique de olho — o jogador do rival que mais decide na temporada
+      (gols + assistências, depois a nota), entre os que podem jogar
+* [x] Confronto direto — os jogos entre os dois em toda a carreira (liga e
+      copa), com vitórias, empates, derrotas e os últimos encontros
+* [x] Capa do pós-jogo — o placar sobre o estádio e a linha do jogo de 0' a
+      90': gols, pênaltis perdidos, cartões e lesões de cada lado
+* [x] Notas do time no campo — os titulares por setor, com a nota, quem
+      saiu e quem marcou; quem entrou fica embaixo
+* [x] Na tabela — a vizinhança do clube (5 posições) com quem subiu e
+      quem caiu na rodada
+* [x] Outros resultados da rodada (na copa, os outros jogos da fase)
+
+---
+
 # 📁 Estrutura
 
 ```text

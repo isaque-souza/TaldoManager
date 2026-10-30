@@ -2,13 +2,16 @@
 // "Jogar a rodada" abre esta tela; "Ir para o jogo" joga de fato. O XI vem
 // de GET /pre-jogo, que roda a mesma escalação do motor: é quem vai entrar.
 // v2.3: com o contexto do jogo — forma recente, desfalques, estádio e
-// público previsto (tudo lido do save).
+// público previsto (tudo lido do save). v2.4: o cartaz do jogo, com o
+// estádio desenhado (atmosfera.js), o jogador que mais decide no rival e o
+// confronto direto na carreira.
 
 import { $, esconderTudo, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { abrirSecaoRodada, jogarRodada, salvarEscalacaoAgora } from "./rodada.js";
 import { jogarAoVivo } from "./aovivo.js";
 import { camisa, escudo } from "./identidade.js";
 import { icone } from "./icones.js";
+import { estadioNoturno } from "./atmosfera.js";
 
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
 const RESULTADO = { V: "Vitória", E: "Empate", D: "Derrota" };
@@ -16,6 +19,8 @@ const RESULTADO = { V: "Vitória", E: "Empate", D: "Derrota" };
 const chip = (classe, texto) => `<span class="chip${classe ? ` chip-${classe}` : ""}">${texto}</span>`;
 const milhar = (n) => n.toLocaleString("pt-BR");
 const pct = (n) => `${Math.round(n * 100)}%`;
+const decimal = (n) => n.toFixed(1).replace(".", ",");
+const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
 
 export async function abrirPreJogo() {
   limparAviso();
@@ -46,9 +51,13 @@ function renderPreJogo(pj) {
     ? `Copa · ${pj.copa.nome}`
     : `Rodada ${pj.rodada} de ${pj.total_rodadas}`;
   $("pj-confronto").innerHTML =
-    `${escudo(eu.clube, 28)} <strong>${eu.clube}</strong> <span class="x">x</span> ` +
-    `${escudo(rival.clube, 28)} <strong>${rival.clube}</strong> <small>(${local})</small> ` +
-    `<span class="chip">Pré-jogo</span>`;
+    `<strong>${eu.clube}</strong> <span class="x">x</span> <strong>${rival.clube}</strong> ` +
+    `<small>${local === "em casa" ? "em casa" : "fora de casa"}</small>`;
+
+  const ctxDe = (nome) => [pj.contexto_mandante, pj.contexto_visitante].find((c) => c && c.clube === nome);
+  $("pj-cartaz").innerHTML = cartaz(pj, ctxDe);
+  $("pj-perigo").innerHTML = perigo(ctxDe(rival.clube), rival.clube);
+  $("pj-direto").innerHTML = confrontoDireto(pj.confronto_direto);
 
   $("pj-tarja-eu").innerHTML = tarjaTime(eu);
   $("pj-tarja-rival").innerHTML = tarjaTime(rival);
@@ -57,16 +66,10 @@ function renderPreJogo(pj) {
   $("pj-campo").innerHTML =
     MARCAS + metade(eu, "eu") + metade(rival, "rival");
 
-  const ctxEu = pj.contexto_mandante && pj.contexto_mandante.clube === eu.clube
-    ? pj.contexto_mandante : pj.contexto_visitante;
-  const ctxRival = ctxEu === pj.contexto_mandante ? pj.contexto_visitante : pj.contexto_mandante;
-  $("pj-estadio").innerHTML = cartaoEstadio(pj.estadio, pj.mando);
-  $("pj-estadio").hidden = !pj.estadio;
-  $("pj-contexto").hidden = !pj.estadio;
-  $("pj-chega-eu-titulo").textContent = `Como chega — ${eu.clube}`;
-  $("pj-chega-rival-titulo").textContent = `Como chega — ${rival.clube}`;
-  $("pj-chega-eu").innerHTML = comoChega(ctxEu);
-  $("pj-chega-rival").innerHTML = comoChega(ctxRival);
+  $("pj-chega-eu-titulo").textContent = `Desfalques — ${eu.clube}`;
+  $("pj-chega-rival-titulo").textContent = `Desfalques — ${rival.clube}`;
+  $("pj-chega-eu").innerHTML = desfalques(ctxDe(eu.clube)?.desfalques || []);
+  $("pj-chega-rival").innerHTML = desfalques(ctxDe(rival.clube)?.desfalques || []);
 
   $("pj-banco-eu-titulo").textContent = `Banco — ${eu.clube}`;
   $("pj-banco-rival-titulo").textContent = `Banco — ${rival.clube}`;
@@ -74,46 +77,122 @@ function renderPreJogo(pj) {
   $("pj-banco-rival").innerHTML = banco(rival);
 }
 
-// ---------- contexto do jogo (v2.3) ----------
+// ---------- o cartaz do jogo (v2.4) ----------
 
-function cartaoEstadio(e, mando) {
-  if (!e) return "";
-  const onde = mando === "casa" ? "Em casa" : `Casa do ${e.clube}`;
-  const selos = [
+// a média de overall de quem vai entrar: a força real do jogo, com os
+// desfalques e o cansaço já pesando na escolha do XI
+function forcaDoXI(t) {
+  return Math.round(t.titulares.reduce((s, j) => s + j.overall, 0) / t.titulares.length);
+}
+
+function cartaz(pj, ctxDe) {
+  const e = pj.estadio;
+  const fundo = estadioNoturno({
+    mandante: pj.mandante.clube, visitante: pj.visitante.clube,
+    ocupacao: e ? e.ocupacao : 0.5, classico: !!(e && e.classico), lotado: !!(e && e.lotado),
+    semente: `pre${pj.rodada}`,
+  });
+  const fm = forcaDoXI(pj.mandante);
+  const fv = forcaDoXI(pj.visitante);
+  const selos = e ? [
     e.classico ? chip("longe", "Clássico") : "",
     e.lotado ? chip("batida", "Lotado") : "",
-  ].join(" ");
-  return `<span class="hub-rotulo">${icone("torcida")} Estádio · ${onde}</span>
-    <p class="pg-numero">${milhar(e.publico_previsto)} <small>torcedores previstos</small></p>
-    <div class="pj-ocupacao" role="img" aria-label="${pct(e.ocupacao)} de ocupação">
-      <span style="width:${Math.min(100, e.ocupacao * 100)}%"></span></div>
-    <p class="pg-detalhe">${pct(e.ocupacao)} de ${milhar(e.capacidade)} lugares · ingresso ${e.ingresso.toLowerCase()}</p>
-    ${selos.trim() ? `<p class="pg-linha">${selos}</p>` : ""}`;
+  ].join(" ").trim() : "";
+  const comp = pj.copa ? `Copa · ${pj.copa.nome}` : `Rodada ${pj.rodada}`;
+  return `<div class="cartaz-fundo">${fundo}</div>
+    <div class="cartaz-palco">
+      ${timeDoCartaz(pj.mandante, ctxDe(pj.mandante.clube), pj.clube_usuario, fm, fv)}
+      <div class="cartaz-meio">
+        <span class="cartaz-comp">${comp}</span>
+        <b class="cartaz-x">x</b>
+        ${selos ? `<span class="cartaz-selos">${selos}</span>` : ""}
+      </div>
+      ${timeDoCartaz(pj.visitante, ctxDe(pj.visitante.clube), pj.clube_usuario, fv, fm)}
+    </div>
+    ${e ? publico(e, pj.mando) : ""}`;
 }
 
-function comoChega(c) {
-  if (!c) return "";
-  const tabela = c.posicao
-    ? `<p class="pg-linha"><b>${c.posicao}º</b> na liga · ${c.pontos} ${c.pontos === 1 ? "ponto" : "pontos"}</p>`
-    : "";
-  return `${tabela}
-    <p class="pg-linha"><b>Últimos jogos</b></p>
-    ${forma(c.forma)}
-    <p class="pg-linha"><b>Desfalques</b></p>
-    ${desfalques(c.desfalques)}`;
+function timeDoCartaz(t, c, meu, forca, outra) {
+  const tabela = c && c.posicao
+    ? `<span class="cartaz-pos"><b>${c.posicao}º</b> · ${plural(c.pontos, "ponto", "pontos")}</span>`
+    : `<span class="cartaz-pos">Estreia na temporada</span>`;
+  const melhor = forca > outra ? " cartaz-forte" : "";
+  return `<div class="cartaz-time${t.clube === meu ? " cartaz-eu" : ""}">
+    ${escudo(t.clube, 76)}
+    <strong class="cartaz-nome">${t.clube}</strong>
+    ${tabela}
+    ${c ? formaCurta(c.forma) : ""}
+    <span class="cartaz-forca${melhor}" title="Média de overall dos 11 que vão entrar">Força do XI <b>${forca}</b></span>
+  </div>`;
 }
 
-function forma(jogos) {
-  if (!jogos.length) return `<p class="pg-detalhe">Ainda não jogou nesta temporada.</p>`;
-  return `<ol class="pj-forma" aria-label="Do mais antigo para o mais recente">${jogos.map((j) => {
-    const onde = j.competicao === "copa" ? `Copa · ${j.fase}` : `Rodada ${j.rodada}`;
-    const pen = j.penaltis
-      ? ` (pên. ${j.penaltis.pro}–${j.penaltis.contra}${j.penaltis.classificou ? ", classificou" : ", eliminado"})` : "";
-    const texto = `${onde}: ${RESULTADO[j.resultado]} ${j.gols_pro}–${j.gols_contra} ` +
-      `${j.mando === "casa" ? "em casa, contra o" : "fora, contra o"} ${j.adversario}${pen}`;
-    return `<li title="${texto}" aria-label="${texto}"><span class="pj-res pj-res-${j.resultado}" aria-hidden="true">${j.resultado}</span>
-      <small aria-hidden="true">${j.gols_pro}–${j.gols_contra}${j.competicao === "copa" ? " · copa" : ""}</small></li>`;
+// os últimos jogos em quadradinhos, do mais antigo para o mais recente
+function formaCurta(jogos) {
+  if (!jogos.length) return "";
+  return `<ol class="cartaz-forma" aria-label="Últimos jogos, do mais antigo para o mais recente">${jogos.map((j) => {
+    const texto = `${RESULTADO[j.resultado]} ${j.gols_pro}–${j.gols_contra} contra o ${j.adversario}` +
+      `${j.competicao === "copa" ? " (copa)" : ""}`;
+    return `<li class="pj-res pj-res-${j.resultado}" title="${texto}" aria-label="${texto}">${j.resultado}</li>`;
   }).join("")}</ol>`;
+}
+
+function publico(e, mando) {
+  const onde = mando === "casa" ? "Nosso estádio" : `Estádio do ${e.clube}`;
+  return `<div class="cartaz-publico">
+    <span class="cartaz-onde">${icone("torcida")} ${onde}</span>
+    <span><b>${milhar(e.publico_previsto)}</b> torcedores previstos</span>
+    <span class="pj-ocupacao" role="img" aria-label="${pct(e.ocupacao)} de ocupação">
+      <i style="width:${Math.min(100, e.ocupacao * 100)}%"></i></span>
+    <span>${pct(e.ocupacao)} de ${milhar(e.capacidade)} lugares · ingresso ${e.ingresso.toLowerCase()}</span>
+  </div>`;
+}
+
+// ---------- análise do adversário (v2.4) ----------
+
+function perigo(c, clube) {
+  const titulo = `<h3 class="secao">Fique de olho</h3>`;
+  const p = c && c.perigo;
+  if (!p) return `${titulo}<p class="pg-detalhe">O ${clube} não tem ninguém disponível que se destaque.</p>`;
+  let porque;
+  if (p.motivo === "overall") {
+    porque = `Ainda sem jogos na temporada: é o melhor do ataque, overall ${p.overall}.`;
+  } else {
+    const conta = [p.gols && plural(p.gols, "gol", "gols"),
+      p.assistencias && plural(p.assistencias, "assistência", "assistências")].filter(Boolean).join(" e ");
+    porque = `${conta ? `${conta} em ` : ""}${plural(p.partidas, "jogo", "jogos")} · nota média ${decimal(p.nota_media)}`;
+  }
+  return `${titulo}
+    <div class="pj-perigo">
+      ${camisa(clube, { numero: p.numero, tamanho: 56 })}
+      <div>
+        <strong>${p.nome}</strong>
+        <small>${p.funcao || p.posicao} · overall ${p.overall}</small>
+        <p class="pg-linha">${porque}</p>
+      </div>
+    </div>`;
+}
+
+function confrontoDireto(d) {
+  const titulo = `<h3 class="secao">Confronto direto</h3>`;
+  if (!d || !d.total) {
+    return `${titulo}<p class="pg-detalhe">Primeiro encontro entre os dois na sua carreira.</p>`;
+  }
+  const parte = (n, classe) => (n ? `<i class="cd-${classe}" style="flex:${n}"></i>` : "");
+  const lista = d.jogos.map((j) => {
+    const onde = j.competicao === "copa" ? `Copa · ${j.fase}` : `Rodada ${j.rodada}`;
+    const pen = j.penaltis ? ` <small>(pên. ${j.penaltis.pro}–${j.penaltis.contra})</small>` : "";
+    return `<li><span class="pj-res pj-res-${j.resultado}" aria-label="${RESULTADO[j.resultado]}">${j.resultado}</span>
+      <b>${j.gols_pro}–${j.gols_contra}</b>${pen}
+      <small>Temporada ${j.temporada} · ${onde} · ${j.mando === "casa" ? "em casa" : "fora"}</small></li>`;
+  }).join("");
+  return `${titulo}
+    <p class="pg-linha cd-placar"><b>${d.vitorias}</b> ${d.vitorias === 1 ? "vitória" : "vitórias"} ·
+      <b>${d.empates}</b> ${d.empates === 1 ? "empate" : "empates"} ·
+      <b>${d.derrotas}</b> ${d.derrotas === 1 ? "derrota" : "derrotas"}
+      <small>gols ${d.gols_pro}–${d.gols_contra} em ${plural(d.total, "jogo", "jogos")}</small></p>
+    <div class="cd-barra" role="img" aria-label="${d.vitorias} vitórias, ${d.empates} empates e ${d.derrotas} derrotas">
+      ${parte(d.vitorias, "v")}${parte(d.empates, "e")}${parte(d.derrotas, "d")}</div>
+    <ol class="cd-jogos" aria-label="Últimos encontros, do mais antigo para o mais recente">${lista}</ol>`;
 }
 
 function desfalques(lista) {
