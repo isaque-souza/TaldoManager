@@ -55,16 +55,18 @@ function cardNivel(n, atual) {
   const agora = !eAtual && n.custo_agora
     ? `<p>Agora: <strong>${reais(n.custo_agora)}</strong> até o fim da temporada.</p>` : "";
   const motivo = !eAtual && n.bloqueio ? `<small class="mk-bloqueio">${icone("cadeado")} ${n.bloqueio}</small>` : "";
-  return `<article class="mk-campanha${eAtual ? " ol-atual" : ""}">
+  return `<article class="bs-linha${eAtual ? " ol-atual" : ""}">
       <header><strong>Nível ${n.nivel}</strong>${eAtual ? ` <span class="chip chip-batida">Atual</span>` : ""}</header>
       <dl class="mk-ficha">
         <div><dt>Crescimento</dt><dd>${ritmo(n.ritmo)}</dd></div>
         <div><dt>Peneira</dt><dd>${n.por_peneira[0]}–${n.por_peneira[1]}</dd></div>
+        <div><dt>Custo</dt><dd>${custo}</dd></div>
       </dl>
-      <dl class="mk-ficha"><div><dt>Custo</dt><dd>${custo}</dd></div></dl>
-      ${agora}${motivo}
-      ${eAtual ? "" : `<button type="button" class="secondary outline bs-nivel" data-nivel="${n.nivel}" ${n.bloqueio ? "disabled" : ""}>
-        ${n.nivel > atual ? "Investir" : "Reduzir"}</button>`}
+      <div class="bs-linha-acao">
+        ${agora}${motivo}
+        ${eAtual ? "" : `<button type="button" class="secondary outline bs-nivel" data-nivel="${n.nivel}" ${n.bloqueio ? "disabled" : ""}>
+          ${n.nivel > atual ? "Investir" : "Reduzir"}</button>`}
+      </div>
     </article>`;
 }
 
@@ -109,7 +111,7 @@ function renderBase() {
       mais jovens e mais talento. Como o olheiro: subir paga na hora a diferença pelas rodadas que faltam;
       descer não devolve nada. Na virada, renova pela temporada cheia.
       Gasto nesta temporada: <strong>${reais(d.gasto_temporada)}</strong>.</p>
-    <div class="mk-campanhas">${d.niveis.map((n) => cardNivel(n, d.nivel)).join("")}</div>`;
+    <div class="bs-linhas">${d.niveis.map((n) => cardNivel(n, d.nivel)).join("")}</div>`;
 
   $("bs-peneira").addEventListener("click", fazerPeneira);
   $("r-base").querySelectorAll(".bs-promover:not([disabled])").forEach((b) =>
@@ -164,7 +166,7 @@ function olheiros(d) {
     ${o.bloqueio_trazer && o.indicados.length
       ? `<p class="mk-bloqueio">${icone("cadeado")} ${o.bloqueio_trazer}: promova ou dispense alguém para trazer.</p>` : ""}
     ${indicados}
-    <div class="mk-campanhas">${o.regioes.map(cardRegiao).join("")}</div>`;
+    <div class="bs-linhas">${o.regioes.map(cardRegiao).join("")}</div>`;
 }
 
 function linhaIndicado(i, bloqueio) {
@@ -188,21 +190,20 @@ function cardRegiao(r) {
   // o mesmo motivo nas três durações (limite, região ocupada): mostra uma vez
   const motivos = [...new Set(r.duracoes.map((x) => x.bloqueio).filter(Boolean))];
   const todas = r.duracoes.every((x) => x.bloqueio);
-  return `<article class="mk-campanha">
-      <header><strong>${r.nome}</strong></header>
-      <p>${r.perfil}.</p>
+  return `<article class="bs-linha">
+      <header><strong>${r.nome}</strong><p>${r.perfil}.</p></header>
       <dl class="mk-ficha">
         <div><dt>Por relatório</dt><dd>${min === max ? min : `${min}–${max}`} <small>jovens</small></dd></div>
         <div><dt>Idade</dt><dd>${r.idades[0]}–${r.idades[1]}</dd></div>
         <div><dt>Mês</dt><dd>${reais(r.custo_mes)}</dd></div>
       </dl>
-      ${todas && motivos.length ? `<small class="mk-bloqueio">${icone("cadeado")} ${motivos[0]}</small>` : ""}
       <div class="bs-duracoes" role="group" aria-label="Mandar o olheiro: ${r.nome}">
         ${r.duracoes.map((x) => `<button type="button" class="secondary outline bs-enviar"
           data-regiao="${r.id}" data-meses="${x.meses}" data-custo="${reais(x.custo)}"
           ${x.bloqueio ? `disabled title="${x.bloqueio}"` : ""}>
           ${plural(x.meses, "mês", "meses")}<small>${reais(x.custo)}</small></button>`).join("")}
       </div>
+      ${todas && motivos.length ? `<small class="mk-bloqueio">${icone("cadeado")} ${motivos[0]}</small>` : ""}
     </article>`;
 }
 

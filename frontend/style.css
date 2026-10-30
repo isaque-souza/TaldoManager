@@ -546,12 +546,12 @@ td.num, th.num { font-variant-numeric: tabular-nums; }
 /* ---------- escalação no campo (v1.2) ---------- */
 .ed-controles { margin: 0 0 .6rem; }
 .ed-aviso {
-  margin: 0 0 .8rem; padding: .5rem .8rem; border-left: 3px solid var(--ambar);
+  margin: 0 0 .8rem; padding: .5rem .8rem; border: 1px solid color-mix(in srgb, var(--ambar) 45%, transparent); border-radius: 4px;
   background: color-mix(in srgb, var(--ambar) 12%, transparent); font-size: .9rem;
 }
 .ed-travado {
   display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: center; justify-content: space-between;
-  margin: 0 0 .8rem; padding: .6rem .8rem; border-left: 3px solid var(--ambar);
+  margin: 0 0 .8rem; padding: .6rem .8rem; border: 1px solid color-mix(in srgb, var(--ambar) 45%, transparent); border-radius: 4px;
   background: color-mix(in srgb, var(--ambar) 12%, transparent); font-size: .9rem;
 }
 .ed-travado[hidden] { display: none; }
@@ -729,6 +729,10 @@ button.hub-card:hover, button.hub-card:focus-visible {
 /* ---------- caixa de entrada (v1.3) ---------- */
 .cx-barra { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: center; justify-content: space-between; margin-bottom: .8rem; }
 .cx-filtros { display: flex; flex-wrap: wrap; gap: .4rem; }
+@media (max-width: 640px) {
+  .cx-filtros { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: .3rem; scrollbar-width: thin; }
+  .cx-filtro { flex: none; }
+}
 .cx-filtro {
   width: auto; margin: 0; padding: .3rem .7rem; font-size: .82rem;
   background: transparent; color: var(--texto-2); border: 1px solid var(--linha); border-radius: 999px;
@@ -899,7 +903,7 @@ button.hub-card:hover, button.hub-card:focus-visible {
 .tr-relatorio { margin: 0 0 .8rem; }
 .tr-relatorio .secao .chip { margin-left: .4rem; vertical-align: 1px; }
 .tr-relatorio dd small { color: var(--texto-2); font-size: .78rem; }
-.tr-disputa { margin: 0 0 .8rem; padding: .5rem .8rem; border-left: 3px solid var(--ambar); background: color-mix(in srgb, var(--ambar) 12%, transparent); font-size: .9rem; }
+.tr-disputa { margin: 0 0 .8rem; padding: .5rem .8rem; border: 1px solid color-mix(in srgb, var(--ambar) 45%, transparent); border-radius: 4px; background: color-mix(in srgb, var(--ambar) 12%, transparent); font-size: .9rem; }
 .tr-disputa .icone { vertical-align: -2px; color: var(--ambar); }
 .idolo .icone { vertical-align: -2px; }
 .idolo .icone path { fill: currentColor; }
@@ -1251,7 +1255,7 @@ body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .
 .mk-ficha dd { margin: 0; font-family: var(--fonte-tarja); font-size: 1.15rem; font-weight: 700; }
 .mk-ficha dd small { font-family: var(--fonte-texto); font-weight: 400; font-size: .8rem; color: var(--texto-2); }
 .mk-bloqueio { color: var(--texto-2); font-size: .82rem; }
-.ol-atual { box-shadow: inset 3px 0 0 var(--gramado-claro); }
+.ol-atual { box-shadow: 0 0 0 1px var(--gramado-claro); }
 .mk-campanha .mk-fazer { margin: auto 0 0; }
 /* estádio (v1.5): as faixas do ingresso reaproveitam os cards do marketing */
 .es-faixa .es-usar { margin: auto 0 0; }
@@ -1279,6 +1283,31 @@ body > section:not([hidden]) { animation: tela-entra .32s cubic-bezier(.16, 1, .
 .bs-missoes li { list-style: none; }
 .bs-missoes small { display: block; color: var(--texto-2); }
 .bs-duracoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin-top: auto; }
+/* regiões dos olheiros e níveis da base: uma linha cada (eram cards, e o
+   quinto ficava sozinho embaixo) */
+.bs-linhas { display: grid; gap: .5rem; margin: 1rem 0 1.5rem; }
+.bs-linha {
+  display: grid; grid-template-columns: minmax(10rem, 1.3fr) minmax(0, 1.2fr) minmax(15rem, 1fr);
+  align-items: center; gap: .5rem 1.5rem; margin: 0; padding: .75rem 1rem;
+}
+.bs-linha > header { margin: 0; padding: 0; background: none; border: 0; }
+.bs-linha > header p { margin: .15rem 0 0; color: var(--texto-2); font-size: .88rem; }
+.bs-linha .mk-ficha { margin: 0; flex-wrap: wrap; gap: .3rem 1.5rem; }
+.bs-linha .mk-ficha dd { white-space: nowrap; }
+.bs-linha .bs-duracoes { margin: 0; }
+.bs-linha > .mk-bloqueio { grid-column: 1 / -1; }
+.bs-linha-acao { display: flex; flex-direction: column; gap: .35rem; }
+.bs-linha-acao p { margin: 0; color: var(--texto-2); font-size: .88rem; }
+.bs-linha-acao button { margin: 0; padding: .4rem .9rem; }
+@media (max-width: 900px) {
+  .bs-linha { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  /* a tabela de jovens cabe na tela: as ações empilham */
+  .bs-tabela th, .bs-tabela td { padding-left: .3rem; padding-right: .3rem; }
+  .bs-tabela .bs-acoes { flex-direction: column; align-items: stretch; gap: .3rem; }
+  .bs-tabela .bs-acoes button { padding: .3rem .5rem; font-size: .8rem; }
+}
 .bs-duracoes button { display: flex; flex-direction: column; align-items: center; margin: 0; padding: .35rem .3rem; font-size: .82rem; line-height: 1.2; white-space: nowrap; }
 .bs-pot { white-space: nowrap; }
 .bs-duracoes button small { display: block; font-size: .72rem; color: var(--texto-2); }
@@ -1402,7 +1431,7 @@ details.outra-liga { margin-top: 1rem; }
 /* ofertas da CPU na ficha do Elenco (v1.7) */
 .el-ofertas { margin: 0 0 1rem; }
 p.el-ofertas { font-size: .88rem; }
-.el-oferta { padding: .55rem .65rem; margin-bottom: .45rem; background: var(--superficie-2); border-radius: 4px; border-left: 3px solid var(--refletor); }
+.el-oferta { padding: .55rem .65rem; margin-bottom: .45rem; background: var(--superficie-2); border-radius: 4px; border: 1px solid color-mix(in srgb, var(--refletor) 40%, var(--linha)); }
 .el-oferta-topo { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
 .el-oferta-topo strong { font-family: var(--fonte-tarja); font-size: 1.2rem; }
 .el-oferta > small { display: block; color: var(--texto-2); margin-bottom: .35rem; }
@@ -1535,6 +1564,9 @@ body.com-lateral #rodada .hub { margin-bottom: 0; }
 .faixa-data { margin: 0; padding: .45rem .9rem; display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; font-size: .95rem; }
 .faixa-data:empty { display: none; }
 .faixa-data small { color: var(--texto-2); font-size: .82rem; }
+/* fora do Início o botão de ação já diz quanto falta: o detalhe da data sai
+   e a faixa cabe numa linha */
+.faixa-rodada:has(#r-acao:not([hidden])) .faixa-data small { display: none; }
 .hub-jogo > #r-dia { width: auto; margin: .5rem 0 0; padding: .45rem 1rem; font-size: .9rem; }
 #r-jogar small { font-size: .8rem; opacity: .85; }
 .faixa-rodada > hgroup { display: flex; align-items: stretch; margin: 0; align-self: stretch; }
@@ -1715,10 +1747,10 @@ input.campo-dinheiro {
 .tr-cartoes { display: grid; gap: .5rem; margin: 0 0 1.2rem; }
 .tr-cartao {
   display: grid; grid-template-columns: minmax(12rem, 1.3fr) minmax(9rem, .8fr) minmax(0, 2fr); gap: .5rem 1.2rem; align-items: center;
-  margin: 0; padding: .7rem .9rem; background: var(--superficie); border: 1px solid var(--linha); border-left: 3px solid var(--linha-forte); border-radius: 6px;
+  margin: 0; padding: .7rem .9rem; background: var(--superficie); border: 1px solid var(--linha); border-radius: 6px;
 }
-.tr-cartao-oferta { border-left-color: var(--refletor); }
-.tr-cartao-contrato { border-left-color: var(--gramado-claro); }
+.tr-cartao-oferta { border-color: color-mix(in srgb, var(--refletor) 45%, var(--linha)); }
+.tr-cartao-contrato { border-color: color-mix(in srgb, var(--gramado-claro) 45%, var(--linha)); }
 .tr-cartao-quem { min-width: 0; }
 .tr-cartao-quem b { display: block; }
 .tr-cartao-quem small { display: block; color: var(--texto-2); font-size: .82rem; }
@@ -1803,11 +1835,11 @@ input.campo-dinheiro {
 .meu-jogo {
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem 1.5rem;
   margin: 0 0 1.5rem; padding: 1rem 1.25rem; background: var(--superficie); border: 1px solid var(--linha);
-  border-left: 4px solid var(--texto-2); border-radius: 6px;
+  border-radius: 6px;
 }
-.meu-jogo.mj-v { border-left-color: var(--gramado-claro); }
-.meu-jogo.mj-d { border-left-color: var(--texto-alerta); }
-.meu-jogo.mj-e { border-left-color: var(--refletor); }
+.meu-jogo.mj-v { border-color: color-mix(in srgb, var(--gramado-claro) 45%, var(--linha)); }
+.meu-jogo.mj-d { border-color: color-mix(in srgb, var(--texto-alerta) 45%, var(--linha)); }
+.meu-jogo.mj-e { border-color: color-mix(in srgb, var(--refletor) 45%, var(--linha)); }
 .mj-resultado { font-family: var(--fonte-tarja); font-size: 1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .mj-v .mj-resultado { color: var(--gramado-claro); }
 .mj-d .mj-resultado { color: var(--texto-alerta); }
