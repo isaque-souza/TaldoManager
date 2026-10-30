@@ -71,10 +71,13 @@ REGIOES = {
         "perfil": "Os mais prontos e mais caros, com menos espaço para crescer",
         "paises": ["Portugal", "Espanha", "França", "Itália", "Inglaterra",
                    "Alemanha", "Holanda", "Bélgica"],
-        "custo_mes": 350_000,
+        # mais cara e mais pronta: o reforço que já ajuda aos 17. Com +4 e
+        # R$ 350 mil, o "pronto" sumia até os 19 e ela rendia um terço do
+        # Brasil por real (v2.0, equilíbrio)
+        "custo_mes": 250_000,
         "por_relatorio": (1, 2),
         "idades": (16, 18),
-        "overall": 4,
+        "overall": 6,
         "margem": -3,
         "joia": 0.05,
         "funcoes": {"Zagueiro": 1.5, "Goleiro": 2, "Meia central": 1.5},
@@ -108,7 +111,7 @@ REGIOES = {
         "de": "da Ásia",
         "perfil": "A mais barata e a que mais manda nomes, de meias e laterais",
         "paises": ["Japão", "Coreia do Sul", "China", "Arábia Saudita", "Irã", "Austrália"],
-        "custo_mes": 80_000,
+        "custo_mes": 100_000,   # com 80 mil, a que mais rendia por real nos níveis 4–5
         "por_relatorio": (2, 3),
         "idades": (15, 17),
         "overall": -3,

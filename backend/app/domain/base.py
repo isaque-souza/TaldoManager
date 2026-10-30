@@ -147,13 +147,17 @@ INTERVALO_PENEIRA = timedelta(days=90)   # uma peneira a cada 3 meses
 # nível: (desconto no overall, margem do potencial, ritmo, custo por
 # temporada, jovens por peneira). Ritmo 1 = cresce na temporada como um
 # jovem titular (a fração da margem de `evolucao`); o 0,6 do nível 1 é o de
-# quem quase não joga
+# quem quase não joga. A margem para de subir no nível 3 (v2.0, equilíbrio):
+# com 26 e 28 nos níveis 4 e 5, 97% dos jovens do nível 5 chegavam aos 19
+# perto do XI e 80% com potencial de titular até do clube mais forte; com
+# 24, ~62% (o nível 5 segue à frente pelo ritmo, pelo desconto e pela
+# quantidade)
 NIVEIS = {
     1: (14, (8, 20), 0.6, 0, (2, 3)),
     2: (13, (9, 22), 0.8, 500_000, (2, 4)),
     3: (12, (10, 24), 1.0, 1_000_000, (3, 4)),
-    4: (11, (11, 26), 1.15, 2_000_000, (3, 5)),
-    5: (10, (12, 28), 1.3, 4_000_000, (4, 6)),
+    4: (11, (10, 24), 1.15, 2_000_000, (3, 5)),
+    5: (10, (10, 24), 1.3, 4_000_000, (4, 6)),
 }
 NIVEL_INICIAL = 1
 CRESCIMENTO_TEMPORADA = 0.35  # a fração de `evolucao` até os 20 anos
