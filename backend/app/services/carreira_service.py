@@ -29,7 +29,10 @@ from app.repositories import jovem_base_repository as jovem_repo
 from app.repositories import observado_repository as observado_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import base_service, copa_service, oferta_service, plano_service, simulacao_service
+from app.services import (
+    base_service, copa_service, oferta_service, olheiro_base_service, plano_service,
+    simulacao_service,
+)
 from scripts.data_loader import (
     LIGA_PADRAO, TODAS_AS_LIGAS, carregar_campeonato_do_save, carregar_jogadores,
     carregar_livres, ligas_do_save,
@@ -245,6 +248,8 @@ def proxima_temporada(simulacao_id):
             mensagem_repo.inserir(conn, nova_id, None, [
                 base_service.virar(conn, simulacao_id, nova_id, seed, temporada),
             ])
+            # e os olheiros da base em missão, com os indicados (v2.0)
+            olheiro_base_service.virar(conn, sim, nova_id, temporada)
 
         return {
             "simulacao_id": nova_id,

@@ -52,6 +52,8 @@ from app.api.schemas import (
     NovoIngresso,
     Calendario,
     Base,
+    IndicadoTrazido,
+    NovaMissao,
     NovoNivelBase,
     PeneiraFeita,
     Promovido,
@@ -92,6 +94,7 @@ from app.services import (
     mercado_service,
     observado_service,
     base_service,
+    olheiro_base_service,
     olheiro_service,
     relatorio_service,
     plano_service,
@@ -890,6 +893,43 @@ def fazer_peneira(simulacao_id: int):
     """Faz uma peneira: chegam jovens pelo nível da base. A próxima só
     depois de 90 dias no calendário."""
     return _resposta_base(lambda: base_service.fazer_peneira(simulacao_id))
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/base/olheiros", response_model=Base, tags=["base"]
+)
+def enviar_olheiro_base(simulacao_id: int, nova: NovaMissao):
+    """Manda um olheiro da base para uma região por 1, 3 ou 6 meses, pagando
+    a missão na hora. Ele manda um relatório com jovens a cada 30 dias."""
+    return _resposta_base(
+        lambda: olheiro_base_service.enviar(simulacao_id, nova.regiao, nova.meses)
+    )
+
+
+@router.post(
+    "/simulacoes/{simulacao_id}/base/indicados/{indicado_id}",
+    response_model=IndicadoTrazido,
+    tags=["base"],
+)
+def trazer_indicado(simulacao_id: int, indicado_id: int):
+    """Traz para a base um jovem indicado por um olheiro (precisa de vaga)."""
+    return _resposta_base(
+        lambda: olheiro_base_service.trazer(simulacao_id, indicado_id),
+        "Indicado não encontrado",
+    )
+
+
+@router.delete(
+    "/simulacoes/{simulacao_id}/base/indicados/{indicado_id}",
+    response_model=Base,
+    tags=["base"],
+)
+def descartar_indicado(simulacao_id: int, indicado_id: int):
+    """Tira o jovem da lista de indicados."""
+    return _resposta_base(
+        lambda: olheiro_base_service.descartar(simulacao_id, indicado_id),
+        "Indicado não encontrado",
+    )
 
 
 @router.post(

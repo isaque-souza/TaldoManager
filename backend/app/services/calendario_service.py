@@ -11,7 +11,7 @@ from datetime import timedelta
 from app.db.conexao import conectar
 from app.domain import calendario, mercado
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import relatorio_service
+from app.services import olheiro_base_service, relatorio_service
 from app.services.temporada_service import TemporadaConcluida, exigir_sem_transmissao
 
 
@@ -75,6 +75,8 @@ def _andar(simulacao_id, proximo):
             simulacao_repo.definir_data(conn, simulacao_id, dia)
             # relatórios do olheiro que ficaram prontos no caminho (v2.0)
             prontos = relatorio_service.entregar(conn, simulacao_id, dia, rodada)
+            # e os relatórios mensais dos olheiros da base
+            prontos += olheiro_base_service.entregar(conn, simulacao_id, dia, rodada)
         # a tela passa os dias um a um e para quando chega mensagem
         return {**visao(simulacao_repo.buscar(conn, simulacao_id)),
                 "chegou_mensagem": bool(prontos)}
@@ -91,10 +93,12 @@ def avancar_dia(simulacao_id):
 
 
 def _proximo_evento(conn, simulacao_id, hoje, jogo):
-    """O dia do próximo jogo, ou antes, o de um relatório que fica pronto."""
+    """O dia do próximo jogo, ou antes, o de um relatório que fica pronto
+    (de contratação ou de um olheiro da base)."""
     jogo = max(hoje, jogo)
-    relatorio = relatorio_service.proximo_pronto(conn, simulacao_id)
-    return min(jogo, relatorio) if relatorio and relatorio > hoje else jogo
+    relatorios = (relatorio_service.proximo_pronto(conn, simulacao_id),
+                  olheiro_base_service.proximo_relatorio(conn, simulacao_id))
+    return min([jogo] + [r for r in relatorios if r and r > hoje])
 
 
 def continuar(simulacao_id):

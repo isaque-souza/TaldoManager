@@ -15,6 +15,7 @@ const ICONE_SETOR = {
   "Auxiliar técnico": "prancheta",
   Diretoria: "alvo",
   "Categorias de base": "base",
+  "Olheiro da base": "alvo",
   Marketing: "torcida",
 };
 

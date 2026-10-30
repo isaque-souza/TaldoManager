@@ -415,3 +415,31 @@ CREATE TABLE IF NOT EXISTS jovem_base (
     potencial      INTEGER NOT NULL,
     chegou_em      TEXT NOT NULL      -- dia (ISO) em que entrou na base
 );
+
+-- Olheiros da base (v2.0, passo 5): cada missão numa região manda um
+-- relatório a cada 30 dias; os jovens achados ficam como indicados até o
+-- técnico trazer para a base ou o prazo acabar.
+CREATE TABLE IF NOT EXISTS missao_base (
+    id                 INTEGER PRIMARY KEY,
+    simulacao_id       INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    regiao             TEXT NOT NULL,
+    meses              INTEGER NOT NULL,
+    enviado_em         TEXT NOT NULL,     -- ISO, dia do calendário
+    proximo_relatorio  TEXT NOT NULL,
+    relatorios_feitos  INTEGER NOT NULL DEFAULT 0,
+    custo              INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS indicado_base (
+    id             INTEGER PRIMARY KEY,
+    simulacao_id   INTEGER NOT NULL REFERENCES simulacao(id) ON DELETE CASCADE,
+    regiao         TEXT NOT NULL,
+    nome           TEXT NOT NULL,
+    idade          INTEGER NOT NULL,
+    funcao         TEXT NOT NULL,
+    overall        REAL NOT NULL,
+    potencial      INTEGER NOT NULL,
+    pais           TEXT NOT NULL,
+    chegou_em      TEXT NOT NULL,
+    expira_em      TEXT NOT NULL
+);
