@@ -5,9 +5,9 @@ import { ligarLinks, reais, tabela } from "./tabelas.js";
 import { COLUNAS, mostrarTemporada } from "./temporada.js";
 import { carregarMercado } from "./mercado.js";
 import { carregarLista } from "./saves.js";
-import { carregarPlanos, gravarEConferir, planoEmUso, posicionamentoDoEditor, renderEditor, xiDoEditor } from "./editor.js";
+import { carregarPlanos, gravarEConferir, planoEmUso, posicionamentoDoEditor, renderEditor, titularesDoEditor, xiDoEditor } from "./editor.js";
 import { renderDashboard } from "./financas.js";
-import { escudo } from "./identidade.js";
+import { escudo, identidade } from "./identidade.js";
 import { icone } from "./icones.js";
 import { abrirPreJogo } from "./prejogo.js";
 import { estadioNoturno } from "./atmosfera.js";
@@ -82,11 +82,30 @@ export function marcarHubMercado({ janelaAberta, total, acabando, aVenda, oferta
   $("hub-elenco").closest(".hub-card").classList.toggle("hub-alerta", acabando > 0 || ofertas > 0);
 }
 
+// v2.4: o XI no campinho do card da Escalação, atacando para a direita
+// (x é a largura do campo, y a profundidade, 0–100); cansado tem anel âmbar
+function campinho(titulares, clube) {
+  const id = identidade(clube);
+  const pecas = titulares.filter((j) => j.x != null && j.y != null).map((j) => {
+    const cx = (6 + j.y * 0.88).toFixed(1);
+    const cy = (4 + j.x * 0.52).toFixed(1);
+    const cansado = j.condicao && j.condicao !== "Normal";
+    return `<circle cx="${cx}" cy="${cy}" r="3" fill="${id.cor_primaria}" stroke="${cansado ? "#f0a52a" : id.cor_secundaria}" stroke-width="${cansado ? 1.4 : .9}"/>`;
+  }).join("");
+  return `<svg viewBox="0 0 100 60" preserveAspectRatio="xMidYMid meet">
+    <rect x=".5" y=".5" width="99" height="59" rx="2" class="cp-gramado"/>
+    <g class="cp-linhas"><line x1="50" y1=".5" x2="50" y2="59.5"/><circle cx="50" cy="30" r="7"/>
+      <rect x=".5" y="16" width="12" height="28"/><rect x="87.5" y="16" width="12" height="28"/></g>
+    ${pecas}</svg>`;
+}
+
 // lê dos seletores (não do rodadaInfo): o técnico pode ter mexido e voltado
 function resumoEscalacao() {
   const fora = estado.rodadaInfo.elenco.filter((j) => j.suspenso || j.lesionado).length;
   const tatica = $("r-tatica");
   $("hub-escalacao").textContent = $("r-formacao").value;
+  const xi = titularesDoEditor();
+  $("hub-campinho").innerHTML = xi.length ? campinho(xi, estado.rodadaInfo.clube_usuario) : "";
   const plano = planoEmUso();
   $("hub-escalacao-info").textContent =
     (plano ? `${plano.nome} · ` : "") +
@@ -178,6 +197,8 @@ function renderHub(info) {
   const linha = t && t.classificacao.find((c) => c.clube === info.clube_usuario);
   const comecou = linha && linha.jogos > 0;
   $("hub-tabela").textContent = comecou ? `${linha.posicao}º lugar` : "Pré-temporada";
+  const meu = [info.contexto_mandante, info.contexto_visitante].find((c) => c && c.clube === info.clube_usuario);
+  $("hub-tabela-forma").innerHTML = formaHub(meu && meu.forma);
   // o relatório do último jogo (v2.2): só depois do primeiro jogo da liga
   $("hub-ultimo").hidden = !comecou;
   $("hub-tabela-info").textContent = comecou
