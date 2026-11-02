@@ -6,6 +6,8 @@
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { reais } from "./tabelas.js";
 import { icone } from "./icones.js";
+import { estadioNoturno } from "./atmosfera.js";
+import { escudo } from "./identidade.js";
 import { carregarMarketing } from "./marketing.js";
 import { carregarCaixa } from "./caixa.js";
 import { carregarProximaRodada } from "./rodada.js";
@@ -45,11 +47,30 @@ function renderHubEstadio() {
     : info;
 }
 
-function cardFaixa(f, atual) {
+// uma fileira de 20 cadeiras, acesas na proporção do público
+function cadeiras(ocupacao, rotulo) {
+  const cheias = Math.round((Math.min(100, ocupacao) / 100) * 20);
+  return `<span class="es-cadeiras" role="img" aria-label="${rotulo}">${
+    Array.from({ length: 20 }, (_, i) => `<i${i < cheias ? ' class="cheia"' : ""}></i>`).join("")}</span>`;
+}
+
+// os destaques entre as faixas: quem rende mais por jogo e quem empurra mais
+function destaques(faixas) {
+  const melhor = (campo) => faixas.reduce((a, f) => (f[campo] > a[campo] ? f : a)).faixa;
+  return { bilheteria: melhor("bilheteria"), mando: melhor("mando_de_campo") };
+}
+
+function cardFaixa(f, atual, top) {
   const escolhida = f.faixa === atual;
+  const selos = [
+    top.bilheteria === f.faixa ? `<span class="es-selo es-selo-dinheiro">${icone("dinheiro")} mais renda</span>` : "",
+    top.mando === f.faixa ? `<span class="es-selo es-selo-forca">${icone("torcida")} mais força</span>` : "",
+  ].join("");
   return `<article class="mk-campanha es-faixa${escolhida ? " es-escolhida" : ""}">
       <header><strong>${f.nome}</strong>${escolhida ? ` <small class="es-atual">${icone("ok")} em uso</small>` : ""}</header>
       <p>${f.descricao}</p>
+      ${cadeiras(f.ocupacao, `${pct(f.ocupacao)} de ocupação`)}
+      ${selos ? `<p class="es-selos">${selos}</p>` : ""}
       <dl class="mk-ficha">
         <div><dt>Ingresso</dt><dd>${ingresso(f.preco)}</dd></div>
         <div><dt>Público</dt><dd>${milhar(f.publico)} <small>(${pct(f.ocupacao)})</small></dd></div>
@@ -70,13 +91,19 @@ function aviso(onde) {
   return `<p class="mk-msg${es.ruim ? " ruim" : ""}" role="status">${texto}</p>`;
 }
 
-function cardObra(o) {
+function cardObra(o, capacidade, maxObra) {
+  const total = capacidade + maxObra;
+  const barra = `<span class="es-capacidade" role="img" aria-label="${milhar(capacidade)} lugares hoje, ${milhar(capacidade + o.lugares)} com a obra">
+      <span class="es-cap-hoje" style="width:${((capacidade / total) * 100).toFixed(1)}%"></span><span class="es-cap-novo" style="width:${((o.lugares / total) * 100).toFixed(1)}%"></span>
+    </span>
+    <small class="es-cap-rotulo">${milhar(capacidade)} → <strong>${milhar(capacidade + o.lugares)}</strong> lugares · R$ ${milhar(Math.round(o.custo / o.lugares))} por lugar</small>`;
   const bloqueio = o.bloqueio
     ? `<small class="mk-bloqueio">${icone("cadeado")} ${o.bloqueio}</small>`
     : "";
   return `<article class="mk-campanha">
       <header><strong>${o.nome}</strong></header>
       <p>${o.descricao}</p>
+      ${barra}
       <dl class="mk-ficha">
         <div><dt>Lugares</dt><dd>+${milhar(o.lugares)}</dd></div>
         <div><dt>Prazo</dt><dd>${rodadas(o.rodadas)}</dd></div>
@@ -112,7 +139,7 @@ function blocoAmpliacao(d) {
       conta as rodadas jogadas, e uma obra que não acabar na temporada segue na
       próxima. Os lugares novos pagam manutenção a cada jogo em casa.</p>
     ${aviso("obra")}${andamento}${ampliados}
-    <div class="mk-campanhas">${d.obras.map(cardObra).join("")}</div>`;
+    <div class="mk-campanhas">${d.obras.map((o) => cardObra(o, d.capacidade, Math.max(...d.obras.map((x) => x.lugares)))).join("")}</div>`;
 }
 
 function renderEstadio() {
@@ -124,24 +151,31 @@ function renderEstadio() {
     ? `média de ${milhar(t.publico_medio)} por jogo`
     : "nenhum jogo em casa ainda";
 
+  const meu = estado.rodadaInfo && estado.rodadaInfo.clube_usuario;
+  const ocup = t.jogos_em_casa ? t.ocupacao_media / 100 : 0.5;
+  const fundo = meu ? estadioNoturno({ mandante: meu, visitante: meu, ocupacao: ocup, semente: "estadio" }) : "";
+  const numero = (rotulo, valor, detalhe) =>
+    `<div class="es-numero"><span>${rotulo}</span><strong>${valor}</strong><small>${detalhe}</small></div>`;
+
   $("r-estadio").innerHTML = `
-    <div class="tiles">
-      <div class="tile"><span class="tile-rotulo">Capacidade</span>
-        <span class="tile-valor">${milhar(d.capacidade)}</span>
-        <span class="tile-detalhe">lugares</span></div>
-      <div class="tile"><span class="tile-rotulo">Ocupação</span>
-        <span class="tile-valor">${t.jogos_em_casa ? pct(t.ocupacao_media) : "—"}</span>
-        <span class="tile-detalhe">${t.jogos_em_casa ? `${t.lotados} de ${t.jogos_em_casa} lotados` : temporada}</span></div>
-      <div class="tile"><span class="tile-rotulo">Bilheteria</span>
-        <span class="tile-valor">${reais(t.bilheteria)}</span>
-        <span class="tile-detalhe">${t.jogos_em_casa ? temporada : "na temporada"}</span></div>
+    <div class="cartaz es-capa">
+      <div class="cartaz-fundo">${fundo}</div>
+      <div class="es-capa-palco">
+        <p class="es-capa-titulo">${meu ? escudo(meu, 34) : ""}<span><small>A casa do</small><b>${meu || "clube"}</b></span></p>
+        <div class="es-numeros">
+          ${numero("Capacidade", milhar(d.capacidade), d.obra ? `+${milhar(d.obra.lugares)} em obra` : "lugares")}
+          ${numero("Ocupação", t.jogos_em_casa ? pct(t.ocupacao_media) : "—", t.jogos_em_casa ? `${t.lotados} de ${t.jogos_em_casa} lotados` : temporada)}
+          ${numero("Público médio", t.jogos_em_casa ? milhar(t.publico_medio) : "—", "por jogo em casa")}
+          ${numero("Bilheteria", reais(t.bilheteria), "na temporada")}
+        </div>
+      </div>
     </div>
     <p class="mk-intro">Parte da torcida vai a cada jogo em casa; clássicos e boa
       fase enchem mais, e quem não cabe fica de fora. O público é o que empurra
       o time: estádio cheio, mais força em casa. As estimativas são de um jogo
       comum, na fase atual.</p>
     ${aviso("faixa")}
-    <div class="mk-campanhas">${d.faixas.map((f) => cardFaixa(f, d.ingresso)).join("")}</div>
+    <div class="mk-campanhas">${d.faixas.map((f) => cardFaixa(f, d.ingresso, destaques(d.faixas))).join("")}</div>
     ${blocoAmpliacao(d)}`;
 
   $("r-estadio").querySelectorAll(".es-usar:not([disabled])").forEach((b) =>
