@@ -10,6 +10,7 @@ import { renderDashboard } from "./financas.js";
 import { escudo } from "./identidade.js";
 import { icone } from "./icones.js";
 import { abrirPreJogo } from "./prejogo.js";
+import { estadioNoturno } from "./atmosfera.js";
 import { jogarAoVivo } from "./aovivo.js";
 import { abrirPosJogo } from "./posjogo.js";
 import { posicaoDe } from "./posicoes.js";
@@ -92,23 +93,85 @@ function resumoEscalacao() {
     tatica.options[tatica.selectedIndex].text + (fora ? ` · ${fora} fora da rodada` : "");
 }
 
+// v2.4: o card do próximo jogo é um cartaz pequeno — o estádio do mandante
+// desenhado atrás (atmosfera.js), a posição e a forma dos dois, e o público
+// previsto. Os refletores só acendem quando o jogo muda: o "Continuar" passa
+// dia a dia e redesenha o hub, e o estádio não pode piscar a cada dia.
+let hubDesenhado = "";
+
+const RESULTADO = { V: "Vitória", E: "Empate", D: "Derrota" };
+
+function formaHub(jogos) {
+  if (!jogos || !jogos.length) return "";
+  return `<ol class="hub-forma" aria-label="Últimos jogos, do mais antigo para o mais recente">${jogos.map((j) => {
+    const texto = `${RESULTADO[j.resultado]} ${j.gols_pro}–${j.gols_contra} contra o ${j.adversario}` +
+      `${j.competicao === "copa" ? " (copa)" : ""}`;
+    return `<li class="pj-res pj-res-${j.resultado}" title="${texto}" aria-label="${texto}">${j.resultado}</li>`;
+  }).join("")}</ol>`;
+}
+
+function ladoHub(nome, ctx, meu) {
+  const pos = ctx && ctx.posicao
+    ? `<b>${ctx.posicao}º</b> · ${ctx.pontos} ${ctx.pontos === 1 ? "ponto" : "pontos"}`
+    : "estreia na temporada";
+  return `<div class="hub-lado${nome === meu ? " hub-eu" : ""}">
+      ${escudo(nome, 56)}
+      <span class="hub-lado-texto">
+        <b class="hub-lado-nome">${nome}</b>
+        <span class="hub-lado-pos">${pos}</span>
+        ${formaHub(ctx && ctx.forma)}
+      </span>
+    </div>`;
+}
+
+function publicoHub(e, mando) {
+  if (!e) return "";
+  const onde = mando === "casa" ? "Em casa" : `No estádio do ${e.clube}`;
+  const pct = Math.round(e.ocupacao * 100);
+  return `<p class="hub-publico">${icone("ingresso")} ${onde} · público previsto
+      <b>${e.publico_previsto.toLocaleString("pt-BR")}</b>
+      <span class="pj-ocupacao" role="img" aria-label="${pct}% da capacidade de ${e.capacidade.toLocaleString("pt-BR")}"><i style="width:${pct}%"></i></span> ${pct}%</p>`;
+}
+
 function renderHub(info) {
   const t = estado.temporada;
-  const loc = info.mando === "casa" ? "em casa" : "fora";
-  // a rodada já está na faixa: aqui vai onde o adversário está na tabela
-  // (no jogo da copa, a fase)
-  const rival = t && t.classificacao.find((c) => c.clube === info.adversario);
-  const onde = info.copa ? ` · Copa, ${info.copa.nome.toLowerCase()}`
-    : rival && rival.jogos > 0 ? ` · ${info.adversario} é o ${rival.posicao}º` : "";
-  $("hub-jogo").innerHTML = info.adversario
-    ? `<div class="hub-confronto">
-         <span>${escudo(info.clube_usuario, 36)}<b>${info.clube_usuario}</b></span>
-         <i>x</i>
-         <span>${escudo(info.adversario, 36)}<b>${info.adversario}</b></span>
-       </div>
-       <small>${loc[0].toUpperCase() + loc.slice(1)}${onde}</small>`
-    : `<p class="hub-folga">${info.clube_usuario} folga nesta rodada</p>
+  const cartao = $("hub-jogo").closest(".hub-jogo");
+  const fundo = $("hub-jogo-fundo");
+  if (!info.adversario) {
+    cartao.classList.remove("hub-com-estadio");
+    fundo.innerHTML = "";
+    hubDesenhado = "";
+    $("hub-jogo").innerHTML =
+      `<p class="hub-folga">${info.clube_usuario} folga nesta rodada</p>
        <small>Rodada ${info.rodada} de ${info.total_rodadas}</small>`;
+  } else {
+    const [mandante, visitante] = info.mando === "casa"
+      ? [info.clube_usuario, info.adversario] : [info.adversario, info.clube_usuario];
+    const ctx = (nome) => [info.contexto_mandante, info.contexto_visitante].find((c) => c && c.clube === nome);
+    const e = info.estadio;
+    const chave = `${estado.simId}|${info.rodada}|${info.copa ? info.copa.fase : "liga"}|${mandante}|${visitante}`;
+    if (chave !== hubDesenhado) {
+      fundo.innerHTML = estadioNoturno({
+        mandante, visitante,
+        ocupacao: e ? e.ocupacao : 0.5, classico: !!(e && e.classico), lotado: !!(e && e.lotado),
+        semente: `hub${info.rodada}`,
+      });
+      hubDesenhado = chave;
+    }
+    cartao.classList.add("hub-com-estadio");
+    const selos = e ? [
+      e.classico ? `<span class="chip chip-longe">Clássico</span>` : "",
+      e.lotado ? `<span class="chip chip-batida">Lotado</span>` : "",
+    ].join("") : "";
+    const comp = info.copa ? `Copa · ${info.copa.nome}` : `Rodada ${info.rodada}`;
+    $("hub-jogo").innerHTML =
+      `<div class="hub-cartaz">
+         ${ladoHub(mandante, ctx(mandante), info.clube_usuario)}
+         <span class="hub-meio"><small>${comp}</small><i>x</i>${selos ? `<span class="hub-selos">${selos}</span>` : ""}</span>
+         ${ladoHub(visitante, ctx(visitante), info.clube_usuario)}
+       </div>
+       ${publicoHub(e, info.mando)}`;
+  }
 
   resumoEscalacao();
 
