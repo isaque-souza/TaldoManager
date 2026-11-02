@@ -73,8 +73,8 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 /* tokens de cor do gráfico: azul = receita/caixa, vermelho = despesa
    (par validado para daltonismo e contraste nos dois modos) */
 .dashboard {
-  --viz-receita: #2a78d6;
-  --viz-despesa: #e34948;
+  --viz-receita: var(--gramado-claro);
+  --viz-despesa: var(--ao-vivo);
   --viz-grade: #e1e0d9;
   --viz-base: #c3c2b7;
   --viz-eixo: #898781;
@@ -82,15 +82,15 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 }
 @media (prefers-color-scheme: dark) {
   :root:where(:not([data-theme="light"])) .dashboard {
-    --viz-receita: #3987e5;
-    --viz-despesa: #e66767;
+    --viz-receita: var(--gramado-claro);
+    --viz-despesa: var(--ao-vivo);
     --viz-grade: #2c2c2a;
     --viz-base: #383835;
   }
 }
 :root[data-theme="dark"] .dashboard {
-  --viz-receita: #3987e5;
-  --viz-despesa: #e66767;
+  --viz-receita: var(--gramado-claro);
+  --viz-despesa: var(--ao-vivo);
   --viz-grade: #2c2c2a;
   --viz-base: #383835;
 }
@@ -2152,4 +2152,49 @@ a.ou-placar:hover, a.ou-placar:focus-visible { background: var(--linha-forte); c
   .nt-peca { width: 3.7rem; }
   .nt-camisa .camisa { width: 30px; height: 30px; }
   .nt-nome { font-size: .7rem; padding: 0 .2rem; }
+}
+
+/* ---------- finanças (v2.4) ---------- */
+/* o dinheiro que entra no verde do gramado, o que sai no vermelho do placar */
+/* (as cores --viz-receita/--viz-despesa vêm do bloco do tema, lá em cima) */
+.dashboard .tile { border-top: 2px solid var(--linha); }
+.dashboard .tile-valor { font-variant-numeric: tabular-nums; }
+.dashboard .tile-valor.negativo { color: var(--ao-vivo); }
+.viz.caixa .rodada-sobe { fill: var(--gramado-claro); opacity: .05; }
+.viz.caixa .rodada-desce { fill: var(--ao-vivo); opacity: .07; }
+.viz.caixa .projecao { fill: none; stroke: var(--refletor); stroke-width: 1.6; stroke-dasharray: 5 4; opacity: .8; }
+.viz.caixa .premio { stroke: var(--ambar); stroke-width: 2; stroke-dasharray: 2 3; }
+.viz.caixa .ponto-proj { fill: var(--refletor); }
+.viz.caixa .ponto-premio { fill: var(--ambar); stroke: var(--viz-superficie); stroke-width: 2; }
+.viz.caixa .rotulo-premio { fill: var(--ambar); font-size: .72rem; font-weight: 600; }
+.caixa-legenda { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin: .4rem 0 0; font-size: .78rem; color: var(--texto-2); }
+.caixa-legenda i { display: inline-block; width: .8rem; height: .55rem; margin-right: .3rem; border-radius: 2px; vertical-align: 0; }
+.cl-sobe { background: color-mix(in srgb, var(--gramado-claro) 40%, transparent); }
+.cl-desce { background: color-mix(in srgb, var(--ao-vivo) 45%, transparent); }
+.caixa-legenda .cl-proj { height: 0; border-top: 2px dashed var(--refletor); border-radius: 0; vertical-align: 3px; }
+
+.fluxo-resumo { display: flex; flex-direction: column; gap: .4rem; padding-bottom: .8rem; margin-bottom: .8rem; border-bottom: 1px solid var(--linha); }
+.pilha-linha { display: grid; grid-template-columns: 3.4rem 1fr auto; align-items: center; gap: .5rem; font-size: .82rem; }
+.pilha-linha strong { font-variant-numeric: tabular-nums; }
+.pilha-rotulo { color: var(--texto-2); }
+.pilha { display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: var(--superficie-2); }
+.pilha-parte { display: block; height: 100%; min-width: 2px; border-right: 1px solid var(--superficie); }
+.pilha.receita .p0 { background: var(--gramado-claro); }
+.pilha.receita .p1 { background: color-mix(in srgb, var(--gramado-claro) 70%, var(--superficie)); }
+.pilha.receita .p2 { background: color-mix(in srgb, var(--gramado-claro) 50%, var(--superficie)); }
+.pilha.receita .p3 { background: color-mix(in srgb, var(--gramado-claro) 35%, var(--superficie)); }
+.pilha.despesa .p0 { background: var(--ao-vivo); }
+.pilha.despesa .p1 { background: color-mix(in srgb, var(--ao-vivo) 70%, var(--superficie)); }
+.pilha.despesa .p2 { background: color-mix(in srgb, var(--ao-vivo) 50%, var(--superficie)); }
+.pilha.despesa .p3 { background: color-mix(in srgb, var(--ao-vivo) 35%, var(--superficie)); }
+.fluxo-saldo { margin: .1rem 0 0; font-size: .82rem; font-weight: 600; }
+.fluxo-saldo.negativo { color: var(--ao-vivo); }
+.fluxo-saldo.positivo { color: var(--gramado-claro); }
+
+.fatia { display: inline-flex; align-items: center; gap: .4rem; min-width: 6rem; }
+.fatia i { display: block; height: 6px; border-radius: 3px; background: var(--refletor); opacity: .75; }
+.fatia b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--texto-2); }
+.dashboard .tile-detalhe { white-space: normal; }
+@media (max-width: 600px) {
+  .viz.caixa .eixo, .viz.caixa .rotulo-fim, .viz.caixa .rotulo-premio { font-size: 1.25rem; }
 }
