@@ -18,10 +18,13 @@ export const decimal = (v, casas = 2) =>
 const COLUNAS_NOTA = ["nota", "nota_media", "melhor_nota", "pior_nota"];
 
 export function celula(valor, item, coluna) {
+  // a forma (v2.4): quadradinhos como no pré-jogo e no Início, do mais
+  // antigo para o mais recente
   if (Array.isArray(valor)) {
-    return `<span class="forma">${valor
-      .map((r) => `<span class="${r}">${r}</span>`)
-      .join(" ")}</span>`;
+    const nome = { V: "vitória", E: "empate", D: "derrota" };
+    return `<span class="forma" role="img" aria-label="Últimos jogos: ${valor.map((r) => nome[r] || r).join(", ")}">${valor
+      .map((r) => `<i class="fq fq-${r}">${r}</i>`)
+      .join("")}</span>`;
   }
   if (coluna === "clube" && item && item.id != null) {
     return comEscudo(valor, `<a class="clube" data-clube="${item.id}">${valor}</a>`);

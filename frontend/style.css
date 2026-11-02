@@ -39,7 +39,7 @@ a.clube, a.jogador, a.partida { cursor: pointer; }
 @media (max-width: 700px) { .colunas { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .cards { grid-template-columns: 1fr; } .saves select { min-width: 0; flex: 1; } }
 .grafico { overflow-x: auto; }
-.grafico svg { display: block; width: 100%; min-width: 620px; height: auto; }
+.grafico > svg { display: block; width: 100%; min-width: 620px; height: auto; }
 .grafico .grade { stroke: var(--pico-muted-border-color); stroke-width: 1; }
 .grafico .eixo { fill: var(--pico-muted-color); font-size: .72rem; }
 .grafico polyline { transition: opacity .12s, stroke-width .12s; }
@@ -2153,3 +2153,37 @@ a.ou-placar:hover, a.ou-placar:focus-visible { background: var(--linha-forte); c
   .nt-camisa .camisa { width: 30px; height: 30px; }
   .nt-nome { font-size: .7rem; padding: 0 .2rem; }
 }
+
+/* ---------- tabela (v2.4): zonas, forma em quadradinhos, evolução ---------- */
+tr.zona-titulo td:first-child { box-shadow: inset 4px 0 0 var(--refletor); }
+tr.zona-copa td:first-child { box-shadow: inset 4px 0 0 var(--gramado-claro); }
+tr.zona-copa + tr:not(.zona-copa) td { border-top: 1px dashed color-mix(in srgb, var(--gramado-claro) 45%, var(--linha)); }
+.zonas-legenda { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; margin: .6rem 0 0; font-size: .82rem; color: var(--texto-2); }
+.zonas-legenda span { display: inline-flex; align-items: center; gap: .45rem; }
+.zonas-legenda i { display: inline-block; width: 4px; height: 1rem; border-radius: 1px; }
+.zl-titulo { background: var(--refletor); }
+.zl-copa { background: var(--gramado-claro); }
+.forma { display: inline-flex; gap: 3px; vertical-align: middle; }
+.forma .fq {
+  display: grid; place-items: center; width: 1.25rem; height: 1.25rem; border-radius: 2px; font-style: normal;
+  font-family: var(--fonte-tarja); font-weight: 800; font-size: .72rem; color: #fff; line-height: 1;
+}
+.fq-V { background: var(--gramado); }
+.fq-E { background: var(--superficie-2); box-shadow: inset 0 0 0 1px var(--linha-forte); }
+.fq-D { background: var(--ao-vivo); }
+
+.grafico-evolucao { padding: .8rem 1rem; background: var(--superficie); border: 1px solid var(--linha); border-radius: 6px; }
+.grafico-dica { margin: 0 0 .5rem; font-size: .82rem; color: var(--texto-2); }
+.grafico-evolucao polyline { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.grafico-evolucao polyline.outro { stroke: #4a5b70; stroke-width: 1.2; opacity: .7; }
+.grafico-evolucao polyline.eu { stroke: var(--refletor); stroke-width: 3.2; }
+.grafico-evolucao.tem-selecao polyline.outro:not(.sel) { opacity: .25; }
+.grafico-evolucao.tem-selecao polyline.eu:not(.sel) { opacity: .55; }
+.grafico-evolucao polyline.sel { stroke: var(--cor); stroke-width: 3; opacity: 1; }
+.grafico-evolucao polyline.eu.sel { stroke: var(--refletor); }
+.grafico-evolucao text.fim { fill: #6d7f93; font-family: var(--fonte-tarja); font-weight: 700; font-size: 10px; }
+.grafico-evolucao text.fim.lider { fill: var(--texto); }
+.grafico-evolucao text.fim.eu { fill: var(--refletor); font-size: 11px; }
+.grafico-evolucao text.fim.sel { fill: #fff; }
+.grafico-legenda .icone { width: 1em; height: 1em; flex: none; }
+.grafico-legenda button.eu { border-color: color-mix(in srgb, var(--refletor) 55%, var(--linha)); }
