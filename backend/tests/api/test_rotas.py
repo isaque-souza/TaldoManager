@@ -244,6 +244,11 @@ def test_fluxo_rodada_a_rodada():
     # as duas ligas jogam na mesma rodada (v1.6)
     assert len(corpo["confrontos"]) == 20
     assert sum(c["liga"] == "premier" for c in corpo["confrontos"]) == 10
+    # v2.4: a galeria de formações, uma por formação, com 10 vagas de linha
+    info = corpo["formacoes_info"]
+    assert [f["formacao"] for f in info] == corpo["formacoes"]
+    assert all(len(f["vagas"]) == 10 for f in info)
+    assert len(info) >= 25
 
     jogou = client.post(f"/simulacoes/{sid}/rodadas", json={"tatica": "defensivo"})
     assert jogou.status_code == 200

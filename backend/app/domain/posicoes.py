@@ -141,6 +141,30 @@ DESENHO = {
         _v("Volante", 50, 34), _v("Ponta", 10, 56, "ME"), _v("Meia central", 32, 50),
         _v("Meia central", 68, 50), _v("Ponta", 90, 56, "MD"),
     ) + _UM_CA,
+    # v2.4: mais variações com linha de 4
+    "4-1-4-1": _LINHA_4 + (
+        _v("Volante", 50, 34), _v("Ponta", 10, 56, "ME"), _v("Meia central", 34, 52),
+        _v("Meia central", 66, 52), _v("Ponta", 90, 56, "MD"),
+    ) + _UM_CA,
+    "4-2-2-2": _LINHA_4 + (   # o quadrado: dois volantes e dois meias abertos
+        _v("Volante", 36, 38), _v("Volante", 64, 38),
+        _v("Ponta", 22, 62, "ME"), _v("Ponta", 78, 62, "MD"),
+    ) + _DOIS_CA,
+    "4-3-1-2": _LINHA_4 + (
+        _v("Volante", 50, 34), _v("Meia central", 28, 46), _v("Meia central", 72, 46),
+        _v("Meia-atacante", 50, 62),
+    ) + _DOIS_CA,
+    "4-2-1-3": _LINHA_4 + (
+        _v("Volante", 36, 38), _v("Volante", 64, 38), _v("Meia-atacante", 50, 58),
+    ) + (_PONTAS[0], _UM_CA[0], _PONTAS[1]),
+    "4-3-2-1": _LINHA_4 + (   # a árvore de Natal
+        _v("Volante", 50, 34), _v("Meia central", 26, 46), _v("Meia central", 74, 46),
+        _v("Meia-atacante", 34, 66), _v("Segundo atacante", 66, 68),
+    ) + _UM_CA,
+    "4-1-3-2": _LINHA_4 + (
+        _v("Volante", 50, 36), _v("Ponta", 14, 56, "ME"), _v("Meia-atacante", 50, 56),
+        _v("Ponta", 86, 56, "MD"),
+    ) + _DOIS_CA,
     "4-2-4": _LINHA_4 + (
         _v("Volante", 36, 40), _v("Volante", 64, 40),
         _v("Ponta", 12, 74, "PE"), _DOIS_CA[0], _DOIS_CA[1], _v("Ponta", 88, 74, "PD"),
@@ -154,12 +178,47 @@ DESENHO = {
         _v("Meia central", 64, 44), _v("Lateral", 92, 48, "ALA"),
         _v("Ponta", 16, 76, "PE"), _UM_CA[0], _v("Ponta", 84, 76, "PD"),
     ),
+    # v2.4: mais variações com linha de 3
+    "3-4-1-2": _LINHA_3 + (
+        _v("Lateral", 8, 48, "ALA"), _v("Meia central", 36, 44),
+        _v("Meia central", 64, 44), _v("Lateral", 92, 48, "ALA"),
+        _v("Meia-atacante", 50, 64),
+    ) + _DOIS_CA,
+    "3-4-2-1": _LINHA_3 + (
+        _v("Lateral", 8, 48, "ALA"), _v("Meia central", 36, 44),
+        _v("Meia central", 64, 44), _v("Lateral", 92, 48, "ALA"),
+        _v("Meia-atacante", 34, 68), _v("Segundo atacante", 66, 70),
+    ) + _UM_CA,
+    "3-1-4-2": _LINHA_3 + (
+        _v("Volante", 50, 32), _v("Lateral", 8, 52, "ALA"), _v("Meia central", 34, 50),
+        _v("Meia central", 66, 50), _v("Lateral", 92, 52, "ALA"),
+    ) + _DOIS_CA,
+    "3-5-1-1": _LINHA_3 + (
+        _v("Lateral", 8, 46, "ALA"), _v("Volante", 50, 34), _v("Meia central", 32, 50),
+        _v("Meia central", 68, 50), _v("Lateral", 92, 46, "ALA"),
+        _v("Segundo atacante", 50, 70),
+    ) + (_v("Centroavante", 50, 87),),
+    "3-1-2-1-3": _LINHA_3 + (   # losango no meio e três na frente
+        _v("Volante", 50, 32), _v("Meia central", 30, 46), _v("Meia central", 70, 46),
+        _v("Meia-atacante", 50, 60),
+    ) + (_v("Ponta", 16, 78, "PE"), _UM_CA[0], _v("Ponta", 84, 78, "PD")),
     "5-3-2": _LINHA_5 + (
         _v("Volante", 50, 38), _v("Meia central", 30, 52), _v("Meia central", 70, 52),
     ) + _DOIS_CA,
     "5-4-1": _LINHA_5 + (
         _v("Ponta", 12, 56, "ME"), _v("Meia central", 36, 48),
         _v("Meia central", 64, 48), _v("Ponta", 88, 56, "MD"),
+    ) + _UM_CA,
+    # v2.4: mais variações com linha de 5
+    "5-2-3": _LINHA_5 + (
+        _v("Meia central", 36, 46), _v("Meia central", 64, 46),
+    ) + (_v("Ponta", 16, 76, "PE"), _UM_CA[0], _v("Ponta", 84, 76, "PD")),
+    "5-2-1-2": _LINHA_5 + (
+        _v("Meia central", 34, 44), _v("Meia central", 66, 44), _v("Meia-atacante", 50, 62),
+    ) + _DOIS_CA,
+    "5-2-2-1": _LINHA_5 + (
+        _v("Meia central", 34, 44), _v("Meia central", 66, 44),
+        _v("Meia-atacante", 34, 66), _v("Segundo atacante", 66, 68),
     ) + _UM_CA,
 }
 

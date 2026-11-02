@@ -10,6 +10,7 @@ import { renderDashboard } from "./financas.js";
 import { escudo } from "./identidade.js";
 import { icone } from "./icones.js";
 import { abrirPreJogo } from "./prejogo.js";
+import { opcoesFormacao, renderGaleria } from "./formacoes.js";
 import { jogarAoVivo } from "./aovivo.js";
 import { abrirPosJogo } from "./posjogo.js";
 import { posicaoDe } from "./posicoes.js";
@@ -167,13 +168,13 @@ export function renderRodadaAntes() {
       `${info.clube_usuario} folga nesta rodada`;
   }
 
-  $("r-formacao").innerHTML = info.formacoes
-    .map((f) => `<option${f === info.formacao ? " selected" : ""}>${f}</option>`)
-    .join("");
+  $("r-formacao").innerHTML = opcoesFormacao(info.formacoes, info.formacao);
   $("r-tatica").value = info.tatica || "equilibrado";
   marcarSalvo("");
 
   renderEditor();
+  $("ed-ver-formacoes").hidden = !(info.formacoes_info || []).length;
+  if (!$("ed-galeria").hidden) renderGaleria();
   carregarPlanos().then(resumoEscalacao);   // o card do hub diz o plano
 
   // com a partida rolando o servidor recusa mudanças na escalação (409):
