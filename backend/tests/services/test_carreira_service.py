@@ -1,5 +1,6 @@
 import pytest
 
+from app.domain import mercado
 from app.db.conexao import conectar
 from app.services import carreira_service, simulacao_service, temporada_service
 from app.repositories import transferencia_repository as transferencia_repo
@@ -345,7 +346,7 @@ def test_elencos_continuam_validos_depois_de_varias_viradas(monkeypatch):
         # a Liga Taldo e a B, que o save ganha na primeira virada (v2.5)
         assert len(elencos) == 40
         for e in elencos:
-            assert 16 <= e["n"] <= 25, e["nome"]
+            assert 16 <= e["n"] <= mercado.ELENCO_ALVO_CPU, e["nome"]
             assert e["goleiros"] >= 2, e["nome"]
         while not temporada_service.avancar(sid)["concluida"]:
             pass

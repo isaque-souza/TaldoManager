@@ -46,11 +46,11 @@ OVERALL_MIN = 40
 
 def quantos_sobem(clube, do_tecnico=False):
     """Completa o elenco até TAMANHO_ALVO, com pelo menos um por temporada,
-    sem passar de ELENCO_MAX_CPU. O clube do técnico (v2.0) promove os da base
+    sem passar de ELENCO_ALVO_CPU. O clube do técnico (v2.0) promove os da base
     ele mesmo: só ganha jovens para não ficar abaixo de ELENCO_MIN."""
     if do_tecnico:
         return max(0, mercado.ELENCO_MIN - len(clube.jogadores))
-    vagas = mercado.ELENCO_MAX_CPU - len(clube.jogadores)
+    vagas = mercado.ELENCO_ALVO_CPU - len(clube.jogadores)
     return max(0, min(vagas, max(MINIMO_POR_TEMPORADA,
                                  TAMANHO_ALVO - len(clube.jogadores))))
 

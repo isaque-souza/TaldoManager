@@ -121,8 +121,8 @@ class _Contexto:
         """Faz a transferência e regrava tudo o que mudou. `termos` e
         `papel`: o contrato combinado com o jogador (v1.7)."""
 
-        # o elenco do técnico vai até ELENCO_MAX; o da CPU, ELENCO_MAX_CPU
-        maximo = mercado.ELENCO_MAX if comprador is self.alvo else mercado.ELENCO_MAX_CPU
+        # o elenco do técnico vai até ELENCO_MAX; o da CPU, ELENCO_ALVO_CPU
+        maximo = mercado.ELENCO_MAX if comprador is self.alvo else mercado.ELENCO_ALVO_CPU
         mercado.transferir(jogador, vendedor, comprador, preco, termos, maximo)
         if papel:
             jogador.papel = papel

@@ -143,7 +143,7 @@ def avaliar(jogador, cedente, tomador, rodada, duracao, total_rodadas, parte, ta
 
 
 def emprestar(jogador, cedente, tomador, volta_antes_da, parte, taxa, opcao=None,
-              emprestimo_id=None, pelo_tecnico=False, maximo=mercado.ELENCO_MAX_CPU):
+              emprestimo_id=None, pelo_tecnico=False, maximo=mercado.ELENCO_ALVO_CPU):
     """Leva o jogador do `cedente` ao `tomador` até `volta_antes_da` e lança
     a taxa nos dois caixas. Levanta `EmprestimoInvalido` se alguma regra
     impedir. `maximo`: o tamanho do elenco do tomador (ELENCO_MAX quando é o

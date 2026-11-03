@@ -28,10 +28,12 @@ JANELAS = (1, 20)
 CONTRATO_PADRAO_ANOS = 3
 
 ELENCO_MIN = 16
-# o elenco do técnico vai até 52, como no FIFA (v2.6); a CPU segue com 25
-# (com mais, os clubes dela acumulariam livres e jovens a cada temporada)
+# a regra: elenco de até 52, como no FIFA (v2.6), para todos. A CPU, por
+# decisão própria, monta até ELENCO_ALVO_CPU (como a IA do FIFA): com 52,
+# os clubes dela acumulariam livres e jovens a cada temporada, a folha
+# explodiria e cada rodada ficaria mais lenta
 ELENCO_MAX = 52
-ELENCO_MAX_CPU = 25
+ELENCO_ALVO_CPU = 30
 GOLEIROS_MIN = 2
 
 
@@ -60,12 +62,14 @@ def motivo_saida_bloqueada(clube, jogador):
     return None
 
 
-def motivo_entrada_bloqueada(clube, preco, maximo=ELENCO_MAX_CPU):
+def motivo_entrada_bloqueada(clube, preco, maximo=ELENCO_ALVO_CPU):
     """Por que `clube` não pode contratar por `preco` (None = pode).
     `maximo`: o tamanho do elenco — ELENCO_MAX quando quem contrata é o
-    técnico."""
+    técnico; o padrão é o que a CPU quer (ELENCO_ALVO_CPU)."""
 
     if len(clube.jogadores) >= maximo:
+        if maximo < ELENCO_MAX:
+            return f"{clube.nome} não quer mais jogadores: o elenco já tem {len(clube.jogadores)}"
         return f"{clube.nome} já tem {maximo} jogadores"
     if clube.dinheiro < preco:
         return f"{clube.nome} não tem caixa para pagar {formato.reais(preco)}"
@@ -83,7 +87,7 @@ def tirar_do_elenco(clube, jogador):
     clube.xi_preferido.discard(jogador)
 
 
-def transferir(jogador, vendedor, comprador, preco, contrato=None, maximo=ELENCO_MAX_CPU):
+def transferir(jogador, vendedor, comprador, preco, contrato=None, maximo=ELENCO_ALVO_CPU):
     """Move `jogador` de `vendedor` para `comprador` pagando `preco`.
     `contrato`: (anos, salário, multa) combinados com o jogador (v1.7); sem
     ele, o padrão. Levanta `TransferenciaInvalida` se alguma regra impedir."""
@@ -125,7 +129,7 @@ def luvas(jogador):
     return _arredondar(jogador.valor_mercado() * FATOR_LUVAS)
 
 
-def contratar_livre(jogador, livres, clube, contrato=None, maximo=ELENCO_MAX_CPU):
+def contratar_livre(jogador, livres, clube, contrato=None, maximo=ELENCO_ALVO_CPU):
     """Tira `jogador` da lista de `livres` e o põe no `clube`, que paga as
     luvas. `contrato`: (anos, salário, multa) combinados (v1.7); sem ele, o
     padrão. Devolve o valor das luvas. Levanta `TransferenciaInvalida` se

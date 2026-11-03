@@ -27,7 +27,8 @@ def test_quantos_sobem_completa_ate_23_com_minimo_de_1():
     assert quantos_sobem(_clube(23)) == 1      # sempre revela alguém
 
     cheio = _clube(23)
-    cheio.jogadores += cheio.jogadores[:2]     # 25 = ELENCO_MAX
+    cheio.jogadores += cheio.jogadores[:7]     # 30 = o que a CPU quer (v2.6)
+    assert len(cheio.jogadores) == mercado.ELENCO_ALVO_CPU
     assert quantos_sobem(cheio) == 0
 
 
@@ -106,4 +107,4 @@ def test_subir_jovens_em_todos_os_clubes():
     assert len(movs) == 7 + 19              # 7 no desfalcado, 1 nos outros
     nomes = [j.nome for c in camp.clubes for j in c.jogadores]
     assert len(nomes) == len(set(nomes))    # nada repetido na liga
-    assert len(camp.clubes[0].jogadores) <= mercado.ELENCO_MAX_CPU
+    assert len(camp.clubes[0].jogadores) <= mercado.ELENCO_ALVO_CPU
