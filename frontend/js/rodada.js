@@ -2,7 +2,7 @@
 
 import { $, api, esconderTudo, estado, limparAviso, navegarPara, ocupado, pedir, pilhaVoltar } from "./nucleo.js";
 import { ligarLinks, reais, tabela } from "./tabelas.js";
-import { COLUNAS, mostrarTemporada } from "./temporada.js";
+import { classeClassificacao, COLUNAS, legendaZonas, mostrarTemporada } from "./temporada.js";
 import { carregarMercado } from "./mercado.js";
 import { carregarLista } from "./saves.js";
 import { carregarPlanos, gravarEConferir, planoEmUso, posicionamentoDoEditor, renderEditor, titularesDoEditor, xiDoEditor } from "./editor.js";
@@ -399,8 +399,8 @@ export function renderRodadaDepois() {
   $("r-classificacao").innerHTML = tabela(
     res.classificacao,
     COLUNAS.classificacao,
-    (c) => (c.clube === meu ? "eu" : "")
-  );
+    (c) => classeClassificacao(c, meu)
+  ) + legendaZonas();
   ligarLinks($("r-classificacao"));
 
   $("r-proxima").innerHTML = res.concluida
