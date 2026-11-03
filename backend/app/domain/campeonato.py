@@ -5,11 +5,21 @@ from . import emprestimo, estadio, fama, financas, papeis, torcida
 from .partida import Partida
 
 
+def semente_do_calendario(seed, temporada):
+    """A semente do sorteio da ordem dos jogos de uma temporada (v3). Com
+    seed, reproduzível e diferente a cada temporada; sem, um sorteio novo
+    (fica no snapshot). Usa um gerador próprio: não consome a sequência
+    aleatória das partidas."""
+    gerador = random.Random(f"calendario:{seed}:{temporada}") if seed is not None else random.Random()
+    return gerador.getrandbits(32)
+
+
 class Campeonato:
 
-    # versão do gerador de calendário (2: mando alternado). Vai no
-    # snapshot: um save em andamento segue com o calendário em que começou
-    CALENDARIO_ATUAL = 2
+    # versão do gerador de calendário (2: mando alternado; 3: a ordem dos
+    # clubes é sorteada por temporada). Vai no snapshot: um save em
+    # andamento segue com o calendário em que começou
+    CALENDARIO_ATUAL = 3
 
     def __init__(self, nome, clubes):
         self.nome = nome
@@ -30,6 +40,9 @@ class Campeonato:
         # as regras de dinheiro do save (v2.5; ver financas.ECONOMIA_ATUAL)
         self.economia = financas.ECONOMIA_ATUAL
         self.versao_calendario = self.CALENDARIO_ATUAL
+        # a semente do sorteio da ordem (v3); None = a ordem da seed, até a
+        # temporada sortear a dela (`sortear_calendario`)
+        self.semente_calendario = None
         self.calendario = self.gerar_calendario()
         self.recordes = {
             "maior_goleada": {
@@ -464,6 +477,13 @@ class Campeonato:
             f"({self.recordes['mais_gols_jogo']['valor']})"
         )
     
+    def sortear_calendario(self, semente):
+        """Sorteia a ordem dos jogos da temporada (v3). A semente é um
+        número (vai no snapshot, que regenera o calendário ao carregar)."""
+        self.versao_calendario = self.CALENDARIO_ATUAL
+        self.semente_calendario = semente
+        self.calendario = self.gerar_calendario()
+
     def gerar_calendario(self, versao=None):
         """O turno e returno de cada liga (v1.6), lado a lado: a rodada N
         tem os jogos da rodada N de todas as ligas (elas têm o mesmo número
@@ -471,10 +491,22 @@ class Campeonato:
         (até 19 jogos seguidos em casa); fica só para os saves em andamento
         criados com ele."""
 
-        gerar = (self._calendario_da_liga_v1
-                 if (versao or self.CALENDARIO_ATUAL) == 1
-                 else self._calendario_da_liga)
-        por_liga = [gerar(self.clubes_da_liga(liga)) for liga in self.ligas]
+        versao = versao or self.CALENDARIO_ATUAL
+        if versao == 1:
+            por_liga = [self._calendario_da_liga_v1(self.clubes_da_liga(liga))
+                        for liga in self.ligas]
+        else:
+            # v3: a ordem dos clubes de cada liga é embaralhada antes do
+            # círculo, com um gerador próprio — não toca na sequência
+            # aleatória das partidas. Sem semente (v2), a ordem da seed.
+            sorteia = versao >= 3 and self.semente_calendario is not None
+            por_liga = []
+            for liga in self.ligas:
+                clubes = self.clubes_da_liga(liga)
+                if sorteia:
+                    clubes = clubes[:]
+                    random.Random(f"calendario:{self.semente_calendario}:{liga}").shuffle(clubes)
+                por_liga.append(self._calendario_da_liga(clubes))
         if not por_liga:
             return []
         return [

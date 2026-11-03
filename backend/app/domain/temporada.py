@@ -91,6 +91,7 @@ def snapshot_estado(campeonato):
         "rodada": campeonato.rodada,
         # versão do calendário: ele é regenerado ao carregar
         "calendario": campeonato.versao_calendario,
+        "semente_calendario": campeonato.semente_calendario,
         "rng": [rng[0], list(rng[1]), rng[2]],
         "clubes": clubes,
         # quem está sem clube (v1.6): também muda (contratações)
@@ -119,8 +120,10 @@ def restaurar_estado(campeonato, blob):
     # saves de antes do mando alternado (sem a chave) seguem com o antigo até
     # o fim da temporada: trocar no meio mudaria os jogos que faltam
     versao = blob.get("calendario", 1)
-    if versao != campeonato.versao_calendario:
+    semente = blob.get("semente_calendario")
+    if versao != campeonato.versao_calendario or semente != campeonato.semente_calendario:
         campeonato.versao_calendario = versao
+        campeonato.semente_calendario = semente
         campeonato.calendario = campeonato.gerar_calendario(versao)
 
     versao, estado, gauss_next = blob["rng"]
