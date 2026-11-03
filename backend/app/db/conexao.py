@@ -1,5 +1,6 @@
 """Conexão com o SQLite e criação do schema."""
 
+import json
 import re
 import sqlite3
 from pathlib import Path
@@ -220,3 +221,39 @@ def _migrar(conn):
         "UPDATE simulacao SET atualizada_em = criada_em "
         "WHERE atualizada_em IS NULL"
     )
+    _renomear_jogadores(conn)
+
+
+# user_version do banco: 1 = nomes da v2.5.1 já trocados
+_VERSAO_NOMES = 1
+
+
+def _renomear_jogadores(conn):
+    """v2.5.1: "Gabriel (Corinthians)" virou "Gabriel Girotto" nas seeds.
+    Os saves guardam o jogador pelo nome — em colunas e dentro dos JSONs
+    (estado, XI, planos, mensagens) —, então troca o nome antigo pelo novo
+    em todo texto do banco, uma vez só. O nome antigo, com o clube ou o
+    país entre parênteses, não aparece em outro lugar."""
+    if conn.execute("PRAGMA user_version").fetchone()[0] >= _VERSAO_NOMES:
+        return
+    from app.domain.renomeados import RENOMEADOS
+    trocas = []
+    for antigo, novo in RENOMEADOS.items():
+        trocas.append((antigo, novo))
+        # o JSON gravado com ensure_ascii escapa os acentos: "Mois\u00e9s"
+        escapado = json.dumps(antigo)[1:-1]
+        if escapado != antigo:
+            trocas.append((escapado, json.dumps(novo)[1:-1]))
+    tabelas = [r["name"] for r in conn.execute(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'")]
+    for tabela in tabelas:
+        colunas = [r["name"] for r in conn.execute(f"PRAGMA table_info({tabela})")
+                   if "TEXT" in (r["type"] or "").upper()]
+        for coluna in colunas:
+            for antigo, novo in trocas:
+                conn.execute(
+                    f"UPDATE {tabela} SET {coluna} = REPLACE({coluna}, ?, ?)"
+                    f" WHERE instr({coluna}, ?) > 0",
+                    (antigo, novo, antigo),
+                )
+    conn.execute(f"PRAGMA user_version = {_VERSAO_NOMES}")

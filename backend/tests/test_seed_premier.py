@@ -69,7 +69,8 @@ def test_ids_e_nomes_nao_colidem_com_a_taldo(seed):
     assert len(nomes) == len(set(nomes))
     taldo = {j["nome"] for j in _ler("jogadores.json")} | {j["nome"] for j in _ler("livres.json")}
     assert not set(nomes) & taldo
-    assert "João Gomes (BRA)" in nomes          # o real ganhou a nacionalidade
+    assert "João Victor Gomes" in nomes         # o real ganhou o nome completo
+    assert not [n for n in nomes if "(" in n]
 
 
 def test_estrelas_entram_com_os_valores_do_arquivo(seed):

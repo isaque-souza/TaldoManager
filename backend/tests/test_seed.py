@@ -101,3 +101,19 @@ def test_livres_da_seed():
     assert not nomes_liga & {j.nome for j in livres}
     assert sum(1 for j in livres if j.posicao == "Goleiro") >= 3
     assert all(j.contrato_anos == 0 for j in livres)
+
+
+def test_nenhum_nome_de_seed_tem_parenteses():
+    """v2.5.1: quem repete um nome ganha o sobrenome de verdade, não o clube
+    ou o país entre parênteses ("Gabriel Girotto", não "Gabriel
+    (Corinthians)"). E os nomes seguem únicos entre todas as seeds."""
+    import json
+    from pathlib import Path
+
+    seeds = Path(__file__).resolve().parent.parent / "data" / "seeds"
+    nomes = []
+    for arquivo in sorted(seeds.rglob("*.json")):
+        if arquivo.name in ("jogadores.json", "livres.json"):
+            nomes += [j["nome"] for j in json.loads(arquivo.read_text(encoding="utf-8"))]
+    assert not [n for n in nomes if "(" in n]
+    assert len(nomes) == len(set(nomes))

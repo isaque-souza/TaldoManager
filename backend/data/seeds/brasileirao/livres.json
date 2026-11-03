@@ -1,6 +1,6 @@
 [
     {
-        "nome": "Thiago Santos (Palmeiras)",
+        "nome": "Thiago dos Santos",
         "idade": 27,
         "posicao": "Meio-Campo",
         "overall": 78,
@@ -14,7 +14,7 @@
         "nacionalidade": "BRA"
     },
     {
-        "nome": "Luan (Palmeiras)",
+        "nome": "Luan Garcia",
         "idade": 24,
         "posicao": "Defesa",
         "overall": 77,
@@ -25,7 +25,7 @@
         "nacionalidade": "BRA"
     },
     {
-        "nome": "Willian (Palmeiras)",
+        "nome": "Willian Siqueira",
         "idade": 30,
         "posicao": "Atacante",
         "overall": 77,
@@ -60,7 +60,7 @@
         "nacionalidade": "ARG"
     },
     {
-        "nome": "Gabriel (Flamengo)",
+        "nome": "Gabriel Santana",
         "idade": 27,
         "posicao": "Atacante",
         "overall": 76,
@@ -229,7 +229,7 @@
         "nacionalidade": "BRA"
     },
     {
-        "nome": "Lucas Silva (Cruzeiro)",
+        "nome": "Lucas Silva Borges",
         "idade": 24,
         "posicao": "Meio-Campo",
         "overall": 74,
@@ -262,7 +262,7 @@
         "nacionalidade": "BRA"
     },
     {
-        "nome": "Thiago Santos (Flamengo)",
+        "nome": "Thiago Nascimento",
         "idade": 22,
         "posicao": "Meio-Campo",
         "overall": 74,
@@ -334,7 +334,7 @@
         "nacionalidade": "BRA"
     },
     {
-        "nome": "João Paulo (Santos)",
+        "nome": "João Paulo Martins",
         "idade": 21,
         "posicao": "Goleiro",
         "overall": 73,
@@ -393,7 +393,7 @@
         "nacionalidade": "BRA"
     },
     {
-        "nome": "Moisés (Chapecoense)",
+        "nome": "Moisés Wolschick",
         "idade": 22,
         "posicao": "Meio-Campo",
         "overall": 73,
@@ -428,7 +428,7 @@
         "nacionalidade": "BRA"
     },
     {
-        "nome": "Renato (Fluminense)",
+        "nome": "José Renato",
         "idade": 27,
         "posicao": "Defesa",
         "overall": 73,
@@ -540,7 +540,7 @@
         "nacionalidade": "BRA"
     },
     {
-        "nome": "Felipe (Fluminense)",
+        "nome": "Felipe Sampaio",
         "idade": 24,
         "posicao": "Meio-Campo",
         "overall": 72,
@@ -564,7 +564,7 @@
         "nacionalidade": "BRA"
     },
     {
-        "nome": "Gilberto (Vasco)",
+        "nome": "Gilberto Moraes",
         "idade": 24,
         "posicao": "Defesa",
         "overall": 72,

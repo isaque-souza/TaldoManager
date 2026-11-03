@@ -18,6 +18,7 @@ import { icone } from "./icones.js";
 import { carregarProximaRodada, salvarEscalacaoAgora, salvarJa } from "./rodada.js";
 import { naTela, podemTrocar, posicaoDe, SETOR, sigla } from "./posicoes.js";
 import { linhaAtributos } from "./atributos.js";
+import { nomesCurtos } from "./nomes.js";
 
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
 
@@ -58,14 +59,12 @@ export function renderEditor() {
   desenhar();
 }
 
-function sobrenome(nome) {
-  const partes = nome.split(" ");
-  return partes[partes.length - 1];
-}
-
 function energia(v) {
   return `<span class="ed-energia ${v <= 30 ? "baixa" : v <= 60 ? "media" : ""}" title="Energia ${v}"><i style="width:${v}%"></i></span>`;
 }
+
+// a forma curta sem confundir ninguém do elenco (titulares e banco)
+const curtoDoElenco = (nome) => nomesCurtos([...ed.titulares, ...ed.banco].map((j) => j.nome))(nome);
 
 const doLado = (lado, nome) => (lado === "campo" ? ed.titulares : ed.banco).find((j) => j.nome === nome);
 
@@ -102,7 +101,7 @@ function desenhar() {
         data-lado="campo" data-nome="${j.nome}" draggable="true" title="${dica}"
         style="left:${left}%;top:${top}%">
       <span class="peca-camisa">${camisa(clube, { numero: j.numero, tamanho: 40 })}<span class="peca-sinais">${sinais}</span></span>
-      <span class="ed-nome">${sobrenome(j.nome)}</span>
+      <span class="ed-nome">${curtoDoElenco(j.nome)}</span>
       <span class="ed-info"><small class="ed-vaga">${j.rotulo || sigla(vaga)}</small><b class="${fora ? "perde" : ""}">${ovr}</b>${energia(j.energia)}</span>
       ${fora ? `<small class="ed-imp">${sigla(posicaoDe(j))} improvisado</small>` : ""}
     </button>`;
@@ -206,7 +205,7 @@ function arrastarComoBoneco(e, lado, nome) {
   boneco.className = "ed-boneco";
   boneco.innerHTML =
     `${camisa(estado.rodadaInfo.clube_usuario, { numero: j.numero, tamanho: 52 })}` +
-    `<span class="ed-nome">${sobrenome(j.nome)}</span><b>${j.overall}</b>`;
+    `<span class="ed-nome">${curtoDoElenco(j.nome)}</span><b>${j.overall}</b>`;
   document.body.appendChild(boneco);   // precisa estar na página para virar imagem
   e.dataTransfer.setDragImage(boneco, boneco.offsetWidth / 2, 26);
   setTimeout(() => boneco.remove(), 0);
