@@ -374,6 +374,21 @@ class FaseDoJogo(BaseModel):
     nome: str                              # "Oitavas de final"
 
 
+class VagaDaFormacao(BaseModel):
+    funcao: str
+    x: float
+    y: float
+    rotulo: str
+
+
+class FormacaoInfo(BaseModel):
+    """v2.4: uma formação na galeria da escalação."""
+    formacao: str
+    ataque: float     # peso no motor: > 1 cria mais
+    defesa: float     # > 1 concede menos
+    vagas: list[VagaDaFormacao]   # as 10 de linha (o goleiro é sempre o mesmo)
+
+
 class ProximaRodada(BaseModel):
     concluida: bool
     rodada: int | None
@@ -385,6 +400,7 @@ class ProximaRodada(BaseModel):
     formacao: str | None
     xi_preferido: list[str] | None
     formacoes: list[str]
+    formacoes_info: list[FormacaoInfo] = []   # v2.4
     confrontos: list[ConfrontoRodada]
     elenco: list[ElencoSituacao]
     transmissao_ativa: bool = False   # v1.2: a partida já começou

@@ -298,6 +298,8 @@
 
         <div class="controles ed-controles">
           <label>Formação <select id="r-formacao"></select></label>
+          <button id="ed-ver-formacoes" type="button" class="secondary outline ed-ver-formacoes"
+            aria-expanded="false" aria-controls="ed-galeria" hidden>Ver as formações</button>
           <label>Tática
             <select id="r-tatica">
               <option value="equilibrado">Equilibrado</option>
@@ -308,6 +310,9 @@
           <span id="r-salvo" class="salvo" aria-live="polite"></span>
         </div>
         <p id="ed-aviso" class="ed-aviso" role="status" hidden></p>
+        <!-- v2.4: a galeria das formações e a prancheta em números -->
+        <div id="ed-galeria" class="ed-galeria" hidden></div>
+        <div id="ed-resumo" class="ed-resumo" aria-label="Resumo do time"></div>
 
         <!-- o time no campo: troca tocando (ou arrastando) titular e reserva -->
         <div class="editor">

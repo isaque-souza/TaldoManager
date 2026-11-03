@@ -11,16 +11,13 @@ import { decisaoParaEnviar, enviarRodada, mostrarRodadaTela } from "./rodada.js"
 import { camisa, corDoTexto, escudo, identidade } from "./identidade.js";
 import { icone } from "./icones.js";
 import { abrirPosJogo } from "./posjogo.js";
+import { opcoesFormacao } from "./formacoes.js";
 import { barrasAtributos } from "./atributos.js";
 import { SETOR, ehGoleiro, naTela, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
 
 const MS_POR_MINUTO = 500;          // 1×: ~45 s por jogo (escolha do usuário)
 const CHAVE_VELOCIDADE = "taldo:velocidade";
 const TATICAS = [["ofensivo", "Ofensivo"], ["equilibrado", "Equilibrado"], ["defensivo", "Defensivo"]];
-// formações, da mais ofensiva à mais fechada (a postura pesa no motor, v1.2)
-const FORMACOES = [
-  "3-4-3", "4-2-4", "3-5-2", "4-1-2-1-2", "4-3-3", "4-2-3-1", "4-4-2", "4-4-1-1", "4-5-1", "5-3-2", "5-4-1",
-];
 
 let jogo = null;   // estado da transmissão em curso
 
@@ -444,7 +441,7 @@ function renderPainel() {
       <label class="av-formacao">
         <span class="av-tatica-rotulo">Formação</span>
         <select id="av-formacao">
-          ${FORMACOES.map((f) => `<option${f === t.formacao ? " selected" : ""}>${f}</option>`).join("")}
+          ${opcoesFormacao(Object.keys(jogo.desenhos), t.formacao)}
         </select>
       </label>
     </div>
