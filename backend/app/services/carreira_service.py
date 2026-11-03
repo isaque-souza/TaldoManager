@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 
 from app.db.conexao import conectar
 from app.domain import caixa, calendario, copa, estadio, fama, historico, livres, mercado_cpu, vontade
+from app.domain.campeonato import semente_do_calendario
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -170,6 +171,9 @@ def proxima_temporada(simulacao_id):
             obras = estadio.cpu_amplia(
                 campeonato, _lotados(conn, simulacao_id, clubes_finais), clube_usuario,
             )
+
+            # a ordem dos jogos muda a cada temporada (v3)
+            campeonato.sortear_calendario(semente_do_calendario(carreira["seed"], temporada))
 
             # a copa (v1.6): os 8 melhores de cada liga na temporada que acabou
             campeonato.iniciar_copa(copa.classificados_pela_tabela(clubes_finais))

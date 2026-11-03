@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from app.db.conexao import conectar
 from app.domain import caixa, calendario, contrato, copa, disputa, emprestimo, fama, mercado, mercado_cpu, posicoes
 from app.domain import vontade
+from app.domain.campeonato import semente_do_calendario
 from app.domain.clube import Clube
 from app.domain.temporada import (
     livres_para_json, restaurar_estado, snapshot_estado,
@@ -168,6 +169,8 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
         random.seed()
 
     campeonato = carregar_campeonato(ligas)
+    # a ordem dos jogos é sorteada por temporada (v3)
+    campeonato.sortear_calendario(semente_do_calendario(seed, 1))
     campeonato.iniciar_copa(copa.classificados_de_inicio(campeonato))
     alvo = _achar_clube(campeonato, clube_usuario)
     simulacao_service._configurar_clube(alvo, tatica, formacao, xi_preferido)

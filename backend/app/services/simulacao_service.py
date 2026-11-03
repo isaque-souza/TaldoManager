@@ -20,6 +20,7 @@ from types import SimpleNamespace
 from app.db.conexao import conectar
 from app.domain import atributos, copa, diretoria, fama, mercado, mercado_cpu, olheiro, posicoes, vontade
 from app.domain import historico as historico_carreira
+from app.domain.campeonato import semente_do_calendario
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
 from app.repositories import atuacao_repository as atuacao_repo
@@ -134,6 +135,7 @@ def _rodar(seed, clube_usuario=None, tatica="equilibrado",
         random.seed()
 
     campeonato = carregar_campeonato(ligas)
+    campeonato.sortear_calendario(semente_do_calendario(seed, 1))
     campeonato.iniciar_copa(copa.classificados_de_inicio(campeonato))
 
     if clube_usuario is not None:

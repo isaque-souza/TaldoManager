@@ -548,3 +548,28 @@ def test_livres_seguem_para_a_temporada_seguinte():
     # foi contratado pela CPU), e a lista foi completada
     assert set(json.loads(livres_json)) & nomes
     assert len(nomes) >= 50
+
+
+def _adversarios(sid):
+    """Os adversários do técnico, rodada a rodada, no calendário do save."""
+    from app.services.mercado_service import _carregar
+    conn = conectar()
+    try:
+        ctx = _carregar(conn, sid)
+        sim, camp = ctx.sim, ctx.campeonato
+        meu = sim["clube_usuario"]
+        return [next(v.nome if m.nome == meu else m.nome for m, v in r if meu in (m.nome, v.nome))
+                for r in camp.calendario if any(meu in (m.nome, v.nome) for m, v in r)]
+    finally:
+        conn.close()
+
+
+def test_cada_temporada_tem_um_calendario_novo():
+    sid = _temporada_concluida(seed=3)
+    t2 = carreira_service.proxima_temporada(sid)["simulacao_id"]
+    t3_de = temporada_service.iniciar(seed=3, clube_usuario=_um_clube())
+    # a temporada 2 da carreira não repete a ordem da temporada 1 nova
+    assert _adversarios(t2) != _adversarios(t3_de)
+    # e as mesmas pessoas, os mesmos jogos: o sorteio é reproduzível
+    outra = carreira_service.proxima_temporada(_temporada_concluida(seed=3))["simulacao_id"]
+    assert _adversarios(outra) == _adversarios(t2)
