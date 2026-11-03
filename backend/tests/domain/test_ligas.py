@@ -66,5 +66,5 @@ def test_tabela_e_premiacao_por_liga(temporada_inteira):
         assert len(tabela) == 20 and {c.liga for c in tabela} == {liga}
         assert all(c.vitorias + c.empates + c.derrotas == 38 for c in tabela)
         # cada liga tem o seu campeão premiado
-        assert tabela[0].receita_premiacao == financas.premiacao(1)
-        assert tabela[-1].receita_premiacao == financas.premiacao(20)
+        assert tabela[0].receita_premiacao == financas.premiacao(1, liga)
+        assert tabela[-1].receita_premiacao == financas.premiacao(20, liga)

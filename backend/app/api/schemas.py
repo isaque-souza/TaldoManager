@@ -830,6 +830,9 @@ class ClubeInfo(BaseModel):
     receita_tv: int = 0
     receita_bilheteria: int = 0
     receita_premiacao: int = 0
+    receita_patrocinio: int = 0          # v2.5
+    # o mérito que a posição de hoje pagaria no fim (v2.5, projeção)
+    premio_posicao: int = 0
     despesa_salarios: int = 0
     receita_vendas: int = 0
     despesa_compras: int = 0

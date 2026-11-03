@@ -93,7 +93,11 @@ def test_por_na_lista_com_a_janela_aberta_traz_ofertas_na_hora(sem_assedio, semp
     assert len(mercado_service.ofertas(sid, alvo["jogador_id"])["ofertas"]) == r["ofertas"]
 
 
-def test_fora_da_janela_a_lista_espera_a_proxima(sem_assedio, sempre_interessa):
+def test_fora_da_janela_a_lista_espera_a_proxima(sem_assedio, sempre_interessa, monkeypatch):
+    # o assunto é a janela, não o caixa de quem compra: no meio da temporada
+    # (economia v2, v2.5) parte da liga fica sem dinheiro para a oferta
+    from app.domain import mercado
+    monkeypatch.setattr(mercado, "motivo_entrada_bloqueada", lambda clube, valor: None)
     sid = _iniciar()
     temporada_service.avancar(sid)
     alvo = _reserva(mercado_service.ver_mercado(sid))

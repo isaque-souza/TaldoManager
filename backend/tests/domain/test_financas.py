@@ -40,11 +40,55 @@ def test_bilheteria_proporcional_aos_torcedores():
     )
 
 
-def test_premiacao_cai_por_posicao_e_tem_piso():
-    assert financas.premiacao(1) == financas.PREMIO_CAMPEAO
-    assert financas.premiacao(1) > financas.premiacao(2) > financas.premiacao(10)
-    assert financas.premiacao(20) == financas.PREMIO_DEGRAU
-    assert financas.premiacao(50) == financas.PREMIO_DEGRAU
+def test_premiacao_linear_por_posicao_e_pelo_tamanho_da_liga():
+    # v2.5: cada posição vale um degrau; o último leva um
+    degrau = financas.premiacao(20, "premier")
+    assert degrau == financas.MERITO_DEGRAU
+    assert financas.premiacao(1, "premier") == 20 * degrau
+    assert financas.premiacao(1, "premier") - financas.premiacao(2, "premier") == degrau
+    # a mesma posição paga menos numa liga menor
+    assert financas.premiacao(1, "taldo") == round(20 * degrau * financas.PESO_LIGA["taldo"])
+    assert financas.premiacao(1, "liga-nova") < financas.premiacao(1, "taldo")
+    assert financas.premiacao(50, "premier") == degrau   # piso
+
+
+def test_premiacao_da_economia_v1_segue_a_antiga():
+    assert financas.premiacao(1, economia=1) == financas.PREMIO_CAMPEAO_V1
+    assert financas.premiacao(20, economia=1) == financas.PREMIO_DEGRAU_V1
+
+
+def test_audiencia_pela_torcida_perto_da_maior():
+    maior = financas.audiencia_temporada(1_000_000, 1_000_000, "premier")
+    assert maior == financas.AUDIENCIA_MAX
+    # um quarto da torcida rende metade (raiz)
+    assert financas.audiencia_temporada(250_000, 1_000_000, "premier") == maior // 2
+    assert financas.audiencia_temporada(0, 1_000_000, "premier") == 0
+
+
+def test_patrocinio_paga_mais_ao_mais_forte_e_a_maior_torcida():
+    topo = financas.patrocinio_temporada(1, 20, 1_000_000, 1_000_000, "premier")
+    assert topo == financas.PATROCINIO_FORCA + financas.PATROCINIO_TORCIDA
+    meio = financas.patrocinio_temporada(10, 20, 1_000_000, 1_000_000, "premier")
+    ultimo = financas.patrocinio_temporada(20, 20, 1_000_000, 1_000_000, "premier")
+    assert topo > meio > ultimo == financas.PATROCINIO_TORCIDA
+    # ao quadrado: o meio da tabela de força leva bem menos que a metade
+    assert meio - ultimo < (topo - ultimo) / 3
+    assert financas.patrocinio_temporada(1, 20, 1, 1, "taldo") < topo
+
+
+def test_rodada_da_economia_v1_nao_tem_patrocinio():
+    casa, fora = _clube("Casa"), _clube("Fora")
+    financas.processar_rodada([(casa, fora)], total_rodadas=38, economia=1)
+    assert casa.receita_tv == round(financas.COTA_TV_V1 / 38)
+    assert casa.receita_patrocinio == 0
+
+
+def test_migrar_salarios_v1_so_sobe_os_da_escala_antiga():
+    antigo = Jogador("Antigo", 27, "Atacante", 85, salario=Jogador.salario_de_mercado_v1(85))
+    novo = Jogador("Novo", 27, "Atacante", 85)   # já na escala nova
+    financas.migrar_salarios_v1([antigo, novo])
+    assert abs(antigo.salario - Jogador.salario_de_mercado(85)) <= 2_000
+    assert novo.salario == Jogador.salario_de_mercado(85)
 
 
 def test_folha_acompanha_o_elenco():
@@ -71,11 +115,13 @@ def test_temporada_completa_fecha_as_contas():
 
     for clube in campeonato.clubes:
         receitas = (clube.receita_tv + clube.receita_bilheteria
-                    + clube.receita_premiacao)
+                    + clube.receita_premiacao + clube.receita_patrocinio)
         # o caixa final é exatamente inicial + receitas - despesas
         assert clube.dinheiro == clube.dinheiro_inicial + receitas - clube.despesa_salarios
-        # ~1,5 mi de TV (arredondamento por rodada) e folha anual inteira
-        assert abs(clube.receita_tv - financas.COTA_TV_TEMPORADA) < 100
+        # a parte igual da TV mais a audiência (arredondamento por rodada) e a
+        # folha anual inteira
+        assert clube.receita_tv >= financas.cota_tv_temporada(clube.liga) - 100
+        assert clube.receita_tv <= financas.cota_tv_temporada(clube.liga) + financas.AUDIENCIA_MAX
         assert abs(clube.despesa_salarios - financas.folha_salarial(clube)) < 100
 
         # um ponto por rodada; o último é o caixa final (já com a premiação)
@@ -84,8 +130,9 @@ def test_temporada_completa_fecha_as_contas():
 
     campeao = campeonato.classificacao()[0]
     lanterna = campeonato.classificacao()[-1]
-    assert campeao.receita_premiacao == financas.PREMIO_CAMPEAO
-    assert lanterna.receita_premiacao == financas.PREMIO_DEGRAU
+    assert campeao.receita_premiacao == financas.premiacao(1, campeao.liga)
+    assert lanterna.receita_premiacao == financas.premiacao(20, lanterna.liga)
+    assert campeao.receita_patrocinio > 0
 
 
 def test_premiacao_so_sai_no_fim_da_temporada():

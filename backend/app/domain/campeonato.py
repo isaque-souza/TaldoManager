@@ -27,6 +27,8 @@ class Campeonato:
         # adiar_copa): o técnico joga a dele à parte (jogar_copa_adiada)
         self.copa_adiada = None
         self.devolvidos = []          # empréstimos que acabaram na última (v1.7)
+        # as regras de dinheiro do save (v2.5; ver financas.ECONOMIA_ATUAL)
+        self.economia = financas.ECONOMIA_ATUAL
         self.versao_calendario = self.CALENDARIO_ATUAL
         self.calendario = self.gerar_calendario()
         self.recordes = {
@@ -98,7 +100,7 @@ class Campeonato:
 
             self.atualizar_recordes(partida)
 
-        financas.processar_rodada(rodada_atual, len(self.calendario), publicos)
+        financas.processar_rodada(rodada_atual, len(self.calendario), publicos, self.economia)
 
         for clube in self.clubes:
             estadio.avancar_obra(clube)
@@ -122,7 +124,7 @@ class Campeonato:
         if self.rodada > len(self.calendario):
             for liga in self.ligas:
                 tabela = self.classificacao(liga)
-                financas.pagar_premiacao(tabela)
+                financas.pagar_premiacao(tabela, self.economia)
                 # a fama antes da torcida: os ídolos novos já atraem gente
                 fama.fim_de_temporada(tabela)
                 torcida.fim_de_temporada(tabela)
@@ -138,7 +140,8 @@ class Campeonato:
         fase = self.copa.fase_da_rodada(self.rodada)
         if fase is None:
             return []
-        return self.copa.jogar_fase(fase, {c.nome: c for c in self.clubes})
+        return self.copa.jogar_fase(fase, {c.nome: c for c in self.clubes},
+                                    premios=copa_.premios(self.economia))
 
     def _joga_a_copa(self, clube):
         """O clube está num jogo da fase da copa desta rodada?"""
@@ -160,6 +163,7 @@ class Campeonato:
             fase, {c.nome: c for c in self.clubes},
             ao_vivo={"clube": clube_usuario, "decisoes": decisoes or [],
                      "capturar_em": capturar_em, "semente": semente},
+            premios=copa_.premios(self.economia),
         )
         self.partida_usuario = self.copa.partida_usuario
         return jogos

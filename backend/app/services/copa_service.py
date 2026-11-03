@@ -7,7 +7,7 @@ técnico está. Nada é restaurado nem regravado.
 import json
 
 from app.db.conexao import conectar
-from app.domain import caixa, copa
+from app.domain import caixa, copa, financas
 from app.repositories import clube_repository as clube_repo
 from app.repositories import simulacao_repository as simulacao_repo
 
@@ -43,12 +43,17 @@ def ver(simulacao_id):
             r["nome"]: r["liga"]
             for r in clube_repo.listar_por_simulacao(conn, simulacao_id)
         }
-        return {"copa": visao(dados, sim["clube_usuario"], liga)}
+        return {"copa": visao(dados, sim["clube_usuario"], liga, economia_do(sim))}
     finally:
         conn.close()
 
 
-def visao(dados, clube_usuario, liga_de):
+def economia_do(sim):
+    """A versão das regras de dinheiro do save (v2.5)."""
+    return financas.economia_do_save(sim)
+
+
+def visao(dados, clube_usuario, liga_de, economia=2):
     """A copa como a tela mostra: as quatro fases (as que ainda não têm
     confronto vêm com `jogos` vazio), o campeão, a próxima data e a
     situação do clube do técnico."""
@@ -59,7 +64,7 @@ def visao(dados, clube_usuario, liga_de):
             "fase": fase,
             "nome": NOMES[fase],
             "depois_da_rodada": copa.DATAS[fase],
-            "premio": copa.PREMIOS[fase],
+            "premio": copa.premios(economia)[fase],
             "jogos": jogos,
             "jogada": bool(jogos) and all(j["vencedor"] for j in jogos),
         })
@@ -138,7 +143,7 @@ def mensagem_de_inicio(campeonato, clube):
         return None
     sit = situacao(campeonato.copa.para_dict(), clube)
     rodada = copa.DATAS[sit["fase"] or "oitavas"]
-    return caixa.copa_classificacao(sit, rodada, sum(copa.PREMIOS.values()))
+    return caixa.copa_classificacao(sit, rodada, sum(copa.premios(campeonato.economia).values()))
 
 
 def mensagem_da_rodada(campeonato, rodada, clube):
@@ -160,4 +165,4 @@ def mensagem_da_rodada(campeonato, rodada, clube):
     if sit["estado"] == "vivo" and sit["jogo"]:
         proxima = (sit["fase"], copa.DATAS[sit["fase"]],
                    sit["jogo"]["adversario"], sit["jogo"]["mando"])
-    return caixa.copa_resultado(fase, jogo, clube, copa.PREMIOS[fase], proxima)
+    return caixa.copa_resultado(fase, jogo, clube, copa.premios(campeonato.economia)[fase], proxima)

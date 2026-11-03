@@ -60,7 +60,9 @@ def test_salario_depende_do_overall_nao_da_idade():
 
 def test_salario_e_bem_menor_que_o_valor():
     j = _jogador(overall=85)
-    assert j.salario_referencia() < j.valor_mercado() / 5
+    # economia v2 (v2.5): a folha é o grande gasto do clube, mas a
+    # temporada de salário ainda custa bem menos que a transferência
+    assert j.salario_referencia() < j.valor_mercado() / 3
 
 
 def test_salario_de_contrato_comeca_no_de_referencia_e_fica_fixo():

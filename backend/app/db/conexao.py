@@ -78,6 +78,9 @@ _COLUNAS_NOVAS = {
         # a fase da copa que espera o jogo do técnico na quarta (v2.0);
         # NULL = a próxima partida é a da liga
         ("copa_pendente", "TEXT"),
+        # versão das regras de dinheiro (v2.5): 1 = antes do dinheiro por
+        # liga; a temporada termina com a dela e a virada passa para a atual
+        ("economia", "INTEGER NOT NULL DEFAULT 1"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")
@@ -85,6 +88,7 @@ _COLUNAS_NOVAS = {
             "dinheiro_inicial", "dinheiro", "receita_tv",
             "receita_bilheteria", "receita_premiacao", "despesa_salarios",
             "receita_vendas", "despesa_compras",
+            "receita_patrocinio",   # v2.5
         )
     ) + (
         ("historico_caixa", "TEXT NOT NULL DEFAULT '[]'"),

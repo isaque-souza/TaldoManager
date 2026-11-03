@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 
 from app.db.conexao import conectar
 from app.domain import caixa, calendario, copa, estadio, fama, historico, livres, mercado_cpu, vontade
+from app.domain import financas
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
     aposentar,
@@ -170,6 +171,14 @@ def proxima_temporada(simulacao_id):
             obras = estadio.cpu_amplia(
                 campeonato, _lotados(conn, simulacao_id, clubes_finais), clube_usuario,
             )
+
+            # a economia v2 (v2.5): um save da v1 passa para as regras novas
+            # na virada — os contratos da escala antiga sobem para a nova
+            if copa_service.economia_do(sim) < financas.ECONOMIA_ATUAL:
+                financas.migrar_salarios_v1(
+                    [j for c in campeonato.clubes for j in c.jogadores] + list(campeonato.livres)
+                )
+            campeonato.economia = financas.ECONOMIA_ATUAL
 
             # a copa (v1.6): os 8 melhores de cada liga na temporada que acabou
             campeonato.iniciar_copa(copa.classificados_pela_tabela(clubes_finais))

@@ -2,7 +2,7 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from app.domain import estadio, fama, livres, vontade
+from app.domain import estadio, fama, financas, livres, vontade
 from app.domain.jogador import Jogador
 from app.domain.clube import Clube
 from app.domain.campeonato import Campeonato
@@ -159,5 +159,8 @@ def carregar_campeonato(ligas=LIGA_PADRAO):
 
 
 def carregar_campeonato_do_save(sim):
-    """O campeonato com as ligas do save, pronto para `restaurar_estado`."""
-    return carregar_campeonato(ligas_do_save(sim))
+    """O campeonato com as ligas do save, pronto para `restaurar_estado`,
+    com as regras de dinheiro em que o save está (v2.5)."""
+    campeonato = carregar_campeonato(ligas_do_save(sim))
+    campeonato.economia = financas.economia_do_save(sim)
+    return campeonato

@@ -59,7 +59,7 @@ export function classeClassificacao(c, meu) {
 }
 
 export function legendaZonas() {
-  return `<p class="zonas-legenda"><span><i class="zl-titulo"></i> Campeão (prêmio de R$ 10 mi)</span>
+  return `<p class="zonas-legenda"><span><i class="zl-titulo"></i> Campeão</span>
     <span><i class="zl-copa"></i> Do 1º ao ${VAGAS_COPA}º: Copa da próxima temporada</span></p>`;
 }
 

@@ -92,6 +92,7 @@ class Clube:
         self.receita_tv = 0
         self.receita_bilheteria = 0
         self.receita_premiacao = 0
+        self.receita_patrocinio = 0  # patrocínio e comercial (v2.5)
         self.despesa_salarios = 0
         self.receita_vendas = 0
         self.despesa_compras = 0

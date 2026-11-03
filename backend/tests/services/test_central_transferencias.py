@@ -217,7 +217,11 @@ def test_historico_tem_compra_venda_livre_e_dispensa_com_o_saldo():
     assert tipos == ["transferencia", "dispensa", "livre", "transferencia"]
 
 
-def test_historico_junta_as_temporadas_da_carreira(cargo_garantido):
+def test_historico_junta_as_temporadas_da_carreira(cargo_garantido, monkeypatch):
+    # o assunto é o histórico, não o caixa: a compra por 3× o valor deixa o
+    # clube sem dinheiro para a rescisão da dispensa (economia v2, v2.5)
+    from app.domain import mercado
+    monkeypatch.setattr(mercado, "motivo_dispensa_bloqueada", mercado.motivo_saida_bloqueada)
     sid = _iniciar()
     comprado = _compravel(mercado_service.ver_mercado(sid))
     _comprar(sid, comprado)

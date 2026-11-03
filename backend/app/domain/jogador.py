@@ -11,6 +11,17 @@ from app.domain.fama import fator_valor
 REF_FISICO = 1
 
 
+# o salário de mercado por temporada (economia v2, v2.5): a folha passa a
+# ser o grande gasto do clube, como no futebol real. A curva é mais suave
+# que a do valor (17% por ponto de overall, contra 22%): a estrela custa
+# muito na transferência, mas o salário dela não come a receita do clube.
+# Calibrado com carreiras de 6 temporadas (caixa mediano estável).
+SALARIO_80 = 620_000          # o salário de um overall 80
+SALARIO_CRESCIMENTO = 1.17    # por ponto de overall
+# economia v1 (até a v2.4): 8% do valor-base do overall
+FATOR_SALARIO_V1 = 0.08
+
+
 class Jogador:
 
     # amarelos acumulados no campeonato que disparam uma suspensão automática
@@ -289,8 +300,13 @@ class Jogador:
     def salario_de_mercado(cls, overall):
         """`salario_referencia` sem precisar de um Jogador (ex.: a partir de
         uma linha do banco)."""
-        salario = 0.08 * cls._base_overall(overall)
+        salario = SALARIO_80 * SALARIO_CRESCIMENTO ** (max(50, overall) - 80)
         return max(1_000, round(salario / 1_000) * 1_000)
+
+    @classmethod
+    def salario_de_mercado_v1(cls, overall):
+        """O salário de mercado da economia v1 (para migrar saves antigos)."""
+        return max(1_000, round(FATOR_SALARIO_V1 * cls._base_overall(overall) / 1_000) * 1_000)
 
     def assinar_contrato(self, anos, salario, multa_rescisoria):
         self.contrato_anos = anos

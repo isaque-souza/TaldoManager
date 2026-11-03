@@ -52,7 +52,7 @@ _CLUBE_CAMPOS = (
     "pontos", "gols_marcados", "gols_sofridos",
     "vitorias", "empates", "derrotas",
     "dinheiro", "dinheiro_inicial", "receita_tv", "receita_bilheteria",
-    "receita_premiacao", "despesa_salarios",
+    "receita_premiacao", "despesa_salarios", "receita_patrocinio",
     "receita_vendas", "despesa_compras", "historico_caixa",
     "despesa_marketing",
     # torcida (v1.4): cresce e encolhe com a campanha
