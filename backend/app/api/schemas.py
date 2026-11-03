@@ -391,6 +391,10 @@ class ProximaRodada(BaseModel):
     escalacao: "EscalacaoPreJogo | None" = None   # v1.2: como o motor vai escalar
     calendario: Calendario | None = None   # v2.0
     copa: FaseDoJogo | None = None         # v2.0: o próximo jogo é da copa
+    # v2.4: o contexto do próximo jogo, para o card do Início (None na folga)
+    contexto_mandante: "ContextoPreJogo | None" = None
+    contexto_visitante: "ContextoPreJogo | None" = None
+    estadio: "EstadioPreJogo | None" = None
 
 
 class ResultadoRodada(BaseModel):
@@ -918,6 +922,8 @@ class JogadorInfo(BaseModel):
     clube_id: int
     posicao: str
     funcao: str | None = None              # v1.3
+    numero: int | None = None              # v2.4: camisa (None em saves antigos)
+    secundarias: list[str] = []            # v2.4
     atributos: dict[str, int] = {}         # v1.3
     overall: int
     idade: int

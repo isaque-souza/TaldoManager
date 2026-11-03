@@ -1122,6 +1122,9 @@ def game_log_jogador(simulacao_id, jogador_id):
             "clube_id": j["clube_id"],
             "posicao": j["posicao"],
             "funcao": j["funcao"],
+            # v2.4: a camisa e as posições secundárias, para a ficha
+            "numero": j["numero"],
+            "secundarias": json.loads(j["secundarias"]) if j["secundarias"] else [],
             "atributos": atributos.calcular(
                 j["nome"], j["posicao"], j["funcao"], j["overall"]
             ),

@@ -40,6 +40,14 @@ function renderHubEstadio() {
   const info = d.temporada.jogos_em_casa
     ? `ingresso ${faixa.nome.toLowerCase()} · ${pct(d.temporada.ocupacao_media)} de ocupação`
     : `ingresso ${faixa.nome.toLowerCase()}`;
+  // v2.4: a ocupação média da temporada numa fileira de cadeiras (cada uma
+  // vale 1/20 do estádio); sem jogo em casa ainda, não desenha nada
+  const CADEIRAS = 20;
+  const cheias = d.temporada.jogos_em_casa ? Math.round(Math.min(100, d.temporada.ocupacao_media) / 100 * CADEIRAS) : 0;
+  $("hub-estadio-barra").innerHTML = d.temporada.jogos_em_casa
+    ? `<span class="hub-cadeiras" role="img" aria-label="${pct(d.temporada.ocupacao_media)} de ocupação média">${
+      Array.from({ length: CADEIRAS }, (_, i) => `<i${i < cheias ? ' class="cheia"' : ""}></i>`).join("")}</span>`
+    : "";
   $("hub-estadio-info").textContent = d.obra
     ? `${info} · em obra (+${milhar(d.obra.lugares)})`
     : info;

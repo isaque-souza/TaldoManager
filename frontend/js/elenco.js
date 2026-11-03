@@ -15,9 +15,9 @@ import { abrirContrato, MULTA_ROTULO, PAPEL_ROTULO as PAPEL } from "./contratos.
 import { abrirJogador } from "./jogador.js";
 import { carregarCaixa } from "./caixa.js";
 import { icone, seloIdolo } from "./icones.js";
-import { barrasAtributos } from "./atributos.js";
-import { camisa } from "./identidade.js";
-import { posicaoDe, sigla } from "./posicoes.js";
+import { barrasAtributos, radarAtributos } from "./atributos.js";
+import { camisa, identidade } from "./identidade.js";
+import { posicaoDe, SETOR, sigla } from "./posicoes.js";
 
 // setor: "" (todos), um setor do motor, "venda" (a lista de transferências),
 // "ofertas" (quem a CPU quer, v1.7) ou "humor" (quem não está contente com o
@@ -71,6 +71,8 @@ function selos(f, { acabando = true } = {}) {
   ].join(" ");
 }
 
+const SETOR_CLASSE = { Goleiro: "gol", Defesa: "def", "Meio-Campo": "meio", Atacante: "ata" };
+
 function lista() {
   const linhas = mercado.elenco.filter((f) => passaFiltro(f, filtro.setor)).map((f) => {
     const s = situacaoDe(f.nome);
@@ -80,7 +82,8 @@ function lista() {
       // o nome é o botão que abre a ficha; lesão e suspensão vão nos selos
       jogador: `<button type="button" class="el-nome" data-sel="${f.jogador_id}">${f.nome}</button> ` +
         `${selos(f, { acabando: false })} ${s.chip}`,
-      pos: sigla(posicaoDe(f)),
+      // v2.4: a posição num selo com a cor do setor (goleiro, defesa, meio, ataque)
+      pos: `<span class="pos-chip pos-${SETOR_CLASSE[SETOR[posicaoDe(f)]] || "meio"}" title="${posicaoDe(f)}">${sigla(posicaoDe(f))}</span>`,
       // potencial acima do overall em verde: ainda vai crescer
       pot: f.potencial > f.overall ? `<span class="sobe" title="ainda cresce">${f.potencial}</span>` : f.potencial,
       papel_fmt: PAPEL[f.papel] || "—",
@@ -109,10 +112,11 @@ function ficha(f) {
   if (!abas.some(([v]) => v === filtro.aba)) filtro.aba = "resumo";
   const ofertas = mercado.janela_aberta
     ? mercado.ofertas_recebidas.filter((o) => o.jogador_id === f.jogador_id && o.status === "aberta").length : 0;
-  const conteudo = { resumo: abaResumo, atributos: (j) => barrasAtributos(j.atributos), mercado: abaMercado }[filtro.aba];
+  const conteudo = { resumo: abaResumo, atributos: (j) => `<div class="el-atributos">${radarAtributos(j.atributos)}${barrasAtributos(j.atributos)}</div>`, mercado: abaMercado }[filtro.aba];
+  const id = identidade(mercado.clube_usuario);
   return `<article class="el-ficha">
     <button type="button" class="secondary outline el-fechar" data-voltar-local>← Elenco</button>
-    <header class="el-ficha-topo el-cabeca">
+    <header class="el-ficha-topo el-cabeca el-cabeca-cor" style="--jg-cor:${id.cor_primaria};--jg-cor2:${id.cor_secundaria}">
       ${camisa(mercado.clube_usuario, { numero: f.numero, tamanho: 56 })}
       <div class="el-cabeca-nome">
         <h3>${f.nome}</h3>
