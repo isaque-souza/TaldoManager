@@ -13,6 +13,7 @@ import { nomeLiga } from "./ligas.js";
 import { dataLonga, paraData } from "./calendario.js";
 import { avancarAposResultado, mostrarRodadaTela } from "./rodada.js";
 import { estadioNoturno } from "./atmosfera.js";
+import { nomesCurtos } from "./nomes.js";
 
 const RESULTADO = {
   vitoria: ["v", "Vitória"],
@@ -24,7 +25,6 @@ const chip = (classe, texto) => `<span class="chip${classe ? ` chip-${classe}` :
 const decimal = (n) => n.toFixed(1).replace(".", ",");
 const sinal = (n) => (n > 0 ? "+" : "") + (Number.isInteger(n) ? `${n}` : decimal(n));
 const nota = decimal;
-const sobrenome = (nome) => nome.split(" ").slice(-1)[0];
 
 let atual = null;   // o relatório na tela
 
@@ -129,6 +129,7 @@ const NA_LINHA = {
 // 0' a 90' (mais os acréscimos): o mandante em cima, o visitante embaixo
 function linhaDoJogo(r) {
   const fim = Math.max(90, ...r.eventos.map((e) => e.minuto)) + 1;
+  const sobrenome = nomesCurtos(r.eventos.map((e) => e.jogador));
   const marcas = r.eventos.filter((e) => NA_LINHA[e.tipo]).map((e) => {
     const [tipo, nome] = NA_LINHA[e.tipo];
     const lado = e.clube === r.visitante ? "baixo" : "cima";
@@ -169,6 +170,7 @@ function notasDoTime(r) {
   const titulares = meus.filter((a) => a.titular);
   const entraram = meus.filter((a) => !a.titular);
   const melhor = Math.max(...meus.map((a) => a.nota));
+  const sobrenome = nomesCurtos(meus.map((a) => a.jogador));
 
   const peca = (a) => {
     const saiu = a.saiu_min != null

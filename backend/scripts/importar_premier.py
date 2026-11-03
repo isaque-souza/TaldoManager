@@ -22,7 +22,8 @@ calculado aqui:
   posição à mão (e garante a vaga no elenco);
 - livres: os melhores de quem é do time principal e sobrou no corte;
 - nomes: o jogo identifica o jogador pelo nome, então quem tem o nome de um
-  jogador (fictício) da liga Taldo ganha a nacionalidade: "João Gomes (BRA)".
+  jogador (fictício) da liga Taldo ganha o nome completo de verdade
+  (NOMES_REAIS): "João Victor Gomes".
 
 Uso (a partir da pasta backend/):
     python -m scripts.importar_premier
@@ -271,13 +272,23 @@ def nomes_da_taldo():
     return nomes
 
 
+# quem repete o nome de um jogador da Taldo: nome na fonte -> nome no jogo
+NOMES_REAIS = {
+    "João Gomes": "João Victor Gomes",
+    "Rodrigo Ribeiro": "Rodrigo Duarte Ribeiro",
+    "Vinicius Souza": "Vinícius Souza",
+}
+
+
 def _ficha(j, ocupados=frozenset()):
     """O jogador no formato da seed (sem id). `ocupados`: nomes da Taldo."""
     rng = _rng(j["nome"] + "/contrato")
     funcao = j["funcao"]
     nome = j["nome"]
     if nome in ocupados:
-        nome = f"{nome} ({j['nacionalidade']})"
+        if nome not in NOMES_REAIS:
+            raise SystemExit(f"falta o nome real de {nome} em NOMES_REAIS")
+        nome = NOMES_REAIS[nome]
     return {
         "nome": nome,
         "idade": j["idade"],

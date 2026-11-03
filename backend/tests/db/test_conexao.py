@@ -196,3 +196,27 @@ def test_migracao_refaz_a_transferencia_com_tipo_e_clubes_opcionais(tmp_path, mo
         assert "transferencia_antiga" not in tabelas
     finally:
         conn.close()
+
+
+def test_saves_antigos_ganham_os_nomes_novos():
+    """v2.5.1: "Gabriel (Corinthians)" virou "Gabriel Girotto" — nas colunas
+    e dentro dos JSONs (com ou sem acento escapado), uma vez só."""
+    import json
+    from app.db import conexao
+
+    conn = conectar()
+    try:
+        conn.execute(
+            "INSERT INTO simulacao (seed, criada_em, campeao, rodadas, xi_preferido, estado_json) "
+            "VALUES (1, '2026-01-01', 'Corinthians', 38, ?, ?)",
+            (json.dumps(["Gabriel (Corinthians)", "Jô"], ensure_ascii=False),
+             json.dumps({"elenco": ["Moisés (Corinthians)", "João Gomes (BRA)"]})),
+        )
+        conn.execute("PRAGMA user_version = 0")
+        conexao._renomear_jogadores(conn)
+        linha = conn.execute("SELECT xi_preferido, estado_json FROM simulacao").fetchone()
+        assert json.loads(linha["xi_preferido"]) == ["Gabriel Girotto", "Jô"]
+        assert json.loads(linha["estado_json"])["elenco"] == ["Moisés Barbosa", "João Victor Gomes"]
+        assert conn.execute("PRAGMA user_version").fetchone()[0] == 1
+    finally:
+        conn.close()

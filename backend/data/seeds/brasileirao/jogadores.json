@@ -1,7 +1,7 @@
 [
     {
         "id": 60001,
-        "nome": "Gabriel (Corinthians)",
+        "nome": "Gabriel Girotto",
         "idade": 24,
         "posicao": "Meio-Campo",
         "overall": 76,
@@ -146,7 +146,7 @@
     },
     {
         "id": 60011,
-        "nome": "Moisés (Corinthians)",
+        "nome": "Moisés Barbosa",
         "idade": 22,
         "posicao": "Defesa",
         "overall": 78,
@@ -288,7 +288,7 @@
     },
     {
         "id": 60021,
-        "nome": "Danilo (Corinthians)",
+        "nome": "Danilo Gabriel",
         "idade": 37,
         "posicao": "Meio-Campo",
         "overall": 73,
@@ -745,7 +745,7 @@
     },
     {
         "id": 60052,
-        "nome": "Lucas Lima (Santos)",
+        "nome": "Lucas Araújo Lima",
         "idade": 27,
         "posicao": "Meio-Campo",
         "overall": 80,
@@ -775,7 +775,7 @@
     },
     {
         "id": 60054,
-        "nome": "Bruno Henrique (Santos)",
+        "nome": "Bruno Henrique Pinto",
         "idade": 26,
         "posicao": "Atacante",
         "overall": 77,
@@ -893,7 +893,7 @@
     },
     {
         "id": 60062,
-        "nome": "Matheus Ribeiro (Santos)",
+        "nome": "Matheus Antunes",
         "idade": 24,
         "posicao": "Defesa",
         "overall": 74,
@@ -967,7 +967,7 @@
     },
     {
         "id": 60067,
-        "nome": "Yuri (Santos)",
+        "nome": "Yuri Lima",
         "idade": 22,
         "posicao": "Meio-Campo",
         "overall": 70,
@@ -1293,7 +1293,7 @@
     },
     {
         "id": 60089,
-        "nome": "Jailson (Grêmio)",
+        "nome": "Jailson Siqueira",
         "idade": 21,
         "posicao": "Meio-Campo",
         "overall": 74,
@@ -1351,7 +1351,7 @@
     },
     {
         "id": 60093,
-        "nome": "Robinho (Cruzeiro)",
+        "nome": "Robinho Signorini",
         "idade": 30,
         "posicao": "Meio-Campo",
         "overall": 76,
@@ -1933,7 +1933,7 @@
     },
     {
         "id": 60133,
-        "nome": "Lucas Paquetá (Flamengo)",
+        "nome": "Lucas Tolentino",
         "idade": 19,
         "posicao": "Meio-Campo",
         "overall": 74,
@@ -1964,7 +1964,7 @@
     },
     {
         "id": 60135,
-        "nome": "Ederson (Flamengo)",
+        "nome": "Ederson Honorato",
         "idade": 31,
         "posicao": "Meio-Campo",
         "overall": 74,
@@ -2138,7 +2138,7 @@
     },
     {
         "id": 60147,
-        "nome": "Guilherme (Vasco)",
+        "nome": "Guilherme Costa",
         "idade": 23,
         "posicao": "Meio-Campo",
         "overall": 71,
@@ -2196,7 +2196,7 @@
     },
     {
         "id": 60151,
-        "nome": "João Pedro (Vasco)",
+        "nome": "João Pedro Borges",
         "idade": 24,
         "posicao": "Goleiro",
         "overall": 73,
@@ -2241,7 +2241,7 @@
     },
     {
         "id": 60154,
-        "nome": "Rafael Marques (Vasco)",
+        "nome": "Rafael Marques Pinto",
         "idade": 33,
         "posicao": "Defesa",
         "overall": 68,
@@ -2272,7 +2272,7 @@
     },
     {
         "id": 60156,
-        "nome": "Jean (Vasco)",
+        "nome": "Jean Irmer",
         "idade": 22,
         "posicao": "Meio-Campo",
         "overall": 73,
@@ -2510,7 +2510,7 @@
     },
     {
         "id": 60172,
-        "nome": "Neto (Chapecoense)",
+        "nome": "Hélio Neto",
         "idade": 31,
         "posicao": "Defesa",
         "overall": 75,
@@ -2538,7 +2538,7 @@
     },
     {
         "id": 60174,
-        "nome": "Elias (Chapecoense)",
+        "nome": "Elias Curzel",
         "idade": 21,
         "posicao": "Goleiro",
         "overall": 74,
@@ -2552,7 +2552,7 @@
     },
     {
         "id": 60175,
-        "nome": "Douglas (Chapecoense)",
+        "nome": "Douglas Bacelar",
         "idade": 27,
         "posicao": "Defesa",
         "overall": 73,
@@ -2582,7 +2582,7 @@
     },
     {
         "id": 60177,
-        "nome": "João Pedro (Chapecoense)",
+        "nome": "João Pedro Maturano",
         "idade": 20,
         "posicao": "Defesa",
         "overall": 70,
@@ -2797,7 +2797,7 @@
     },
     {
         "id": 60192,
-        "nome": "Luan (Atlético Mineiro)",
+        "nome": "Luan Madson",
         "idade": 26,
         "posicao": "Atacante",
         "overall": 75,
@@ -2825,7 +2825,7 @@
     },
     {
         "id": 60194,
-        "nome": "Leonardo Silva (Atlético Mineiro)",
+        "nome": "Léo Silva",
         "idade": 38,
         "posicao": "Defesa",
         "overall": 76,
@@ -2913,7 +2913,7 @@
     },
     {
         "id": 60200,
-        "nome": "Rodrigão (Atlético Mineiro)",
+        "nome": "Rodrigão Prado",
         "idade": 21,
         "posicao": "Defesa",
         "overall": 71,
@@ -3218,7 +3218,7 @@
     },
     {
         "id": 60221,
-        "nome": "Emerson (Botafogo)",
+        "nome": "Emerson Santos",
         "idade": 22,
         "posicao": "Defesa",
         "overall": 68,
@@ -3348,7 +3348,7 @@
     },
     {
         "id": 60230,
-        "nome": "Guilherme (Botafogo)",
+        "nome": "Guilherme Santos",
         "idade": 22,
         "posicao": "Atacante",
         "overall": 66,
@@ -3378,7 +3378,7 @@
     },
     {
         "id": 60232,
-        "nome": "Pablo (Atlético Paranaense)",
+        "nome": "Pablo Teixeira",
         "idade": 24,
         "posicao": "Atacante",
         "overall": 75,
@@ -3624,7 +3624,7 @@
     },
     {
         "id": 60249,
-        "nome": "Bruno Guimarães (Atlético Paranaense)",
+        "nome": "Bruno Guimarães Moura",
         "idade": 19,
         "posicao": "Meio-Campo",
         "overall": 68,
@@ -3682,7 +3682,7 @@
     },
     {
         "id": 60253,
-        "nome": "Eduardo (Atlético Paranaense)",
+        "nome": "Eduardo da Silva",
         "idade": 34,
         "posicao": "Atacante",
         "overall": 69,
@@ -3726,7 +3726,7 @@
     },
     {
         "id": 60256,
-        "nome": "Jean (Bahia)",
+        "nome": "Jean Fernandes",
         "idade": 21,
         "posicao": "Goleiro",
         "overall": 74,
@@ -3773,7 +3773,7 @@
     },
     {
         "id": 60259,
-        "nome": "Juninho (Bahia)",
+        "nome": "Juninho Valoura",
         "idade": 31,
         "posicao": "Meio-Campo",
         "overall": 73,
@@ -3877,7 +3877,7 @@
     },
     {
         "id": 60266,
-        "nome": "Anderson (Bahia)",
+        "nome": "Anderson Campos",
         "idade": 33,
         "posicao": "Goleiro",
         "overall": 67,
@@ -4269,7 +4269,7 @@
     },
     {
         "id": 60292,
-        "nome": "Bruno (São Paulo)",
+        "nome": "Bruno Nascimento",
         "idade": 31,
         "posicao": "Defesa",
         "overall": 69,
@@ -4325,7 +4325,7 @@
     },
     {
         "id": 60296,
-        "nome": "Lucas Fernandes (São Paulo)",
+        "nome": "Lucas Fernandes da Silva",
         "idade": 19,
         "posicao": "Meio-Campo",
         "overall": 68,
@@ -4341,7 +4341,7 @@
     },
     {
         "id": 60297,
-        "nome": "Brenner (São Paulo)",
+        "nome": "Brenner Souza",
         "idade": 17,
         "posicao": "Atacante",
         "overall": 62,
@@ -4445,7 +4445,7 @@
     },
     {
         "id": 60304,
-        "nome": "Léo (Fluminense)",
+        "nome": "Léo Pelé",
         "idade": 21,
         "posicao": "Defesa",
         "overall": 72,
@@ -4489,7 +4489,7 @@
     },
     {
         "id": 60307,
-        "nome": "Wellington Silva (Fluminense)",
+        "nome": "Wellington Alves",
         "idade": 24,
         "posicao": "Atacante",
         "overall": 73,
@@ -4577,7 +4577,7 @@
     },
     {
         "id": 60313,
-        "nome": "Henrique (Fluminense)",
+        "nome": "Henrique Buss",
         "idade": 30,
         "posicao": "Defesa",
         "overall": 74,
@@ -4653,7 +4653,7 @@
     },
     {
         "id": 60318,
-        "nome": "Douglas (Fluminense)",
+        "nome": "Douglas Augusto",
         "idade": 20,
         "posicao": "Meio-Campo",
         "overall": 68,
@@ -4698,7 +4698,7 @@
     },
     {
         "id": 60321,
-        "nome": "Robinho (Fluminense)",
+        "nome": "Robinho Azevedo",
         "idade": 21,
         "posicao": "Atacante",
         "overall": 68,
@@ -4806,7 +4806,7 @@
     },
     {
         "id": 60328,
-        "nome": "Diego Souza (Sport)",
+        "nome": "Diego Souza Andrade",
         "idade": 31,
         "posicao": "Meio-Campo",
         "overall": 79,
@@ -4908,7 +4908,7 @@
     },
     {
         "id": 60335,
-        "nome": "Lucas Ferreira (Sport)",
+        "nome": "Lucas Amaral",
         "idade": 24,
         "posicao": "Goleiro",
         "overall": 70,
@@ -5043,7 +5043,7 @@
     },
     {
         "id": 60344,
-        "nome": "Marquinhos (Sport)",
+        "nome": "Marquinhos Gonçalves",
         "idade": 27,
         "posicao": "Atacante",
         "overall": 71,
@@ -5136,7 +5136,7 @@
     },
     {
         "id": 60350,
-        "nome": "Juninho (Vitória)",
+        "nome": "Juninho Barbosa",
         "idade": 27,
         "posicao": "Defesa",
         "overall": 72,
@@ -5294,7 +5294,7 @@
     },
     {
         "id": 60361,
-        "nome": "Fred (Vitória)",
+        "nome": "Fred Burgel",
         "idade": 31,
         "posicao": "Defesa",
         "overall": 69,
@@ -5368,7 +5368,7 @@
     },
     {
         "id": 60366,
-        "nome": "Yago (Vitória)",
+        "nome": "Yago Felipe",
         "idade": 22,
         "posicao": "Atacante",
         "overall": 65,
@@ -5466,7 +5466,7 @@
     },
     {
         "id": 60373,
-        "nome": "João Paulo (Coritiba)",
+        "nome": "João Paulo da Silva",
         "idade": 32,
         "posicao": "Meio-Campo",
         "overall": 72,
@@ -5748,7 +5748,7 @@
     },
     {
         "id": 60392,
-        "nome": "Luan (Avaí)",
+        "nome": "Luan Scapolan",
         "idade": 28,
         "posicao": "Meio-Campo",
         "overall": 70,
@@ -5780,7 +5780,7 @@
     },
     {
         "id": 60394,
-        "nome": "Douglas (Avaí)",
+        "nome": "Douglas Friedrich",
         "idade": 28,
         "posicao": "Goleiro",
         "overall": 72,
@@ -5964,7 +5964,7 @@
     },
     {
         "id": 60406,
-        "nome": "Maicon (Avaí)",
+        "nome": "Maicon Sisenando",
         "idade": 35,
         "posicao": "Defesa",
         "overall": 67,
@@ -6317,7 +6317,7 @@
     },
     {
         "id": 60430,
-        "nome": "Rodrigo (Ponte Preta)",
+        "nome": "Rodrigo Baldasso",
         "idade": 36,
         "posicao": "Defesa",
         "overall": 66,
@@ -6347,7 +6347,7 @@
     },
     {
         "id": 60432,
-        "nome": "Jádson (Ponte Preta)",
+        "nome": "Jádson Alves",
         "idade": 23,
         "posicao": "Meio-Campo",
         "overall": 65,
@@ -6375,7 +6375,7 @@
     },
     {
         "id": 60434,
-        "nome": "Wendel (Ponte Preta)",
+        "nome": "Wendel Maurício",
         "idade": 35,
         "posicao": "Meio-Campo",
         "overall": 61,
@@ -6403,7 +6403,7 @@
     },
     {
         "id": 60436,
-        "nome": "Emerson (Ponte Preta)",
+        "nome": "Emerson Sheik",
         "idade": 38,
         "posicao": "Atacante",
         "overall": 59,
@@ -6447,7 +6447,7 @@
     },
     {
         "id": 60439,
-        "nome": "Walter (Atlético Goianiense)",
+        "nome": "Walter Henrique",
         "idade": 27,
         "posicao": "Atacante",
         "overall": 72,
@@ -6503,7 +6503,7 @@
     },
     {
         "id": 60443,
-        "nome": "Jorginho (Atlético Goianiense)",
+        "nome": "Jorginho Xavier",
         "idade": 26,
         "posicao": "Meio-Campo",
         "overall": 71,
@@ -6681,7 +6681,7 @@
     },
     {
         "id": 60455,
-        "nome": "Igor (Atlético Goianiense)",
+        "nome": "Igor Machado",
         "idade": 25,
         "posicao": "Meio-Campo",
         "overall": 62,
@@ -6728,7 +6728,7 @@
     },
     {
         "id": 60458,
-        "nome": "Alison (Atlético Goianiense)",
+        "nome": "Alison Mira",
         "idade": 21,
         "posicao": "Atacante",
         "overall": 65,

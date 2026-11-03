@@ -13,8 +13,8 @@ Como na Premier (scripts/importar_premier.py):
   camisa e pela idade, com um ruído fixo por nome e um teto — acima dele,
   só as estrelas;
 - nomes: o jogo identifica o jogador pelo nome. Quem repete o nome de
-  outro (no Brasileirão ou em outra seed) ganha o clube: "Gabriel
-  (Flamengo)".
+  outro (no Brasileirão ou em outra seed) ganha o sobrenome de verdade
+  (NOMES_REAIS, do nome completo no Wikidata): "Gabriel Girotto".
 
 Uso (a partir da pasta backend/):
     python -m scripts.importar_brasileirao
@@ -65,6 +65,79 @@ CLUBES = {
     "Atlético Goianiense": ("ACG", "#C8102E", "#000000", "listras", "moderno", 2, 0.2),
 }
 
+# quem repete o nome de outro jogador ganha o sobrenome de verdade (do nome
+# completo no Wikidata), não o clube: (clube, nome na fonte) -> nome no jogo
+NOMES_REAIS = {
+    ("Corinthians", "Gabriel"): "Gabriel Girotto",
+    ("Corinthians", "Moisés"): "Moisés Barbosa",
+    ("Corinthians", "Danilo"): "Danilo Gabriel",
+    ("Palmeiras", "Thiago Santos"): "Thiago dos Santos",
+    ("Palmeiras", "Luan"): "Luan Garcia",
+    ("Palmeiras", "Willian"): "Willian Siqueira",
+    ("Santos", "Lucas Lima"): "Lucas Araújo Lima",
+    ("Santos", "Bruno Henrique"): "Bruno Henrique Pinto",
+    ("Santos", "Matheus Ribeiro"): "Matheus Antunes",
+    ("Santos", "Yuri"): "Yuri Lima",
+    ("Santos", "João Paulo"): "João Paulo Martins",
+    ("Grêmio", "Jailson"): "Jailson Siqueira",
+    ("Cruzeiro", "Robinho"): "Robinho Signorini",
+    ("Cruzeiro", "Lucas Silva"): "Lucas Silva Borges",
+    ("Flamengo", "Lucas Paquetá"): "Lucas Tolentino",
+    ("Flamengo", "Ederson"): "Ederson Honorato",
+    ("Flamengo", "Gabriel"): "Gabriel Santana",
+    ("Flamengo", "Thiago Santos"): "Thiago Nascimento",
+    ("Vasco", "Guilherme"): "Guilherme Costa",
+    ("Vasco", "João Pedro"): "João Pedro Borges",
+    ("Vasco", "Rafael Marques"): "Rafael Marques Pinto",
+    ("Vasco", "Jean"): "Jean Irmer",
+    ("Vasco", "Gilberto"): "Gilberto Moraes",
+    ("Chapecoense", "Neto"): "Hélio Neto",
+    ("Chapecoense", "Elias"): "Elias Curzel",
+    ("Chapecoense", "Douglas"): "Douglas Bacelar",
+    ("Chapecoense", "João Pedro"): "João Pedro Maturano",
+    ("Chapecoense", "Moisés"): "Moisés Wolschick",
+    ("Atlético Mineiro", "Luan"): "Luan Madson",
+    ("Atlético Mineiro", "Leonardo Silva"): "Léo Silva",
+    ("Atlético Mineiro", "Rodrigão"): "Rodrigão Prado",
+    ("Botafogo", "Emerson"): "Emerson Santos",
+    ("Botafogo", "Guilherme"): "Guilherme Santos",
+    ("Atlético Paranaense", "Pablo"): "Pablo Teixeira",
+    ("Atlético Paranaense", "Bruno Guimarães"): "Bruno Guimarães Moura",
+    ("Atlético Paranaense", "Eduardo"): "Eduardo da Silva",
+    ("Bahia", "Jean"): "Jean Fernandes",
+    ("Bahia", "Juninho"): "Juninho Valoura",
+    ("Bahia", "Anderson"): "Anderson Campos",
+    ("São Paulo", "Bruno"): "Bruno Nascimento",
+    ("São Paulo", "Lucas Fernandes"): "Lucas Fernandes da Silva",
+    ("São Paulo", "Brenner"): "Brenner Souza",
+    ("Fluminense", "Léo"): "Léo Pelé",
+    ("Fluminense", "Wellington Silva"): "Wellington Alves",
+    ("Fluminense", "Henrique"): "Henrique Buss",
+    ("Fluminense", "Douglas"): "Douglas Augusto",
+    ("Fluminense", "Robinho"): "Robinho Azevedo",
+    ("Fluminense", "Renato"): "José Renato",
+    ("Fluminense", "Felipe"): "Felipe Sampaio",
+    ("Fluminense", "Matheus"): "Matheus Coutinho",
+    ("Sport", "Diego Souza"): "Diego Souza Andrade",
+    ("Sport", "Lucas Ferreira"): "Lucas Amaral",
+    ("Sport", "Marquinhos"): "Marquinhos Gonçalves",
+    ("Vitória", "Juninho"): "Juninho Barbosa",
+    ("Vitória", "Fred"): "Fred Burgel",
+    ("Vitória", "Yago"): "Yago Felipe",
+    ("Coritiba", "João Paulo"): "João Paulo da Silva",
+    ("Avaí", "Luan"): "Luan Scapolan",
+    ("Avaí", "Douglas"): "Douglas Friedrich",
+    ("Avaí", "Maicon"): "Maicon Sisenando",
+    ("Ponte Preta", "Rodrigo"): "Rodrigo Baldasso",
+    ("Ponte Preta", "Jádson"): "Jádson Alves",
+    ("Ponte Preta", "Wendel"): "Wendel Maurício",
+    ("Ponte Preta", "Emerson"): "Emerson Sheik",
+    ("Atlético Goianiense", "Walter"): "Walter Henrique",
+    ("Atlético Goianiense", "Jorginho"): "Jorginho Xavier",
+    ("Atlético Goianiense", "Igor"): "Igor Machado",
+    ("Atlético Goianiense", "Alison"): "Alison Mira",
+}
+
 CLASSICOS = [
     ("Corinthians", "Palmeiras"),
     ("Corinthians", "São Paulo"),
@@ -107,6 +180,27 @@ def _idade(nascimento):
     return INICIO.year - n.year - ((INICIO.month, INICIO.day) < (n.month, n.day))
 
 
+_PARTICULAS = {"de", "da", "do", "das", "dos", "e"}
+_SUFIXOS = {"júnior", "junior", "filho", "neto", "sobrinho"}
+
+
+def _com_sobrenome(nome, clube, j):
+    """Quem repete um nome e não está em NOMES_REAIS (as sobras, que não
+    entram na seed): o nome + o último sobrenome do nome completo. Sem nome
+    completo (artigo "Fulano (footballer, ...)"), o clube."""
+    artigo = j.get("artigo") or ""
+    if "(" not in artigo:
+        ja = {p.lower() for p in nome.split()}
+        for parte in reversed(artigo.split()):
+            if parte.lower() not in _PARTICULAS | _SUFIXOS | ja:
+                return f"{nome} {parte}"
+    return f"{nome} ({clube})"
+
+
+def _p_sorteio(j):
+    return {**j, "nome": j.get("nome_sorteio", j["nome"])}
+
+
 def nomes_ocupados():
     """Os nomes das outras seeds (o Brasileirão não pode repeti-los)."""
     nomes = set()
@@ -139,6 +233,7 @@ def importar():
             if j["setor"] not in CORTE:
                 continue
             jogadores.append({
+                "artigo": j.get("artigo"),
                 "numero": j.get("numero"),
                 "nome": j["nome"],
                 "nacionalidade": j.get("nacionalidade") or "Brazil",
@@ -155,9 +250,9 @@ def importar():
         dar_funcoes(sobras)
         por_clube[nome] = (elenco, sobras)
 
-    # nomes repetidos ganham o clube. Entre os do Brasileirão, o melhor fica
-    # com o nome; quem repete o de outra seed (que não pode mudar: os saves
-    # acham o jogador pelo nome) ganha o clube sempre
+    # nomes repetidos ganham o sobrenome real (NOMES_REAIS). Entre os do
+    # Brasileirão, o melhor fica com o nome; quem repete o de outra seed (que
+    # não pode mudar: os saves acham o jogador pelo nome) ganha sempre
     ocupados = nomes_ocupados()
     por_nome = {}
     for clube, (elenco, sobras) in por_clube.items():
@@ -169,7 +264,15 @@ def importar():
         donos.sort(key=lambda d: (-d[1]["overall"], ordem.index(d[0])))
         for i, (clube, j) in enumerate(donos):
             if i > 0 or nome in ocupados:
-                j["nome"] = f"{nome} ({clube})"
+                # o nome novo só entra na ficha: o sorteio (contrato,
+                # secundárias) segue com o nome de antes da v2.5.1, "Gabriel
+                # (Corinthians)", para a seed não mudar além do nome
+                j["nome_sorteio"] = f"{nome} ({clube})"
+                j["nome_jogo"] = NOMES_REAIS.get((clube, nome)) or _com_sobrenome(nome, clube, j)
+    finais = [j.get("nome_jogo", j["nome"]) for el, so in por_clube.values() for j in el + so]
+    repetidos = {n for n in finais if finais.count(n) > 1 or n in ocupados}
+    if repetidos:
+        raise SystemExit(f"nomes repetidos: {sorted(repetidos)}")
 
     clubes, jogadores, sobras_todas = [], [], []
     proximo = PRIMEIRO_ID
@@ -180,7 +283,7 @@ def importar():
         for j in titulares + [j for j in elenco if j not in titulares]:
             j["id"] = proximo
             proximo += 1
-            ficha = _ficha(j)
+            ficha = {**_ficha(_p_sorteio(j)), "nome": j.get("nome_jogo", j["nome"])}
             ficha["multa_rescisoria"] = None    # quem compra negocia (como na Premier)
             ficha["nacionalidade"] = _sigla_pais(j["nacionalidade"])
             jogadores.append({"id": j["id"], **ficha})
@@ -204,9 +307,10 @@ def importar():
         })
 
     livres_seed = [
-        {k: v for k, v in {**_ficha(j), "nacionalidade": _sigla_pais(j["nacionalidade"])}.items()
+        {k: v for k, v in {**_ficha(_p_sorteio(j)), "nome": j.get("nome_jogo", j["nome"]),
+                           "nacionalidade": _sigla_pais(j["nacionalidade"])}.items()
          if k not in ("contrato_anos", "multa_rescisoria")}
-        for j in sorted(sobras_todas, key=lambda j: (-j["overall"], j["nome"]))
+        for j in sorted(sobras_todas, key=lambda j: (-j["overall"], _p_sorteio(j)["nome"]))
     ][:livres.QUANTOS]
     return clubes, jogadores, livres_seed
 

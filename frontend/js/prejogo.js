@@ -12,6 +12,7 @@ import { jogarAoVivo } from "./aovivo.js";
 import { camisa, escudo } from "./identidade.js";
 import { icone } from "./icones.js";
 import { estadioNoturno } from "./atmosfera.js";
+import { nomesCurtos } from "./nomes.js";
 
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
 const RESULTADO = { V: "Vitória", E: "Empate", D: "Derrota" };
@@ -216,12 +217,8 @@ function tarjaTime(t) {
 // (v1.3). O CSS transforma --x (largura) e --y (profundidade) na posição, no
 // campo deitado do computador e no em pé do celular
 function metade(t, lado) {
-  return `<div class="metade metade-${lado}">${t.titulares.map((j) => peca(t.clube, j)).join("")}</div>`;
-}
-
-function sobrenome(nome) {
-  const partes = nome.split(" ");
-  return partes[partes.length - 1];
+  const curto = nomesCurtos(t.titulares.map((j) => j.nome));
+  return `<div class="metade metade-${lado}">${t.titulares.map((j) => peca(t.clube, j, curto)).join("")}</div>`;
 }
 
 function sinais(j) {
@@ -234,12 +231,12 @@ function sinais(j) {
   return s.join("");
 }
 
-function peca(clube, j) {
+function peca(clube, j, curto) {
   const lugar = j.x != null ? ` style="--x:${j.x};--y:${j.y}"` : "";
   return `<div class="peca"${lugar} title="${j.nome} · ${j.rotulo || j.vaga || j.funcao || j.posicao} · overall ${j.overall} · energia ${j.energia}">
     <span class="peca-camisa">${camisa(clube, { numero: j.numero, tamanho: 44 })}
       <span class="peca-sinais">${sinais(j)}</span></span>
-    <span class="peca-nome">${sobrenome(j.nome)}</span>
+    <span class="peca-nome">${curto(j.nome)}</span>
     <span class="peca-ovr">${j.overall}</span>
   </div>`;
 }

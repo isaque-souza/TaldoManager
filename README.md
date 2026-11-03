@@ -670,8 +670,8 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       tabela de 23/24 (calculada dos jogos), da camisa e da idade, com teto;
       `data/fontes/estrelas-premier.json` corrige à mão ~60 estrelas
       (Haaland 91, Salah 89, Saka 86...). Cores, caixa, torcida e clássicos
-      numa tabela do importador. Nomes iguais aos da Taldo ganham a
-      nacionalidade ("João Gomes (BRA)"). XI de ~73 (Sheffield) a ~87 (City).
+      numa tabela do importador. Nomes iguais aos da Taldo ganham o nome
+      completo de verdade ("João Victor Gomes", v2.5.1). XI de ~73 (Sheffield) a ~87 (City).
       Ainda não aparece no jogo: é o próximo passo
 * [x] Várias ligas no banco e no motor — todo jogo novo tem as duas
       ligas rodando juntas

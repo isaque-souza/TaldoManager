@@ -13,6 +13,7 @@ import { icone } from "./icones.js";
 import { abrirPosJogo } from "./posjogo.js";
 import { opcoesFormacao } from "./formacoes.js";
 import { barrasAtributos } from "./atributos.js";
+import { nomesCurtos } from "./nomes.js";
 import { SETOR, ehGoleiro, naTela, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
 
 const MS_POR_MINUTO = 500;          // 1×: ~45 s por jogo (escolha do usuário)
@@ -369,6 +370,7 @@ function renderPainel() {
   // na vaga do escolhido em campo
   const vagaSel = escolhido && sel.lado === "campo" ? escolhido.vaga : null;
 
+  const curto = nomesCurtos(t.em_campo.map((j) => j.nome));
   const camisaCampo = (j) => {
     const { left, top } = noDesenho(j.slot);
     const fora = j.vaga && j.vaga !== posicaoDe(j);
@@ -380,7 +382,7 @@ function renderPainel() {
         title="${j.nome} · ${sigla(j.vaga || posicaoDe(j))}${fora ? ` (${sigla(posicaoDe(j))} improvisado)` : ""}">
       <b class="gt-ovr ${fora ? "perde" : ""}">${alvo ?? j.overall_vaga ?? j.overall}</b>
       ${camisa(jogo.meu, { numero: j.numero, tamanho: 38 })}
-      <span class="gt-nome">${cartao(j)}${j.nome.split(" ").slice(-1)[0]}</span>
+      <span class="gt-nome">${cartao(j)}${curto(j.nome)}</span>
       <small class="gt-pos ${fora ? "perde" : ""}">${sigla(j.vaga || posicaoDe(j))}</small>
       ${energia(j.energia)}
     </button>`;
