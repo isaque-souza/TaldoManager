@@ -121,7 +121,9 @@ class _Contexto:
         """Faz a transferência e regrava tudo o que mudou. `termos` e
         `papel`: o contrato combinado com o jogador (v1.7)."""
 
-        mercado.transferir(jogador, vendedor, comprador, preco, termos)
+        # o elenco do técnico vai até ELENCO_MAX; o da CPU, ELENCO_MAX_CPU
+        maximo = mercado.ELENCO_MAX if comprador is self.alvo else mercado.ELENCO_MAX_CPU
+        mercado.transferir(jogador, vendedor, comprador, preco, termos, maximo)
         if papel:
             jogador.papel = papel
         mapa = self.gravar()
@@ -499,7 +501,7 @@ def _ficha_de_livre(ctx, janela, j):
         **_estimativa(ctx, j),
         "luvas": luvas,
         "bloqueio": (
-            janela.fechada or mercado.motivo_entrada_bloqueada(ctx.alvo, luvas)
+            janela.fechada or mercado.motivo_entrada_bloqueada(ctx.alvo, luvas, mercado.ELENCO_MAX)
             or interesse.bloqueio
         ),
         "negociacao": janela.por_nome.get(j.nome),
@@ -718,7 +720,7 @@ def propor(simulacao_id, jogador_id, valor):
         # regras que nem chegam a ser negociação (não gastam tentativa)
         motivo = (
             mercado.motivo_saida_bloqueada(vendedor, jogador)
-            or mercado.motivo_entrada_bloqueada(comprador, valor)
+            or mercado.motivo_entrada_bloqueada(comprador, valor, mercado.ELENCO_MAX)
             or _interesse(ctx, jogador, vendedor).bloqueio   # v1.9
         )
         if motivo:
@@ -939,7 +941,7 @@ def contratar_livre(simulacao_id, nome):
 
         clube = ctx.alvo
         motivo = (
-            mercado.motivo_entrada_bloqueada(clube, mercado.luvas(jogador))
+            mercado.motivo_entrada_bloqueada(clube, mercado.luvas(jogador), mercado.ELENCO_MAX)
             or _interesse(ctx, jogador, None).bloqueio   # v1.9
         )
         if motivo:
@@ -1119,7 +1121,7 @@ def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=Non
 
         motivo = (
             (vendedor and mercado.motivo_saida_bloqueada(vendedor, jogador))
-            or mercado.motivo_entrada_bloqueada(comprador, neg["valor"])
+            or mercado.motivo_entrada_bloqueada(comprador, neg["valor"], mercado.ELENCO_MAX)
         )
         if motivo:
             raise TransferenciaInvalida(motivo)
@@ -1186,7 +1188,8 @@ def propor_contrato(simulacao_id, negociacao_id, salario, anos, multa, papel=Non
                     )
                 else:
                     mercado.contratar_livre(
-                        jogador, ctx.campeonato.livres, comprador, termos
+                        jogador, ctx.campeonato.livres, comprador, termos,
+                        mercado.ELENCO_MAX,
                     )
                     jogador.papel = papel
                     mapa = ctx.gravar()
