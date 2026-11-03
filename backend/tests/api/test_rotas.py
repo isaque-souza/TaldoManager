@@ -255,6 +255,12 @@ def test_fluxo_rodada_a_rodada():
     assert corpo["contexto_mandante"]["forma"] == []   # ninguém jogou ainda
     assert "confronto_direto" not in corpo
 
+    # v2.4: a galeria de formações, uma por formação, com 10 vagas de linha
+    info = corpo["formacoes_info"]
+    assert [f["formacao"] for f in info] == corpo["formacoes"]
+    assert all(len(f["vagas"]) == 10 for f in info)
+    assert len(info) >= 25
+
     jogou = client.post(f"/simulacoes/{sid}/rodadas", json={"tatica": "defensivo"})
     assert jogou.status_code == 200
     r = jogou.json()

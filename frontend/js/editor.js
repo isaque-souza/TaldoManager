@@ -16,7 +16,7 @@ import { $, estado, pedir } from "./nucleo.js";
 import { camisa } from "./identidade.js";
 import { icone } from "./icones.js";
 import { carregarProximaRodada, salvarEscalacaoAgora, salvarJa } from "./rodada.js";
-import { naTela, podemTrocar, posicaoDe, sigla } from "./posicoes.js";
+import { naTela, podemTrocar, posicaoDe, SETOR, sigla } from "./posicoes.js";
 import { linhaAtributos } from "./atributos.js";
 
 const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "Defensivo" };
@@ -143,8 +143,34 @@ function desenhar() {
       <small>${j.lesionado ? `lesão ${j.rodadas_lesao}r` : `susp. ${j.jogos_suspensao}j`}</small>
     </span></li>`).join("");
 
+  $("ed-resumo").innerHTML = resumoDoTime(ed.titulares);
   ligar();
   acenderAlvos();   // mesma regra do arrasto: banco só é alvo de um titular
+}
+
+// v2.4: a prancheta em números — a força do XI (overall na vaga, com a
+// perda de quem está improvisado), a de cada setor e a energia média
+const SETORES = [["Defesa", "Defesa"], ["Meio-Campo", "Meio"], ["Atacante", "Ataque"]];
+
+function resumoDoTime(titulares) {
+  if (!titulares.length) return "";
+  const media = (lista, f) => (lista.length ? Math.round(lista.reduce((s, j) => s + f(j), 0) / lista.length) : null);
+  const ovr = (j) => j.overall_vaga ?? j.overall;
+  const setor = (j) => SETOR[j.vaga || posicaoDe(j)];
+  const improvisados = titulares.filter((j) => (j.vaga || posicaoDe(j)) !== posicaoDe(j)).length;
+  const energiaMedia = media(titulares, (j) => j.energia);
+  const bloco = (rotulo, valor, extra = "") =>
+    `<div class="ed-res-bloco${extra}"><dt>${rotulo}</dt><dd>${valor ?? "—"}</dd></div>`;
+  const setores = SETORES.map(([s, rotulo]) => {
+    const doSetor = titulares.filter((j) => setor(j) === s);
+    return bloco(`${rotulo} <small>${doSetor.length}</small>`, media(doSetor, ovr));
+  }).join("");
+  return `<dl class="ed-res">
+    ${bloco("Força do XI", media(titulares, ovr), " ed-res-forte")}
+    ${setores}
+    ${bloco("Energia", `${energiaMedia}%`, energiaMedia < 60 ? " ed-res-alerta" : "")}
+    ${improvisados ? bloco("Improvisados", improvisados, " ed-res-alerta") : ""}
+  </dl>`;
 }
 
 function ligar() {
