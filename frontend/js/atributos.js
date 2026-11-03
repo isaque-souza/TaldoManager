@@ -41,3 +41,39 @@ export function barrasAtributos(atributos) {
     </li>`).join("");
   return linhas ? `<ul class="atributos" aria-label="Atributos">${linhas}</ul>` : "";
 }
+
+// v2.4: o radar dos seis atributos (hexágono), como nas fichas do FIFA. A
+// escala começa em 40 — abaixo disso ninguém joga a liga — para o desenho
+// mostrar a diferença entre um 70 e um 90.
+const PISO = 40;
+const R = 78;
+
+export function radarAtributos(atributos, cor = "#22b46a") {
+  const lista = Object.entries(atributos || {});
+  if (lista.length < 3) return "";
+  const n = lista.length;
+  const ang = (i) => -Math.PI / 2 + (i * 2 * Math.PI) / n;
+  const ponto = (i, v) => {
+    const r = (R * (Math.max(PISO, v) - PISO)) / (100 - PISO);
+    return [Math.cos(ang(i)) * r, Math.sin(ang(i)) * r];
+  };
+  const anel = (v) => lista.map((_, i) => ponto(i, v).map((c) => c.toFixed(1)).join(",")).join(" ");
+  const aneis = [55, 70, 85, 100].map((v) => `<polygon points="${anel(v)}" class="rd-anel"/>`).join("");
+  const eixos = lista.map((_, i) => {
+    const [x, y] = ponto(i, 100);
+    return `<line x1="0" y1="0" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="rd-eixo"/>`;
+  }).join("");
+  const forma = lista.map(([, v], i) => ponto(i, v).map((c) => c.toFixed(1)).join(",")).join(" ");
+  const rotulos = lista.map(([a, v], i) => {
+    const x = Math.cos(ang(i)) * (R + 20);
+    const y = Math.sin(ang(i)) * (R + 20);
+    return `<text x="${x.toFixed(1)}" y="${(y - 3).toFixed(1)}" class="rd-sigla">${SIGLA[a]}</text>
+      <text x="${x.toFixed(1)}" y="${(y + 11).toFixed(1)}" class="rd-valor rd-${faixa(v)}">${v}</text>`;
+  }).join("");
+  const texto = lista.map(([a, v]) => `${NOME[a]} ${v}`).join(", ");
+  return `<svg class="radar" viewBox="-120 -112 240 226" role="img" aria-label="Atributos: ${texto}">
+    ${aneis}${eixos}
+    <polygon points="${forma}" class="rd-forma" style="--rd-cor:${cor}"/>
+    ${rotulos}
+  </svg>`;
+}
