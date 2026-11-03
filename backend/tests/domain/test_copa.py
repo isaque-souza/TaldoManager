@@ -369,3 +369,12 @@ def test_copa_de_save_antigo_vira_a_continental():
     assert copa.rodada_da_chave(antigo, "oitavas") == 8
     assert copa.dividir("oitavas") == (C, "oitavas")
     assert copa.nome_da_chave(antigo, "oitavas") == "Copa entre as ligas · Oitavas de final"
+
+
+def test_premio_da_nacional_segue_o_peso_do_pais_e_a_continental_e_igual():
+    """v2.6: a nacional paga pelo peso da Série A do país, como a liga; a
+    continental, igual para todos (o campeão soma 19 mi)."""
+    total = lambda cid: sum(copa.premios(2, "nacional", cid).values())
+    assert total("inglaterra") == 8_100_000
+    assert total("brasil") == 3_240_000 and total("taldo") == 6_480_000
+    assert sum(copa.premios(2).values()) == 19_000_000

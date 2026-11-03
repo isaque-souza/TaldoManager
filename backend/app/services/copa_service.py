@@ -80,7 +80,7 @@ def visao(c, clube_usuario, liga_de, economia=2):
     vêm com `jogos` vazio), o campeão, a próxima data e a situação do clube
     do técnico. `c`: uma copa do dict (`copa.normalizar`)."""
     fases = []
-    valores = copa.premios(economia, c["tipo"])
+    valores = copa.premios_da_copa(economia, c)
     for fase in c["ordem"]:
         jogos = [_jogo(j, liga_de) for j in c["fases"].get(fase, [])]
         fases.append({
@@ -189,7 +189,7 @@ def mensagens_de_inicio(campeonato, clube):
                 continue
         rodada = c.datas[sit["fase"] or c.ordem[0]]
         mensagens.append(caixa.copa_classificacao(
-            sit, rodada, sum(copa.premios(campeonato.economia, c.tipo).values()),
+            sit, rodada, sum(copa.premios_da_copa(campeonato.economia, c).values()),
             c.nome, c.tipo,
         ))
     return mensagens
@@ -219,5 +219,5 @@ def mensagem_da_rodada(campeonato, rodada, clube):
         proxima = (sit["fase"], c.datas[sit["fase"]],
                    sit["jogo"]["adversario"], sit["jogo"]["mando"])
     return caixa.copa_resultado(
-        fase, jogo, clube, copa.premios(campeonato.economia, c.tipo)[fase], proxima, c.nome,
+        fase, jogo, clube, copa.premios_da_copa(campeonato.economia, c)[fase], proxima, c.nome,
     )

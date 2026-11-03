@@ -1274,13 +1274,16 @@ bandeiras. O mesmo jogo desenha sempre o mesmo estádio.
       32 clubes, 16 avos, oitavas, quartas, semi e final, no meio da semana
       depois das rodadas 5, 12, 19, 26 e 34. Na primeira fase ninguém pega
       um clube da própria liga; o seed é a posição (no empate, a ordem das
-      ligas) e o melhor seed joga em casa. O campeão soma 21 mi
+      ligas) e o melhor seed joga em casa. Paga igual para todos, como a
+      Champions: o campeão soma 19 mi
 * [x] **Copas nacionais** — Taça Taldo, FA Cup, Copa del Rey e Copa do
       Brasil: os 20 da Série A e os 12 melhores da B, 32 clubes, depois das
       rodadas 3, 9, 16, 23 e 30 (todas no mesmo dia; a continental nunca cai
       junto). Usam as divisões da temporada nova (quem subiu joga entre os
-      da A) e a ordem da anterior (quem caiu vem antes dos da B). O campeão
-      soma 8,1 mi
+      da A) e a ordem da anterior (quem caiu vem antes dos da B). O prêmio
+      segue o peso da Série A do país, como a liga: o campeão soma 8,1 mi na
+      FA Cup, 6,5 mi na Taça Taldo, 5,7 mi na Copa del Rey e 3,2 mi na Copa
+      do Brasil
 * [x] Motor (`app/domain/copa.py`): `Copas` guarda as copas da temporada e
       cada fase é chamada pela chave `"copa:fase"` (`"brasil:oitavas"`); o
       jogo do técnico espera a quarta (`copa_adiada`) e as outras fases do

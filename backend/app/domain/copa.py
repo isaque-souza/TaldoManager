@@ -60,12 +60,14 @@ DATAS = {
 # a copa de antes da v2.6 (16 clubes, Taldo x Premier)
 DATAS_V1 = {"oitavas": 8, "quartas": 17, "semi": 26, "final": 35}
 
-# prêmio por vitória em cada fase (economia v2, v2.5): como a Champions, a
-# copa entre as ligas paga mais que o título nacional — o campeão soma 21 mi;
-# a nacional, 8,1 mi
+# prêmio por vitória em cada fase (economia v2, v2.5). A copa entre as ligas
+# paga igual para todos, como a Champions: o campeão soma 19 mi (a de antes
+# da v2.6, com uma fase a menos, 20 mi). A nacional é a de um país de peso
+# 1,0 (a FA Cup, 8,1 mi): cada país paga pelo peso da sua Série A, como a
+# premiação da liga (`financas.PESO_LIGA`) — a Copa do Brasil, 3,2 mi
 PREMIOS = {
     CONTINENTAL: {"16-avos": 1_000_000, "oitavas": 2_000_000, "quartas": 3_500_000,
-                  "semi": 5_500_000, "final": 9_000_000},
+                  "semi": 5_500_000, "final": 7_000_000},
     "nacional": {"16-avos": 300_000, "oitavas": 600_000, "quartas": 1_200_000,
                  "semi": 2_000_000, "final": 4_000_000},
 }
@@ -78,9 +80,21 @@ PREMIOS_V1 = {
 }
 
 
-def premios(economia, tipo=CONTINENTAL):
-    """{fase: prêmio por vitória} da copa do `tipo` (continental/nacional)."""
-    return (PREMIOS_V1 if economia < 2 else PREMIOS)[tipo]
+def premios(economia, tipo=CONTINENTAL, copa_id=None):
+    """{fase: prêmio por vitória} da copa do `tipo` (continental/nacional).
+    A nacional (`copa_id` = o país) sai pelo peso da Série A dele."""
+    base = (PREMIOS_V1 if economia < 2 else PREMIOS)[tipo]
+    if tipo == CONTINENTAL or copa_id is None:
+        return dict(base)
+    serie_a = next((l for l, (p, d) in divisoes.DIVISOES.items() if p == copa_id and d == 1), None)
+    fator = financas.peso(serie_a) if serie_a else 1.0
+    return {f: round(v * fator / 10_000) * 10_000 for f, v in base.items()}
+
+
+def premios_da_copa(economia, c):
+    """Os prêmios de uma copa (um `Copa` ou o dict dela)."""
+    tipo, copa_id = (c["tipo"], c["id"]) if isinstance(c, dict) else (c.tipo, c.id)
+    return premios(economia, tipo, copa_id)
 
 
 # disputa de pênaltis
@@ -285,7 +299,7 @@ class Copa:
         jogos = self.fases.get(fase)
         if not jogos or jogos[0]["vencedor"]:
             return []
-        premios = premios or PREMIOS[self.tipo]
+        premios = premios or premios_da_copa(financas.ECONOMIA_ATUAL, self)
 
         for jogo in jogos:
             dele = ao_vivo and ao_vivo["clube"] in (jogo["mandante"], jogo["visitante"])
@@ -372,7 +386,7 @@ class Copas:
     def jogar_fase(self, chave_, clubes, ao_vivo=None, economia=financas.ECONOMIA_ATUAL):
         copa_id, fase = dividir(chave_)
         c = self.copa(copa_id)
-        jogos = c.jogar_fase(fase, clubes, ao_vivo, premios(economia, c.tipo))
+        jogos = c.jogar_fase(fase, clubes, ao_vivo, premios_da_copa(economia, c))
         self.partida_usuario = c.partida_usuario
         return jogos
 
