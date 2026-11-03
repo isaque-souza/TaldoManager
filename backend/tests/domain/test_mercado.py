@@ -62,7 +62,7 @@ def test_vendedor_nao_fica_abaixo_do_elenco_minimo():
 
 def test_comprador_nao_passa_do_elenco_maximo():
     vendedor, comprador = _clube("A"), _clube("B")
-    for i in range(mercado.ELENCO_MAX_CPU - len(comprador.jogadores)):
+    for i in range(mercado.ELENCO_ALVO_CPU - len(comprador.jogadores)):
         comprador.contratar_jogador(Jogador(f"Extra {i}", 25, "Defesa", 70))
     with pytest.raises(TransferenciaInvalida, match="já tem"):
         mercado.transferir(_atacante(vendedor), vendedor, comprador, 1)
@@ -186,7 +186,7 @@ def test_contratar_livre_paga_so_as_luvas():
 
 def test_contratar_livre_respeita_elenco_cheio_e_caixa():
     cheio = _clube("A")
-    for i in range(mercado.ELENCO_MAX_CPU - len(cheio.jogadores)):
+    for i in range(mercado.ELENCO_ALVO_CPU - len(cheio.jogadores)):
         cheio.contratar_jogador(Jogador(f"Extra {i}", 25, "Defesa", 70))
     livre = Jogador("Sem Clube", 25, "Atacante", 80, contrato_anos=0)
     with pytest.raises(TransferenciaInvalida):
@@ -205,10 +205,10 @@ def test_so_contrata_quem_esta_livre():
 
 
 def test_elenco_do_tecnico_vai_ate_52():
-    """v2.6: o técnico tem elenco de até 52, como no FIFA; a CPU, 25."""
-    assert (mercado.ELENCO_MAX, mercado.ELENCO_MAX_CPU) == (52, 25)
+    """v2.6: elenco de até 52, como no FIFA; a CPU, por conta própria, 30."""
+    assert (mercado.ELENCO_MAX, mercado.ELENCO_ALVO_CPU) == (52, 30)
     vendedor, comprador = _clube("A"), _clube("B")
-    for i in range(mercado.ELENCO_MAX_CPU - len(comprador.jogadores)):
+    for i in range(mercado.ELENCO_ALVO_CPU - len(comprador.jogadores)):
         comprador.contratar_jogador(Jogador(f"Extra {i}", 25, "Defesa", 70))
     mercado.transferir(_atacante(vendedor), vendedor, comprador, 1, maximo=mercado.ELENCO_MAX)
     for i in range(mercado.ELENCO_MAX - len(comprador.jogadores)):

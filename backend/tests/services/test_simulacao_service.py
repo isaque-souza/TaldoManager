@@ -340,7 +340,8 @@ def test_game_log_do_jogador_bate_com_a_ficha():
     assert sum(j["assistencias"] for j in log["jogos"]) == craque["assistencias"]
 
     media = sum(j["nota"] for j in log["jogos"]) / len(log["jogos"])
-    assert round(media, 1) == round(craque["nota_media"], 1)
+    # a ficha guarda a média com 2 casas
+    assert abs(media - craque["nota_media"]) < 0.006
 
 
 def test_game_log_de_jogador_inexistente_da_none():
