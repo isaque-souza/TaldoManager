@@ -86,12 +86,8 @@ function tileProjecao(clube) {
 
 // ---------- projeção do fim da temporada (v2.4) ----------
 
-// o prêmio pela posição final (app/domain/financas.py: PREMIO_CAMPEAO e
-// PREMIO_DEGRAU) — só entra no fim, então a linha do caixa não o mostra
-const PREMIO_CAMPEAO = 10_000_000;
-const PREMIO_DEGRAU = 500_000;
-const premioDa = (posicao) => Math.max(PREMIO_DEGRAU, PREMIO_CAMPEAO - (posicao - 1) * PREMIO_DEGRAU);
-
+// o prêmio pela posição final vem da API (`premio_posicao`, com o tamanho
+// da liga, v2.5) — só entra no fim, então a linha do caixa não o mostra
 // No ritmo das últimas rodadas (a mediana: uma venda ou compra no meio não
 // distorce), onde o caixa chega na última rodada, e quanto o prêmio da
 // posição de hoje soma em cima. null antes da 3ª rodada ou no fim.
@@ -105,7 +101,7 @@ function projecao(clube) {
   const porRodada = deltas[Math.floor(deltas.length / 2)];
   const semPremio = clube.dinheiro + porRodada * (total - feitas);
   const posicao = clube.posicao_final;
-  const premio = posicao ? premioDa(posicao) : 0;
+  const premio = posicao ? clube.premio_posicao || 0 : 0;
   return { feitas, total, porRodada, semPremio, premio, comPremio: semPremio + premio, posicao };
 }
 
@@ -229,6 +225,7 @@ function barrasFluxo(clube) {
   const itens = [
     ["Cota de TV", clube.receita_tv, "receita", true, "tv"],
     ["Bilheteria", clube.receita_bilheteria, "receita", true, "ingresso"],
+    ["Patrocínio", clube.receita_patrocinio || 0, "receita", false, "assinou"],
     ["Premiação", clube.receita_premiacao, "receita", false, "trofeu"],
     ["Vendas", clube.receita_vendas, "receita", false, "troca"],
     ["Salários", clube.despesa_salarios, "despesa", true, "dinheiro"],

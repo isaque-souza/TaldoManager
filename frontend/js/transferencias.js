@@ -26,7 +26,8 @@ const ABAS = [
   ["negociacoes", "Negociações"], ["historico", "Histórico"], ["olheiro", "Olheiro"],
 ];
 const LIMITE_LINHAS = 40;   // linhas da busca (o resto pede filtro)
-const SIGLA_LIGA = { taldo: "TAL", premier: "PL" };
+const SIGLA_LIGA = { taldo: "TAL", premier: "PL", taldo_b: "TAL B", championship: "CHA", laliga: "LL", segunda: "LL2",
+  brasileirao: "BR", brasileirao_b: "BR B" };
 const POSICOES = [["", "todas"], ["Goleiro", "Goleiro"], ["Defesa", "Defesa"],
                   ["Meio-Campo", "Meio-campo"], ["Atacante", "Atacante"]];
 const IDADES = [["", "todas"], ["jovem", "até 21"], ["auge", "22 a 29"], ["veterano", "30 ou mais"]];
@@ -318,7 +319,7 @@ function abaBuscar() {
         aria-expanded="${tela.filtros}">${icone("lista")} Filtros${ativos ? ` (${ativos} ativo${ativos === 1 ? "" : "s"})` : ""}</button>
     <div class="mercado-filtros tr-filtros${tela.filtros ? " aberto" : ""}">
       ${filtro("origem", "Jogadores", [["clubes", "outros clubes"], ["livres", `sem clube (${m.livres.length})`]])}
-      ${!livres && ligas.length > 1 ? filtro("liga", "Liga", [["", "as duas"], ...ligas.map((l) => [l, nomeLiga(l)])]) : ""}
+      ${!livres && ligas.length > 1 ? filtro("liga", "Liga", [["", "todas"], ...ligas.map((l) => [l, nomeLiga(l)])]) : ""}
       ${livres ? "" : filtro("clube", "Clube", [["", "todos"], ...clubes.map((c) => [c, c])])}
       ${filtro("posicao", "Posição", POSICOES)}
       ${filtro("idade", "Idade", IDADES)}

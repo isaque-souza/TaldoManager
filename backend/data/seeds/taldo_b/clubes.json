@@ -1,0 +1,882 @@
+[
+    {
+        "id": 1,
+        "nome": "Taldo Wanderers",
+        "pais": "Taldo",
+        "dinheiro": 5000000,
+        "torcedores": 1400000,
+        "titulares": [
+            20001,
+            20002,
+            20003,
+            20004,
+            20005,
+            20006,
+            20007,
+            20008,
+            20009,
+            20010,
+            20011
+        ],
+        "reservas": [
+            20012,
+            20013,
+            20014,
+            20015,
+            20016,
+            20017,
+            20018,
+            20019,
+            20020,
+            20021,
+            20022,
+            20023
+        ],
+        "rivais": [
+            "Taldo Rovers"
+        ],
+        "identidade": {
+            "cor_primaria": "#5B2C83",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "TWA"
+        }
+    },
+    {
+        "id": 2,
+        "nome": "Taldo Albion",
+        "pais": "Taldo",
+        "dinheiro": 4000000,
+        "torcedores": 1100000,
+        "titulares": [
+            20024,
+            20025,
+            20026,
+            20027,
+            20028,
+            20029,
+            20030,
+            20031,
+            20032,
+            20033,
+            20034
+        ],
+        "reservas": [
+            20035,
+            20036,
+            20037,
+            20038,
+            20039,
+            20040,
+            20041,
+            20042,
+            20043,
+            20044,
+            20045,
+            20046
+        ],
+        "rivais": [
+            "Taldo Town"
+        ],
+        "identidade": {
+            "cor_primaria": "#0B5394",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "TAL"
+        }
+    },
+    {
+        "id": 3,
+        "nome": "Taldo Rovers",
+        "pais": "Taldo",
+        "dinheiro": 4000000,
+        "torcedores": 1000000,
+        "titulares": [
+            20047,
+            20048,
+            20049,
+            20050,
+            20051,
+            20052,
+            20053,
+            20054,
+            20055,
+            20056,
+            20057
+        ],
+        "reservas": [
+            20058,
+            20059,
+            20060,
+            20061,
+            20062,
+            20063,
+            20064,
+            20065,
+            20066,
+            20067,
+            20068,
+            20069
+        ],
+        "rivais": [
+            "Taldo Wanderers"
+        ],
+        "identidade": {
+            "cor_primaria": "#1E7B3A",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "aros",
+            "escudo": "redondo",
+            "sigla": "TRO"
+        }
+    },
+    {
+        "id": 4,
+        "nome": "Olímpico Taldo",
+        "pais": "Taldo",
+        "dinheiro": 4000000,
+        "torcedores": 900000,
+        "titulares": [
+            20070,
+            20071,
+            20072,
+            20073,
+            20074,
+            20075,
+            20076,
+            20077,
+            20078,
+            20079,
+            20080
+        ],
+        "reservas": [
+            20081,
+            20082,
+            20083,
+            20084,
+            20085,
+            20086,
+            20087,
+            20088,
+            20089,
+            20090,
+            20091,
+            20092
+        ],
+        "rivais": [
+            "Racing Taldo"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#C9A227",
+            "camisa": "faixa",
+            "escudo": "moderno",
+            "sigla": "OLT"
+        }
+    },
+    {
+        "id": 5,
+        "nome": "Taldo Town",
+        "pais": "Taldo",
+        "dinheiro": 3000000,
+        "torcedores": 800000,
+        "titulares": [
+            20093,
+            20094,
+            20095,
+            20096,
+            20097,
+            20098,
+            20099,
+            20100,
+            20101,
+            20102,
+            20103
+        ],
+        "reservas": [
+            20104,
+            20105,
+            20106,
+            20107,
+            20108,
+            20109,
+            20110,
+            20111,
+            20112,
+            20113,
+            20114,
+            20115
+        ],
+        "rivais": [
+            "Taldo Albion"
+        ],
+        "identidade": {
+            "cor_primaria": "#E06666",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "TTO"
+        }
+    },
+    {
+        "id": 6,
+        "nome": "Racing Taldo",
+        "pais": "Taldo",
+        "dinheiro": 3000000,
+        "torcedores": 800000,
+        "titulares": [
+            20116,
+            20117,
+            20118,
+            20119,
+            20120,
+            20121,
+            20122,
+            20123,
+            20124,
+            20125,
+            20126
+        ],
+        "reservas": [
+            20127,
+            20128,
+            20129,
+            20130,
+            20131,
+            20132,
+            20133,
+            20134,
+            20135,
+            20136,
+            20137,
+            20138
+        ],
+        "rivais": [
+            "Olímpico Taldo"
+        ],
+        "identidade": {
+            "cor_primaria": "#6FA8DC",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "RCT"
+        }
+    },
+    {
+        "id": 7,
+        "nome": "Taldo County",
+        "pais": "Taldo",
+        "dinheiro": 3000000,
+        "torcedores": 600000,
+        "titulares": [
+            20139,
+            20140,
+            20141,
+            20142,
+            20143,
+            20144,
+            20145,
+            20146,
+            20147,
+            20148,
+            20149
+        ],
+        "reservas": [
+            20150,
+            20151,
+            20152,
+            20153,
+            20154,
+            20155,
+            20156,
+            20157,
+            20158,
+            20159,
+            20160,
+            20161
+        ],
+        "rivais": [
+            "Taldo Central"
+        ],
+        "identidade": {
+            "cor_primaria": "#38761D",
+            "cor_secundaria": "#F1C232",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "TCO"
+        }
+    },
+    {
+        "id": 8,
+        "nome": "Taldo Ferroviário",
+        "pais": "Taldo",
+        "dinheiro": 3000000,
+        "torcedores": 700000,
+        "titulares": [
+            20162,
+            20163,
+            20164,
+            20165,
+            20166,
+            20167,
+            20168,
+            20169,
+            20170,
+            20171,
+            20172
+        ],
+        "reservas": [
+            20173,
+            20174,
+            20175,
+            20176,
+            20177,
+            20178,
+            20179,
+            20180,
+            20181,
+            20182,
+            20183,
+            20184
+        ],
+        "rivais": [
+            "Operário Taldo"
+        ],
+        "identidade": {
+            "cor_primaria": "#CC0000",
+            "cor_secundaria": "#000000",
+            "camisa": "metade",
+            "escudo": "classico",
+            "sigla": "TFE"
+        }
+    },
+    {
+        "id": 9,
+        "nome": "Operário Taldo",
+        "pais": "Taldo",
+        "dinheiro": 2000000,
+        "torcedores": 600000,
+        "titulares": [
+            20185,
+            20186,
+            20187,
+            20188,
+            20189,
+            20190,
+            20191,
+            20192,
+            20193,
+            20194,
+            20195
+        ],
+        "reservas": [
+            20196,
+            20197,
+            20198,
+            20199,
+            20200,
+            20201,
+            20202,
+            20203,
+            20204,
+            20205,
+            20206,
+            20207
+        ],
+        "rivais": [
+            "Taldo Ferroviário"
+        ],
+        "identidade": {
+            "cor_primaria": "#000000",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "moderno",
+            "sigla": "OPT"
+        }
+    },
+    {
+        "id": 10,
+        "nome": "Taldo Unidos",
+        "pais": "Taldo",
+        "dinheiro": 2000000,
+        "torcedores": 500000,
+        "titulares": [
+            20208,
+            20209,
+            20210,
+            20211,
+            20212,
+            20213,
+            20214,
+            20215,
+            20216,
+            20217,
+            20218
+        ],
+        "reservas": [
+            20219,
+            20220,
+            20221,
+            20222,
+            20223,
+            20224,
+            20225,
+            20226,
+            20227,
+            20228,
+            20229,
+            20230
+        ],
+        "rivais": [
+            "Taldo Atlântico"
+        ],
+        "identidade": {
+            "cor_primaria": "#073763",
+            "cor_secundaria": "#E69138",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "TUN"
+        }
+    },
+    {
+        "id": 11,
+        "nome": "Taldo Atlântico",
+        "pais": "Taldo",
+        "dinheiro": 2000000,
+        "torcedores": 500000,
+        "titulares": [
+            20231,
+            20232,
+            20233,
+            20234,
+            20235,
+            20236,
+            20237,
+            20238,
+            20239,
+            20240,
+            20241
+        ],
+        "reservas": [
+            20242,
+            20243,
+            20244,
+            20245,
+            20246,
+            20247,
+            20248,
+            20249,
+            20250,
+            20251,
+            20252,
+            20253
+        ],
+        "rivais": [
+            "Taldo Unidos"
+        ],
+        "identidade": {
+            "cor_primaria": "#0097A7",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "faixa",
+            "escudo": "moderno",
+            "sigla": "TAT"
+        }
+    },
+    {
+        "id": 12,
+        "nome": "Taldo Norte",
+        "pais": "Taldo",
+        "dinheiro": 2000000,
+        "torcedores": 450000,
+        "titulares": [
+            20254,
+            20255,
+            20256,
+            20257,
+            20258,
+            20259,
+            20260,
+            20261,
+            20262,
+            20263,
+            20264
+        ],
+        "reservas": [
+            20265,
+            20266,
+            20267,
+            20268,
+            20269,
+            20270,
+            20271,
+            20272,
+            20273,
+            20274,
+            20275,
+            20276
+        ],
+        "rivais": [
+            "Taldo Sul"
+        ],
+        "identidade": {
+            "cor_primaria": "#274E13",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "TNO"
+        }
+    },
+    {
+        "id": 13,
+        "nome": "Taldo Sul",
+        "pais": "Taldo",
+        "dinheiro": 2000000,
+        "torcedores": 450000,
+        "titulares": [
+            20277,
+            20278,
+            20279,
+            20280,
+            20281,
+            20282,
+            20283,
+            20284,
+            20285,
+            20286,
+            20287
+        ],
+        "reservas": [
+            20288,
+            20289,
+            20290,
+            20291,
+            20292,
+            20293,
+            20294,
+            20295,
+            20296,
+            20297,
+            20298,
+            20299
+        ],
+        "rivais": [
+            "Taldo Norte"
+        ],
+        "identidade": {
+            "cor_primaria": "#990000",
+            "cor_secundaria": "#FFD966",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "TSU"
+        }
+    },
+    {
+        "id": 14,
+        "nome": "Taldo Litoral",
+        "pais": "Taldo",
+        "dinheiro": 2000000,
+        "torcedores": 400000,
+        "titulares": [
+            20300,
+            20301,
+            20302,
+            20303,
+            20304,
+            20305,
+            20306,
+            20307,
+            20308,
+            20309,
+            20310
+        ],
+        "reservas": [
+            20311,
+            20312,
+            20313,
+            20314,
+            20315,
+            20316,
+            20317,
+            20318,
+            20319,
+            20320,
+            20321,
+            20322
+        ],
+        "rivais": [
+            "Taldo Porto"
+        ],
+        "identidade": {
+            "cor_primaria": "#3D85C6",
+            "cor_secundaria": "#FFE599",
+            "camisa": "listras",
+            "escudo": "redondo",
+            "sigla": "TLI"
+        }
+    },
+    {
+        "id": 15,
+        "nome": "Taldo Serrano",
+        "pais": "Taldo",
+        "dinheiro": 1500000,
+        "torcedores": 300000,
+        "titulares": [
+            20323,
+            20324,
+            20325,
+            20326,
+            20327,
+            20328,
+            20329,
+            20330,
+            20331,
+            20332,
+            20333
+        ],
+        "reservas": [
+            20334,
+            20335,
+            20336,
+            20337,
+            20338,
+            20339,
+            20340,
+            20341,
+            20342,
+            20343,
+            20344,
+            20345
+        ],
+        "rivais": [
+            "Taldo Vale"
+        ],
+        "identidade": {
+            "cor_primaria": "#783F04",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "TSE"
+        }
+    },
+    {
+        "id": 16,
+        "nome": "Taldo Vale",
+        "pais": "Taldo",
+        "dinheiro": 1500000,
+        "torcedores": 300000,
+        "titulares": [
+            20346,
+            20347,
+            20348,
+            20349,
+            20350,
+            20351,
+            20352,
+            20353,
+            20354,
+            20355,
+            20356
+        ],
+        "reservas": [
+            20357,
+            20358,
+            20359,
+            20360,
+            20361,
+            20362,
+            20363,
+            20364,
+            20365,
+            20366,
+            20367,
+            20368
+        ],
+        "rivais": [
+            "Taldo Serrano"
+        ],
+        "identidade": {
+            "cor_primaria": "#6AA84F",
+            "cor_secundaria": "#000000",
+            "camisa": "metade",
+            "escudo": "moderno",
+            "sigla": "TVA"
+        }
+    },
+    {
+        "id": 17,
+        "nome": "Taldo Porto",
+        "pais": "Taldo",
+        "dinheiro": 1500000,
+        "torcedores": 300000,
+        "titulares": [
+            20369,
+            20370,
+            20371,
+            20372,
+            20373,
+            20374,
+            20375,
+            20376,
+            20377,
+            20378,
+            20379
+        ],
+        "reservas": [
+            20380,
+            20381,
+            20382,
+            20383,
+            20384,
+            20385,
+            20386,
+            20387,
+            20388,
+            20389,
+            20390,
+            20391
+        ],
+        "rivais": [
+            "Taldo Litoral"
+        ],
+        "identidade": {
+            "cor_primaria": "#1C4587",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "aros",
+            "escudo": "classico",
+            "sigla": "TPO"
+        }
+    },
+    {
+        "id": 18,
+        "nome": "Taldo Central",
+        "pais": "Taldo",
+        "dinheiro": 1500000,
+        "torcedores": 250000,
+        "titulares": [
+            20392,
+            20393,
+            20394,
+            20395,
+            20396,
+            20397,
+            20398,
+            20399,
+            20400,
+            20401,
+            20402
+        ],
+        "reservas": [
+            20403,
+            20404,
+            20405,
+            20406,
+            20407,
+            20408,
+            20409,
+            20410,
+            20411,
+            20412,
+            20413,
+            20414
+        ],
+        "rivais": [
+            "Taldo County"
+        ],
+        "identidade": {
+            "cor_primaria": "#B45F06",
+            "cor_secundaria": "#000000",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "TCE"
+        }
+    },
+    {
+        "id": 19,
+        "nome": "Taldo Phoenix",
+        "pais": "Taldo",
+        "dinheiro": 1000000,
+        "torcedores": 200000,
+        "titulares": [
+            20415,
+            20416,
+            20417,
+            20418,
+            20419,
+            20420,
+            20421,
+            20422,
+            20423,
+            20424,
+            20425
+        ],
+        "reservas": [
+            20426,
+            20427,
+            20428,
+            20429,
+            20430,
+            20431,
+            20432,
+            20433,
+            20434,
+            20435,
+            20436,
+            20437
+        ],
+        "rivais": [
+            "Taldo Comets"
+        ],
+        "identidade": {
+            "cor_primaria": "#E69138",
+            "cor_secundaria": "#990000",
+            "camisa": "faixa",
+            "escudo": "moderno",
+            "sigla": "TPH"
+        }
+    },
+    {
+        "id": 20,
+        "nome": "Taldo Comets",
+        "pais": "Taldo",
+        "dinheiro": 1000000,
+        "torcedores": 150000,
+        "titulares": [
+            20438,
+            20439,
+            20440,
+            20441,
+            20442,
+            20443,
+            20444,
+            20445,
+            20446,
+            20447,
+            20448
+        ],
+        "reservas": [
+            20449,
+            20450,
+            20451,
+            20452,
+            20453,
+            20454,
+            20455,
+            20456,
+            20457,
+            20458,
+            20459,
+            20460
+        ],
+        "rivais": [
+            "Taldo Phoenix"
+        ],
+        "identidade": {
+            "cor_primaria": "#674EA7",
+            "cor_secundaria": "#F1C232",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "TCM"
+        }
+    }
+]

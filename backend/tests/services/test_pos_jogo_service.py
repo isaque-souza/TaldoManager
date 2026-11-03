@@ -4,6 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.db.conexao import conectar
+from app.domain import copa
 from app.main import app
 from app.services import pos_jogo_service, temporada_service
 from scripts.data_loader import TODAS_AS_LIGAS
@@ -134,7 +135,7 @@ def test_jogo_da_copa_e_a_liga_depois_dele():
     assert r["competicao"] == "copa" and r["copa"]["fase"] == "oitavas"
     assert (r["gols_mandante"], r["gols_visitante"]) == (jogo["gols_mandante"], jogo["gols_visitante"])
     assert r["copa"]["classificado"] == (jogo["vencedor"] == "Arsenal")
-    assert r["copa"]["premio"] == (500_000 if r["copa"]["classificado"] else 0)
+    assert r["copa"]["premio"] == (copa.PREMIOS["oitavas"] if r["copa"]["classificado"] else 0)
     assert bool(r["copa"]["penaltis"]) == (r["gols_mandante"] == r["gols_visitante"])
     # a copa agora guarda notas e números do jogo; a tabela da liga não muda
     assert r["tabela"] is None and r["estatisticas"] and r["atuacoes"]

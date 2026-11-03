@@ -1,0 +1,888 @@
+[
+    {
+        "id": 1,
+        "nome": "Leganés",
+        "pais": "Espanha",
+        "dinheiro": 2000000,
+        "torcedores": 150000,
+        "titulares": [
+            50001,
+            50002,
+            50003,
+            50004,
+            50005,
+            50006,
+            50007,
+            50008,
+            50009,
+            50010,
+            50011
+        ],
+        "reservas": [
+            50012,
+            50013,
+            50014,
+            50015,
+            50016,
+            50017,
+            50018,
+            50019,
+            50020,
+            50021,
+            50022,
+            50023
+        ],
+        "rivais": [
+            "Alcorcón"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#0050A0",
+            "camisa": "listras",
+            "escudo": "moderno",
+            "sigla": "LEG"
+        }
+    },
+    {
+        "id": 2,
+        "nome": "Real Valladolid",
+        "pais": "Espanha",
+        "dinheiro": 3000000,
+        "torcedores": 300000,
+        "titulares": [
+            50024,
+            50025,
+            50026,
+            50027,
+            50028,
+            50029,
+            50030,
+            50031,
+            50032,
+            50033,
+            50034
+        ],
+        "reservas": [
+            50035,
+            50036,
+            50037,
+            50038,
+            50039,
+            50040,
+            50041,
+            50042,
+            50043,
+            50044,
+            50045,
+            50046
+        ],
+        "rivais": [
+            "Burgos"
+        ],
+        "identidade": {
+            "cor_primaria": "#5C2D91",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "VLL"
+        }
+    },
+    {
+        "id": 3,
+        "nome": "Eibar",
+        "pais": "Espanha",
+        "dinheiro": 2000000,
+        "torcedores": 100000,
+        "titulares": [
+            50047,
+            50048,
+            50049,
+            50050,
+            50051,
+            50052,
+            50053,
+            50054,
+            50055,
+            50056,
+            50057
+        ],
+        "reservas": [
+            50058,
+            50059,
+            50060,
+            50061,
+            50062,
+            50063,
+            50064,
+            50065,
+            50066,
+            50067,
+            50068,
+            50069
+        ],
+        "rivais": [
+            "Alavés",
+            "Amorebieta"
+        ],
+        "identidade": {
+            "cor_primaria": "#A50044",
+            "cor_secundaria": "#004D98",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "EIB"
+        }
+    },
+    {
+        "id": 4,
+        "nome": "Espanyol",
+        "pais": "Espanha",
+        "dinheiro": 4000000,
+        "torcedores": 600000,
+        "titulares": [
+            50070,
+            50071,
+            50072,
+            50073,
+            50074,
+            50075,
+            50076,
+            50077,
+            50078,
+            50079,
+            50080
+        ],
+        "reservas": [
+            50081,
+            50082,
+            50083,
+            50084,
+            50085,
+            50086,
+            50087,
+            50088,
+            50089,
+            50090,
+            50091,
+            50092
+        ],
+        "rivais": [
+            "Barcelona"
+        ],
+        "identidade": {
+            "cor_primaria": "#007FC8",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "ESP"
+        }
+    },
+    {
+        "id": 5,
+        "nome": "Sporting Gijón",
+        "pais": "Espanha",
+        "dinheiro": 2000000,
+        "torcedores": 400000,
+        "titulares": [
+            50093,
+            50094,
+            50095,
+            50096,
+            50097,
+            50098,
+            50099,
+            50100,
+            50101,
+            50102,
+            50103
+        ],
+        "reservas": [
+            50104,
+            50105,
+            50106,
+            50107,
+            50108,
+            50109,
+            50110,
+            50111,
+            50112,
+            50113,
+            50114,
+            50115
+        ],
+        "rivais": [
+            "Racing Santander",
+            "Real Oviedo"
+        ],
+        "identidade": {
+            "cor_primaria": "#E2001A",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "SPO"
+        }
+    },
+    {
+        "id": 6,
+        "nome": "Real Oviedo",
+        "pais": "Espanha",
+        "dinheiro": 2000000,
+        "torcedores": 300000,
+        "titulares": [
+            50116,
+            50117,
+            50118,
+            50119,
+            50120,
+            50121,
+            50122,
+            50123,
+            50124,
+            50125,
+            50126
+        ],
+        "reservas": [
+            50127,
+            50128,
+            50129,
+            50130,
+            50131,
+            50132,
+            50133,
+            50134,
+            50135,
+            50136,
+            50137,
+            50138
+        ],
+        "rivais": [
+            "Sporting Gijón"
+        ],
+        "identidade": {
+            "cor_primaria": "#0053A0",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "OVI"
+        }
+    },
+    {
+        "id": 7,
+        "nome": "Racing Santander",
+        "pais": "Espanha",
+        "dinheiro": 2000000,
+        "torcedores": 300000,
+        "titulares": [
+            50139,
+            50140,
+            50141,
+            50142,
+            50143,
+            50144,
+            50145,
+            50146,
+            50147,
+            50148,
+            50149
+        ],
+        "reservas": [
+            50150,
+            50151,
+            50152,
+            50153,
+            50154,
+            50155,
+            50156,
+            50157,
+            50158,
+            50159,
+            50160,
+            50161
+        ],
+        "rivais": [
+            "Sporting Gijón"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#00A650",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "RAC"
+        }
+    },
+    {
+        "id": 8,
+        "nome": "Levante",
+        "pais": "Espanha",
+        "dinheiro": 3000000,
+        "torcedores": 300000,
+        "titulares": [
+            50162,
+            50163,
+            50164,
+            50165,
+            50166,
+            50167,
+            50168,
+            50169,
+            50170,
+            50171,
+            50172
+        ],
+        "reservas": [
+            50173,
+            50174,
+            50175,
+            50176,
+            50177,
+            50178,
+            50179,
+            50180,
+            50181,
+            50182,
+            50183,
+            50184
+        ],
+        "rivais": [
+            "Valencia"
+        ],
+        "identidade": {
+            "cor_primaria": "#004F9F",
+            "cor_secundaria": "#A50044",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "LEV"
+        }
+    },
+    {
+        "id": 9,
+        "nome": "Burgos",
+        "pais": "Espanha",
+        "dinheiro": 1000000,
+        "torcedores": 100000,
+        "titulares": [
+            50185,
+            50186,
+            50187,
+            50188,
+            50189,
+            50190,
+            50191,
+            50192,
+            50193,
+            50194,
+            50195
+        ],
+        "reservas": [
+            50196,
+            50197,
+            50198,
+            50199,
+            50200,
+            50201,
+            50202,
+            50203,
+            50204,
+            50205,
+            50206,
+            50207
+        ],
+        "rivais": [
+            "Mirandés",
+            "Real Valladolid"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#000000",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "BUR"
+        }
+    },
+    {
+        "id": 10,
+        "nome": "Racing Ferrol",
+        "pais": "Espanha",
+        "dinheiro": 1000000,
+        "torcedores": 50000,
+        "titulares": [
+            50208,
+            50209,
+            50210,
+            50211,
+            50212,
+            50213,
+            50214,
+            50215,
+            50216,
+            50217,
+            50218
+        ],
+        "reservas": [
+            50219,
+            50220,
+            50221,
+            50222,
+            50223,
+            50224,
+            50225,
+            50226,
+            50227,
+            50228,
+            50229,
+            50230
+        ],
+        "rivais": [
+            "Celta de Vigo"
+        ],
+        "identidade": {
+            "cor_primaria": "#00843D",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "FER"
+        }
+    },
+    {
+        "id": 11,
+        "nome": "Elche",
+        "pais": "Espanha",
+        "dinheiro": 2000000,
+        "torcedores": 200000,
+        "titulares": [
+            50231,
+            50232,
+            50233,
+            50234,
+            50235,
+            50236,
+            50237,
+            50238,
+            50239,
+            50240,
+            50241
+        ],
+        "reservas": [
+            50242,
+            50243,
+            50244,
+            50245,
+            50246,
+            50247,
+            50248,
+            50249,
+            50250,
+            50251,
+            50252,
+            50253
+        ],
+        "rivais": [
+            "Cartagena",
+            "Eldense"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#00A650",
+            "camisa": "faixa",
+            "escudo": "classico",
+            "sigla": "ELC"
+        }
+    },
+    {
+        "id": 12,
+        "nome": "Tenerife",
+        "pais": "Espanha",
+        "dinheiro": 2000000,
+        "torcedores": 200000,
+        "titulares": [
+            50254,
+            50255,
+            50256,
+            50257,
+            50258,
+            50259,
+            50260,
+            50261,
+            50262,
+            50263,
+            50264
+        ],
+        "reservas": [
+            50265,
+            50266,
+            50267,
+            50268,
+            50269,
+            50270,
+            50271,
+            50272,
+            50273,
+            50274,
+            50275,
+            50276
+        ],
+        "rivais": [
+            "Las Palmas"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#0047AB",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "TEN"
+        }
+    },
+    {
+        "id": 13,
+        "nome": "Albacete",
+        "pais": "Espanha",
+        "dinheiro": 1000000,
+        "torcedores": 100000,
+        "titulares": [
+            50277,
+            50278,
+            50279,
+            50280,
+            50281,
+            50282,
+            50283,
+            50284,
+            50285,
+            50286,
+            50287
+        ],
+        "reservas": [
+            50288,
+            50289,
+            50290,
+            50291,
+            50292,
+            50293,
+            50294,
+            50295,
+            50296,
+            50297,
+            50298,
+            50299
+        ],
+        "rivais": [
+            "Cartagena"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#C8102E",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "ALB"
+        }
+    },
+    {
+        "id": 14,
+        "nome": "Cartagena",
+        "pais": "Espanha",
+        "dinheiro": 1000000,
+        "torcedores": 100000,
+        "titulares": [
+            50300,
+            50301,
+            50302,
+            50303,
+            50304,
+            50305,
+            50306,
+            50307,
+            50308,
+            50309,
+            50310
+        ],
+        "reservas": [
+            50311,
+            50312,
+            50313,
+            50314,
+            50315,
+            50316,
+            50317,
+            50318,
+            50319,
+            50320,
+            50321,
+            50322
+        ],
+        "rivais": [
+            "Albacete",
+            "Elche"
+        ],
+        "identidade": {
+            "cor_primaria": "#000000",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "moderno",
+            "sigla": "CTG"
+        }
+    },
+    {
+        "id": 15,
+        "nome": "Real Zaragoza",
+        "pais": "Espanha",
+        "dinheiro": 2000000,
+        "torcedores": 500000,
+        "titulares": [
+            50323,
+            50324,
+            50325,
+            50326,
+            50327,
+            50328,
+            50329,
+            50330,
+            50331,
+            50332,
+            50333
+        ],
+        "reservas": [
+            50334,
+            50335,
+            50336,
+            50337,
+            50338,
+            50339,
+            50340,
+            50341,
+            50342,
+            50343,
+            50344,
+            50345
+        ],
+        "rivais": [
+            "Huesca",
+            "Osasuna"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFFFFF",
+            "cor_secundaria": "#0047AB",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "ZAR"
+        }
+    },
+    {
+        "id": 16,
+        "nome": "Eldense",
+        "pais": "Espanha",
+        "dinheiro": 1000000,
+        "torcedores": 50000,
+        "titulares": [
+            50346,
+            50347,
+            50348,
+            50349,
+            50350,
+            50351,
+            50352,
+            50353,
+            50354,
+            50355,
+            50356
+        ],
+        "reservas": [
+            50357,
+            50358,
+            50359,
+            50360,
+            50361,
+            50362,
+            50363,
+            50364,
+            50365,
+            50366,
+            50367,
+            50368
+        ],
+        "rivais": [
+            "Elche"
+        ],
+        "identidade": {
+            "cor_primaria": "#00843D",
+            "cor_secundaria": "#C8102E",
+            "camisa": "listras",
+            "escudo": "redondo",
+            "sigla": "ELD"
+        }
+    },
+    {
+        "id": 17,
+        "nome": "Huesca",
+        "pais": "Espanha",
+        "dinheiro": 1000000,
+        "torcedores": 100000,
+        "titulares": [
+            50369,
+            50370,
+            50371,
+            50372,
+            50373,
+            50374,
+            50375,
+            50376,
+            50377,
+            50378,
+            50379
+        ],
+        "reservas": [
+            50380,
+            50381,
+            50382,
+            50383,
+            50384,
+            50385,
+            50386,
+            50387,
+            50388,
+            50389,
+            50390,
+            50391
+        ],
+        "rivais": [
+            "Real Zaragoza"
+        ],
+        "identidade": {
+            "cor_primaria": "#0047AB",
+            "cor_secundaria": "#A50044",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "HUE"
+        }
+    },
+    {
+        "id": 18,
+        "nome": "Mirandés",
+        "pais": "Espanha",
+        "dinheiro": 1000000,
+        "torcedores": 50000,
+        "titulares": [
+            50392,
+            50393,
+            50394,
+            50395,
+            50396,
+            50397,
+            50398,
+            50399,
+            50400,
+            50401,
+            50402
+        ],
+        "reservas": [
+            50403,
+            50404,
+            50405,
+            50406,
+            50407,
+            50408,
+            50409,
+            50410,
+            50411,
+            50412,
+            50413,
+            50414
+        ],
+        "rivais": [
+            "Burgos"
+        ],
+        "identidade": {
+            "cor_primaria": "#C8102E",
+            "cor_secundaria": "#000000",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "MIR"
+        }
+    },
+    {
+        "id": 19,
+        "nome": "Alcorcón",
+        "pais": "Espanha",
+        "dinheiro": 1000000,
+        "torcedores": 50000,
+        "titulares": [
+            50415,
+            50416,
+            50417,
+            50418,
+            50419,
+            50420,
+            50421,
+            50422,
+            50423,
+            50424,
+            50425
+        ],
+        "reservas": [
+            50426,
+            50427,
+            50428,
+            50429,
+            50430,
+            50431,
+            50432,
+            50433,
+            50434,
+            50435,
+            50436,
+            50437
+        ],
+        "rivais": [
+            "Leganés"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFE500",
+            "cor_secundaria": "#0047AB",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "ALC"
+        }
+    },
+    {
+        "id": 20,
+        "nome": "Amorebieta",
+        "pais": "Espanha",
+        "dinheiro": 1000000,
+        "torcedores": 30000,
+        "titulares": [
+            50438,
+            50439,
+            50440,
+            50441,
+            50442,
+            50443,
+            50444,
+            50445,
+            50446,
+            50447,
+            50448
+        ],
+        "reservas": [
+            50449,
+            50450,
+            50451,
+            50452,
+            50453,
+            50454,
+            50455,
+            50456,
+            50457,
+            50458,
+            50459,
+            50460
+        ],
+        "rivais": [
+            "Eibar"
+        ],
+        "identidade": {
+            "cor_primaria": "#000000",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "moderno",
+            "sigla": "AMO"
+        }
+    }
+]

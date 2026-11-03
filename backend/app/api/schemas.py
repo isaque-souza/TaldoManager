@@ -240,6 +240,10 @@ class TemporadaDaCarreira(BaseModel):
     copa_usuario: str | None = None
     estado: str
     rodada_atual: int | None = None
+    # a liga do técnico na temporada (v2.5: pode ser uma Série B)
+    liga: str | None = None
+    liga_nome: str | None = None
+    serie_b: bool = False
 
 
 class TituloClube(BaseModel):
@@ -302,7 +306,8 @@ class NovaSimulacao(BaseModel):
     xi: list[str] | None = None        # nomes do XI titular preferido
     modo: Literal["completa", "rodada_a_rodada"] = "completa"
     # ligas que rodam juntas (v1.6); sem dizer, todas
-    ligas: list[Literal["taldo", "premier"]] | None = None
+    ligas: list[Literal["taldo", "premier", "laliga", "brasileirao", "taldo_b",
+                        "championship", "segunda", "brasileirao_b"]] | None = None
 
 
 class Posicionamento(BaseModel):
@@ -830,6 +835,9 @@ class ClubeInfo(BaseModel):
     receita_tv: int = 0
     receita_bilheteria: int = 0
     receita_premiacao: int = 0
+    receita_patrocinio: int = 0          # v2.5
+    # o mérito que a posição de hoje pagaria no fim (v2.5, projeção)
+    premio_posicao: int = 0
     despesa_salarios: int = 0
     receita_vendas: int = 0
     despesa_compras: int = 0

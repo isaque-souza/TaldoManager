@@ -93,7 +93,11 @@ def test_por_na_lista_com_a_janela_aberta_traz_ofertas_na_hora(sem_assedio, semp
     assert len(mercado_service.ofertas(sid, alvo["jogador_id"])["ofertas"]) == r["ofertas"]
 
 
-def test_fora_da_janela_a_lista_espera_a_proxima(sem_assedio, sempre_interessa):
+def test_fora_da_janela_a_lista_espera_a_proxima(sem_assedio, sempre_interessa, monkeypatch):
+    # o assunto é a janela, não o caixa de quem compra: no meio da temporada
+    # (economia v2, v2.5) parte da liga fica sem dinheiro para a oferta
+    from app.domain import mercado
+    monkeypatch.setattr(mercado, "motivo_entrada_bloqueada", lambda clube, valor: None)
     sid = _iniciar()
     temporada_service.avancar(sid)
     alvo = _reserva(mercado_service.ver_mercado(sid))
@@ -202,3 +206,39 @@ def test_sonho_que_expira_tambem_chateia(monkeypatch):
     sid, o = _oferta_do_sonho(monkeypatch)
     temporada_service.avancar(sid)
     assert _humor(sid, o["jogador"]) == "incomodado"
+
+
+def test_nos_dias_de_janela_os_clubes_voltam_a_olhar_a_lista(sem_assedio, monkeypatch):
+    # v2.5: ninguém quis na hora, mas os dias passam e a CPU volta a olhar
+    from app.services import calendario_service
+    monkeypatch.setattr(ofertas, "CHANCE_NENHUMA", 1.0)
+    sid = _iniciar()
+    alvo = _reserva(mercado_service.ver_mercado(sid))
+    assert mercado_service.marcar_a_venda(sid, alvo["jogador_id"], True)["ofertas"] == 0
+
+    monkeypatch.setattr(ofertas, "CHANCE_NENHUMA", 0.0)
+    monkeypatch.setattr(ofertas, "CHANCE_POR_DIA", 1.0)
+    dia = calendario_service.avancar_dia(sid)
+    assert dia["chegou_mensagem"]
+    lista = mercado_service.ofertas(sid, alvo["jogador_id"])["ofertas"]
+    assert lista and all(o["status"] == "aberta" for o in lista)
+
+    # com oferta esperando resposta, não chega outra leva
+    n = len(lista)
+    assert not calendario_service.avancar_dia(sid)["chegou_mensagem"]
+    assert len(mercado_service.ofertas(sid, alvo["jogador_id"])["ofertas"]) == n
+
+
+def test_continuar_para_no_dia_da_oferta(sem_assedio, monkeypatch):
+    from app.services import calendario_service
+    monkeypatch.setattr(ofertas, "CHANCE_NENHUMA", 1.0)
+    sid = _iniciar()
+    alvo = _reserva(mercado_service.ver_mercado(sid))
+    mercado_service.marcar_a_venda(sid, alvo["jogador_id"], True)
+    antes = calendario_service.ver(sid)
+
+    monkeypatch.setattr(ofertas, "CHANCE_NENHUMA", 0.0)
+    monkeypatch.setattr(ofertas, "CHANCE_POR_DIA", 1.0)
+    depois = calendario_service.continuar(sid)
+    assert depois["chegou_mensagem"]
+    assert depois["dias_ate_o_jogo"] == antes["dias_ate_o_jogo"] - 1

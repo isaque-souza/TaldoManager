@@ -50,7 +50,7 @@ def test_lista_de_compra_traz_as_duas_ligas_com_a_liga_de_cada_um():
     sid = temporada_service.iniciar(seed=11, clube_usuario=CLUBE, ligas=TODAS_AS_LIGAS)
     m = mercado_service.ver_mercado(sid)
     assert m["liga_usuario"] == "taldo"
-    assert {f["liga"] for f in m["disponiveis"]} == {"taldo", "premier"}
+    assert {f["liga"] for f in m["disponiveis"]} == set(TODAS_AS_LIGAS)   # com as Séries B (v2.5)
     assert all(f["liga"] == "taldo" for f in m["elenco"])
     assert all(f["liga"] is None for f in m["livres"])
 
@@ -217,7 +217,11 @@ def test_historico_tem_compra_venda_livre_e_dispensa_com_o_saldo():
     assert tipos == ["transferencia", "dispensa", "livre", "transferencia"]
 
 
-def test_historico_junta_as_temporadas_da_carreira(cargo_garantido):
+def test_historico_junta_as_temporadas_da_carreira(cargo_garantido, monkeypatch):
+    # o assunto é o histórico, não o caixa: a compra por 3× o valor deixa o
+    # clube sem dinheiro para a rescisão da dispensa (economia v2, v2.5)
+    from app.domain import mercado
+    monkeypatch.setattr(mercado, "motivo_dispensa_bloqueada", mercado.motivo_saida_bloqueada)
     sid = _iniciar()
     comprado = _compravel(mercado_service.ver_mercado(sid))
     _comprar(sid, comprado)

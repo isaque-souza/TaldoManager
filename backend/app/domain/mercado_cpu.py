@@ -3,7 +3,8 @@
 Regras puras, sem banco. Quando a janela abre (pré-temporada e depois da
 rodada 19), antes de o técnico mexer:
 
-- cada clube da CPU tem uma chance de ir ao mercado atrás de UM reforço
+- cada clube da CPU tem uma chance de ir ao mercado atrás de até
+  `REFORCOS_POR_CLUBE` reforços (v2.5; antes, um só)
 - reforço é quem chega pelo menos `GANHO_MINIMO` acima do pior titular da
   posição; o comprador paga o que o vendedor pede (`mercado.preco_pedido`)
   e não gasta mais que `FRACAO_CAIXA` do caixa
@@ -24,8 +25,10 @@ from dataclasses import dataclass
 
 from app.domain import fama, mercado, vontade
 
-CHANCE_COMPRA = 0.35       # por clube, por janela
-MAX_POR_JANELA = 10
+CHANCE_COMPRA = 0.55       # por clube, por janela (v2.5: era 0,35)
+MAX_POR_JANELA = 24        # para 40 clubes (v2.5: era 10); cresce com o mundo
+CLUBES_DO_MAXIMO = 40
+REFORCOS_POR_CLUBE = 2     # v2.5: com dinheiro, o clube reforça mais de um setor
 FRACAO_CAIXA = 0.4         # o máximo do caixa que vai num reforço
 GANHO_MINIMO = 2           # de overall sobre o pior titular da posição
 CANDIDATOS = 5             # sorteia entre os melhores negócios
@@ -105,22 +108,27 @@ def negociar(clubes, clube_usuario, rng):
     rng.shuffle(compradores)
 
     feitos, ja = [], set()
+    maximo = max(MAX_POR_JANELA, round(MAX_POR_JANELA * len(clubes) / CLUBES_DO_MAXIMO))
     prest = vontade.prestigio(clubes)
     for comprador in compradores:
-        if len(feitos) >= MAX_POR_JANELA:
-            break
-        candidatos = _candidatos(comprador, cpu, ja, clubes)
-        if not candidatos:
-            continue
-        # o jogador também decide (v1.9): resistente, às vezes recusa — e o
-        # comprador tenta o próximo da lista
-        rng.shuffle(candidatos)
-        for _, jogador, vendedor, preco in candidatos:
-            interesse = vontade.interesse(jogador, comprador, vendedor, clubes, prest)
-            if interesse.nivel == vontade.RESISTENTE and rng.random() < CHANCE_RECUSA:
-                continue
-            mercado.transferir(jogador, vendedor, comprador, preco)
-            ja.add(jogador.nome)
-            feitos.append(Negocio(jogador, vendedor, comprador, preco))
-            break
+        for _ in range(REFORCOS_POR_CLUBE):
+            if len(feitos) >= maximo:
+                return feitos
+            # a lista é refeita a cada compra: o caixa e o pior titular mudaram
+            candidatos = _candidatos(comprador, cpu, ja, clubes)
+            if not candidatos:
+                break
+            # o jogador também decide (v1.9): resistente, às vezes recusa — e o
+            # comprador tenta o próximo da lista
+            rng.shuffle(candidatos)
+            for _, jogador, vendedor, preco in candidatos:
+                interesse = vontade.interesse(jogador, comprador, vendedor, clubes, prest)
+                if interesse.nivel == vontade.RESISTENTE and rng.random() < CHANCE_RECUSA:
+                    continue
+                mercado.transferir(jogador, vendedor, comprador, preco)
+                ja.add(jogador.nome)
+                feitos.append(Negocio(jogador, vendedor, comprador, preco))
+                break
+            else:
+                break   # todos recusaram: o clube desiste nesta janela
     return feitos

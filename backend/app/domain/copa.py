@@ -18,18 +18,33 @@ from .estadio import publico
 from .partida import Partida
 
 VAGAS_POR_LIGA = 8
+# as ligas da copa (v2.5): a chave é de duas ligas; as outras Séries A
+# esperam a copa de N ligas
+LIGAS_DA_COPA = ("taldo", "premier")
 
 # a fase é jogada no meio da semana, depois desta rodada da liga
 DATAS = {"oitavas": 8, "quartas": 17, "semi": 26, "final": 35}
 FASES = list(DATAS)
 
-# prêmio por vitória em cada fase: o campeão leva 7,5 mi (o da liga, 10 mi)
+# prêmio por vitória em cada fase (economia v2, v2.5): como a Champions, a
+# copa entre as ligas paga mais que o título nacional — o campeão soma 20 mi
 PREMIOS = {
+    "oitavas": 2_000_000,
+    "quartas": 3_500_000,
+    "semi": 5_500_000,
+    "final": 9_000_000,
+}
+# economia v1: o campeão levava 7,5 mi (o da liga, 10 mi)
+PREMIOS_V1 = {
     "oitavas": 500_000,
     "quartas": 1_000_000,
     "semi": 2_000_000,
     "final": 4_000_000,
 }
+
+
+def premios(economia):
+    return PREMIOS_V1 if economia < 2 else PREMIOS
 
 # a ordem das oitavas monta a chave: os vencedores dos jogos 1 e 2 se
 # enfrentam nas quartas, os de 3 e 4 também... O 1º de cada liga só pode
@@ -128,7 +143,7 @@ class Copa:
             if nome in (jogo["mandante"], jogo["visitante"])
         ]
 
-    def jogar_fase(self, fase, clubes, ao_vivo=None):
+    def jogar_fase(self, fase, clubes, ao_vivo=None, premios=None):
         """Joga os jogos da fase (`clubes`: {nome: Clube}), paga prêmio e
         bilheteria e monta a próxima. Devolve os jogos jogados.
 
@@ -150,7 +165,7 @@ class Copa:
             )
             if dele:
                 self.partida_usuario = partida
-            clubes[jogo["vencedor"]].lancar("receita_premiacao", PREMIOS[fase])
+            clubes[jogo["vencedor"]].lancar("receita_premiacao", (premios or PREMIOS)[fase])
 
         proxima = FASES.index(fase) + 1
         if proxima < len(FASES):

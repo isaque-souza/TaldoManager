@@ -50,8 +50,13 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
         if final["nome"] not in por_nome:
             por_nome[final["nome"]] = criar_jogador(final["nome"], final)
 
-    # elencos: começa vazio e cada jogador vai para o clube onde terminou
+    # elencos: começa vazio e cada jogador vai para o clube onde terminou.
+    # Clube sem registro (a Série B que um save antigo ganha na virada,
+    # v2.5) fica com o elenco da seed
+    com_registro = {f["nome"] for f in clubes_finais}
     for clube in campeonato.clubes:
+        if clube.nome not in com_registro:
+            continue
         clube.jogadores = []
         clube.titulares = []
         clube.reservas = []
@@ -88,6 +93,8 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
     # caixa: o final da temporada anterior é o inicial desta
     for final in clubes_finais:
         clube = por_clube[final["nome"]]
+        # a liga em que terminou (v2.5): a da seed não sabe de quem subiu
+        clube.liga = final.get("liga") or clube.liga
         clube.dinheiro = final["dinheiro"]
         clube.dinheiro_inicial = final["dinheiro"]
         # a torcida também (v1.4); temporadas anteriores não guardam (0) e

@@ -126,6 +126,15 @@ def listar_por_simulacao(conn, simulacao_id, com_livres=True):
     ).fetchall()
 
 
+def tem_a_venda(conn, simulacao_id, clube):
+    """O `clube` tem alguém na lista de transferências (v2.5)?"""
+    return conn.execute(
+        "SELECT 1 FROM jogador j JOIN clube c ON c.id = j.clube_id "
+        "WHERE j.simulacao_id = ? AND c.nome = ? AND j.a_venda = 1 AND j.livre = 0 LIMIT 1",
+        (simulacao_id, clube),
+    ).fetchone() is not None
+
+
 def listar_por_clube(conn, clube_id):
     """O elenco do clube (sem quem ele dispensou, v1.7)."""
     return conn.execute(

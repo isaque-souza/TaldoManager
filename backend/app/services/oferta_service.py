@@ -7,6 +7,8 @@ Dois gatilhos, sempre dentro da transação de quem chama:
   pelos jogadores à venda e, às vezes, o assédio a um craque
 - `ao_listar`: o técnico pôs alguém na lista com a janela aberta — as ofertas
   por ele chegam na hora
+- `nos_dias` (v2.5): a cada dia de janela aberta que passa, os clubes voltam
+  a olhar quem está à venda sem oferta esperando resposta
 
 E os negócios entre os clubes da CPU (`app.domain.mercado_cpu`): quem chama
 os faz no estado vivo antes de gravá-lo; `registrar_cpu` grava o histórico
@@ -83,6 +85,45 @@ def ao_listar(conn, simulacao_id, rodada, campeonato, alvo, jogador, jogador_id)
         caixa.ofertas_pela_lista([(jogador, lista)]),
     ])
     return lista
+
+
+def sortear_nos_dias(conn, simulacao_id, rodada, campeonato, alvo, dias):
+    """Os dias `dias` (datas, em ordem) da janela de `rodada` vão passar
+    (v2.5). Cada dia sorteia, com `ofertas.no_dia`, ofertas por quem está à
+    venda sem oferta aberta. Só sorteia, não grava: devolve (o primeiro dia
+    em que alguém recebeu oferta, [(jogador, jogador_id, [OfertaCpu])]), ou
+    (None, []). O sorteio é semeado pelo dia: passar um a um ou de uma vez dá
+    no mesmo."""
+
+    ids = {r["nome"]: r["id"] for r in jogador_repo.listar_por_simulacao(conn, simulacao_id)}
+    abertas = oferta_repo.jogadores_com_oferta_aberta(conn, simulacao_id, rodada)
+    lista_venda = sorted(
+        (j for j in alvo.jogadores
+         if j.a_venda and not j.emprestimo and ids[j.nome] not in abertas),
+        key=lambda j: (-j.overall, j.nome),
+    )
+    for dia in dias:
+        achadas = []
+        for j in lista_venda:
+            lista = ofertas.no_dia(
+                j, alvo, campeonato.clubes,
+                ofertas.semente(simulacao_id, rodada, f"{j.nome}:{dia.isoformat()}"),
+            )
+            if lista:
+                achadas.append((j, ids[j.nome], lista))
+        if achadas:
+            return dia, achadas
+    return None, []
+
+
+def gravar_do_dia(conn, simulacao_id, rodada, achadas):
+    """Grava as ofertas de `sortear_nos_dias` e avisa o técnico (a data da
+    mensagem é a do save: grave o dia antes)."""
+    for _, jogador_id, lista in achadas:
+        _gravar(conn, simulacao_id, rodada, jogador_id, lista)
+    mensagem_repo.inserir(conn, simulacao_id, rodada, [
+        caixa.ofertas_pela_lista([(j, lista) for j, _, lista in achadas]),
+    ])
 
 
 def registrar_cpu(conn, simulacao_id, rodada, negocios, mapa_clubes, alvo, rodada_msg):

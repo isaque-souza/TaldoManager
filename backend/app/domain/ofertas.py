@@ -32,6 +32,7 @@ from app.domain import diretoria, mercado
 
 MAX_OFERTAS = 3
 CHANCE_NENHUMA = 0.15            # à venda e ninguém se interessa
+CHANCE_POR_DIA = 0.25            # nos dias seguintes, a CPU volta a olhar (v2.5)
 DESCONTO_A_VENDA = 0.9           # sabem que o clube quer vender
 VARIACAO = (0.85, 1.10)
 CHANCE_ASSEDIO = 0.5             # por janela
@@ -87,8 +88,12 @@ def para_venda(jogador, vendedor, clubes, rng):
 
     if mercado.motivo_saida_bloqueada(vendedor, jogador):
         return []
+    # só entra no sorteio quem pode pagar (v2.5): com o mundo grande, a
+    # maioria dos interessados não tem caixa, e sortear entre todos quase
+    # sempre dava em nada
     interessados = sorted(
-        (c for c in clubes if c is not vendedor and _precisa(c, jogador)),
+        (c for c in clubes if c is not vendedor and _precisa(c, jogador)
+         and _pode_pagar(c, jogador)),
         key=lambda c: c.nome,   # ordem estável antes do sorteio
     )
     if not interessados or rng.random() < CHANCE_NENHUMA:
@@ -97,13 +102,36 @@ def para_venda(jogador, vendedor, clubes, rng):
 
     lista = []
     for clube in escolhidos:
-        fator = mercado.OFERTA_TITULAR if mercado.seria_titular(clube, jogador) else mercado.OFERTA_BANCO
-        valor = jogador.valor_mercado() * fator * rng.uniform(*VARIACAO) * DESCONTO_A_VENDA
+        valor = _valor_a_venda(clube, jogador) * rng.uniform(*VARIACAO)
         oferta = _oferta(rng, clube, jogador, valor, espontanea=False)
+        if oferta is None:
+            # a variação passou do caixa: oferece o que ele tem
+            oferta = _oferta(rng, clube, jogador, min(valor, clube.dinheiro), espontanea=False)
         if oferta:
             lista.append(oferta)
     lista.sort(key=lambda o: (-o.valor, o.clube.nome))
     return lista
+
+
+def _valor_a_venda(clube, jogador):
+    fator = mercado.OFERTA_TITULAR if mercado.seria_titular(clube, jogador) else mercado.OFERTA_BANCO
+    return jogador.valor_mercado() * fator * DESCONTO_A_VENDA
+
+
+def _pode_pagar(clube, jogador):
+    """Tem vaga no elenco e caixa para a oferta mais baixa da faixa."""
+    valor = mercado._arredondar(_valor_a_venda(clube, jogador) * VARIACAO[0])
+    return mercado.motivo_entrada_bloqueada(clube, valor) is None
+
+
+def no_dia(jogador, vendedor, clubes, rng):
+    """Um dia de janela aberta (v2.5): os clubes voltam a olhar a lista. Com
+    `CHANCE_POR_DIA`, chegam ofertas novas por quem está à venda sem oferta
+    aberta — antes, quem não recebia nada na hora ficava a janela inteira
+    sem ninguém."""
+    if rng.random() >= CHANCE_POR_DIA:
+        return []
+    return para_venda(jogador, vendedor, clubes, rng)
 
 
 def assedio(vendedor, clubes, rng):

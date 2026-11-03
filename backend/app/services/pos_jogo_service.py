@@ -254,7 +254,7 @@ def _da_copa(conn, sim, clubes, fase, j):
             "proxima_fase": proxima_fase and {
                 "fase": proxima_fase, "nome": copa_service.NOMES[proxima_fase],
             },
-            "premio": copa.PREMIOS[fase] if venceu else 0,
+            "premio": copa.premios(copa_service.economia_do(sim))[fase] if venceu else 0,
         },
         "data": calendario.data_da_copa(sim["temporada"], rodada).isoformat(),
         "partida_id": None,

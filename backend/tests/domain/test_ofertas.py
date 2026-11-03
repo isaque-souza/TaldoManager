@@ -104,3 +104,26 @@ def test_contraproposta_aceita_ate_o_teto():
     assert ofertas.responder_contraproposta(1_000_000, 1_150_000, 1_160_000) == "retirada"
     with pytest.raises(TransferenciaInvalida, match="mais do que a oferta"):
         ofertas.responder_contraproposta(1_000_000, 1_150_000, 1_000_000)
+
+
+def test_so_sorteia_entre_quem_pode_pagar():
+    # v2.5: com o mundo grande, a maioria dos interessados não tem caixa; o
+    # sorteio entre todos quase sempre dava em nada
+    meu = _clube("Meu")
+    pobres = [_clube(f"P{i:02}", dinheiro=10) for i in range(40)]
+    rico = _clube("Rico")
+    j = meu.jogadores[-1]
+    vezes = 0
+    for n in range(40):
+        lista = ofertas.para_venda(j, meu, [meu, *pobres, rico], random.Random(n))
+        assert all(o.clube is rico for o in lista)
+        vezes += bool(lista)
+    assert vezes >= 25   # só o CHANCE_NENHUMA deixa sem oferta
+
+
+def test_no_dia_as_vezes_traz_ofertas():
+    meu, *outros = _liga()
+    j = meu.jogadores[-1]
+    dias = [ofertas.no_dia(j, meu, [meu, *outros], random.Random(n)) for n in range(60)]
+    com = sum(1 for d in dias if d)
+    assert 0 < com < 60

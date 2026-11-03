@@ -1,22 +1,33 @@
 import random
 
 from . import copa as copa_
-from . import emprestimo, estadio, fama, financas, papeis, torcida
+from . import divisoes, emprestimo, estadio, fama, financas, papeis, torcida
 from .partida import Partida
+
+
+def semente_do_calendario(seed, temporada):
+    """A semente do sorteio da ordem dos jogos de uma temporada (v3). Com
+    seed, reproduzível e diferente a cada temporada; sem, um sorteio novo
+    (fica no snapshot). Usa um gerador próprio: não consome a sequência
+    aleatória das partidas."""
+    gerador = random.Random(f"calendario:{seed}:{temporada}") if seed is not None else random.Random()
+    return gerador.getrandbits(32)
 
 
 class Campeonato:
 
-    # versão do gerador de calendário (2: mando alternado). Vai no
-    # snapshot: um save em andamento segue com o calendário em que começou
-    CALENDARIO_ATUAL = 2
+    # versão do gerador de calendário (2: mando alternado; 3: a ordem dos
+    # clubes é sorteada por temporada). Vai no snapshot: um save em
+    # andamento segue com o calendário em que começou
+    CALENDARIO_ATUAL = 3
 
     def __init__(self, nome, clubes):
         self.nome = nome
         self.clubes = clubes
         # ligas (v1.6): cada uma tem a sua tabela e o seu turno e returno,
         # jogados na mesma rodada; a ordem é a dos clubes
-        self.ligas = list(dict.fromkeys(c.liga for c in clubes))
+        # (v2.5: as Séries A primeiro, depois as B)
+        self.ligas = divisoes.ordenar(c.liga for c in clubes)
         self.livres = []              # jogadores sem clube (v1.6)
         self.copa = None              # copa entre as ligas (v1.6), se houver
         self.rodada = 1
@@ -27,7 +38,12 @@ class Campeonato:
         # adiar_copa): o técnico joga a dele à parte (jogar_copa_adiada)
         self.copa_adiada = None
         self.devolvidos = []          # empréstimos que acabaram na última (v1.7)
+        # as regras de dinheiro do save (v2.5; ver financas.ECONOMIA_ATUAL)
+        self.economia = financas.ECONOMIA_ATUAL
         self.versao_calendario = self.CALENDARIO_ATUAL
+        # a semente do sorteio da ordem (v3); None = a ordem da seed, até a
+        # temporada sortear a dela (`sortear_calendario`)
+        self.semente_calendario = None
         self.calendario = self.gerar_calendario()
         self.recordes = {
             "maior_goleada": {
@@ -98,7 +114,7 @@ class Campeonato:
 
             self.atualizar_recordes(partida)
 
-        financas.processar_rodada(rodada_atual, len(self.calendario), publicos)
+        financas.processar_rodada(rodada_atual, len(self.calendario), publicos, self.economia)
 
         for clube in self.clubes:
             estadio.avancar_obra(clube)
@@ -122,7 +138,7 @@ class Campeonato:
         if self.rodada > len(self.calendario):
             for liga in self.ligas:
                 tabela = self.classificacao(liga)
-                financas.pagar_premiacao(tabela)
+                financas.pagar_premiacao(tabela, self.economia)
                 # a fama antes da torcida: os ídolos novos já atraem gente
                 fama.fim_de_temporada(tabela)
                 torcida.fim_de_temporada(tabela)
@@ -138,7 +154,8 @@ class Campeonato:
         fase = self.copa.fase_da_rodada(self.rodada)
         if fase is None:
             return []
-        return self.copa.jogar_fase(fase, {c.nome: c for c in self.clubes})
+        return self.copa.jogar_fase(fase, {c.nome: c for c in self.clubes},
+                                    premios=copa_.premios(self.economia))
 
     def _joga_a_copa(self, clube):
         """O clube está num jogo da fase da copa desta rodada?"""
@@ -160,14 +177,17 @@ class Campeonato:
             fase, {c.nome: c for c in self.clubes},
             ao_vivo={"clube": clube_usuario, "decisoes": decisoes or [],
                      "capturar_em": capturar_em, "semente": semente},
+            premios=copa_.premios(self.economia),
         )
         self.partida_usuario = self.copa.partida_usuario
         return jogos
 
     def iniciar_copa(self, classificados):
         """Monta a copa com {liga: [nomes do 1º ao 8º]}. Só com duas
-        ligas; com uma, fica sem copa."""
-        self.copa = copa_.Copa(classificados) if len(self.ligas) == 2 else None
+        Séries A; com uma, fica sem copa. As Séries B (v2.5) não jogam."""
+        primeiras = [l for l in divisoes.primeiras(self.ligas) if l in copa_.LIGAS_DA_COPA]
+        classificados = {l: n for l, n in classificados.items() if l in primeiras}
+        self.copa = copa_.Copa(classificados) if len(classificados) == 2 else None
         return self.copa
 
     def mostrar_cabecalho(self):
@@ -460,6 +480,19 @@ class Campeonato:
             f"({self.recordes['mais_gols_jogo']['valor']})"
         )
     
+    def reorganizar_ligas(self):
+        """Depois que clubes trocam de liga (acesso e rebaixamento, v2.5):
+        refaz a lista das ligas e o calendário (na versão e semente atuais)."""
+        self.ligas = divisoes.ordenar(c.liga for c in self.clubes)
+        self.calendario = self.gerar_calendario(self.versao_calendario)
+
+    def sortear_calendario(self, semente):
+        """Sorteia a ordem dos jogos da temporada (v3). A semente é um
+        número (vai no snapshot, que regenera o calendário ao carregar)."""
+        self.versao_calendario = self.CALENDARIO_ATUAL
+        self.semente_calendario = semente
+        self.calendario = self.gerar_calendario()
+
     def gerar_calendario(self, versao=None):
         """O turno e returno de cada liga (v1.6), lado a lado: a rodada N
         tem os jogos da rodada N de todas as ligas (elas têm o mesmo número
@@ -467,10 +500,22 @@ class Campeonato:
         (até 19 jogos seguidos em casa); fica só para os saves em andamento
         criados com ele."""
 
-        gerar = (self._calendario_da_liga_v1
-                 if (versao or self.CALENDARIO_ATUAL) == 1
-                 else self._calendario_da_liga)
-        por_liga = [gerar(self.clubes_da_liga(liga)) for liga in self.ligas]
+        versao = versao or self.CALENDARIO_ATUAL
+        if versao == 1:
+            por_liga = [self._calendario_da_liga_v1(self.clubes_da_liga(liga))
+                        for liga in self.ligas]
+        else:
+            # v3: a ordem dos clubes de cada liga é embaralhada antes do
+            # círculo, com um gerador próprio — não toca na sequência
+            # aleatória das partidas. Sem semente (v2), a ordem da seed.
+            sorteia = versao >= 3 and self.semente_calendario is not None
+            por_liga = []
+            for liga in self.ligas:
+                clubes = self.clubes_da_liga(liga)
+                if sorteia:
+                    clubes = clubes[:]
+                    random.Random(f"calendario:{self.semente_calendario}:{liga}").shuffle(clubes)
+                por_liga.append(self._calendario_da_liga(clubes))
         if not por_liga:
             return []
         return [

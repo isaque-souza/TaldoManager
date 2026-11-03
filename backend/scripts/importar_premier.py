@@ -99,6 +99,18 @@ CLASSICOS = [
     ("Brentford", "Fulham"),
     ("West Ham", "Chelsea"),
 ]
+# clássicos com a Championship (v2.5, scripts/gerar_ligas.py): o clube da
+# Premier também lista o rival da Série B
+RIVAIS_NA_CHAMPIONSHIP = [
+    ("Sunderland", "Newcastle"),
+    ("Leeds United", "Manchester United"),
+    ("Leicester City", "Nottingham Forest"),
+    ("West Brom", "Aston Villa"),
+    ("Sheffield Wednesday", "Sheffield United"),
+    ("Blackburn Rovers", "Burnley"),
+    ("Watford", "Luton Town"),
+    ("Millwall", "West Ham"),
+]
 
 _LINHA_ELENCO = re.compile(
     r"^\s*(\d+)?\s*,\s*(.+?)(?:\s+\(([A-Z]{3})\))?\s*,\s*(GK|DF|MF|FW)\s*,"
@@ -325,7 +337,8 @@ def importar():
             "titulares": [j["id"] for j in titulares],
             "reservas": [j["id"] for j in elenco if j not in titulares],
             "rivais": sorted(
-                b if a == jogo else a for a, b in CLASSICOS if jogo in (a, b)
+                [b if a == jogo else a for a, b in CLASSICOS if jogo in (a, b)]
+                + [a for a, b in RIVAIS_NA_CHAMPIONSHIP if b == jogo]
             ),
             "identidade": {
                 "cor_primaria": cor1, "cor_secundaria": cor2,

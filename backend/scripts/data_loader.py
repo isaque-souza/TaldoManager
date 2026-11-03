@@ -2,7 +2,7 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from app.domain import estadio, fama, livres, vontade
+from app.domain import estadio, fama, financas, livres, vontade
 from app.domain.jogador import Jogador
 from app.domain.clube import Clube
 from app.domain.campeonato import Campeonato
@@ -13,6 +13,15 @@ SEEDS_DIR = Path(__file__).resolve().parent.parent / "data" / "seeds"
 LIGAS = {
     "taldo": ("Liga Taldo", SEEDS_DIR),
     "premier": ("Premier League", SEEDS_DIR / "premier"),
+    # as Séries B (v2.5; ver app.domain.divisoes)
+    "taldo_b": ("Liga Taldo B", SEEDS_DIR / "taldo_b"),
+    "championship": ("Championship", SEEDS_DIR / "championship"),
+    # a Espanha (v2.5)
+    "laliga": ("La Liga", SEEDS_DIR / "laliga"),
+    "segunda": ("Segunda División", SEEDS_DIR / "segunda"),
+    # o Brasil de 2017, o ano do hepta do Corinthians (v2.5)
+    "brasileirao": ("Brasileirão", SEEDS_DIR / "brasileirao"),
+    "brasileirao_b": ("Brasileirão Série B", SEEDS_DIR / "brasileirao_b"),
 }
 LIGA_PADRAO = ("taldo",)   # saves de antes da v1.6
 TODAS_AS_LIGAS = tuple(LIGAS)   # todo jogo novo (v1.6)
@@ -159,5 +168,8 @@ def carregar_campeonato(ligas=LIGA_PADRAO):
 
 
 def carregar_campeonato_do_save(sim):
-    """O campeonato com as ligas do save, pronto para `restaurar_estado`."""
-    return carregar_campeonato(ligas_do_save(sim))
+    """O campeonato com as ligas do save, pronto para `restaurar_estado`,
+    com as regras de dinheiro em que o save está (v2.5)."""
+    campeonato = carregar_campeonato(ligas_do_save(sim))
+    campeonato.economia = financas.economia_do_save(sim)
+    return campeonato

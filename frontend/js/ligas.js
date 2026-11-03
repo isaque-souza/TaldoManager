@@ -4,9 +4,35 @@
 
 import { estado, pedir } from "./nucleo.js";
 
-export const NOME_LIGA = { taldo: "Liga Taldo", premier: "Premier League" };
+export const NOME_LIGA = {
+  taldo: "Liga Taldo", premier: "Premier League",
+  // as Séries B (v2.5)
+  taldo_b: "Liga Taldo B", championship: "Championship",
+  laliga: "La Liga", segunda: "Segunda División",
+  brasileirao: "Brasileirão", brasileirao_b: "Brasileirão Série B",
+};
 
 export const nomeLiga = (id) => NOME_LIGA[id] || id;
+
+// divisões (v2.5; app.domain.divisoes no servidor): a Série B de cada A
+const SERIE_B_DA_A = {
+  taldo: "taldo_b", premier: "championship", laliga: "segunda", brasileirao: "brasileirao_b",
+};
+const SERIE_B = new Set(Object.values(SERIE_B_DA_A));
+export const SOBEM = 4;
+export const VAGAS_COPA = 8;   // copa.VAGAS_POR_LIGA no servidor
+
+// as zonas da tabela de uma liga: na A, título, copa e (se o save tem a B
+// do país) rebaixamento; na B, título e acesso
+export function zonasDaLiga(liga, ligas) {
+  const ids = (ligas || []).map((l) => l.id ?? l);
+  if (SERIE_B.has(liga)) {
+    const a = Object.keys(SERIE_B_DA_A).find((k) => SERIE_B_DA_A[k] === liga);
+    return { acesso: SOBEM, copa: 0, queda: 0, para: nomeLiga(a) };
+  }
+  const temB = ids.includes(SERIE_B_DA_A[liga]);
+  return { acesso: 0, copa: VAGAS_COPA, queda: temB ? SOBEM : 0, para: temB ? nomeLiga(SERIE_B_DA_A[liga]) : "" };
+}
 
 // abas de liga (só quando o save tem mais de uma)
 export function abasLiga(ligas, atual, atributo = "data-liga") {

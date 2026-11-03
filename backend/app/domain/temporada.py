@@ -52,7 +52,7 @@ _CLUBE_CAMPOS = (
     "pontos", "gols_marcados", "gols_sofridos",
     "vitorias", "empates", "derrotas",
     "dinheiro", "dinheiro_inicial", "receita_tv", "receita_bilheteria",
-    "receita_premiacao", "despesa_salarios",
+    "receita_premiacao", "despesa_salarios", "receita_patrocinio",
     "receita_vendas", "despesa_compras", "historico_caixa",
     "despesa_marketing",
     # torcida (v1.4): cresce e encolhe com a campanha
@@ -81,6 +81,8 @@ def snapshot_estado(campeonato):
         dados["formacao"] = clube.formacao
         dados["xi_preferido"] = sorted(j.nome for j in clube.xi_preferido)
         dados["posicionamento"] = clube.posicionamento
+        # a liga (v2.5): quem subiu ou caiu não está mais na da seed
+        dados["liga"] = clube.liga
         # o elenco entra no snapshot porque transferências mudam quem joga
         # onde; sem isso, cada jogador voltaria para o clube da seed
         dados["elenco"] = [j.nome for j in clube.jogadores]
@@ -91,6 +93,7 @@ def snapshot_estado(campeonato):
         "rodada": campeonato.rodada,
         # versão do calendário: ele é regenerado ao carregar
         "calendario": campeonato.versao_calendario,
+        "semente_calendario": campeonato.semente_calendario,
         "rng": [rng[0], list(rng[1]), rng[2]],
         "clubes": clubes,
         # quem está sem clube (v1.6): também muda (contratações)
@@ -119,9 +122,19 @@ def restaurar_estado(campeonato, blob):
     # saves de antes do mando alternado (sem a chave) seguem com o antigo até
     # o fim da temporada: trocar no meio mudaria os jogos que faltam
     versao = blob.get("calendario", 1)
-    if versao != campeonato.versao_calendario:
+    semente = blob.get("semente_calendario")
+    # a liga de cada clube (v2.5, acesso e rebaixamento); snapshots antigos
+    # não têm e ficam com a da seed
+    mudou_liga = False
+    for clube in campeonato.clubes:
+        liga = blob["clubes"].get(clube.nome, {}).get("liga", clube.liga)
+        mudou_liga |= liga != clube.liga
+        clube.liga = liga
+    if (mudou_liga or versao != campeonato.versao_calendario
+            or semente != campeonato.semente_calendario):
         campeonato.versao_calendario = versao
-        campeonato.calendario = campeonato.gerar_calendario(versao)
+        campeonato.semente_calendario = semente
+        campeonato.reorganizar_ligas()
 
     versao, estado, gauss_next = blob["rng"]
     random.setstate((versao, tuple(estado), gauss_next))

@@ -10,8 +10,9 @@ from datetime import timedelta
 
 from app.db.conexao import conectar
 from app.domain import calendario, mercado
+from app.repositories import jogador_repository as jogador_repo
 from app.repositories import simulacao_repository as simulacao_repo
-from app.services import olheiro_base_service, relatorio_service
+from app.services import oferta_service, olheiro_base_service, relatorio_service
 from app.services.temporada_service import TemporadaConcluida, exigir_sem_transmissao
 
 
@@ -71,17 +72,38 @@ def _andar(simulacao_id, proximo):
         na_copa = bool(sim["copa_pendente"])
         hoje = calendario.data_atual(temporada, rodada, sim["data_atual"])
         dia = proximo(conn, simulacao_id, hoje, calendario.data_do_jogo(temporada, rodada, na_copa))
+        # com a janela aberta, os clubes voltam a olhar a lista (v2.5): o dia
+        # em que chega oferta para a passagem, como um relatório pronto
+        dia_oferta, achadas = _ofertas_no_caminho(conn, sim, rodada, hoje, dia)
+        if dia_oferta is not None:
+            dia = dia_oferta
         with conn:
             simulacao_repo.definir_data(conn, simulacao_id, dia)
+            if achadas:
+                oferta_service.gravar_do_dia(conn, simulacao_id, rodada, achadas)
             # relatórios do olheiro que ficaram prontos no caminho (v2.0)
             prontos = relatorio_service.entregar(conn, simulacao_id, dia, rodada)
             # e os relatórios mensais dos olheiros da base
             prontos += olheiro_base_service.entregar(conn, simulacao_id, dia, rodada)
         # a tela passa os dias um a um e para quando chega mensagem
         return {**visao(simulacao_repo.buscar(conn, simulacao_id)),
-                "chegou_mensagem": bool(prontos)}
+                "chegou_mensagem": bool(prontos) or bool(achadas)}
     finally:
         conn.close()
+
+
+def _ofertas_no_caminho(conn, sim, rodada, hoje, dia):
+    """(dia, achadas) de `oferta_service.sortear_nos_dias` nos dias depois de
+    `hoje` até `dia` — só com a janela aberta e alguém à venda."""
+    if dia <= hoje or not mercado.janela_aberta(rodada)             or not jogador_repo.tem_a_venda(conn, sim["id"], sim["clube_usuario"]):
+        return None, []
+    # aqui: o mercado importa o temporada_service, como este módulo
+    from app.services.mercado_service import _carregar
+    ctx = _carregar(conn, sim["id"])
+    dias = [hoje + timedelta(days=k) for k in range(1, (dia - hoje).days + 1)]
+    return oferta_service.sortear_nos_dias(
+        conn, sim["id"], rodada, ctx.campeonato, ctx.alvo, dias,
+    )
 
 
 def avancar_dia(simulacao_id):

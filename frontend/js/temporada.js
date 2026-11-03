@@ -8,7 +8,7 @@ import { abrirCarreira, renderVirada } from "./carreira.js";
 import { renderFimDeCarreira, renderMeta } from "./diretoria.js";
 import { comEscudo } from "./identidade.js";
 import { cartao, icone } from "./icones.js";
-import { abasLiga, nomeLiga, verLiga } from "./ligas.js";
+import { abasLiga, nomeLiga, verLiga, zonasDaLiga } from "./ligas.js";
 
 // ---------- visão temporada ----------
 
@@ -50,17 +50,22 @@ export const COLUNAS = {
 };
 
 // as zonas da tabela (v2.4): o 1º é o campeão e os 8 primeiros de cada
-// liga jogam a copa da temporada seguinte (copa.VAGAS_POR_LIGA no servidor)
-export const VAGAS_COPA = 8;
-
-export function classeClassificacao(c, meu) {
-  const zona = c.posicao === 1 ? "zona-titulo" : c.posicao <= VAGAS_COPA ? "zona-copa" : "";
+// Série A jogam a copa da temporada seguinte; na v2.5, os 4 primeiros da B
+// sobem e os 4 últimos da A caem (zonasDaLiga)
+export function classeClassificacao(c, meu, z = zonasDaLiga("taldo"), total = 20) {
+  const p = c.posicao;
+  const zona = p === 1 ? "zona-titulo"
+    : z.acesso && p <= z.acesso ? "zona-acesso"
+    : z.copa && p <= z.copa ? "zona-copa"
+    : z.queda && p > total - z.queda ? "zona-queda" : "";
   return [zona, c.clube === meu ? "eu" : ""].filter(Boolean).join(" ");
 }
 
-export function legendaZonas() {
-  return `<p class="zonas-legenda"><span><i class="zl-titulo"></i> Campeão (prêmio de R$ 10 mi)</span>
-    <span><i class="zl-copa"></i> Do 1º ao ${VAGAS_COPA}º: Copa da próxima temporada</span></p>`;
+export function legendaZonas(z = zonasDaLiga("taldo")) {
+  return `<p class="zonas-legenda"><span><i class="zl-titulo"></i> Campeão</span>
+    ${z.acesso ? `<span><i class="zl-acesso"></i> Do 1º ao ${z.acesso}º: sobem para a ${z.para}</span>` : ""}
+    ${z.copa ? `<span><i class="zl-copa"></i> Do 1º ao ${z.copa}º: Copa da próxima temporada</span>` : ""}
+    ${z.queda ? `<span><i class="zl-queda"></i> Os ${z.queda} últimos caem para a ${z.para}</span>` : ""}</p>`;
 }
 
 export const ABAS = [
@@ -116,8 +121,10 @@ export function renderPainel() {
   }
   if (estado.abaAtual === "classificacao") {
     const meu = estado.temporada.clube_usuario;
-    painel.innerHTML = tabela(estado.temporada.classificacao, COLUNAS.classificacao,
-      (c) => classeClassificacao(c, meu)) + legendaZonas();
+    const lista = estado.temporada.classificacao;
+    const z = zonasDaLiga(estado.temporada.liga, estado.temporada.ligas);
+    painel.innerHTML = tabela(lista, COLUNAS.classificacao,
+      (c) => classeClassificacao(c, meu, z, lista.length)) + legendaZonas(z);
     ligarLinks(painel);
     return;
   }

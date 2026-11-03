@@ -11,7 +11,7 @@ from app.services import (
 )
 from scripts.data_loader import TODAS_AS_LIGAS
 
-DUAS = TODAS_AS_LIGAS
+DUAS = ("taldo", "premier")   # as duas Séries A (as B têm testes próprios, v2.5)
 
 
 @pytest.fixture(autouse=True)
@@ -67,13 +67,15 @@ def test_carreira_segue_com_as_duas_ligas():
     nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
 
     sim = _linhas("SELECT ligas FROM simulacao WHERE id = ?", nova)[0]
-    assert json.loads(sim["ligas"]) == ["taldo", "premier"]
+    # o save de antes da v2.5 ganha as Séries B e as ligas novas na virada
+    from app.domain import divisoes
+    assert json.loads(sim["ligas"]) == divisoes.ordenar(TODAS_AS_LIGAS)
     m = mercado_service.ver_mercado(nova)
     assert len(m["livres"]) >= 100     # a lista cresce com as ligas
     porliga = collections.Counter(
         r["liga"] for r in _linhas("SELECT liga FROM clube WHERE simulacao_id = ?", nova)
     )
-    assert porliga == {"taldo": 20, "premier": 20}
+    assert porliga == {l: 20 for l in TODAS_AS_LIGAS}
 
 
 def test_listar_clubes_das_duas_ligas_com_ranking_por_liga():
@@ -169,3 +171,53 @@ def test_carreira_com_duas_ligas_campeao_da_liga_do_tecnico_e_copa():
     assert t1["campeao_copa"] and c["titulos_copa"][0]["clube"] == t1["campeao_copa"]
     # o Liverpool foi 3º em 23/24: está na copa
     assert t1["copa_usuario"] in ("oitavas", "quartas", "semi", "final", "campeao")
+
+
+# --- Séries B (v2.5) ---
+
+def test_carreira_com_as_series_b_sobe_4_e_cai_4():
+    from app.domain import divisoes
+    from app.repositories import partida_repository as partida_repo
+
+    sid = simulacao_service.salvar_temporada(
+        seed=4, clube_usuario="Leeds United", ligas=TODAS_AS_LIGAS,
+    )
+    finais = {
+        r["nome"]: (r["liga"], r["posicao_final"])
+        for r in _linhas("SELECT nome, liga, posicao_final FROM clube WHERE simulacao_id = ?", sid)
+    }
+    assert collections.Counter(l for l, _ in finais.values()) == {l: 20 for l in TODAS_AS_LIGAS}
+
+    nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
+    agora = {
+        r["nome"]: r["liga"]
+        for r in _linhas("SELECT nome, liga FROM clube WHERE simulacao_id = ?", nova)
+    }
+    for nome, (liga, posicao) in finais.items():
+        esperado = liga
+        if divisoes.divisao(liga) == 2 and posicao <= 4:
+            esperado = divisoes.da_divisao(liga, 1)
+        if divisoes.divisao(liga) == 1 and posicao >= 17:
+            esperado = divisoes.da_divisao(liga, 2)
+        assert agora[nome] == esperado, nome
+    assert collections.Counter(agora.values()) == {l: 20 for l in TODAS_AS_LIGAS}
+
+    # a copa é das Séries A da temporada que acabou
+    estado = json.loads(_linhas("SELECT estado_json FROM simulacao WHERE id = ?", nova)[0]["estado_json"])
+    assert set(estado["copa"]["classificados"]) == {"taldo", "premier"}
+
+    # a diretoria conta quem subiu e quem caiu
+    assuntos = {r["assunto"] for r in _linhas(
+        "SELECT assunto FROM mensagem WHERE simulacao_id = ? AND setor = 'Diretoria'", nova)}
+    assert assuntos & {"Acesso!", "Rebaixados", "Acesso e rebaixamento"}
+
+    # a rodada 1 (o save é carregado do snapshot) junta os clubes das ligas novas
+    temporada_service.avancar(nova)
+    conn = conectar()
+    try:
+        partidas = partida_repo.listar_por_simulacao(conn, nova)
+    finally:
+        conn.close()
+    assert len(partidas) == 10 * len(TODAS_AS_LIGAS)
+    for p in partidas:
+        assert agora[p["mandante_nome"]] == agora[p["visitante_nome"]]

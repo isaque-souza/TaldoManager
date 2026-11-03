@@ -18,8 +18,9 @@ from datetime import datetime, timezone
 from types import SimpleNamespace
 
 from app.db.conexao import conectar
-from app.domain import atributos, copa, diretoria, fama, mercado, mercado_cpu, olheiro, posicoes, vontade
+from app.domain import atributos, copa, diretoria, divisoes, fama, financas, mercado, mercado_cpu, olheiro, posicoes, vontade
 from app.domain import historico as historico_carreira
+from app.domain.campeonato import semente_do_calendario
 from app.domain.clube import Clube
 from app.domain.jogador import Jogador
 from app.repositories import atuacao_repository as atuacao_repo
@@ -134,6 +135,7 @@ def _rodar(seed, clube_usuario=None, tatica="equilibrado",
         random.seed()
 
     campeonato = carregar_campeonato(ligas)
+    campeonato.sortear_calendario(semente_do_calendario(seed, 1))
     campeonato.iniciar_copa(copa.classificados_de_inicio(campeonato))
 
     if clube_usuario is not None:
@@ -243,6 +245,7 @@ def _serializar(campeonato, seed, clube_usuario=None, tatica=None,
             "receita_tv": clube.receita_tv,
             "receita_bilheteria": clube.receita_bilheteria,
             "receita_premiacao": clube.receita_premiacao,
+            "receita_patrocinio": clube.receita_patrocinio,
             "despesa_salarios": clube.despesa_salarios,
             "receita_vendas": clube.receita_vendas,
             "despesa_compras": clube.despesa_compras,
@@ -363,7 +366,8 @@ def _financas_da_liga(clubes, jogadores):
     linhas = []
     for c in clubes:
         receitas = (c.get("receita_tv", 0) + c.get("receita_bilheteria", 0)
-                    + c.get("receita_premiacao", 0) + c.get("receita_vendas", 0))
+                    + c.get("receita_premiacao", 0) + c.get("receita_vendas", 0)
+                    + c.get("receita_patrocinio", 0))
         despesas = (c.get("despesa_salarios", 0) + c.get("despesa_compras", 0)
                     + c.get("despesa_marketing", 0) + c.get("despesa_estadio", 0)
                     + c.get("despesa_olheiros", 0) + c.get("despesa_base", 0))
@@ -405,7 +409,7 @@ def _meta_da_visao(cru, clubes_ordenados):
 def _ligas_da_visao(cru, liga):
     """(ligas do save, liga do técnico, liga mostrada). Saves antigos não
     trazem `liga` nos clubes: são da Taldo."""
-    ligas = list(dict.fromkeys(c.get("liga", "taldo") for c in cru["clubes"]))
+    ligas = divisoes.ordenar(c.get("liga", "taldo") for c in cru["clubes"])
     do_tecnico = next(
         (c.get("liga", "taldo") for c in cru["clubes"]
          if c["nome"] == cru.get("clube_usuario")),
@@ -939,6 +943,13 @@ def detalhe_clube(simulacao_id, clube_id):
         c = dict(clube)
         c["saldo_gols"] = c["gols_marcados"] - c["gols_sofridos"]
         c["historico_caixa"] = _historico_caixa(c)
+        # o mérito que a posição de hoje pagaria no fim (projeção, v2.5)
+        sim = simulacao_repo.buscar(conn, simulacao_id)
+        da_liga = [r for r in clube_repo.listar_por_simulacao(conn, simulacao_id)
+                   if r["liga"] == c["liga"]]
+        c["premio_posicao"] = financas.premiacao(
+            c["posicao_final"], c["liga"], len(da_liga), financas.economia_do_save(sim),
+        ) if c["posicao_final"] else 0
 
         return {"clube": c, "elenco": elenco, "jogos": jogos}
     finally:

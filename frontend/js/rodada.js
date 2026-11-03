@@ -20,7 +20,7 @@ import { carregarMarketing } from "./marketing.js";
 import { carregarEstadio } from "./estadio.js";
 import { carregarBase } from "./base.js";
 import { carregarCopa, renderCopaDaRodada } from "./copa.js";
-import { porLiga } from "./ligas.js";
+import { porLiga, zonasDaLiga } from "./ligas.js";
 import { avancarDia, ehDiaDeJogo, passarDias, pausar, relogioRodando, rotuloContinuar, textoCalendario } from "./calendario.js";
 
 // ---------- visão rodada a rodada ----------
@@ -396,11 +396,12 @@ export function renderRodadaDepois() {
   // a copa no meio da semana (v1.6)
   renderCopaDaRodada($("r-copa-rodada"), res.copa, meu);
 
+  const z = zonasDaLiga(minha || estado.temporada?.liga, estado.temporada?.ligas);
   $("r-classificacao").innerHTML = tabela(
     res.classificacao,
     COLUNAS.classificacao,
-    (c) => classeClassificacao(c, meu)
-  ) + legendaZonas();
+    (c) => classeClassificacao(c, meu, z, res.classificacao.length)
+  ) + legendaZonas(z);
   ligarLinks($("r-classificacao"));
 
   $("r-proxima").innerHTML = res.concluida

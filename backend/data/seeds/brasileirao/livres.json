@@ -1,0 +1,591 @@
+[
+    {
+        "nome": "Thiago Santos (Palmeiras)",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 78,
+        "potencial": 78,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Ponta",
+            "Volante"
+        ],
+        "numero": 21,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Luan (Palmeiras)",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 77,
+        "potencial": 83,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 13,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Willian (Palmeiras)",
+        "idade": 30,
+        "posicao": "Atacante",
+        "overall": 77,
+        "potencial": 77,
+        "funcao": "Centroavante",
+        "secundarias": [],
+        "numero": 29,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Fabián Noguera",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 78,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 32,
+        "nacionalidade": "ARG"
+    },
+    {
+        "nome": "Federico Mancuello",
+        "idade": 28,
+        "posicao": "Meio-Campo",
+        "overall": 76,
+        "potencial": 79,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Volante"
+        ],
+        "numero": 11,
+        "nacionalidade": "ARG"
+    },
+    {
+        "nome": "Gabriel (Flamengo)",
+        "idade": 27,
+        "posicao": "Atacante",
+        "overall": 76,
+        "potencial": 78,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Meia-atacante"
+        ],
+        "numero": 17,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Kayke",
+        "idade": 29,
+        "posicao": "Atacante",
+        "overall": 76,
+        "potencial": 79,
+        "funcao": "Ponta",
+        "secundarias": [
+            "Lateral"
+        ],
+        "numero": 11,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Marcelo Oliveira",
+        "idade": 30,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 76,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ],
+        "numero": 26,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Orinho",
+        "idade": 21,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 81,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ],
+        "numero": 15,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Renê",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 76,
+        "potencial": 82,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 6,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Caju",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 77,
+        "funcao": "Lateral",
+        "secundarias": [],
+        "numero": 22,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Erik",
+        "idade": 22,
+        "posicao": "Atacante",
+        "overall": 75,
+        "potencial": 80,
+        "funcao": "Ponta",
+        "secundarias": [],
+        "numero": 17,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Leonan",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 75,
+        "potencial": 83,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ],
+        "numero": 31,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Marciel",
+        "idade": 22,
+        "posicao": "Meio-Campo",
+        "overall": 75,
+        "potencial": 79,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 22,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Vladimir Hernández",
+        "idade": 28,
+        "posicao": "Atacante",
+        "overall": 75,
+        "potencial": 75,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta",
+            "Segundo atacante"
+        ],
+        "numero": 16,
+        "nacionalidade": "COL"
+    },
+    {
+        "nome": "Antônio Carlos",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 74,
+        "potencial": 76,
+        "funcao": "Lateral",
+        "secundarias": [],
+        "numero": 25,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Bruno Rodrigo",
+        "idade": 32,
+        "posicao": "Defesa",
+        "overall": 74,
+        "potencial": 74,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 33,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Carlos César",
+        "idade": 30,
+        "posicao": "Defesa",
+        "overall": 74,
+        "potencial": 74,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 19,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Fabiano",
+        "idade": 25,
+        "posicao": "Defesa",
+        "overall": 74,
+        "potencial": 75,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ],
+        "numero": 22,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Lucas Silva (Cruzeiro)",
+        "idade": 24,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 78,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 16,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Lucão",
+        "idade": 24,
+        "posicao": "Goleiro",
+        "overall": 74,
+        "potencial": 82,
+        "funcao": "Goleiro",
+        "secundarias": [],
+        "numero": 39,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Marquinhos Gabriel",
+        "idade": 26,
+        "posicao": "Atacante",
+        "overall": 74,
+        "potencial": 76,
+        "funcao": "Ponta",
+        "secundarias": [],
+        "numero": 31,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Thiago Santos (Flamengo)",
+        "idade": 22,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 79,
+        "funcao": "Volante",
+        "secundarias": [
+            "Meia central"
+        ],
+        "numero": 40,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Warian",
+        "idade": 20,
+        "posicao": "Meio-Campo",
+        "overall": 74,
+        "potencial": 85,
+        "funcao": "Volante",
+        "secundarias": [],
+        "numero": 33,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Alan Ruschel",
+        "idade": 27,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 73,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ],
+        "numero": 28,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Beto da Silva",
+        "idade": 20,
+        "posicao": "Atacante",
+        "overall": 73,
+        "potencial": 84,
+        "funcao": "Ponta",
+        "secundarias": [],
+        "numero": 19,
+        "nacionalidade": "PER"
+    },
+    {
+        "nome": "Camacho",
+        "idade": 27,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 75,
+        "funcao": "Meia-atacante",
+        "secundarias": [
+            "Meia central"
+        ],
+        "numero": 29,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Diego Renan",
+        "idade": 27,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 74,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 26,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "João Paulo (Santos)",
+        "idade": 21,
+        "posicao": "Goleiro",
+        "overall": 73,
+        "potencial": 75,
+        "funcao": "Goleiro",
+        "secundarias": [],
+        "numero": 34,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Kelvin",
+        "idade": 23,
+        "posicao": "Atacante",
+        "overall": 73,
+        "potencial": 75,
+        "funcao": "Ponta",
+        "secundarias": [],
+        "numero": null,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Lucas Crispim",
+        "idade": 22,
+        "posicao": "Atacante",
+        "overall": 73,
+        "potencial": 80,
+        "funcao": "Centroavante",
+        "secundarias": [
+            "Ponta"
+        ],
+        "numero": 35,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Manoel",
+        "idade": 27,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 74,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Volante"
+        ],
+        "numero": 27,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Matheus Mancini",
+        "idade": 22,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 76,
+        "funcao": "Lateral",
+        "secundarias": [],
+        "numero": 23,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Moisés (Chapecoense)",
+        "idade": 22,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 76,
+        "funcao": "Meia central",
+        "secundarias": [
+            "Ponta"
+        ],
+        "numero": 37,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Nilmar",
+        "idade": 32,
+        "posicao": "Atacante",
+        "overall": 73,
+        "potencial": 73,
+        "funcao": "Ponta",
+        "secundarias": [],
+        "numero": 18,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Paulo Roberto",
+        "idade": 30,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 73,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 28,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Renato (Fluminense)",
+        "idade": 27,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 76,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 16,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Régis",
+        "idade": 24,
+        "posicao": "Meio-Campo",
+        "overall": 73,
+        "potencial": 80,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 20,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Vilson",
+        "idade": 28,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 76,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 15,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Wellington Silva",
+        "idade": 29,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 75,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 25,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Zé Ivaldo",
+        "idade": 20,
+        "posicao": "Defesa",
+        "overall": 73,
+        "potencial": 82,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 27,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Bruno Alves",
+        "idade": 26,
+        "posicao": "Defesa",
+        "overall": 72,
+        "potencial": 72,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 34,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Bruno Bispo",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 72,
+        "potencial": 76,
+        "funcao": "Zagueiro",
+        "secundarias": [],
+        "numero": 37,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Caíque França",
+        "idade": 21,
+        "posicao": "Goleiro",
+        "overall": 72,
+        "potencial": 78,
+        "funcao": "Goleiro",
+        "secundarias": [],
+        "numero": 40,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Emilio Zeballos",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 72,
+        "potencial": 78,
+        "funcao": "Lateral",
+        "secundarias": [
+            "Meia central"
+        ],
+        "numero": 92,
+        "nacionalidade": "URU"
+    },
+    {
+        "nome": "Feijão",
+        "idade": 23,
+        "posicao": "Atacante",
+        "overall": 72,
+        "potencial": 75,
+        "funcao": "Ponta",
+        "secundarias": [],
+        "numero": 15,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Felipe (Fluminense)",
+        "idade": 24,
+        "posicao": "Meio-Campo",
+        "overall": 72,
+        "potencial": 74,
+        "funcao": "Meia central",
+        "secundarias": [],
+        "numero": 39,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Felipe Santana",
+        "idade": 31,
+        "posicao": "Defesa",
+        "overall": 72,
+        "potencial": 72,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral"
+        ],
+        "numero": 26,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Gilberto (Vasco)",
+        "idade": 24,
+        "posicao": "Defesa",
+        "overall": 72,
+        "potencial": 76,
+        "funcao": "Zagueiro",
+        "secundarias": [
+            "Lateral",
+            "Volante"
+        ],
+        "numero": null,
+        "nacionalidade": "BRA"
+    },
+    {
+        "nome": "Giovanni",
+        "idade": 30,
+        "posicao": "Goleiro",
+        "overall": 72,
+        "potencial": 72,
+        "funcao": "Goleiro",
+        "secundarias": [],
+        "numero": 87,
+        "nacionalidade": "BRA"
+    }
+]
