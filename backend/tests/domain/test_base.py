@@ -106,4 +106,4 @@ def test_subir_jovens_em_todos_os_clubes():
     assert len(movs) == 7 + 19              # 7 no desfalcado, 1 nos outros
     nomes = [j.nome for c in camp.clubes for j in c.jogadores]
     assert len(nomes) == len(set(nomes))    # nada repetido na liga
-    assert len(camp.clubes[0].jogadores) <= mercado.ELENCO_MAX
+    assert len(camp.clubes[0].jogadores) <= mercado.ELENCO_MAX_CPU

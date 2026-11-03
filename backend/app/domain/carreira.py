@@ -239,13 +239,13 @@ def _destino_livre(campeonato, jogador, origem, clube_usuario):
     sonho = next((c for c in campeonato.clubes if c.nome == jogador.sonho), None)
     if (sonho is not None and sonho is not origem and sonho.nome != clube_usuario
             and jogador.idade >= vontade.IDADE_APOSENTADORIA
-            and len(sonho.jogadores) < mercado.ELENCO_MAX):
+            and len(sonho.jogadores) < mercado.ELENCO_MAX_CPU):
         return sonho
     candidatos = [
         c for c in campeonato.clubes
         if c is not origem
         and c.nome != clube_usuario
-        and len(c.jogadores) < mercado.ELENCO_MAX
+        and len(c.jogadores) < mercado.ELENCO_MAX_CPU
         and mercado.seria_titular(c, jogador)
     ]
     return max(candidatos, key=lambda c: c.dinheiro, default=None)

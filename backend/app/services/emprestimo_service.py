@@ -81,7 +81,7 @@ def pedir(simulacao_id, jogador_id, duracao, parte_salario, taxa, opcao=False):
 
         motivo = (
             emprestimo.motivo_nao_empresta(jogador, cedente, tomador)
-            or mercado.motivo_entrada_bloqueada(tomador, taxa)
+            or mercado.motivo_entrada_bloqueada(tomador, taxa, mercado.ELENCO_MAX)
         )
         if motivo:
             raise bloqueada(motivo)
@@ -135,6 +135,7 @@ def pedir(simulacao_id, jogador_id, duracao, parte_salario, taxa, opcao=False):
                 )
                 emprestimo.emprestar(
                     jogador, cedente, tomador, volta, parte_salario, taxa, preco, eid,
+                    maximo=mercado.ELENCO_MAX,
                 )
                 papeis.completar(tomador)
                 mapa = ctx.gravar()

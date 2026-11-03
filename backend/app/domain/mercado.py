@@ -28,7 +28,10 @@ JANELAS = (1, 20)
 CONTRATO_PADRAO_ANOS = 3
 
 ELENCO_MIN = 16
-ELENCO_MAX = 25
+# o elenco do técnico vai até 52, como no FIFA (v2.6); a CPU segue com 25
+# (com mais, os clubes dela acumulariam livres e jovens a cada temporada)
+ELENCO_MAX = 52
+ELENCO_MAX_CPU = 25
 GOLEIROS_MIN = 2
 
 
@@ -57,11 +60,13 @@ def motivo_saida_bloqueada(clube, jogador):
     return None
 
 
-def motivo_entrada_bloqueada(clube, preco):
-    """Por que `clube` não pode contratar por `preco` (None = pode)."""
+def motivo_entrada_bloqueada(clube, preco, maximo=ELENCO_MAX_CPU):
+    """Por que `clube` não pode contratar por `preco` (None = pode).
+    `maximo`: o tamanho do elenco — ELENCO_MAX quando quem contrata é o
+    técnico."""
 
-    if len(clube.jogadores) >= ELENCO_MAX:
-        return f"{clube.nome} já tem {ELENCO_MAX} jogadores"
+    if len(clube.jogadores) >= maximo:
+        return f"{clube.nome} já tem {maximo} jogadores"
     if clube.dinheiro < preco:
         return f"{clube.nome} não tem caixa para pagar {formato.reais(preco)}"
     return None
@@ -78,7 +83,7 @@ def tirar_do_elenco(clube, jogador):
     clube.xi_preferido.discard(jogador)
 
 
-def transferir(jogador, vendedor, comprador, preco, contrato=None):
+def transferir(jogador, vendedor, comprador, preco, contrato=None, maximo=ELENCO_MAX_CPU):
     """Move `jogador` de `vendedor` para `comprador` pagando `preco`.
     `contrato`: (anos, salário, multa) combinados com o jogador (v1.7); sem
     ele, o padrão. Levanta `TransferenciaInvalida` se alguma regra impedir."""
@@ -90,7 +95,7 @@ def transferir(jogador, vendedor, comprador, preco, contrato=None):
 
     motivo = (
         motivo_saida_bloqueada(vendedor, jogador)
-        or motivo_entrada_bloqueada(comprador, preco)
+        or motivo_entrada_bloqueada(comprador, preco, maximo)
     )
     if motivo:
         raise TransferenciaInvalida(motivo)
@@ -120,7 +125,7 @@ def luvas(jogador):
     return _arredondar(jogador.valor_mercado() * FATOR_LUVAS)
 
 
-def contratar_livre(jogador, livres, clube, contrato=None):
+def contratar_livre(jogador, livres, clube, contrato=None, maximo=ELENCO_MAX_CPU):
     """Tira `jogador` da lista de `livres` e o põe no `clube`, que paga as
     luvas. `contrato`: (anos, salário, multa) combinados (v1.7); sem ele, o
     padrão. Devolve o valor das luvas. Levanta `TransferenciaInvalida` se
@@ -129,7 +134,7 @@ def contratar_livre(jogador, livres, clube, contrato=None):
     if jogador not in livres:
         raise TransferenciaInvalida(f"{jogador.nome} não está livre")
     valor = luvas(jogador)
-    motivo = motivo_entrada_bloqueada(clube, valor)
+    motivo = motivo_entrada_bloqueada(clube, valor, maximo)
     if motivo:
         raise TransferenciaInvalida(motivo)
 
