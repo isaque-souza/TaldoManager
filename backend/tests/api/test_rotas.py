@@ -244,6 +244,13 @@ def test_fluxo_rodada_a_rodada():
     # as duas ligas jogam na mesma rodada (v1.6)
     assert len(corpo["confrontos"]) == 20
     assert sum(c["liga"] == "premier" for c in corpo["confrontos"]) == 10
+    # v2.4: o contexto do próximo jogo para o card do Início
+    assert corpo["estadio"]["capacidade"] > 0
+    assert 0 < corpo["estadio"]["ocupacao"] <= 1
+    nomes = {corpo["contexto_mandante"]["clube"], corpo["contexto_visitante"]["clube"]}
+    assert nomes == {clube, corpo["adversario"]}
+    assert corpo["contexto_mandante"]["forma"] == []   # ninguém jogou ainda
+    assert "confronto_direto" not in corpo
 
     jogou = client.post(f"/simulacoes/{sid}/rodadas", json={"tatica": "defensivo"})
     assert jogou.status_code == 200
