@@ -905,3 +905,32 @@ def copa_resultado(fase, jogo, clube, premio, proxima=None):
     if proxima:
         corpo += " " + _confronto_copa(*proxima)
     return _mensagem("Diretoria", "Avançamos na copa", corpo)
+
+
+def _lista(nomes):
+    nomes = list(nomes)
+    return nomes[0] if len(nomes) == 1 else f"{', '.join(nomes[:-1])} e {nomes[-1]}"
+
+
+def divisoes_na_virada(clube, antes, depois, sobem, caem, nome_a, nome_b):
+    """Virada (v2.5): quem subiu e quem caiu no país do técnico. `antes` e
+    `depois`: a divisão do clube dele (1 = A, 2 = B); `sobem` e `caem`: os
+    nomes dos que trocaram de divisão. None se ninguém trocou."""
+    if not sobem and not caem:
+        return None
+    resumo = f"Sobem para a {nome_a}: {_lista(sobem)}. Caem para a {nome_b}: {_lista(caem)}."
+    if antes == 2 and depois == 1:
+        return _mensagem(
+            "Diretoria", "Acesso!",
+            f"O {clube} subiu para a {nome_a}! A TV, os patrocínios e a "
+            "premiação pagam muito mais lá, mas os adversários também são "
+            f"outros: reforçar o elenco é a prioridade. {resumo}",
+        )
+    if antes == 1 and depois == 2:
+        return _mensagem(
+            "Diretoria", "Rebaixados",
+            f"O {clube} vai disputar a {nome_b}. As receitas caem a uma fração "
+            "do que eram e a folha precisa caber nelas: vender quem ganha "
+            f"muito pode ser o caminho. A meta agora é voltar. {resumo}",
+        )
+    return _mensagem("Diretoria", "Acesso e rebaixamento", resumo)

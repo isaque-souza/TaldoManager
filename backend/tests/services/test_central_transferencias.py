@@ -50,7 +50,7 @@ def test_lista_de_compra_traz_as_duas_ligas_com_a_liga_de_cada_um():
     sid = temporada_service.iniciar(seed=11, clube_usuario=CLUBE, ligas=TODAS_AS_LIGAS)
     m = mercado_service.ver_mercado(sid)
     assert m["liga_usuario"] == "taldo"
-    assert {f["liga"] for f in m["disponiveis"]} == {"taldo", "premier"}
+    assert {f["liga"] for f in m["disponiveis"]} == set(TODAS_AS_LIGAS)   # com as Séries B (v2.5)
     assert all(f["liga"] == "taldo" for f in m["elenco"])
     assert all(f["liga"] is None for f in m["livres"])
 

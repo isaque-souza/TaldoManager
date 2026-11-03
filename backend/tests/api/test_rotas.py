@@ -61,8 +61,9 @@ def test_listar_clubes():
     assert resp.status_code == 200
     clubes = resp.json()
     # v1.6: as duas ligas
-    assert len(clubes) == 40
-    assert {c["liga"] for c in clubes} == {"taldo", "premier"}
+    # as Séries A e as B (v2.5)
+    assert len(clubes) == 80
+    assert {c["liga"] for c in clubes} == {"taldo", "premier", "taldo_b", "championship"}
     assert {"nome", "liga", "pais", "forca", "ranking_forca", "meta_posicao", "meta",
             "dinheiro", "torcedores", "identidade"} == set(clubes[0])
 
@@ -245,7 +246,7 @@ def test_fluxo_rodada_a_rodada():
     assert corpo["rodada"] == 1
     assert corpo["clube_usuario"] == clube
     # as duas ligas jogam na mesma rodada (v1.6)
-    assert len(corpo["confrontos"]) == 20
+    assert len(corpo["confrontos"]) == 40      # as 4 ligas (v2.5)
     assert sum(c["liga"] == "premier" for c in corpo["confrontos"]) == 10
     # v2.4: o contexto do próximo jogo para o card do Início
     assert corpo["estadio"]["capacidade"] > 0
@@ -266,8 +267,8 @@ def test_fluxo_rodada_a_rodada():
     r = jogou.json()
     assert r["rodada_jogada"] == 1
     assert r["concluida"] is False
-    assert len(r["resultados"]) == 20
-    assert {x["liga"] for x in r["resultados"]} == {"taldo", "premier"}
+    assert len(r["resultados"]) == 40      # as 4 ligas (v2.5)
+    assert {x["liga"] for x in r["resultados"]} == {"taldo", "premier", "taldo_b", "championship"}
     assert r["tatica"] == "defensivo"
 
 
@@ -674,7 +675,7 @@ def test_visao_de_cada_liga():
 
     corpo = client.get(f"/simulacoes/{sid}").json()
     assert corpo["liga"] == "premier" and corpo["campeonato"] == "Premier League"
-    assert [l["id"] for l in corpo["ligas"]] == ["taldo", "premier"]
+    assert [l["id"] for l in corpo["ligas"]] == ["taldo", "premier", "taldo_b", "championship"]
     assert len(corpo["classificacao"]) == 20
     assert "Arsenal" in {c["clube"] for c in corpo["classificacao"]}
     assert corpo["campeao"] == corpo["classificacao"][0]["clube"]

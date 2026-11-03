@@ -11,7 +11,8 @@ from datetime import datetime, timezone
 
 from app.db.conexao import conectar
 from app.domain import caixa, calendario, copa, estadio, fama, historico, livres, mercado_cpu, vontade
-from app.domain import financas
+from app.domain import divisoes, financas
+from app.domain.base import gerar_nome
 from app.domain.campeonato import semente_do_calendario
 from app.domain.base import subir_jovens
 from app.domain.carreira import (
@@ -36,7 +37,7 @@ from app.services import (
     simulacao_service,
 )
 from scripts.data_loader import (
-    LIGA_PADRAO, TODAS_AS_LIGAS, carregar_campeonato_do_save, carregar_jogadores,
+    LIGA_PADRAO, LIGAS, TODAS_AS_LIGAS, carregar_campeonato, carregar_jogadores,
     carregar_livres, ligas_do_save,
 )
 
@@ -60,6 +61,40 @@ def _nomes_usados(conn, carreira_id):
         (carreira_id,),
     )
     return seed | {r["nome"] for r in rows}
+
+
+def _sem_nomes_repetidos(campeonato, clubes_finais, jogadores_finais,
+                         livres_finais, seed):
+    """A Série B que um save antigo ganha na virada (v2.5) vem da seed: um
+    nome dela pode ser o de um jovem que a carreira já criou. Quem repete
+    ganha outro (o jogo identifica o jogador pelo nome). Gerador próprio:
+    não mexe na sequência da virada."""
+    com_registro = {f["nome"] for f in clubes_finais}
+    novos = [j for c in campeonato.clubes if c.nome not in com_registro for j in c.jogadores]
+    if not novos:
+        return
+    ocupados = {f["nome"] for f in jogadores_finais} | {
+        j.nome for j in (livres_finais or [])
+    } | {j.nome for c in campeonato.clubes if c.nome in com_registro for j in c.jogadores}
+    rng = random.Random(f"series-b:{seed}")
+    for j in novos:
+        if j.nome in ocupados:
+            j.nome = gerar_nome(ocupados, rng)
+        ocupados.add(j.nome)
+
+
+def _mensagem_das_divisoes(clube_usuario, liga_antes, liga_depois, subidas):
+    """O aviso da diretoria de quem subiu e caiu no país do técnico (v2.5)."""
+    a = divisoes.da_divisao(liga_depois, 1)
+    b = divisoes.da_divisao(liga_depois, 2)
+    if not a or not b:
+        return None
+    return caixa.divisoes_na_virada(
+        clube_usuario, divisoes.divisao(liga_antes or liga_depois), divisoes.divisao(liga_depois),
+        sorted(n for n, l in subidas.items() if l == a),
+        sorted(n for n, l in subidas.items() if l == b),
+        LIGAS[a][0], LIGAS[b][0],
+    )
 
 
 def _lotados(conn, simulacao_id, clubes_finais):
@@ -139,11 +174,24 @@ def proxima_temporada(simulacao_id):
             else:
                 random.seed()
 
-            # as ligas seguem as da temporada anterior (v1.6)
-            campeonato = carregar_campeonato_do_save(sim)
+            # as ligas seguem as da temporada anterior (v1.6), mais a Série B
+            # de cada país que o save ainda não tem (v2.5)
+            ligas = divisoes.com_as_series_b(ligas_do_save(sim))
+            campeonato = carregar_campeonato(ligas)
+            campeonato.economia = financas.economia_do_save(sim)
+            _sem_nomes_repetidos(campeonato, clubes_finais, jogadores_finais,
+                                 livres_finais, carreira["seed"])
             preparar_nova_temporada(
                 campeonato, clubes_finais, jogadores_finais, livres_finais
             )
+            # acesso e rebaixamento (v2.5): 4 sobem da B, 4 caem da A
+            subidas = divisoes.acesso_e_rebaixamento(clubes_finais)
+            liga_antes = next(
+                (c.liga for c in campeonato.clubes if c.nome == clube_usuario), None
+            )
+            for clube in campeonato.clubes:
+                clube.liga = subidas.get(clube.nome, clube.liga)
+            campeonato.reorganizar_ligas()
             envelhecer(campeonato, jogadores_finais, random)
             # quem terminou a temporada como ídolo ganha a história no clube
             # (v1.9), antes de os contratos e a aposentadoria o tirarem de lá
@@ -227,8 +275,7 @@ def proxima_temporada(simulacao_id):
                 temporada=temporada,
                 # a nova temporada começa na pré-temporada (v2.0)
                 data_atual=calendario.inicio(temporada).isoformat(),
-                ligas=(ligas_do_save(sim) if ligas_do_save(sim) != LIGA_PADRAO
-                       else None),
+                ligas=(list(ligas) if tuple(ligas) != LIGA_PADRAO else None),
                 # a meta nasce do elenco depois da virada (base, saídas...)
                 **simulacao_service.meta_inicial(campeonato, clube_usuario),
             )
@@ -249,6 +296,7 @@ def proxima_temporada(simulacao_id):
                     if c.liga == alvo.liga
                 ]),
                 copa_service.mensagem_de_inicio(campeonato, clube_usuario),
+                _mensagem_das_divisoes(clube_usuario, liga_antes, alvo.liga, subidas),
             ])
             # a janela da pré-temporada abre: a CPU negociou e faz ofertas (v1.7)
             oferta_service.registrar_cpu(conn, nova_id, 1, negocios_cpu, mapa, alvo, None)
@@ -324,7 +372,16 @@ def detalhe_carreira(carreira_id):
                 resumo = historico.resumo_temporada(
                     da_liga, [j for j in jogadores if j["clube"] in nomes], clube_usuario,
                 )
-                resumo["campeoes"] = [c["nome"] for c in clubes if c["posicao_final"] == 1]
+                # o título de jogador é o das Séries A (v2.5)
+                resumo["campeoes"] = [
+                    c["nome"] for c in clubes
+                    if c["posicao_final"] == 1 and divisoes.eh_primeira(c["liga"])
+                ]
+                # a temporada do técnico na Série B (v2.5): aparece, mas o
+                # título dela não entra na conta dos títulos
+                linha["liga"] = liga
+                linha["liga_nome"] = LIGAS[liga][0] if liga in LIGAS else liga
+                linha["serie_b"] = not divisoes.eh_primeira(liga)
                 dados_copa = json.loads(t["copa_json"]) if t["copa_json"] else None
                 resumo["campeao_copa"] = copa.campeao_de(dados_copa)
                 linha.update({k: v for k, v in resumo.items() if k != "campeoes"})
@@ -333,6 +390,7 @@ def detalhe_carreira(carreira_id):
                     "temporada": t["temporada"],
                     "jogadores": jogadores,
                     "resumo": resumo,
+                    "serie_b": linha["serie_b"],
                 })
             temporadas.append(linha)
 
@@ -344,7 +402,7 @@ def detalhe_carreira(carreira_id):
             "criada_em": carreira["criada_em"],
             "temporadas": temporadas,
             "titulos": historico.titulos_por_clube(
-                [(t["temporada"], t["resumo"]) for t in concluidas]
+                [(t["temporada"], t["resumo"]) for t in concluidas if not t["serie_b"]]
             ),
             "titulos_copa": historico.titulos_por_clube(
                 [(t["temporada"], t["resumo"]) for t in concluidas], "campeao_copa",

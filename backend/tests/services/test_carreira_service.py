@@ -342,7 +342,8 @@ def test_elencos_continuam_validos_depois_de_varias_viradas(monkeypatch):
             ).fetchall()
         finally:
             conn.close()
-        assert len(elencos) == 20
+        # a Liga Taldo e a B, que o save ganha na primeira virada (v2.5)
+        assert len(elencos) == 40
         for e in elencos:
             assert 16 <= e["n"] <= 25, e["nome"]
             assert e["goleiros"] >= 2, e["nome"]
@@ -366,10 +367,15 @@ def test_virada_sobe_jovens_em_todos_os_clubes_da_cpu():
     jovens = _jovens_da_base(nova)
     visao = simulacao_service.carregar_temporada(nova)
 
-    # o clube do técnico promove da base dele (v2.0): fora do mínimo, nada
-    assert {m["clube"] for m in jovens} == {
-        c["clube"] for c in visao["classificacao"] if c["clube"] != visao["clube_usuario"]
-    }
+    # o clube do técnico promove da base dele (v2.0): fora do mínimo, nada.
+    # Os da Série B também (v2.5)
+    conn = conectar()
+    try:
+        clubes = {r["nome"] for r in conn.execute(
+            "SELECT nome FROM clube WHERE simulacao_id = ?", (nova,))}
+    finally:
+        conn.close()
+    assert {m["clube"] for m in jovens} == clubes - {visao["clube_usuario"]}
     t2 = _jogadores(nova)
     for m in jovens:
         assert m["jogador"] in t2

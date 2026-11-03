@@ -26,7 +26,8 @@ from dataclasses import dataclass
 from app.domain import fama, mercado, vontade
 
 CHANCE_COMPRA = 0.55       # por clube, por janela (v2.5: era 0,35)
-MAX_POR_JANELA = 24        # v2.5: era 10, para 40 clubes
+MAX_POR_JANELA = 24        # para 40 clubes (v2.5: era 10); cresce com o mundo
+CLUBES_DO_MAXIMO = 40
 REFORCOS_POR_CLUBE = 2     # v2.5: com dinheiro, o clube reforça mais de um setor
 FRACAO_CAIXA = 0.4         # o máximo do caixa que vai num reforço
 GANHO_MINIMO = 2           # de overall sobre o pior titular da posição
@@ -107,10 +108,11 @@ def negociar(clubes, clube_usuario, rng):
     rng.shuffle(compradores)
 
     feitos, ja = [], set()
+    maximo = max(MAX_POR_JANELA, round(MAX_POR_JANELA * len(clubes) / CLUBES_DO_MAXIMO))
     prest = vontade.prestigio(clubes)
     for comprador in compradores:
         for _ in range(REFORCOS_POR_CLUBE):
-            if len(feitos) >= MAX_POR_JANELA:
+            if len(feitos) >= maximo:
                 return feitos
             # a lista é refeita a cada compra: o caixa e o pior titular mudaram
             candidatos = _candidatos(comprador, cpu, ja, clubes)

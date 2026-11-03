@@ -10,7 +10,7 @@ import { icone } from "./icones.js";
 import { reais, tabela } from "./tabelas.js";
 import { nomeLiga } from "./ligas.js";
 
-const SIGLA_LIGA = { taldo: "TAL", premier: "PL" };
+const SIGLA_LIGA = { taldo: "TAL", premier: "PL", taldo_b: "TAL B", championship: "CHA" };
 const ESTADOS = {
   vivo: ["Na copa", "chip-batida"],
   eliminado: ["Eliminado", "chip-longe"],

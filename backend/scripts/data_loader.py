@@ -13,6 +13,9 @@ SEEDS_DIR = Path(__file__).resolve().parent.parent / "data" / "seeds"
 LIGAS = {
     "taldo": ("Liga Taldo", SEEDS_DIR),
     "premier": ("Premier League", SEEDS_DIR / "premier"),
+    # as Séries B (v2.5; ver app.domain.divisoes)
+    "taldo_b": ("Liga Taldo B", SEEDS_DIR / "taldo_b"),
+    "championship": ("Championship", SEEDS_DIR / "championship"),
 }
 LIGA_PADRAO = ("taldo",)   # saves de antes da v1.6
 TODAS_AS_LIGAS = tuple(LIGAS)   # todo jogo novo (v1.6)

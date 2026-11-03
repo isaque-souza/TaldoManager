@@ -81,6 +81,8 @@ def snapshot_estado(campeonato):
         dados["formacao"] = clube.formacao
         dados["xi_preferido"] = sorted(j.nome for j in clube.xi_preferido)
         dados["posicionamento"] = clube.posicionamento
+        # a liga (v2.5): quem subiu ou caiu não está mais na da seed
+        dados["liga"] = clube.liga
         # o elenco entra no snapshot porque transferências mudam quem joga
         # onde; sem isso, cada jogador voltaria para o clube da seed
         dados["elenco"] = [j.nome for j in clube.jogadores]
@@ -121,10 +123,18 @@ def restaurar_estado(campeonato, blob):
     # o fim da temporada: trocar no meio mudaria os jogos que faltam
     versao = blob.get("calendario", 1)
     semente = blob.get("semente_calendario")
-    if versao != campeonato.versao_calendario or semente != campeonato.semente_calendario:
+    # a liga de cada clube (v2.5, acesso e rebaixamento); snapshots antigos
+    # não têm e ficam com a da seed
+    mudou_liga = False
+    for clube in campeonato.clubes:
+        liga = blob["clubes"].get(clube.nome, {}).get("liga", clube.liga)
+        mudou_liga |= liga != clube.liga
+        clube.liga = liga
+    if (mudou_liga or versao != campeonato.versao_calendario
+            or semente != campeonato.semente_calendario):
         campeonato.versao_calendario = versao
         campeonato.semente_calendario = semente
-        campeonato.calendario = campeonato.gerar_calendario(versao)
+        campeonato.reorganizar_ligas()
 
     versao, estado, gauss_next = blob["rng"]
     random.setstate((versao, tuple(estado), gauss_next))

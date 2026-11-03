@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from types import SimpleNamespace
 
 from app.db.conexao import conectar
-from app.domain import atributos, copa, diretoria, fama, financas, mercado, mercado_cpu, olheiro, posicoes, vontade
+from app.domain import atributos, copa, diretoria, divisoes, fama, financas, mercado, mercado_cpu, olheiro, posicoes, vontade
 from app.domain import historico as historico_carreira
 from app.domain.campeonato import semente_do_calendario
 from app.domain.clube import Clube
@@ -409,7 +409,7 @@ def _meta_da_visao(cru, clubes_ordenados):
 def _ligas_da_visao(cru, liga):
     """(ligas do save, liga do técnico, liga mostrada). Saves antigos não
     trazem `liga` nos clubes: são da Taldo."""
-    ligas = list(dict.fromkeys(c.get("liga", "taldo") for c in cru["clubes"]))
+    ligas = divisoes.ordenar(c.get("liga", "taldo") for c in cru["clubes"])
     do_tecnico = next(
         (c.get("liga", "taldo") for c in cru["clubes"]
          if c["nome"] == cru.get("clube_usuario")),

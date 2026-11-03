@@ -69,7 +69,10 @@ function renderTemporadas(c) {
     vice: t.vice ?? "",
     art: t.estado === "em_andamento" ? "" : destaque(t.artilheiro),
     mvpd: t.estado === "em_andamento" ? "" : destaque(t.mvp),
-    voce: t.posicao_usuario ? `${t.posicao_usuario}º` : "",
+    // na Série B (v2.5), a posição diz a liga
+    voce: t.posicao_usuario
+      ? `${t.posicao_usuario}º${t.serie_b ? ` <small>(${t.liga_nome})</small>` : ""}`
+      : "",
     copa: t.campeao_copa ? `${icone("trofeu")} ${t.campeao_copa}` : "",
     sua_copa: t.copa_usuario ? CAMPANHA_COPA[t.copa_usuario] : (t.campeao_copa ? "fora" : ""),
   }));

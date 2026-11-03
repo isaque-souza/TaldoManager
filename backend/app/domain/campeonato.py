@@ -1,7 +1,7 @@
 import random
 
 from . import copa as copa_
-from . import emprestimo, estadio, fama, financas, papeis, torcida
+from . import divisoes, emprestimo, estadio, fama, financas, papeis, torcida
 from .partida import Partida
 
 
@@ -26,7 +26,8 @@ class Campeonato:
         self.clubes = clubes
         # ligas (v1.6): cada uma tem a sua tabela e o seu turno e returno,
         # jogados na mesma rodada; a ordem é a dos clubes
-        self.ligas = list(dict.fromkeys(c.liga for c in clubes))
+        # (v2.5: as Séries A primeiro, depois as B)
+        self.ligas = divisoes.ordenar(c.liga for c in clubes)
         self.livres = []              # jogadores sem clube (v1.6)
         self.copa = None              # copa entre as ligas (v1.6), se houver
         self.rodada = 1
@@ -183,8 +184,10 @@ class Campeonato:
 
     def iniciar_copa(self, classificados):
         """Monta a copa com {liga: [nomes do 1º ao 8º]}. Só com duas
-        ligas; com uma, fica sem copa."""
-        self.copa = copa_.Copa(classificados) if len(self.ligas) == 2 else None
+        Séries A; com uma, fica sem copa. As Séries B (v2.5) não jogam."""
+        primeiras = divisoes.primeiras(self.ligas)
+        classificados = {l: n for l, n in classificados.items() if l in primeiras}
+        self.copa = copa_.Copa(classificados) if len(primeiras) == 2 else None
         return self.copa
 
     def mostrar_cabecalho(self):
@@ -477,6 +480,12 @@ class Campeonato:
             f"({self.recordes['mais_gols_jogo']['valor']})"
         )
     
+    def reorganizar_ligas(self):
+        """Depois que clubes trocam de liga (acesso e rebaixamento, v2.5):
+        refaz a lista das ligas e o calendário (na versão e semente atuais)."""
+        self.ligas = divisoes.ordenar(c.liga for c in self.clubes)
+        self.calendario = self.gerar_calendario(self.versao_calendario)
+
     def sortear_calendario(self, semente):
         """Sorteia a ordem dos jogos da temporada (v3). A semente é um
         número (vai no snapshot, que regenera o calendário ao carregar)."""
