@@ -111,7 +111,7 @@ def test_enviar_cobra_a_missao_e_marca_o_primeiro_relatorio():
     sid = _iniciar()
     caixa = base_service.ver(sid)["caixa"]
     visao = olheiro_base_service.enviar(sid, "europa", 3)
-    custo = olheiro_base.custo("europa", 3)
+    custo = olheiro_base.custo("europa", 3, "taldo")   # v2.6: pelo peso da liga
     assert visao["caixa"] == caixa - custo
     assert visao["gasto_temporada"] == custo
     [m] = visao["olheiros"]["missoes"]

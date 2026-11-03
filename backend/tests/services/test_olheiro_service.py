@@ -30,7 +30,7 @@ def test_comeca_no_nivel_1_e_lista_os_niveis():
     um, tres = v["niveis"][0], v["niveis"][2]
     assert um["bloqueio"] and um["custo_agora"] == 0
     # antes da 1ª rodada, subir custa a temporada inteira
-    assert tres["custo_agora"] == olheiro.custo_temporada(3)
+    assert tres["custo_agora"] == olheiro.custo_temporada(3, "taldo")
 
 
 def test_subir_paga_e_estreita_a_faixa():
@@ -41,8 +41,8 @@ def test_subir_paga_e_estreita_a_faixa():
 
     v = olheiro_service.trocar(sid, 4)
     assert v["nivel"] == 4
-    assert v["gasto_temporada"] == olheiro.custo_temporada(4)
-    assert v["caixa"] == antes["caixa"] - olheiro.custo_temporada(4)
+    assert v["gasto_temporada"] == olheiro.custo_temporada(4, "taldo")
+    assert v["caixa"] == antes["caixa"] - olheiro.custo_temporada(4, "taldo")
 
     depois = mercado_service.ver_mercado(sid)
     estreito = next(f for f in depois["disponiveis"] if f["nome"] == largo["nome"])
@@ -110,7 +110,7 @@ def test_na_virada_o_olheiro_renova_pela_temporada_cheia(cargo_garantido):
     nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
     v = olheiro_service.ver(nova)
     assert v["nivel"] == 4
-    assert v["gasto_temporada"] == olheiro.custo_temporada(4)
+    assert v["gasto_temporada"] == olheiro.custo_temporada(4, "taldo")
 
     # as joias dos outros clubes aparecem com a faixa do olheiro
     movs = simulacao_service.carregar_temporada(nova)["movimentos_virada"]

@@ -1295,6 +1295,11 @@ bandeiras. O mesmo jogo desenha sempre o mesmo estádio.
       quais copas o clube entrou. Na Carreira, campeão e campanha da copa
       nacional do país do técnico e a tabela de títulos dela; no Hall da
       Fama toda copa vale 1 ponto de lenda
+* [x] **Custos pelo tamanho da liga** — olheiro, base e missões dos
+      olheiros da base custam pelo peso da liga, como a receita
+      (`financas.custo_da_liga`), com piso de 25% nas Séries B: o nível 5 da
+      base é 4 mi na Premier e 1,6 mi no Brasileirão. Na virada, conta a
+      liga da temporada nova (quem subiu paga o preço da A)
 
 ---
 

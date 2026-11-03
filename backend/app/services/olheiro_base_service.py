@@ -102,17 +102,17 @@ def visao(conn, sim, alvo, hoje, ocupadas):
     missoes = repo.listar_missoes(conn, sim["id"])
     em_missao = [m["regiao"] for m in missoes]
     regioes = []
-    for r in olheiro_base.resumo_regioes():
+    for r in olheiro_base.resumo_regioes(alvo.liga):
         bloqueios = {
             meses: olheiro_base.motivo_envio_bloqueado(
-                r["id"], meses, em_missao, alvo.nivel_base, alvo.dinheiro,
+                r["id"], meses, em_missao, alvo.nivel_base, alvo.dinheiro, alvo.liga,
             )
             for meses in olheiro_base.DURACOES
         }
         regioes.append({
             **r,
             "duracoes": [
-                {"meses": m, "custo": olheiro_base.custo(r["id"], m), "bloqueio": b}
+                {"meses": m, "custo": olheiro_base.custo(r["id"], m, alvo.liga), "bloqueio": b}
                 for m, b in bloqueios.items()
             ],
         })
@@ -181,11 +181,11 @@ def enviar(simulacao_id, regiao, meses):
         exigir_sem_transmissao(ctx.sim)
         em_missao = [m["regiao"] for m in repo.listar_missoes(conn, simulacao_id)]
         motivo = olheiro_base.motivo_envio_bloqueado(
-            regiao, meses, em_missao, ctx.alvo.nivel_base, ctx.alvo.dinheiro,
+            regiao, meses, em_missao, ctx.alvo.nivel_base, ctx.alvo.dinheiro, ctx.alvo.liga,
         )
         if motivo:
             raise AcaoInvalida(motivo)
-        custo = olheiro_base.custo(regiao, meses)
+        custo = olheiro_base.custo(regiao, meses, ctx.alvo.liga)
         hoje = _hoje(ctx.sim)
         ctx.alvo.lancar("despesa_base", custo)
         with conn:

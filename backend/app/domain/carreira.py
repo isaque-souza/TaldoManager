@@ -26,7 +26,7 @@ def seed_da_temporada(seed_carreira, temporada):
 
 
 def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
-                            livres_finais=None):
+                            livres_finais=None, subidas=None):
     """Aplica num campeonato recém-carregado o estado final da temporada
     anterior.
 
@@ -115,10 +115,13 @@ def preparar_nova_temporada(campeonato, clubes_finais, jogadores_finais,
             clube.lugares_ampliados = final.get("lugares_ampliados") or 0
         # o olheiro renova pela temporada cheia (v2.0)
         clube.nivel_olheiro = final.get("nivel_olheiro") or 1
-        clube.lancar("despesa_olheiros", olheiro.custo_temporada(clube.nivel_olheiro))
+        # pelo peso da liga da temporada nova (v2.6): a do fim da anterior,
+        # com acesso e rebaixamento (`subidas`: {nome: liga nova})
+        liga = (subidas or {}).get(clube.nome, final.get("liga") or clube.liga)
+        clube.lancar("despesa_olheiros", olheiro.custo_temporada(clube.nivel_olheiro, liga))
         # e a base também (v2.0)
         clube.nivel_base = final.get("nivel_base") or 1
-        clube.lancar("despesa_base", base.custo_temporada(clube.nivel_base))
+        clube.lancar("despesa_base", base.custo_temporada(clube.nivel_base, liga))
 
     # livres (v1.6): os do fim da temporada anterior; sem registro, os da
     # seed — nos dois casos, menos quem já está num clube

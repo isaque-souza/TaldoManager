@@ -181,11 +181,11 @@ def proxima_temporada(simulacao_id):
             campeonato.economia = financas.economia_do_save(sim)
             _sem_nomes_repetidos(campeonato, clubes_finais, jogadores_finais,
                                  livres_finais, carreira["seed"])
-            preparar_nova_temporada(
-                campeonato, clubes_finais, jogadores_finais, livres_finais
-            )
             # acesso e rebaixamento (v2.5): 4 sobem da B, 4 caem da A
             subidas = divisoes.acesso_e_rebaixamento(clubes_finais)
+            preparar_nova_temporada(
+                campeonato, clubes_finais, jogadores_finais, livres_finais, subidas,
+            )
             liga_antes = next(
                 (c.liga for c in campeonato.clubes if c.nome == clube_usuario), None
             )

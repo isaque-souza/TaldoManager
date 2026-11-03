@@ -49,6 +49,7 @@ def trocar(simulacao_id, nivel):
         clube = ctx.alvo
         custo = olheiro.custo_da_troca(
             clube.nivel_olheiro, nivel, ctx.rodada - 1, len(ctx.campeonato.calendario),
+            clube.liga,
         )
         motivo = olheiro.motivo_troca_bloqueada(clube, nivel, custo)
         if motivo:

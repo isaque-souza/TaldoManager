@@ -63,6 +63,23 @@ def peso(liga):
     return PESO_LIGA.get(liga, PESO_PADRAO)
 
 
+# o olheiro, a base e as missões dos olheiros da base (v2.6) custam pelo
+# peso da liga, como a receita: o nível 5 da base é 4 mi na Premier e 1,6 mi
+# no Brasileirão. O piso não deixa a Série B ter tudo quase de graça
+PISO_CUSTO = 0.25
+
+
+def fator_de_custo(liga=None):
+    """Quanto o clube da `liga` paga de olheiro e base, perto do preço
+    cheio (o de peso 1,0). Sem liga, o preço cheio."""
+    return 1.0 if liga is None else max(PISO_CUSTO, peso(liga))
+
+
+def custo_da_liga(valor, liga=None):
+    """`valor` (o preço cheio) para a `liga`, arredondado a 10 mil."""
+    return round(valor * fator_de_custo(liga) / 10_000) * 10_000
+
+
 def cota_tv_temporada(liga="taldo"):
     """A parte igual da TV, por temporada."""
     return round(PARTE_IGUAL * peso(liga))
