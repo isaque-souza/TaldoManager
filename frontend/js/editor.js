@@ -24,6 +24,11 @@ const TATICA = { ofensivo: "Ofensivo", equilibrado: "Equilibrado", defensivo: "D
 // o que está no campo e no banco agora, e o que está selecionado
 const ed = { titulares: [], banco: [], formacao: null, sel: null, planos: null, editando: null, apagar: null };
 
+// os titulares como estão no campo (com o lugar no desenho): o card do Início
+export function titularesDoEditor() {
+  return ed.titulares;
+}
+
 export function xiDoEditor() {
   return ed.titulares.map((j) => j.nome);
 }

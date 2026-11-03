@@ -790,6 +790,77 @@ button.hub-card:hover, button.hub-card:focus-visible {
 .hub-jogo #hub-jogo small, .hub-folga + small { display: block; margin-top: .45rem; }
 .hub-folga { margin: 0; font-family: var(--fonte-tarja); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; }
 .hub-jogo > #r-jogar { width: auto; margin: 0; padding: .7rem 1.4rem; font-size: 1.05rem; }
+/* v2.4: com jogo marcado, o estádio do mandante fica numa faixa no alto
+   do card (o gramado listrado continua na folga) e some para o fundo
+   escuro antes dos botões: o cartaz é o jogo, os botões ficam limpos. */
+.hub-jogo { position: relative; isolation: isolate; overflow: hidden; }
+.hub-jogo-fundo {
+  position: absolute; inset: 0 0 auto 0; height: 16rem; z-index: -1; pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
+  mask-image: linear-gradient(180deg, #000 55%, transparent);
+}
+.hub-jogo-fundo:empty { display: none; }
+.hub-jogo-fundo .atmosfera { display: block; width: 100%; height: 100%; }
+.hub-jogo-fundo::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(70% 70% at 50% 62%, rgba(5, 8, 13, .72), rgba(5, 8, 13, .3) 75%, rgba(5, 8, 13, .1));
+}
+.hub-jogo-fundo .atm-feixe { animation: refletor-acende 1.8s cubic-bezier(.16, 1, .3, 1) both; }
+@media (prefers-reduced-motion: reduce) { .hub-jogo-fundo .atm-feixe { animation: none; } }
+.hub-com-estadio {
+  justify-content: flex-start;
+  background: linear-gradient(180deg, #05080d 40%, var(--superficie));
+  border-color: color-mix(in srgb, var(--gramado) 45%, var(--linha));
+}
+.hub-com-estadio .hub-rotulo { text-shadow: 0 1px 6px rgba(0, 0, 0, .9); }
+.hub-com-estadio > #r-jogar { margin-top: auto; }
+.hub-com-estadio #hub-jogo { width: 100%; }
+
+.hub-cartaz {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: start; gap: .6rem;
+  width: 100%; padding-top: .4rem; text-shadow: 0 2px 10px rgba(0, 0, 0, .85);
+}
+.hub-lado { display: flex; flex-direction: column; align-items: center; gap: .35rem; min-width: 0; text-align: center; }
+.hub-lado .escudo { flex: none; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, .7)); }
+.hub-lado-texto { display: flex; flex-direction: column; align-items: center; gap: .35rem; min-width: 0; }
+.hub-lado-nome {
+  font-family: var(--fonte-tarja); font-weight: 800; text-transform: uppercase;
+  font-size: clamp(1.1rem, 1.7vw, 1.45rem); line-height: 1; color: #fff;
+}
+.hub-eu .hub-lado-nome { color: var(--refletor); }
+.hub-lado-pos { font-size: .82rem; color: var(--texto-2); }
+.hub-lado-pos b { font-family: var(--fonte-tarja); font-size: 1rem; color: #fff; }
+.hub-forma { list-style: none; display: flex; gap: .2rem; margin: 0; padding: 0; }
+.hub-forma li { list-style: none; margin: 0; width: 1.2rem; height: 1.2rem; font-size: .72rem; text-shadow: none; cursor: help; }
+.hub-meio { display: flex; flex-direction: column; align-items: center; gap: .3rem; padding-top: 1.1rem; }
+.hub-meio small {
+  font-family: var(--fonte-tarja); font-weight: 700; font-size: .72rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--texto-2); white-space: nowrap;
+}
+.hub-meio i { font-style: normal; font-family: var(--fonte-tarja); font-weight: 800; font-size: 2.2rem; line-height: .9; color: rgba(255, 255, 255, .85); }
+.hub-selos { display: flex; flex-direction: column; align-items: center; gap: .25rem; }
+.hub-publico {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .2rem .45rem; margin: .8rem 0 0;
+  font-size: .85rem; color: var(--texto-2); width: 100%;
+}
+.hub-publico b { font-family: var(--fonte-tarja); font-size: 1rem; color: #fff; }
+.hub-publico .icone { vertical-align: -2px; }
+.hub-publico .pj-ocupacao { display: inline-block; width: 5rem; margin: 0 0 0 .2rem; }
+
+/* v2.4: o pedaço desenhado dos cards menores (campinho, forma, lotação)
+   fica logo abaixo do rótulo; o número e o detalhe continuam no pé */
+.hub-card:has(.hub-visual:not(:empty)) .hub-rotulo { margin-bottom: .45rem; }
+.hub-visual { display: block; width: 100%; margin-bottom: auto; }
+.hub-visual:empty { display: none; }
+.hub-campinho svg { display: block; height: 4.6rem; width: auto; max-width: 100%; }
+.cp-gramado { fill: var(--gramado-noite); stroke: var(--campo-borda); }
+.cp-linhas { fill: none; stroke: rgba(255, 255, 255, .18); stroke-width: .6; }
+button.hub-card:hover .cp-linhas { stroke: rgba(255, 255, 255, .3); }
+.hub-visual .hub-forma li { width: 1.5rem; height: 1.5rem; font-size: .82rem; }
+.hub-cadeiras { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; max-width: 14rem; }
+.hub-cadeiras i { display: block; height: .45rem; border-radius: 2px 2px 0 0; background: var(--superficie-2); }
+.hub-cadeiras i.cheia { background: var(--gramado-claro); }
+
 /* a faixa da copa no pé do card do jogo */
 .hub-jogo .hub-copa {
   flex-direction: row; flex-wrap: wrap; align-items: baseline; justify-content: flex-start;
@@ -821,6 +892,12 @@ button.hub-card:hover, button.hub-card:focus-visible {
   .hub-card strong { font-size: 1.35rem; }
   .hub-confronto { flex-direction: column; align-items: flex-start; gap: .35rem; }
   .hub-confronto i { font-size: 1rem; padding-left: 1rem; }
+  .hub-cartaz { gap: .4rem; }
+  .hub-lado .escudo { width: 42px; height: 50px; }
+  .hub-lado-nome { font-size: 1.05rem; }
+  .hub-forma li { width: 1.05rem; height: 1.05rem; font-size: .65rem; }
+  .hub-meio i { font-size: 1.6rem; }
+  .hub-meio { padding-top: .6rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   button.hub-card { transition: none; }
@@ -1683,6 +1760,8 @@ input.campo-dinheiro {
   .el-grade.ficha-aberta .el-lista { display: none; }
   :is(#el-central, #r-mercado):has(.ficha-aberta) > :not(.el-grade) { display: none; }
   .el-fechar { display: block; width: auto; margin: 0 0 .8rem; padding: .35rem .8rem; font-size: .85rem; }
+  /* com o Voltar em cima, a faixa do clube não sobe até a borda */
+  .el-fechar + .el-cabeca-cor { margin-top: 0; border-radius: 4px; }
 }
 @media (max-width: 760px) {
   .el-resumo { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
@@ -2153,6 +2232,128 @@ a.ou-placar:hover, a.ou-placar:focus-visible { background: var(--linha-forte); c
   .nt-camisa .camisa { width: 30px; height: 30px; }
   .nt-nome { font-size: .7rem; padding: 0 .2rem; }
 }
+
+/* ---------- ficha do jogador (v2.4) ----------
+   O cabeçalho é a ficha do jogador nas cores do clube: a camisa grande com
+   o número, o nome, as posições (com o campinho) e OVR/POT. Embaixo, o
+   radar dos atributos ao lado das barras e as notas jogo a jogo. */
+.jg-topo { display: block; }
+.jg-ficha {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 1.2rem 1.6rem;
+  padding: 1.1rem 1.4rem; border: 1px solid var(--linha); border-radius: 6px;
+  background:
+    linear-gradient(100deg, color-mix(in srgb, var(--jg-cor, var(--gramado)) 34%, transparent), transparent 55%),
+    repeating-linear-gradient(115deg, transparent 0 22px, rgba(255, 255, 255, .022) 22px 44px),
+    var(--superficie);
+}
+.jg-ficha::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 5px;
+  background: linear-gradient(180deg, var(--jg-cor, var(--gramado)), var(--jg-cor2, var(--gramado-claro)));
+}
+.jg-ficha-camisa .camisa { display: block; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .6)); }
+.jg-ficha-nome { min-width: 0; }
+.jg-ficha-nome h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.3rem); line-height: 1; text-transform: uppercase; }
+.jg-ficha-clube { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin: .45rem 0 0; color: var(--texto-2); }
+.jg-ficha-clube strong { color: var(--texto); }
+.jg-ficha-pos { display: flex; flex-wrap: wrap; gap: .35rem; margin: .6rem 0 0; }
+.jg-pos-principal { background: var(--gramado); color: #fff; }
+.jg-pos-sec { background: transparent; color: var(--texto-2); box-shadow: inset 0 0 0 1px var(--linha-forte); cursor: help; }
+.jg-ficha .jg-notas div { min-width: 4.4rem; padding: .45rem .7rem; background: rgba(5, 8, 13, .55); }
+.jg-ficha .jg-notas dd { font-size: 2.3rem; }
+.jg-campinho { display: block; width: 5.4rem; height: auto; }
+.jg-campinho .cp-gramado { fill: var(--gramado-noite); stroke: var(--campo-borda); }
+.jg-campinho .cp-linhas { fill: none; stroke: rgba(255, 255, 255, .2); stroke-width: .6; }
+.jg-campinho text {
+  font-family: var(--fonte-tarja); font-weight: 800; font-size: 5.4px; text-anchor: middle; letter-spacing: 0;
+}
+.cp-principal circle { fill: var(--refletor); }
+.cp-principal text { fill: var(--texto-sobre-ambar); }
+.cp-secundaria circle { fill: rgba(5, 8, 13, .7); stroke: var(--refletor); stroke-width: .8; stroke-dasharray: 2 1.4; }
+.cp-secundaria text { fill: var(--refletor); font-size: 4.6px; }
+.jg-grade { margin-top: 1.2rem; }
+.jg-carreira li { list-style: none; }
+.jg-carreira li::marker { content: none; }
+
+.jg-atributos { display: grid; grid-template-columns: 1fr; justify-items: center; gap: .6rem; }
+.jg-atributos .radar { max-width: 15.5rem; }
+.jg-atributos .atributos { width: 100%; }
+.jg-atributos .atributos { margin: 0; }
+.radar { display: block; width: 100%; height: auto; }
+.rd-anel { fill: none; stroke: var(--linha); stroke-width: .8; }
+.rd-anel:last-of-type { stroke: var(--linha-forte); }
+.rd-eixo { stroke: var(--linha); stroke-width: .6; }
+.rd-forma {
+  fill: color-mix(in srgb, var(--rd-cor) 32%, transparent); stroke: var(--rd-cor); stroke-width: 1.6; stroke-linejoin: round;
+}
+.rd-sigla { fill: var(--texto-2); font-family: var(--fonte-tarja); font-weight: 700; font-size: 9.5px; letter-spacing: .06em; text-anchor: middle; }
+.rd-valor { font-family: var(--fonte-tarja); font-weight: 800; font-size: 12px; text-anchor: middle; }
+.rd-otimo { fill: #2bd17e; } .rd-bom { fill: #8fd14f; } .rd-medio { fill: var(--ambar); } .rd-fraco { fill: #ef5b5b; }
+
+.jg-grafico-notas { margin: 0 0 1.4rem; padding: .8rem 1rem .6rem; background: var(--superficie); border: 1px solid var(--linha); border-radius: 6px; }
+.jg-grafico-notas svg { display: block; width: 100%; height: auto; }
+.jg-grafico-notas .grade { stroke: var(--linha); stroke-width: 1; }
+.jg-grafico-notas .eixo { fill: var(--texto-2); font-size: 11px; font-family: var(--fonte-tarja); }
+.gn-barra { opacity: .88; }
+.gn-jogo:hover .gn-barra { opacity: 1; }
+.gn-otimo { fill: #2bd17e; } .gn-bom { fill: #8fd14f; } .gn-medio { fill: var(--ambar); } .gn-fraco { fill: #ef5b5b; }
+.gn-gol { fill: #fff; stroke: #05080d; stroke-width: 1; }
+.gn-assist { fill: var(--refletor); stroke: #05080d; stroke-width: 1; }
+.gn-media { stroke: rgba(255, 255, 255, .55); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.gn-media-rotulo { fill: var(--texto); font-family: var(--fonte-tarja); font-weight: 700; font-size: 11px; }
+.jg-grafico-notas figcaption { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; margin-top: .3rem; font-size: .78rem; color: var(--texto-2); }
+.jg-grafico-notas figcaption span { display: inline-flex; align-items: center; gap: .35rem; }
+.gn-gol-leg, .gn-assist-leg { display: inline-block; width: .55rem; height: .55rem; background: #fff; border-radius: 50%; }
+.gn-assist-leg { background: var(--refletor); border-radius: 1px; }
+
+#jogador-log .pj-res { width: 1.5rem; height: 1.5rem; font-size: .82rem; }
+.jg-nota { display: inline-block; min-width: 2.9rem; padding: .1rem .4rem; border-radius: 3px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.jg-nota-otimo { background: color-mix(in srgb, #2bd17e 22%, transparent); color: #2bd17e; }
+.jg-nota-bom { background: color-mix(in srgb, #8fd14f 18%, transparent); color: #8fd14f; }
+.jg-nota-medio { background: color-mix(in srgb, var(--ambar) 18%, transparent); color: var(--ambar); }
+.jg-nota-fraco { background: color-mix(in srgb, #ef5b5b 18%, transparent); color: #ef5b5b; }
+#jogador-log td:last-child, #jogador-log th:last-child { text-align: right; }
+
+@media (max-width: 900px) {
+  .jg-ficha { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .jg-campinho { display: none; }
+}
+@media (max-width: 640px) {
+  .jg-ficha { grid-template-columns: auto minmax(0, 1fr); gap: .8rem 1rem; padding: .9rem 1rem; }
+  .jg-ficha-camisa .camisa { width: 64px; height: 64px; }
+  .jg-ficha .jg-notas { grid-column: 1 / -1; }
+  .jg-ficha .jg-notas dd { font-size: 1.8rem; }
+  /* o gráfico não encolhe até sumir: rola de lado, como as tabelas */
+  .jg-grafico-notas { overflow-x: auto; }
+  .jg-grafico-notas svg { min-width: 40rem; }
+}
+
+/* elenco (v2.4): a posição num selo com a cor do setor, e a ficha lateral
+   com a faixa do clube, como a página do jogador */
+.pos-chip {
+  display: inline-block; min-width: 2.1rem; padding: 0 .2rem; border-radius: 3px; text-align: center; line-height: 1.5;
+  font-family: var(--fonte-tarja); font-weight: 800; font-size: .8rem; letter-spacing: .04em; cursor: help;
+}
+.pos-gol { background: color-mix(in srgb, var(--refletor) 20%, transparent); color: var(--refletor); }
+.pos-def { background: color-mix(in srgb, #4ea3ff 20%, transparent); color: #7dbbff; }
+.pos-meio { background: color-mix(in srgb, var(--gramado-claro) 20%, transparent); color: var(--gramado-claro); }
+.pos-ata { background: color-mix(in srgb, #ef5b5b 20%, transparent); color: #ff8a8a; }
+.el-cabeca-cor {
+  position: relative; margin: -1rem -1rem 1rem; padding: 1rem 1rem .9rem 1.2rem;
+  border-radius: 6px 6px 0 0; border-bottom: 1px solid var(--linha);
+  background:
+    linear-gradient(100deg, color-mix(in srgb, var(--jg-cor) 30%, transparent), transparent 70%),
+    repeating-linear-gradient(115deg, transparent 0 18px, rgba(255, 255, 255, .022) 18px 36px);
+}
+.el-cabeca-cor::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; border-radius: 6px 0 0 0;
+  background: linear-gradient(180deg, var(--jg-cor), var(--jg-cor2));
+}
+.el-cabeca-cor .camisa { filter: drop-shadow(0 6px 12px rgba(0, 0, 0, .55)); }
+.el-cabeca-cor .el-notas div { background: rgba(5, 8, 13, .55); }
+.el-atributos { display: grid; justify-items: center; gap: .5rem; }
+.el-atributos .radar { max-width: 10.5rem; }
+.el-atributos .atributos { width: 100%; }
 
 /* ---------- escalação (v2.4): galeria de formações e a prancheta em números ---------- */
 .ed-controles { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .5rem 1rem; }

@@ -202,6 +202,9 @@ def test_detalhe_de_partida_e_game_log():
     log = jogador.json()
     assert log["jogador"]["id"] == jid
     assert len(log["jogos"]) == log["jogador"]["partidas"]
+    # v2.4: a camisa e as secundárias, para a ficha
+    assert isinstance(log["jogador"]["numero"], int)
+    assert isinstance(log["jogador"]["secundarias"], list)
     # dados de mercado (v0.7) chegam até a API
     assert log["jogador"]["valor_mercado"] > 0
     assert log["jogador"]["salario"] > 0
@@ -244,6 +247,14 @@ def test_fluxo_rodada_a_rodada():
     # as duas ligas jogam na mesma rodada (v1.6)
     assert len(corpo["confrontos"]) == 20
     assert sum(c["liga"] == "premier" for c in corpo["confrontos"]) == 10
+    # v2.4: o contexto do próximo jogo para o card do Início
+    assert corpo["estadio"]["capacidade"] > 0
+    assert 0 < corpo["estadio"]["ocupacao"] <= 1
+    nomes = {corpo["contexto_mandante"]["clube"], corpo["contexto_visitante"]["clube"]}
+    assert nomes == {clube, corpo["adversario"]}
+    assert corpo["contexto_mandante"]["forma"] == []   # ninguém jogou ainda
+    assert "confronto_direto" not in corpo
+
     # v2.4: a galeria de formações, uma por formação, com 10 vagas de linha
     info = corpo["formacoes_info"]
     assert [f["formacao"] for f in info] == corpo["formacoes"]

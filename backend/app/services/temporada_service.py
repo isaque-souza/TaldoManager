@@ -286,7 +286,18 @@ def proxima_rodada(simulacao_id):
                 for m, v in campeonato.calendario[r - 1]
             ]
 
+        # v2.4: o contexto do próximo jogo para o card do Início (estádio,
+        # público, forma e posição dos dois); o mesmo do pré-jogo, sem o
+        # confronto direto
+        contexto = {}
+        if adversario is not None:
+            rival = _achar_clube(campeonato, adversario)
+            mandante, visitante = (alvo, rival) if mando == "casa" else (rival, alvo)
+            contexto = pre_jogo_service.contexto(conn, sim, mandante, visitante)
+            contexto.pop("confronto_direto", None)
+
         return {
+            **contexto,
             "concluida": False,
             "rodada": r,
             "total_rodadas": total,
