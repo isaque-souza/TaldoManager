@@ -70,7 +70,20 @@ def _limitar(valor):
 def calcular(nome, posicao, funcao, overall):
     """{atributo: valor} a partir dos dados do jogador (de um Jogador ou de
     uma linha do banco). Goleiro tem os de goleiro; sem posição específica
-    (saves antigos), a padrão do setor."""
+    (saves antigos), a padrão do setor. Uma cópia: quem recebe pode mexer."""
+    return dict(_calcular(nome, posicao, funcao, overall))
+
+
+def valor(jogador, atributo):
+    """Um atributo do jogador, sem copiar o dict (o motor pede milhares por
+    rodada)."""
+    return _calcular(jogador.nome, jogador.posicao, jogador.funcao, jogador.overall)[atributo]
+
+
+# a conta só depende destes quatro: com 8 ligas, o motor pedia ~38 mil vezes
+# por rodada (v2.6). Ninguém de fora vê este dict (calcular devolve cópia)
+@lru_cache(maxsize=65536)
+def _calcular(nome, posicao, funcao, overall):
     if posicao == "Goleiro":
         nomes, perfil = GOLEIRO, PERFIL_GOLEIRO
     else:

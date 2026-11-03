@@ -254,6 +254,9 @@ CREATE TABLE IF NOT EXISTS atuacao (
 CREATE INDEX IF NOT EXISTS ix_clube_simulacao   ON clube(simulacao_id);
 CREATE INDEX IF NOT EXISTS ix_jogador_simulacao ON jogador(simulacao_id);
 CREATE INDEX IF NOT EXISTS ix_jogador_clube     ON jogador(clube_id);
+-- o UPDATE de cada rodada acha o jogador por (simulacao_id, nome): sem este
+-- índice, cada um percorria o save inteiro (v2.6; com 8 ligas, ~3.900 x 3.900)
+CREATE INDEX IF NOT EXISTS ix_jogador_simulacao_nome ON jogador(simulacao_id, nome);
 CREATE INDEX IF NOT EXISTS ix_partida_simulacao ON partida(simulacao_id);
 CREATE INDEX IF NOT EXISTS ix_partida_mandante  ON partida(mandante_id);
 CREATE INDEX IF NOT EXISTS ix_partida_visitante ON partida(visitante_id);
