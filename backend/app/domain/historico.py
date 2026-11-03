@@ -12,7 +12,7 @@ mesmo quando ele troca de clube.
 
 # pontos de lenda (Hall da Fama)
 PONTOS_TITULO = 2
-PONTOS_COPA = 1              # copa entre as ligas (v1.6): metade da liga
+PONTOS_COPA = 1              # cada copa (v1.6; v2.6, as nacionais também): metade da liga
 PONTOS_PREMIO = 3            # artilheiro ou MVP de uma temporada
 GOLS_POR_PONTO = 25
 PICO_LENDA = 90              # pico de overall que vale pontos
@@ -71,6 +71,7 @@ def resumo_temporada(clubes, jogadores, clube_usuario=None):
         # vale em qualquer uma (quem chama completa; uma liga só = este)
         "campeoes": [ordem[0]["nome"]] if ordem else [],
         "campeao_copa": None,
+        "campeoes_copas": [],
     }
 
 
@@ -112,7 +113,8 @@ def totais_por_jogador(temporadas):
             if j["partidas"] >= PARTIDAS_TITULO:
                 if j["clube"] in resumo.get("campeoes", [resumo["campeao"]]):
                     r["titulos"] += 1
-                if j["clube"] == resumo.get("campeao_copa"):
+                # v2.6: qualquer copa (a entre as ligas e as nacionais)
+                if j["clube"] in resumo.get("campeoes_copas", [resumo.get("campeao_copa")]):
                     r["copas"] += 1
             for campo, premiado in premiados.items():
                 if premiado and premiado["nome"] == j["nome"]:

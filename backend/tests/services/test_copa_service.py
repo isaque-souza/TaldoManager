@@ -1,6 +1,6 @@
-"""Copa entre as ligas (v1.6): a visão e as mensagens do técnico."""
+"""As copas (v1.6; v2.6): a visão e as mensagens do técnico."""
 
-from app.domain import caixa
+from app.domain import caixa, copa
 from app.services import copa_service
 
 
@@ -33,7 +33,9 @@ def test_situacao_de_cada_clube():
 
 
 def test_visao_lista_as_quatro_fases_e_a_proxima():
-    v = copa_service.visao(DADOS, "B", {"A": "taldo", "B": "taldo", "X": "premier", "Y": "premier"})
+    c = copa.copa_de(DADOS, copa.CONTINENTAL)   # o formato de antes da v2.6
+    v = copa_service.visao(c, "B", {"A": "taldo", "B": "taldo", "X": "premier", "Y": "premier"})
+    assert (v["id"], v["nome"]) == ("continental", "Copa entre as ligas")
     assert [f["jogada"] for f in v["fases"]] == [True, True, False, False]
     assert v["proxima"]["fase"] == "semi" and v["campeao"] is None
     assert v["fases"][0]["jogos"][0]["liga_visitante"] == "premier"
@@ -45,4 +47,17 @@ def test_mensagem_conta_os_penaltis_do_lado_do_tecnico():
     assert "1 a 1 (4 a 3 nos pênaltis)" in m["corpo"]
     assert "depois da rodada 17" in m["corpo"] and "fora" in m["corpo"]
     perdeu = caixa.copa_resultado("oitavas", jogo, "X", 500_000)
-    assert perdeu["assunto"] == "Fora da copa" and "3 a 4 nos pênaltis" in perdeu["corpo"]
+    assert perdeu["assunto"] == "Fora da Copa entre as ligas" and "3 a 4 nos pênaltis" in perdeu["corpo"]
+    nacional = caixa.copa_resultado("final", jogo, "B", 4_000_000, nome="Copa do Brasil")
+    assert nacional["assunto"] == "Campeões da Copa do Brasil!"
+
+
+def test_jogos_da_rodada_com_as_nacionais_no_mesmo_dia_mostra_a_do_tecnico():
+    def nacional(pais, a, b):
+        return {"id": pais, "nome": pais, "tipo": "nacional", "classificados": {"a": [a, b]},
+                "seed": {a: 1, b: 2}, "ordem": ["final"], "datas": {"final": 30},
+                "fases": {"final": [_jogo(a, b, 1, 0, a)]}}
+    dados = {"copas": [nacional("taldo", "A", "B"), nacional("brasil", "C", "D")]}
+    assert copa_service.jogos_da_rodada(dados, 30, {}, "D")["fase"] == "brasil:final"
+    assert copa_service.jogos_da_rodada(dados, 30, {}, "Z")["fase"] == "taldo:final"
+    assert copa_service.jogos_da_rodada(dados, 29, {}, "D") is None

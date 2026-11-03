@@ -221,6 +221,12 @@ def _migrar(conn):
         "UPDATE simulacao SET atualizada_em = criada_em "
         "WHERE atualizada_em IS NULL"
     )
+    # a fase da copa que espera o técnico vira a chave "copa:fase" (v2.6);
+    # a de antes era sempre da copa entre as ligas
+    conn.execute(
+        "UPDATE simulacao SET copa_pendente = 'continental:' || copa_pendente "
+        "WHERE copa_pendente IS NOT NULL AND instr(copa_pendente, ':') = 0"
+    )
     _renomear_jogadores(conn)
 
 

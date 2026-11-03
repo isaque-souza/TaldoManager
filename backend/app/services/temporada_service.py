@@ -62,7 +62,13 @@ def transmissao_ativa(sim):
         return False
     ao_vivo = json.loads(sim["ao_vivo_json"])
     return (ao_vivo["rodada"] == sim["rodada_atual"]
-            and ao_vivo.get("copa") == sim["copa_pendente"])
+            and _chave(ao_vivo.get("copa")) == _chave(sim["copa_pendente"]))
+
+
+def _chave(fase):
+    """A chave "copa:fase" (a transmissão de antes da v2.6 guardou só a
+    fase da copa entre as ligas)."""
+    return copa.chave(*copa.dividir(fase)) if fase else None
 
 
 def decisoes_ao_vivo(sim):
@@ -119,12 +125,12 @@ def _resolver_disputas(conn, simulacao_id, rodada, campeonato):
 
 def proximo_confronto(sim, campeonato, nome):
     """(adversário, mando, copa) do próximo jogo do clube: o da fase da
-    copa que espera por ele (copa = {"fase", "nome"}) ou o da rodada da liga
-    (copa = None; adversário None na folga)."""
-    fase = sim["copa_pendente"]
+    copa que espera por ele (copa = `copa_service.fase_do_jogo`) ou o da
+    rodada da liga (copa = None; adversário None na folga)."""
+    fase = _chave(sim["copa_pendente"])
     if fase:
         adversario, mando = _jogo_da_copa(campeonato, fase, nome)
-        return adversario, mando, {"fase": fase, "nome": copa_service.NOMES[fase]}
+        return adversario, mando, copa_service.fase_do_jogo(campeonato.copa.para_dict(), fase)
     adversario, mando = _confronto_do_clube(
         campeonato.calendario[campeonato.rodada - 1], nome
     )
@@ -224,7 +230,7 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
                     clube_usuario, meta["meta_posicao"], meta["ranking_forca"],
                 )])
             mensagem_repo.inserir(conn, sim_id, None, [
-                copa_service.mensagem_de_inicio(campeonato, clube_usuario),
+                *copa_service.mensagens_de_inicio(campeonato, clube_usuario),
             ])
             # a janela da pré-temporada abre: a CPU negociou e faz ofertas (v1.7)
             oferta_service.registrar_cpu(conn, sim_id, 1, negocios_cpu, mapa, alvo, None)
@@ -724,6 +730,7 @@ def avancar(simulacao_id, tatica=None, formacao=None, xi_preferido=None,
             # a fase que ficou para a quarta ainda não tem resultado
             "copa": None if campeonato.copa_adiada else copa_service.jogos_da_rodada(
                 campeonato.copa and campeonato.copa.para_dict(), rodada_jogada, liga_de,
+                clube_usuario,
             ),
             **visao,
         }
@@ -739,7 +746,7 @@ def _avancar_copa(conn, sim, tatica, formacao, xi_preferido, posicionamento):
 
     simulacao_id = sim["id"]
     clube_usuario = sim["clube_usuario"]
-    fase = sim["copa_pendente"]
+    fase = _chave(sim["copa_pendente"])
     ao_vivo = transmissao_ativa(sim)
     decisoes = decisoes_ao_vivo(sim)
     if ao_vivo:
@@ -759,7 +766,7 @@ def _avancar_copa(conn, sim, tatica, formacao, xi_preferido, posicionamento):
     else:
         xi_ef = sorted(j.nome for j in alvo.xi_preferido) or None
 
-    rodada_da_fase = copa.DATAS[fase]
+    rodada_da_fase = campeonato.copa.rodada_da_chave(fase)
     antes = caixa.foto_do_elenco(alvo)
     with redirect_stdout(io.StringIO()):
         campeonato.jogar_copa_adiada(fase, clube_usuario, decisoes)
@@ -816,7 +823,7 @@ def _avancar_copa(conn, sim, tatica, formacao, xi_preferido, posicionamento):
         "copa_jogada": True,
         "resultados": [],
         "copa": copa_service.jogos_da_rodada(
-            campeonato.copa.para_dict(), rodada_da_fase, liga_de,
+            campeonato.copa.para_dict(), rodada_da_fase, liga_de, clube_usuario,
         ),
         **visao,
     }

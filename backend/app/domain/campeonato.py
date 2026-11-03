@@ -29,13 +29,14 @@ class Campeonato:
         # (v2.5: as Séries A primeiro, depois as B)
         self.ligas = divisoes.ordenar(c.liga for c in clubes)
         self.livres = []              # jogadores sem clube (v1.6)
-        self.copa = None              # copa entre as ligas (v1.6), se houver
+        # as copas da temporada (v1.6; v2.6, várias: copa.Copas), se houver
+        self.copa = None
         self.rodada = 1
         self.historico = []
         self.partidas_jogadas = []
         self.partida_usuario = None   # a do técnico na última rodada
-        # a fase da copa que ficou para a quarta (jogar_rodada com
-        # adiar_copa): o técnico joga a dele à parte (jogar_copa_adiada)
+        # a chave ("copa:fase") da fase que ficou para a quarta (jogar_rodada
+        # com adiar_copa): o técnico joga a dele à parte (jogar_copa_adiada)
         self.copa_adiada = None
         self.devolvidos = []          # empréstimos que acabaram na última (v1.7)
         # as regras de dinheiro do save (v2.5; ver financas.ECONOMIA_ATUAL)
@@ -119,11 +120,9 @@ class Campeonato:
         for clube in self.clubes:
             estadio.avancar_obra(clube)
 
-        self.copa_adiada = None
-        if adiar_copa and self._joga_a_copa(clube_usuario):
-            self.copa_adiada = self.copa.fase_da_rodada(self.rodada)
-        else:
-            self.jogar_copa()
+        # as fases de copa da quarta; a do técnico, com adiar_copa, espera
+        self.copa_adiada = self._joga_a_copa(clube_usuario) if adiar_copa else None
+        self.jogar_copa(fora=self.copa_adiada)
 
         # o humor do elenco do técnico anda a cada 5 rodadas (v1.7)
         if clube_usuario and papeis.eh_checagem(self.rodada):
@@ -146,26 +145,29 @@ class Campeonato:
         for clube in self.clubes:
             clube.historico_caixa.append(clube.dinheiro)
             
-    def jogar_copa(self):
-        """A fase da copa no meio da semana, se esta rodada tiver uma.
-        Devolve os jogos jogados ([] se não teve)."""
+    def jogar_copa(self, fora=None):
+        """As fases de copa no meio da semana, se esta rodada tiver alguma
+        (as nacionais caem juntas), menos a chave `fora` (a do técnico, que
+        espera). Devolve os jogos jogados ([] se não teve)."""
         if self.copa is None:
             return []
-        fase = self.copa.fase_da_rodada(self.rodada)
-        if fase is None:
-            return []
-        return self.copa.jogar_fase(fase, {c.nome: c for c in self.clubes},
-                                    premios=copa_.premios(self.economia))
+        clubes = {c.nome: c for c in self.clubes}
+        jogos = []
+        for chave in self.copa.chaves_da_rodada(self.rodada):
+            if chave != fora:
+                jogos += self.copa.jogar_fase(chave, clubes, economia=self.economia)
+        return jogos
 
     def _joga_a_copa(self, clube):
-        """O clube está num jogo da fase da copa desta rodada?"""
+        """A chave da fase desta rodada em que o clube tem jogo, ou None."""
         if self.copa is None or clube is None:
-            return False
-        fase = self.copa.fase_da_rodada(self.rodada)
-        return any(
-            clube in (j["mandante"], j["visitante"]) and not j["vencedor"]
-            for j in self.copa.fases.get(fase) or []
-        )
+            return None
+        fases = self.copa.fases
+        return next((
+            chave for chave in self.copa.chaves_da_rodada(self.rodada)
+            if any(clube in (j["mandante"], j["visitante"]) and not j["vencedor"]
+                   for j in fases.get(chave) or [])
+        ), None)
 
     def jogar_copa_adiada(self, fase, clube_usuario, decisoes=None, capturar_em=None):
         """A fase da copa que `jogar_rodada(adiar_copa=True)` deixou para a
@@ -177,17 +179,17 @@ class Campeonato:
             fase, {c.nome: c for c in self.clubes},
             ao_vivo={"clube": clube_usuario, "decisoes": decisoes or [],
                      "capturar_em": capturar_em, "semente": semente},
-            premios=copa_.premios(self.economia),
+            economia=self.economia,
         )
         self.partida_usuario = self.copa.partida_usuario
         return jogos
 
     def iniciar_copa(self, classificados):
-        """Monta a copa com {liga: [nomes do 1º ao 8º]}. Só com duas
-        Séries A; com uma, fica sem copa. As Séries B (v2.5) não jogam."""
-        primeiras = [l for l in divisoes.primeiras(self.ligas) if l in copa_.LIGAS_DA_COPA]
-        classificados = {l: n for l, n in classificados.items() if l in primeiras}
-        self.copa = copa_.Copa(classificados) if len(classificados) == 2 else None
+        """Monta as copas da temporada com a ordem de cada liga ({liga:
+        [nomes, do 1º ao último]}; ver `copa.montar`). Sem nenhuma (uma
+        Série A só e sem B), fica None."""
+        copas = copa_.montar(self, classificados)
+        self.copa = copas if len(copas) else None
         return self.copa
 
     def mostrar_cabecalho(self):

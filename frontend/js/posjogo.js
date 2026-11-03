@@ -44,7 +44,7 @@ function render(r) {
   window.scrollTo(0, 0);
 
   $("pg-titulo").textContent = r.copa
-    ? `Apito final · Copa · ${r.copa.nome}`
+    ? `Apito final · ${r.copa.nome}`
     : `Apito final · ${nomeLiga(r.liga)}`;
   const quando = dataLonga(paraData(r.data));
   $("pg-confronto").innerHTML = r.copa
@@ -231,10 +231,15 @@ function impactoCopa(r) {
   if (c.campeao) destino = `<p class="pg-numero">Campeão</p>`;
   else if (c.classificado) destino = `<p class="pg-numero">Classificado</p>
     <p class="pg-detalhe">Próxima fase: ${c.proxima_fase.nome.toLowerCase()}</p>`;
-  else destino = `<p class="pg-numero pg-ruim">Eliminado</p>
-    <p class="pg-detalhe">A copa acabou para nós ${c.nome === "Final" ? "na final" : `nas ${c.nome.toLowerCase()}`}.</p>`;
+  else {
+    // "Oitavas de final" -> "nas oitavas de final"; "Semifinal" -> "na semifinal"
+    const fase = c.fase_nome || c.nome;
+    const na = /^(Final|Semifinal)$/.test(fase) ? "na" : "nas";
+    destino = `<p class="pg-numero pg-ruim">Eliminado</p>
+    <p class="pg-detalhe">A ${c.copa || "copa"} acabou para nós ${na} ${fase.toLowerCase()}.</p>`;
+  }
   const premio = c.premio ? `<p class="pg-linha"><b>Prêmio:</b> ${reais(c.premio)} no caixa</p>` : "";
-  return `<span class="hub-rotulo">${icone("trofeu")} Na copa</span>${destino}${premio}
+  return `<span class="hub-rotulo">${icone("trofeu")} ${c.copa || "Na copa"}</span>${destino}${premio}
     <p class="pg-detalhe">A tabela da liga não muda com o jogo da copa.</p>${cargo(r)}`;
 }
 
@@ -314,7 +319,7 @@ function proximo(r) {
       <div class="pg-acoes">${resultados}<button id="pg-continuar">${icone("trofeu")} Ver a temporada completa</button></div>`;
   }
   const p = r.proximo;
-  const comp = p.copa ? `Copa · ${p.copa.nome}` : `Rodada ${p.rodada}`;
+  const comp = p.copa ? p.copa.nome : `Rodada ${p.rodada}`;
   const quando = dataLonga(paraData(p.data));
   const jogo = p.adversario
     ? `<div class="hub-confronto">

@@ -670,7 +670,7 @@ function renderPlacar(fase) {
   const v = jogo.visitante.clube;
   const tempo = fase === "intervalo" ? "INT" : relogio(jogo.minuto);
   $("av-placar").innerHTML = `
-    <span class="pt-rodada">${jogo.copa ? `Copa · ${jogo.copa.nome}` : `Rodada ${jogo.rodada}`}</span>
+    <span class="pt-rodada">${jogo.copa ? jogo.copa.nome : `Rodada ${jogo.rodada}`}</span>
     <span class="pt-time">${escudo(m, 30)}<b>${identidade(m).sigla}</b></span>
     <span class="pt-gols"><b>${jogo.placar[0]}</b><i>x</i><b>${jogo.placar[1]}</b>${
       jogo.penaltisPlacar ? `<small class="pt-penaltis">pên. ${jogo.penaltisPlacar[0]} x ${jogo.penaltisPlacar[1]}</small>` : ""}</span>

@@ -104,9 +104,17 @@ def test_outros_jogos_ao_vivo_sao_da_liga_do_tecnico():
 
 # --- copa entre as ligas (v1.6) ---------------------------------------------
 
-def _copa_do_estado(sid):
+def _copa_do_estado(sid, copa_id="continental"):
+    """A copa (`copa_id`) do snapshot, ou None (o save sem copa)."""
+    from app.domain import copa as copa_
     estado = _linhas("SELECT estado_json FROM simulacao WHERE id = ?", sid)[0]["estado_json"]
-    return json.loads(estado)["copa"]
+    return copa_.copa_de(json.loads(estado)["copa"], copa_id)
+
+
+def _copa_guardada(sid, copa_id="continental"):
+    from app.domain import copa as copa_
+    dados = _linhas("SELECT copa_json FROM simulacao WHERE id = ?", sid)[0]["copa_json"]
+    return copa_.copa_de(json.loads(dados), copa_id)
 
 
 def test_jogo_novo_ja_tem_a_copa_com_os_classificados_de_inicio():
@@ -125,26 +133,27 @@ def test_so_a_taldo_nao_tem_copa():
 
 def test_a_copa_anda_no_save_e_fica_guardada_no_fim():
     sid = temporada_service.iniciar(seed=6, clube_usuario="Arsenal", ligas=DUAS)
-    for _ in range(8):
+    for _ in range(12):
         temporada_service.avancar(sid)
     # o Arsenal está nas oitavas: a fase espera o jogo dele, na quarta
     assert all(j["vencedor"] is None for j in _copa_do_estado(sid)["fases"]["oitavas"])
     res = temporada_service.avancar(sid)
-    assert res["copa_jogada"] and res["rodada_jogada"] == 8 and res["rodada_atual"] == 9
+    assert res["copa_jogada"] and res["rodada_jogada"] == 12 and res["rodada_atual"] == 13
+    assert res["copa"]["fase"] == "continental:oitavas"
     oitavas = _copa_do_estado(sid)["fases"]["oitavas"]
-    assert all(j["vencedor"] for j in oitavas)          # jogou depois da 8ª
+    assert all(j["vencedor"] for j in oitavas)          # jogou depois da 12ª
     assert all(j["vencedor"] is None for j in _copa_do_estado(sid)["fases"]["quartas"])
 
     while temporada_service.avancar(sid)["concluida"] is False:
         pass
-    copa = json.loads(_linhas("SELECT copa_json FROM simulacao WHERE id = ?", sid)[0]["copa_json"])
+    copa = _copa_guardada(sid)
     assert copa["fases"]["oitavas"] == oitavas          # a mesma de antes
     assert copa["fases"]["final"][0]["vencedor"]
 
 
 def test_temporada_inteira_de_uma_vez_guarda_a_copa():
     sid = simulacao_service.salvar_temporada(seed=4, clube_usuario="Liverpool", ligas=DUAS)
-    copa = json.loads(_linhas("SELECT copa_json FROM simulacao WHERE id = ?", sid)[0]["copa_json"])
+    copa = _copa_guardada(sid)
     assert copa["fases"]["final"][0]["vencedor"]
 
 
@@ -202,9 +211,21 @@ def test_carreira_com_as_series_b_sobe_4_e_cai_4():
         assert agora[nome] == esperado, nome
     assert collections.Counter(agora.values()) == {l: 20 for l in TODAS_AS_LIGAS}
 
-    # a copa é das Séries A da temporada que acabou
-    estado = json.loads(_linhas("SELECT estado_json FROM simulacao WHERE id = ?", nova)[0]["estado_json"])
-    assert set(estado["copa"]["classificados"]) == {"taldo", "premier"}
+    # v2.6: a continental tem as 4 Séries A da temporada que acabou, e cada
+    # país a sua copa nacional, com as divisões de agora
+    continental = _copa_do_estado(nova)
+    assert set(continental["classificados"]) == {"taldo", "premier", "laliga", "brasileirao"}
+    for liga, nomes in continental["classificados"].items():
+        assert nomes == [n for n, (l, _) in sorted(finais.items(), key=lambda x: x[1][1])
+                         if l == liga][:8]
+    fa = _copa_do_estado(nova, "inglaterra")
+    assert set(fa["classificados"]["premier"]) == {n for n, l in agora.items() if l == "premier"}
+    assert len(fa["classificados"]["championship"]) == 12
+
+    # o técnico (Leeds, na Championship) recebe a mensagem da FA Cup
+    assuntos_copa = {r["assunto"] for r in _linhas(
+        "SELECT assunto FROM mensagem WHERE simulacao_id = ? AND assunto LIKE '%FA Cup%'", nova)}
+    assert assuntos_copa & {"Estamos na FA Cup", "Fora da FA Cup"}
 
     # a diretoria conta quem subiu e quem caiu
     assuntos = {r["assunto"] for r in _linhas(

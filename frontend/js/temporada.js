@@ -64,7 +64,7 @@ export function classeClassificacao(c, meu, z = zonasDaLiga("taldo"), total = 20
 export function legendaZonas(z = zonasDaLiga("taldo")) {
   return `<p class="zonas-legenda"><span><i class="zl-titulo"></i> Campeão</span>
     ${z.acesso ? `<span><i class="zl-acesso"></i> Do 1º ao ${z.acesso}º: sobem para a ${z.para}</span>` : ""}
-    ${z.copa ? `<span><i class="zl-copa"></i> Do 1º ao ${z.copa}º: Copa da próxima temporada</span>` : ""}
+    ${z.copa ? `<span><i class="zl-copa"></i> Do 1º ao ${z.copa}º: Copa entre as ligas na próxima temporada</span>` : ""}
     ${z.queda ? `<span><i class="zl-queda"></i> Os ${z.queda} últimos caem para a ${z.para}</span>` : ""}</p>`;
 }
 

@@ -178,11 +178,11 @@ def test_contexto_nao_muda_o_resultado_da_rodada_adiante():
 def test_jogo_da_copa_tem_contexto_e_entra_na_forma(cargo_garantido):
     from scripts.data_loader import TODAS_AS_LIGAS
     sid = temporada_service.iniciar(seed=6, clube_usuario="Arsenal", ligas=TODAS_AS_LIGAS)
-    for _ in range(8):
+    for _ in range(3):       # v2.6: a FA Cup é depois da 3ª
         temporada_service.avancar(sid)
 
     pj = temporada_service.pre_jogo(sid)
-    assert pj["copa"]["fase"] == "oitavas"
+    assert pj["copa"]["fase"] == "inglaterra:16-avos"
     meu, rival = _contextos(pj)
     # o rival da copa pode ser da outra liga: posição e total são os da liga dele
     assert 1 <= rival["posicao"] <= rival["total_clubes"]
@@ -193,7 +193,7 @@ def test_jogo_da_copa_tem_contexto_e_entra_na_forma(cargo_garantido):
     jogo = next(j for j in res["copa"]["jogos"] if "Arsenal" in (j["mandante"], j["visitante"]))
     assert jogo["publico"] == previsto
 
-    depois = temporada_service.pre_jogo(sid)   # rodada 9 da liga
+    depois = temporada_service.pre_jogo(sid)   # rodada 4 da liga
     assert depois["copa"] is None
     ultimo = _contextos(depois)[0]["forma"][-1]
     assert ultimo["competicao"] == "copa" and ultimo["fase"] == pj["copa"]["nome"]

@@ -295,7 +295,7 @@ def proxima_temporada(simulacao_id):
                     (c.nome, estadio.OBRAS[t]["lugares"]) for c, t in obras
                     if c.liga == alvo.liga
                 ]),
-                copa_service.mensagem_de_inicio(campeonato, clube_usuario),
+                *copa_service.mensagens_de_inicio(campeonato, clube_usuario),
                 _mensagem_das_divisoes(clube_usuario, liga_antes, alvo.liga, subidas),
             ])
             # a janela da pré-temporada abre: a CPU negociou e faz ofertas (v1.7)
@@ -346,6 +346,9 @@ def detalhe_carreira(carreira_id):
                 "posicao_usuario": None,
                 "campeao_copa": None,
                 "copa_usuario": None,
+                "copa_nacional": None,
+                "campeao_copa_nacional": None,
+                "copa_nacional_usuario": None,
                 "estado": t["estado"],
                 "rodada_atual": t["rodada_atual"],
             }
@@ -382,10 +385,20 @@ def detalhe_carreira(carreira_id):
                 linha["liga"] = liga
                 linha["liga_nome"] = LIGAS[liga][0] if liga in LIGAS else liga
                 linha["serie_b"] = not divisoes.eh_primeira(liga)
-                dados_copa = json.loads(t["copa_json"]) if t["copa_json"] else None
+                dados_copa = copa.normalizar(json.loads(t["copa_json"]) if t["copa_json"] else None)
                 resumo["campeao_copa"] = copa.campeao_de(dados_copa)
-                linha.update({k: v for k, v in resumo.items() if k != "campeoes"})
+                # v2.6: a copa nacional do país do técnico; o título de
+                # jogador vale em qualquer copa
+                pais = divisoes.pais(liga) if liga else None
+                nacional = copa.copa_de(dados_copa, pais) if pais else None
+                resumo["campeao_copa_nacional"] = copa.campeao_de(dados_copa, pais) if nacional else None
+                resumo["campeoes_copas"] = list(copa.campeoes_de(dados_copa).values()) if dados_copa else []
+                linha.update({k: v for k, v in resumo.items() if k not in ("campeoes", "campeoes_copas")})
                 linha["copa_usuario"] = copa.ate_onde(dados_copa, clube_usuario)
+                linha["copa_nacional"] = nacional["nome"] if nacional else None
+                linha["copa_nacional_usuario"] = (
+                    copa.ate_onde(dados_copa, clube_usuario, pais) if nacional else None
+                )
                 concluidas.append({
                     "temporada": t["temporada"],
                     "jogadores": jogadores,
@@ -406,6 +419,10 @@ def detalhe_carreira(carreira_id):
             ),
             "titulos_copa": historico.titulos_por_clube(
                 [(t["temporada"], t["resumo"]) for t in concluidas], "campeao_copa",
+            ),
+            # v2.6: a copa nacional do país do técnico (em cada temporada)
+            "titulos_copa_nacional": historico.titulos_por_clube(
+                [(t["temporada"], t["resumo"]) for t in concluidas], "campeao_copa_nacional",
             ),
             "lideres": historico.lideres(totais),
             "hall_da_fama": historico.hall_da_fama(totais, aposentados),

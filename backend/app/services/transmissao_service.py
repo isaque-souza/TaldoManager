@@ -160,7 +160,7 @@ def _montar(sim, campeonato, rodada, decisoes):
         "outros": outros,
         "desenhos": desenhos_das_formacoes(),
         # jogo da copa (v2.0): a fase e, no empate, os pênaltis
-        "copa": {"fase": fase, "nome": copa_service.NOMES[fase]} if fase else None,
+        "copa": copa_service.fase_do_jogo(campeonato.copa.para_dict(), fase) if fase else None,
         "penaltis": [
             {**c, "lado": lado[c["lado"]]} for c in getattr(p, "cobrancas", [])
         ] if fase else [],

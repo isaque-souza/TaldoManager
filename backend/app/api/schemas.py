@@ -238,6 +238,11 @@ class TemporadaDaCarreira(BaseModel):
     # ("campeao", a fase em que caiu, ou None se não entrou)
     campeao_copa: str | None = None
     copa_usuario: str | None = None
+    # a copa nacional do país do técnico (v2.6): o nome, o campeão e até
+    # onde ele foi
+    copa_nacional: str | None = None
+    campeao_copa_nacional: str | None = None
+    copa_nacional_usuario: str | None = None
     estado: str
     rodada_atual: int | None = None
     # a liga do técnico na temporada (v2.5: pode ser uma Série B)
@@ -291,6 +296,7 @@ class CarreiraDetalhe(BaseModel):
     temporadas: list[TemporadaDaCarreira]
     titulos: list[TituloClube]
     titulos_copa: list[TituloClube] = []   # copa entre as ligas (v1.6)
+    titulos_copa_nacional: list[TituloClube] = []   # a do país do técnico (v2.6)
     lideres: LideresCarreira
     hall_da_fama: list[Lenda]
 
@@ -375,8 +381,10 @@ class Calendario(BaseModel):
 
 class FaseDoJogo(BaseModel):
     """O jogo do técnico é da copa (v2.0): a fase dele."""
-    fase: str                              # oitavas | quartas | semi | final
-    nome: str                              # "Oitavas de final"
+    fase: str                              # a chave "copa:fase" ("brasil:oitavas", v2.6)
+    nome: str                              # "Copa do Brasil · Oitavas de final"
+    copa: str | None = None                # "Copa do Brasil" (v2.6)
+    fase_nome: str | None = None           # "Oitavas de final" (v2.6)
 
 
 class VagaDaFormacao(BaseModel):
@@ -631,8 +639,10 @@ class PenaltisPosJogo(BaseModel):
 
 
 class CopaPosJogo(BaseModel):
-    fase: str
-    nome: str
+    fase: str                     # a chave "copa:fase"
+    nome: str                     # "Copa do Brasil · Final"
+    copa: str | None = None       # "Copa do Brasil"
+    fase_nome: str | None = None  # "Final"
     penaltis: PenaltisPosJogo | None
     classificado: bool
     campeao: bool
@@ -729,8 +739,8 @@ class JogoCopa(BaseModel):
 
 
 class CopaDaRodada(BaseModel):
-    fase: str
-    nome: str
+    fase: str                            # a chave "copa:fase"
+    nome: str                            # "Copa do Brasil · Oitavas de final"
     jogos: list[JogoCopa]
 
 
@@ -771,6 +781,9 @@ class SituacaoCopa(BaseModel):
 
 
 class CopaVisao(BaseModel):
+    id: str = "continental"              # continental | o país da nacional (v2.6)
+    nome: str = "Copa entre as ligas"
+    tipo: Literal["continental", "nacional"] = "continental"
     fases: list[FaseCopa]
     campeao: str | None
     proxima: ProximaFaseCopa | None
@@ -778,7 +791,8 @@ class CopaVisao(BaseModel):
 
 
 class Copa(BaseModel):
-    copa: CopaVisao | None               # None = save sem copa (uma liga só)
+    copa: CopaVisao | None               # a primeira de `copas`; None = save sem copa
+    copas: list[CopaVisao] = []          # v2.6: as do técnico primeiro
 
 
 class Identidade(BaseModel):

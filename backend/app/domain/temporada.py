@@ -19,7 +19,7 @@ import json
 import random
 
 from app.domain import numeros, vontade
-from app.domain.copa import Copa
+from app.domain.copa import Copas
 from app.domain.jogador import Jogador
 
 # campos acumulados de Jogador (os *_partida são zerados a cada jogo)
@@ -98,7 +98,7 @@ def snapshot_estado(campeonato):
         "clubes": clubes,
         # quem está sem clube (v1.6): também muda (contratações)
         "livres": livres_para_json(campeonato),
-        # a copa entre as ligas (v1.6); None = sem copa
+        # as copas (v1.6; v2.6, várias); None = sem copa
         "copa": campeonato.copa.para_dict() if campeonato.copa else None,
     }
 
@@ -182,7 +182,7 @@ def restaurar_estado(campeonato, blob):
     # livres (v1.6). Snapshots de antes deles ficam com os da seed, menos
     # quem tiver o nome de alguém da liga (um jovem da base, na carreira)
     # a copa (v1.6): snapshots sem ela (antigos, ou de uma liga só) ficam sem
-    campeonato.copa = Copa.de_dict(blob["copa"]) if blob.get("copa") else None
+    campeonato.copa = Copas.de_dict(blob["copa"]) if blob.get("copa") else None
 
     if "livres" in blob:
         campeonato.livres = restaurar_livres(blob["livres"])
