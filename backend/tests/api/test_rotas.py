@@ -202,6 +202,9 @@ def test_detalhe_de_partida_e_game_log():
     log = jogador.json()
     assert log["jogador"]["id"] == jid
     assert len(log["jogos"]) == log["jogador"]["partidas"]
+    # v2.4: a camisa e as secundárias, para a ficha
+    assert isinstance(log["jogador"]["numero"], int)
+    assert isinstance(log["jogador"]["secundarias"], list)
     # dados de mercado (v0.7) chegam até a API
     assert log["jogador"]["valor_mercado"] > 0
     assert log["jogador"]["salario"] > 0

@@ -922,6 +922,8 @@ class JogadorInfo(BaseModel):
     clube_id: int
     posicao: str
     funcao: str | None = None              # v1.3
+    numero: int | None = None              # v2.4: camisa (None em saves antigos)
+    secundarias: list[str] = []            # v2.4
     atributos: dict[str, int] = {}         # v1.3
     overall: int
     idade: int
