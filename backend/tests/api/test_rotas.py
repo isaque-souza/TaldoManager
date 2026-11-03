@@ -705,55 +705,63 @@ def test_copa_da_temporada_e_jogo_do_tecnico():
         "modo": "rodada_a_rodada", "clube": "Manchester City", "seed": 6,
     }).json()["id"]
 
-    copa = client.get(f"/simulacoes/{sid}/copa").json()["copa"]
-    assert [f["fase"] for f in copa["fases"]] == ["oitavas", "quartas", "semi", "final"]
-    assert len(copa["fases"][0]["jogos"]) == 8 and copa["fases"][1]["jogos"] == []
-    assert copa["proxima"]["depois_da_rodada"] == 8
-    # o campeão de 23/24 está na copa, em casa contra o 8º da Taldo
+    dados = client.get(f"/simulacoes/{sid}/copa").json()
+    # v2.6: a copa entre as ligas (as 4 Séries A) e a FA Cup do City
+    assert [c["id"] for c in dados["copas"]][:2] == ["continental", "inglaterra"]
+    copa = dados["copa"]
+    assert copa["nome"] == "Copa entre as ligas"
+    assert [f["fase"] for f in copa["fases"]] == ["16-avos", "oitavas", "quartas", "semi", "final"]
+    assert len(copa["fases"][0]["jogos"]) == 16 and copa["fases"][1]["jogos"] == []
+    assert copa["proxima"]["depois_da_rodada"] == 5
+    # o campeão de 23/24 está na copa, em casa
     assert copa["seu_clube"]["estado"] == "vivo"
     assert copa["seu_clube"]["jogo"]["mando"] == "casa"
-    assert any(m["assunto"] == "Estamos na copa" for m in _mensagens(sid))
+    fa = dados["copas"][1]
+    assert fa["nome"] == "FA Cup" and fa["proxima"]["depois_da_rodada"] == 3
+    assuntos = {m["assunto"] for m in _mensagens(sid)}
+    assert {"Estamos na Copa entre as ligas", "Estamos na FA Cup"} <= assuntos
 
-    for rodada in range(1, 9):
+    for rodada in range(1, 4):
         res = client.post(f"/simulacoes/{sid}/rodadas").json()
-        assert res["copa"] is None and not res["copa_jogada"]
+        assert not res["copa_jogada"]
 
-    # o técnico está nas oitavas: a fase espera a quarta, com o jogo dele
+    # o técnico está nos 16 avos da FA Cup: a fase espera a quarta
     cal = client.get(f"/simulacoes/{sid}/calendario").json()
-    assert cal["copa"] and cal["rodada"] == 9 and cal["dias_ate_o_jogo"] == 4
+    assert cal["copa"] and cal["rodada"] == 4 and cal["dias_ate_o_jogo"] == 4
     prox = client.get(f"/simulacoes/{sid}/rodadas/proxima").json()
-    assert prox["copa"] == {"fase": "oitavas", "nome": "Oitavas de final"}
-    assert prox["mando"] == "casa" and len(prox["confrontos"]) == 8
+    assert prox["copa"] == {"fase": "inglaterra:16-avos", "nome": "FA Cup · 16 avos de final",
+                            "copa": "FA Cup", "fase_nome": "16 avos de final"}
+    assert prox["mando"] == "casa" and len(prox["confrontos"]) == 16
     pj = client.get(f"/simulacoes/{sid}/pre-jogo").json()
-    assert pj["copa"]["fase"] == "oitavas" and pj["mandante"]["clube"] == "Manchester City"
+    assert pj["copa"]["fase"] == "inglaterra:16-avos" and pj["mandante"]["clube"] == "Manchester City"
     # ainda não é dia de jogo
     assert client.post(f"/simulacoes/{sid}/calendario/continuar").json()["periodo"] == "dia_de_jogo"
 
     t = client.post(f"/simulacoes/{sid}/transmissao", json={}).json()
-    assert t["copa"]["fase"] == "oitavas" and len(t["outros"]) == 7
+    assert t["copa"]["fase"] == "inglaterra:16-avos" and len(t["outros"]) == 15
     gols = [sum(1 for e in t["eventos"] if e["tipo"] in ("gol", "penalti") and e["clube"] == c)
             for c in (t["mandante"]["clube"], t["visitante"]["clube"])]
     assert bool(t["penaltis"]) == (gols[0] == gols[1])
 
     res = client.post(f"/simulacoes/{sid}/rodadas").json()
-    assert res["copa_jogada"] and res["resultados"] == [] and res["rodada_atual"] == 9
-    assert res["copa"]["fase"] == "oitavas" and len(res["copa"]["jogos"]) == 8
+    assert res["copa_jogada"] and res["resultados"] == [] and res["rodada_atual"] == 4
+    assert res["copa"]["fase"] == "inglaterra:16-avos" and len(res["copa"]["jogos"]) == 16
     meu = next(j for j in res["copa"]["jogos"] if j["mandante"] == "Manchester City")
     # o placar gravado é o da transmissão
     assert [meu["gols_mandante"], meu["gols_visitante"]] == gols
     assert not client.get(f"/simulacoes/{sid}/calendario").json()["copa"]
     assert all(j["vencedor"] for j in res["copa"]["jogos"])
 
-    copa = client.get(f"/simulacoes/{sid}/copa").json()["copa"]
-    assert copa["fases"][0]["jogada"] and len(copa["fases"][1]["jogos"]) == 4
-    assert copa["seu_clube"]["estado"] in ("vivo", "eliminado")
+    fa = next(c for c in client.get(f"/simulacoes/{sid}/copa").json()["copas"] if c["id"] == "inglaterra")
+    assert fa["fases"][0]["jogada"] and len(fa["fases"][1]["jogos"]) == 8
+    assert fa["seu_clube"]["estado"] in ("vivo", "eliminado")
     assuntos = {m["assunto"] for m in _mensagens(sid)}
-    assert {"Avançamos na copa", "Fora da copa"} & assuntos
+    assert {"Avançamos na FA Cup", "Fora da FA Cup"} & assuntos
 
 
 def test_save_so_da_taldo_nao_tem_copa():
     sid = client.post("/simulacoes", json={
         "modo": "rodada_a_rodada", "clube": "Real Taldo", "seed": 2, "ligas": ["taldo"],
     }).json()["id"]
-    assert client.get(f"/simulacoes/{sid}/copa").json() == {"copa": None}
+    assert client.get(f"/simulacoes/{sid}/copa").json() == {"copa": None, "copas": []}
     assert client.get("/simulacoes/999999/copa").status_code == 404

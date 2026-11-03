@@ -49,7 +49,7 @@ function renderPreJogo(pj) {
   window.scrollTo(0, 0);
 
   $("pj-titulo").textContent = pj.copa
-    ? `Copa · ${pj.copa.nome}`
+    ? pj.copa.nome
     : `Rodada ${pj.rodada} de ${pj.total_rodadas}`;
   $("pj-confronto").innerHTML =
     `<strong>${eu.clube}</strong> <span class="x">x</span> <strong>${rival.clube}</strong> ` +
@@ -99,7 +99,7 @@ function cartaz(pj, ctxDe) {
     e.classico ? chip("longe", "Clássico") : "",
     e.lotado ? chip("batida", "Lotado") : "",
   ].join(" ").trim() : "";
-  const comp = pj.copa ? `Copa · ${pj.copa.nome}` : `Rodada ${pj.rodada}`;
+  const comp = pj.copa ? pj.copa.nome : `Rodada ${pj.rodada}`;
   return `<div class="cartaz-fundo">${fundo}</div>
     <div class="cartaz-palco">
       ${timeDoCartaz(pj.mandante, ctxDe(pj.mandante.clube), pj.clube_usuario, fm, fv)}
@@ -180,7 +180,7 @@ function confrontoDireto(d) {
   }
   const parte = (n, classe) => (n ? `<i class="cd-${classe}" style="flex:${n}"></i>` : "");
   const lista = d.jogos.map((j) => {
-    const onde = j.competicao === "copa" ? `Copa · ${j.fase}` : `Rodada ${j.rodada}`;
+    const onde = j.competicao === "copa" ? j.fase : `Rodada ${j.rodada}`;
     const pen = j.penaltis ? ` <small>(pên. ${j.penaltis.pro}–${j.penaltis.contra})</small>` : "";
     return `<li><span class="pj-res pj-res-${j.resultado}" aria-label="${RESULTADO[j.resultado]}">${j.resultado}</span>
       <b>${j.gols_pro}–${j.gols_contra}</b>${pen}

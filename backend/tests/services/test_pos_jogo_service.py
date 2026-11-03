@@ -120,48 +120,53 @@ def test_retomar_o_save_devolve_o_relatorio_do_ultimo_jogo():
 
 def test_jogo_da_copa_e_a_liga_depois_dele():
     sid = temporada_service.iniciar(seed=6, clube_usuario="Arsenal", ligas=TODAS_AS_LIGAS)
-    for _ in range(8):
+    # v2.6: o primeiro jogo de copa do Arsenal é o da FA Cup, depois da 3ª
+    for _ in range(3):
         temporada_service.avancar(sid)
-    da_rodada_8 = pos_jogo_service.ver(sid)
-    assert da_rodada_8["competicao"] == "liga"
+    da_rodada_3 = pos_jogo_service.ver(sid)
+    assert da_rodada_3["competicao"] == "liga"
     # com a copa esperando, o próximo compromisso é ela, na quarta
-    proximo = da_rodada_8["proximo"]
-    assert proximo["copa"]["fase"] == "oitavas" and proximo["rodada"] == 9
+    proximo = da_rodada_3["proximo"]
+    assert proximo["copa"]["fase"] == "inglaterra:16-avos" and proximo["rodada"] == 4
+    assert proximo["copa"]["nome"] == "FA Cup · 16 avos de final"
 
     res = temporada_service.avancar(sid)
     assert res["copa_jogada"]
     r = pos_jogo_service.ver(sid)
     jogo = next(j for j in res["copa"]["jogos"] if "Arsenal" in (j["mandante"], j["visitante"]))
-    assert r["competicao"] == "copa" and r["copa"]["fase"] == "oitavas"
+    assert r["competicao"] == "copa" and r["copa"]["fase"] == "inglaterra:16-avos"
+    assert r["copa"]["copa"] == "FA Cup"
     assert (r["gols_mandante"], r["gols_visitante"]) == (jogo["gols_mandante"], jogo["gols_visitante"])
     assert r["copa"]["classificado"] == (jogo["vencedor"] == "Arsenal")
-    assert r["copa"]["premio"] == (copa.PREMIOS["oitavas"] if r["copa"]["classificado"] else 0)
+    assert r["copa"]["premio"] == (
+        copa.PREMIOS["nacional"]["16-avos"] if r["copa"]["classificado"] else 0)
     assert bool(r["copa"]["penaltis"]) == (r["gols_mandante"] == r["gols_visitante"])
     # a copa agora guarda notas e números do jogo; a tabela da liga não muda
     assert r["tabela"] is None and r["estatisticas"] and r["atuacoes"]
-    # a mensagem da copa é a do dia do jogo (a da rodada 8 tem outra data)
-    assert any("copa" in m["corpo"] for m in r["mensagens"])
-    assert not {m["id"] for m in r["mensagens"]} & {m["id"] for m in da_rodada_8["mensagens"]}
-    # depois da copa, a rodada 9 da liga, no sábado
-    assert r["proximo"]["rodada"] == 9 and r["proximo"]["copa"] is None
+    # a mensagem da copa é a do dia do jogo (a da rodada 3 tem outra data)
+    assert any("FA Cup" in m["corpo"] for m in r["mensagens"])
+    assert not {m["id"] for m in r["mensagens"]} & {m["id"] for m in da_rodada_3["mensagens"]}
+    # depois da copa, a rodada 4 da liga, no sábado
+    assert r["proximo"]["rodada"] == 4 and r["proximo"]["copa"] is None
 
     temporada_service.avancar(sid)
     depois = pos_jogo_service.ver(sid)
-    assert depois["competicao"] == "liga" and depois["rodada"] == 9
+    assert depois["competicao"] == "liga" and depois["rodada"] == 4
 
 
 def test_jogo_da_copa_de_save_antigo_so_com_os_gols():
     """Saves anteriores à v2.2 não guardam notas nem números na copa."""
     import json
     sid = temporada_service.iniciar(seed=6, clube_usuario="Arsenal", ligas=TODAS_AS_LIGAS)
-    for _ in range(9):
+    for _ in range(4):      # a liga até a 3ª e o jogo da FA Cup
         temporada_service.avancar(sid)
     conn = conectar()
     try:
         with conn:
             estado = json.loads(conn.execute(
                 "SELECT estado_json FROM simulacao WHERE id = ?", (sid,)).fetchone()[0])
-            for j in estado["copa"]["fases"]["oitavas"]:
+            fa = next(c for c in estado["copa"]["copas"] if c["id"] == "inglaterra")
+            for j in fa["fases"]["16-avos"]:
                 for k in ("estatisticas", "eventos", "atuacoes"):
                     j.pop(k)
             conn.execute("UPDATE simulacao SET estado_json = ? WHERE id = ?",

@@ -51,8 +51,8 @@ def _do_clube(clube, clubes, partidas, dados_copa):
 
 def ultimos_jogos(nome, partidas, dados_copa, n=ULTIMOS):
     """Os `n` jogos mais recentes do clube (liga e copa; todos com `n`
-    None), do mais antigo para o mais novo. O jogo da copa vem depois da rodada `copa.DATAS[fase]`
-    da liga (é no meio da semana seguinte)."""
+    None), do mais antigo para o mais novo. O jogo da copa vem depois da
+    rodada da fase (é no meio da semana seguinte)."""
     jogos = []
     for p in partidas:
         if nome not in (p["mandante_nome"], p["visitante_nome"]):
@@ -62,17 +62,17 @@ def ultimos_jogos(nome, partidas, dados_copa, n=ULTIMOS):
             p["gols_mandante"], p["gols_visitante"],
             competicao="liga", rodada=p["rodada"],
         )))
-    for fase in copa.FASES:
-        for j in (dados_copa or {}).get("fases", {}).get(fase) or []:
-            if nome not in (j["mandante"], j["visitante"]) or not j["vencedor"]:
-                continue
-            jogos.append(((copa.DATAS[fase], 1), _jogo(
-                nome, j["mandante"], j["visitante"],
-                j["gols_mandante"], j["gols_visitante"],
-                competicao="copa", rodada=copa.DATAS[fase],
-                fase=copa_service.NOMES[fase],
-                penaltis=j["penaltis"], vencedor=j["vencedor"],
-            )))
+    for c, fase, j in copa.jogos_de_todas(dados_copa):
+        if nome not in (j["mandante"], j["visitante"]) or not j["vencedor"]:
+            continue
+        rodada = c["datas"][fase]
+        jogos.append(((rodada, 1), _jogo(
+            nome, j["mandante"], j["visitante"],
+            j["gols_mandante"], j["gols_visitante"],
+            competicao="copa", rodada=rodada,
+            fase=copa.nome_da_chave({"copas": [c]}, copa.chave(c["id"], fase)),
+            penaltis=j["penaltis"], vencedor=j["vencedor"],
+        )))
     jogos.sort(key=lambda par: par[0])
     return [j for _, j in (jogos[-n:] if n else jogos)]
 
@@ -199,13 +199,13 @@ def confronto_direto(conn, sim, mandante, visitante, partidas, dados_copa):
     jogos = []
     for s, ps, dc in reversed(temporadas):
         entre = [p for p in ps if {p["mandante_nome"], p["visitante_nome"]} == {eu, rival}]
-        do_rival = {
-            "fases": {
-                fase: [j for j in (dc or {}).get("fases", {}).get(fase) or []
-                       if {j["mandante"], j["visitante"]} == {eu, rival}]
-                for fase in copa.FASES
-            }
-        }
+        do_rival = {"copas": [
+            {**c, "fases": {
+                fase: [j for j in jogos_f if {j["mandante"], j["visitante"]} == {eu, rival}]
+                for fase, jogos_f in c["fases"].items()
+            }}
+            for c in (copa.normalizar(dc) or {}).get("copas", [])
+        ]}
         for j in ultimos_jogos(eu, entre, do_rival, n=None):
             jogos.append({**j, "temporada": s["temporada"]})
 

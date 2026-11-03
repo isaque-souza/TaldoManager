@@ -1400,7 +1400,9 @@ details.outra-liga { margin-top: 1rem; }
 .cp-regra { max-width: 46rem; margin: .8rem 0 1.2rem; color: var(--texto-2); font-size: .9rem; }
 /* a chave: uma coluna por fase; os jogos se espalham na altura da coluna,
    então cada jogo das quartas fica na altura entre os dois das oitavas */
-.cp-chave { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
+/* v2.6: uma coluna para cada fase (5 nas copas de 32), rolando para o lado
+   se não couber */
+.cp-chave { display: grid; grid-template-columns: repeat(var(--fases, 4), minmax(11.5rem, 1fr)); gap: .8rem; overflow-x: auto; }
 .cp-fase { display: flex; flex-direction: column; min-width: 0; }
 .cp-fase header { margin-bottom: .6rem; }
 .cp-fase header .secao { margin: 0; }
@@ -2541,3 +2543,7 @@ tr:not(.zona-queda) + tr.zona-queda td { border-top: 1px dashed color-mix(in srg
 /* o título da capa lê sobre a torcida (estádio e marketing) */
 .es-capa-titulo { align-self: flex-start; padding: .35rem .8rem .35rem .45rem; border-radius: 6px; background: rgba(5, 8, 13, .7); backdrop-filter: blur(3px); }
 .es-capa-titulo small { color: var(--texto); opacity: .8; }
+
+/* as copas (v2.6): uma aba para cada */
+.cp-abas { margin-bottom: .8rem; }
+.cp-titulo { display: flex; align-items: center; gap: .4rem; margin: 0 0 .6rem; font-size: 1.25rem; }

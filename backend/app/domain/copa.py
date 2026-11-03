@@ -1,65 +1,93 @@
-"""Copa entre as ligas (v1.6): 16 clubes, os 8 melhores de cada liga, em
-mata-mata de jogo único, no meio da semana.
+"""As copas (v1.6; v2.6, várias): mata-mata de jogo único, no meio da
+semana, com pênaltis no empate.
 
-As fases são jogadas depois de algumas rodadas da liga (`DATAS`), então o
-calendário da liga (salários, TV, obras...) não muda. Um jogo de copa é uma
-`Partida` comum, mas ela foi feita para a liga e mexe direto nos jogadores e
-clubes (gols, cartões, suspensões, pontos...). Por isso a copa tira uma foto
-dos números antes do apito e devolve depois: só o cansaço e as lesões novas
-ficam (`_isolar_da_liga`).
+- a **copa entre as ligas** (continental): os 8 melhores de cada Série A
+  (32 clubes com as 4 ligas; 16 com duas). Paga como a Champions;
+- uma **copa nacional** por país que tem a A e a B no save: os 20 da A e os
+  12 melhores da B (32 clubes).
 
-O estado é um dict JSON (`para_dict` / `de_dict`), para ir no snapshot.
+As fases são jogadas depois de algumas rodadas da liga (`DATAS`). As
+nacionais jogam nas mesmas quartas (cada clube só está na do seu país) e a
+continental em outras: o técnico nunca tem dois jogos de copa na mesma
+semana. Uma fase é chamada
+pela `chave` "copa:fase" ("brasil:oitavas", "continental:final").
+
+Um jogo de copa é uma `Partida` comum, mas ela foi feita para a liga e mexe
+direto nos jogadores e clubes (gols, cartões, suspensões, pontos...). Por
+isso a copa tira uma foto dos números antes do apito e devolve depois: só o
+cansaço e as lesões novas ficam (`_isolar_da_liga`).
+
+O estado é um dict JSON (`Copas.para_dict` / `Copas.de_dict`), para ir no
+snapshot. O formato de antes da v2.6 (uma copa só, Taldo x Premier) ainda
+é lido: vira a copa "continental" com as datas de então (`normalizar`).
 """
 
 import random
 
-from . import diretoria, financas
+from . import diretoria, divisoes, financas
 from .estadio import publico
 from .partida import Partida
 
-VAGAS_POR_LIGA = 8
-# as ligas da copa (v2.5): a chave é de duas ligas; as outras Séries A
-# esperam a copa de N ligas
-LIGAS_DA_COPA = ("taldo", "premier")
+VAGAS_POR_LIGA = 8          # na copa entre as ligas
+VAGAS_DA_SERIE_B = 12       # na copa nacional (com os 20 da A: 32)
+
+CONTINENTAL = "continental"
+NOME_CONTINENTAL = "Copa entre as ligas"
+# país (app.domain.divisoes) -> nome da copa nacional
+NOMES_NACIONAIS = {
+    "taldo": "Taça Taldo",
+    "inglaterra": "FA Cup",
+    "espanha": "Copa del Rey",
+    "brasil": "Copa do Brasil",
+}
+
+# todas as fases, da primeira à final; uma copa de N clubes joga as últimas
+# log2(N)
+FASES_TODAS = ["16-avos", "oitavas", "quartas", "semi", "final"]
+NOMES_DAS_FASES = {
+    "16-avos": "16 avos de final",
+    "oitavas": "Oitavas de final",
+    "quartas": "Quartas de final",
+    "semi": "Semifinal",
+    "final": "Final",
+}
 
 # a fase é jogada no meio da semana, depois desta rodada da liga
-DATAS = {"oitavas": 8, "quartas": 17, "semi": 26, "final": 35}
-FASES = list(DATAS)
+DATAS = {
+    CONTINENTAL: {"16-avos": 5, "oitavas": 12, "quartas": 19, "semi": 26, "final": 34},
+    "nacional": {"16-avos": 3, "oitavas": 9, "quartas": 16, "semi": 23, "final": 30},
+}
+# a copa de antes da v2.6 (16 clubes, Taldo x Premier)
+DATAS_V1 = {"oitavas": 8, "quartas": 17, "semi": 26, "final": 35}
 
 # prêmio por vitória em cada fase (economia v2, v2.5): como a Champions, a
-# copa entre as ligas paga mais que o título nacional — o campeão soma 20 mi
+# copa entre as ligas paga mais que o título nacional — o campeão soma 21 mi;
+# a nacional, 8,1 mi
 PREMIOS = {
-    "oitavas": 2_000_000,
-    "quartas": 3_500_000,
-    "semi": 5_500_000,
-    "final": 9_000_000,
+    CONTINENTAL: {"16-avos": 1_000_000, "oitavas": 2_000_000, "quartas": 3_500_000,
+                  "semi": 5_500_000, "final": 9_000_000},
+    "nacional": {"16-avos": 300_000, "oitavas": 600_000, "quartas": 1_200_000,
+                 "semi": 2_000_000, "final": 4_000_000},
 }
-# economia v1: o campeão levava 7,5 mi (o da liga, 10 mi)
+# economia v1: o campeão da continental levava 7,5 mi (o da liga, 10 mi)
 PREMIOS_V1 = {
-    "oitavas": 500_000,
-    "quartas": 1_000_000,
-    "semi": 2_000_000,
-    "final": 4_000_000,
+    CONTINENTAL: {"16-avos": 250_000, "oitavas": 500_000, "quartas": 1_000_000,
+                  "semi": 2_000_000, "final": 4_000_000},
+    "nacional": {"16-avos": 100_000, "oitavas": 200_000, "quartas": 400_000,
+                 "semi": 800_000, "final": 1_500_000},
 }
 
 
-def premios(economia):
-    return PREMIOS_V1 if economia < 2 else PREMIOS
+def premios(economia, tipo=CONTINENTAL):
+    """{fase: prêmio por vitória} da copa do `tipo` (continental/nacional)."""
+    return (PREMIOS_V1 if economia < 2 else PREMIOS)[tipo]
 
-# a ordem das oitavas monta a chave: os vencedores dos jogos 1 e 2 se
-# enfrentam nas quartas, os de 3 e 4 também... O 1º de cada liga só pode
-# encontrar o 1º da outra na final, e o 2º de cada uma fica no lado do 1º
-# da outra. (liga, posição): 0 = a primeira liga, 1 = a segunda
-CHAVE_OITAVAS = [
-    ((0, 1), (1, 8)), ((1, 4), (0, 5)), ((0, 3), (1, 6)), ((1, 2), (0, 7)),
-    ((1, 1), (0, 8)), ((0, 4), (1, 5)), ((1, 3), (0, 6)), ((0, 2), (1, 7)),
-]
-
-# o que um jogo de copa deixa no jogador; o resto volta ao que era
-FICA_DA_COPA = {"energia", "rodadas_lesao"}
 
 # disputa de pênaltis
 COBRANCAS = 5
+
+# o que um jogo de copa deixa no jogador; o resto volta ao que era
+FICA_DA_COPA = {"energia", "rodadas_lesao"}
 
 # os lances que o jogo da copa guarda (a liga guarda todos em `lance`; o
 # chute para fora só enche a linha do tempo)
@@ -69,66 +97,167 @@ EVENTOS_DO_RELATORIO = (
 )
 
 
+# --- chaves "copa:fase" -------------------------------------------------------
+
+def chave(copa_id, fase):
+    return f"{copa_id}:{fase}"
+
+
+def dividir(chave_):
+    """(copa, fase) de uma chave. A fase sozinha (saves de antes da v2.6,
+    em `simulacao.copa_pendente`) é da continental."""
+    if ":" not in chave_:
+        return CONTINENTAL, chave_
+    copa_id, fase = chave_.rsplit(":", 1)
+    return copa_id, fase
+
+
+def nome_da_fase(fase):
+    return NOMES_DAS_FASES[fase]
+
+
+# --- quem joga ----------------------------------------------------------------
+
 def classificados_de_inicio(campeonato):
-    """Os classificados de um jogo novo: {liga: [nomes do 1º ao 8º]}. A
-    liga com tabela do ano anterior (Premier 23/24) usa a posição nela; a
+    """A ordem de cada liga num jogo novo: {liga: [nomes, do 1º ao último]}.
+    A liga com tabela do ano anterior (Premier 23/24) usa a posição nela; a
     outra, o ranking de força dos elencos."""
     classificados = {}
     for liga in campeonato.ligas:
         clubes = campeonato.clubes_da_liga(liga)
         forca = diretoria.ranking_de_forca(clubes)
         ordem = sorted(clubes, key=lambda c: (c.posicao_anterior or 99, forca[c.nome]))
-        classificados[liga] = [c.nome for c in ordem][:VAGAS_POR_LIGA]
+        classificados[liga] = [c.nome for c in ordem]
     return classificados
 
 
 def classificados_pela_tabela(clubes_finais):
-    """Os classificados pela tabela da temporada anterior (carreira):
+    """A ordem de cada liga pela tabela da temporada anterior (carreira):
     `clubes_finais` são as linhas da tabela `clube` (nome, liga,
     posicao_final)."""
     classificados = {}
     for c in sorted(clubes_finais, key=lambda c: c["posicao_final"]):
         classificados.setdefault(c["liga"], []).append(c["nome"])
-    return {l: n[:VAGAS_POR_LIGA] for l, n in classificados.items()}
+    return classificados
+
+
+def montar(campeonato, classificados):
+    """As copas da temporada, com a ordem de cada liga (`classificados_*`):
+    a continental com os 8 melhores de cada Série A (2 ou 4 ligas; com outro
+    número, não tem) e a nacional de cada país com a A e a B no save. A
+    nacional usa as divisões de agora (quem subiu joga entre os da A) e a
+    ordem de antes (quem caiu vem antes dos da B)."""
+    copas = []
+
+    primeiras = [l for l in divisoes.primeiras(campeonato.ligas) if l in classificados]
+    if len(primeiras) in (2, 4):
+        copas.append(Copa.continental({l: classificados[l][:VAGAS_POR_LIGA] for l in primeiras}))
+
+    # (divisão antes, posição antes): quem caiu vem antes dos da B
+    antes = {
+        nome: (divisoes.divisao(liga), posicao)
+        for liga, nomes in classificados.items()
+        for posicao, nome in enumerate(nomes, start=1)
+    }
+    for a in divisoes.primeiras(campeonato.ligas):
+        b = divisoes.da_divisao(a, 2)
+        if b not in campeonato.ligas:
+            continue
+        ordem = lambda liga: sorted(
+            (c.nome for c in campeonato.clubes_da_liga(liga)),
+            key=lambda n: (*antes.get(n, (9, 99)), n),
+        )
+        da_a, da_b = ordem(a), ordem(b)[:VAGAS_DA_SERIE_B]
+        if len(da_a) + len(da_b) == 32:
+            copas.append(Copa.nacional(divisoes.pais(a), {a: da_a, b: da_b}))
+    return Copas(copas)
+
+
+def _chaveamento(n):
+    """A ordem dos seeds na primeira fase: 1 x n, ... e o 1º e o 2º só se
+    encontram na final ([1, 4, 2, 3] para 4)."""
+    ordem = [1]
+    while len(ordem) < n:
+        tamanho = len(ordem) * 2
+        ordem = [s for x in ordem for s in (x, tamanho + 1 - x)]
+    return ordem
 
 
 class Copa:
+    """Uma copa: os jogos de cada fase, as datas e o seed de cada clube (o
+    melhor seed joga em casa)."""
 
-    def __init__(self, classificados):
-        """`classificados`: {liga: [nomes na ordem, do 1º ao 8º]}, com duas
-        ligas. O seed é a posição na liga (1 a 8)."""
-        if len(classificados) != 2:
-            raise ValueError("a copa é entre duas ligas")
+    def __init__(self, id, nome, tipo, classificados, seed, ordem, datas, fases):
+        self.id = id
+        self.nome = nome
+        self.tipo = tipo                    # continental | nacional
+        self.classificados = classificados  # {liga: [nomes]}
+        self.seed = seed                    # {nome: seed}
+        self.ordem = ordem                  # as fases, da primeira à final
+        self.datas = datas                  # {fase: rodada}
+        self.fases = fases                  # {fase: [jogos]}
+        self.partida_usuario = None
+
+    @classmethod
+    def _nova(cls, id, nome, tipo, classificados, participantes):
+        """`participantes`: do seed 1 ao último (32 ou 16)."""
+        n = len(participantes)
+        ordem = FASES_TODAS[len(FASES_TODAS) - (n.bit_length() - 1):]
+        if 2 ** len(ordem) != n:
+            raise ValueError(f"a copa precisa de 2, 4, 8, 16 ou 32 clubes, não {n}")
+        seed = {nome: i for i, nome in enumerate(participantes, start=1)}
+        seeds = _chaveamento(n)
+        primeira = [
+            _jogo(participantes[seeds[i] - 1], participantes[seeds[i + 1] - 1])
+            for i in range(0, n, 2)
+        ]
+        datas = {f: DATAS[CONTINENTAL if tipo == CONTINENTAL else "nacional"][f] for f in ordem}
+        return cls(id, nome, tipo, classificados, seed, ordem, datas, {ordem[0]: primeira})
+
+    @classmethod
+    def continental(cls, classificados):
+        """`classificados`: {liga: [do 1º ao 8º]}. Seed pela posição e, no
+        empate, pela ordem das ligas: na primeira fase ninguém pega um clube
+        da própria liga, e os 1º das ligas só se cruzam a partir da
+        semifinal (com duas ligas, só na final)."""
         ligas = list(classificados)
-        self.classificados = {l: list(n[:VAGAS_POR_LIGA]) for l, n in classificados.items()}
-        self.seed = {
-            nome: posicao
+        if len(ligas) < 2:
+            raise ValueError("a copa entre as ligas precisa de duas ligas")
+        participantes = [
+            classificados[liga][p]
+            for p in range(VAGAS_POR_LIGA)
             for liga in ligas
-            for posicao, nome in enumerate(self.classificados[liga], start=1)
-        }
-        self.fases = {
-            "oitavas": [
-                _jogo(*(self.classificados[ligas[l]][p - 1] for l, p in par))
-                for par in CHAVE_OITAVAS
-            ]
-        }
+        ]
+        return cls._nova(CONTINENTAL, NOME_CONTINENTAL, CONTINENTAL, classificados, participantes)
+
+    @classmethod
+    def nacional(cls, pais, classificados):
+        """`classificados`: {Série A: [os 20], Série B: [os 12]}, cada uma na
+        ordem. Seed: os da A, depois os da B."""
+        participantes = [n for nomes in classificados.values() for n in nomes]
+        return cls._nova(pais, NOMES_NACIONAIS.get(pais, f"Copa {pais}"), "nacional",
+                         classificados, participantes)
 
     # --- estado ---------------------------------------------------------
 
     def para_dict(self):
-        return {"classificados": self.classificados, "fases": self.fases}
+        return {
+            "id": self.id, "nome": self.nome, "tipo": self.tipo,
+            "classificados": self.classificados, "seed": self.seed,
+            "ordem": self.ordem, "datas": self.datas, "fases": self.fases,
+        }
 
     @classmethod
     def de_dict(cls, dados):
-        copa = cls(dados["classificados"])
-        copa.fases = dados["fases"]
-        return copa
+        d = _normalizar_copa(dados)
+        return cls(d["id"], d["nome"], d["tipo"], d["classificados"], d["seed"],
+                   d["ordem"], d["datas"], d["fases"])
 
     # --- andamento ------------------------------------------------------
 
     def fase_da_rodada(self, rodada):
         """A fase jogada depois desta rodada da liga, ou None."""
-        return next((f for f, r in DATAS.items() if r == rodada), None)
+        return next((f for f in self.ordem if self.datas[f] == rodada), None)
 
     @property
     def campeao(self):
@@ -138,7 +267,7 @@ class Copa:
     def jogos_do_clube(self, nome):
         return [
             {"fase": fase, **jogo}
-            for fase in FASES
+            for fase in self.ordem
             for jogo in self.fases.get(fase, [])
             if nome in (jogo["mandante"], jogo["visitante"])
         ]
@@ -156,6 +285,7 @@ class Copa:
         jogos = self.fases.get(fase)
         if not jogos or jogos[0]["vencedor"]:
             return []
+        premios = premios or PREMIOS[self.tipo]
 
         for jogo in jogos:
             dele = ao_vivo and ao_vivo["clube"] in (jogo["mandante"], jogo["visitante"])
@@ -165,39 +295,186 @@ class Copa:
             )
             if dele:
                 self.partida_usuario = partida
-            clubes[jogo["vencedor"]].lancar("receita_premiacao", (premios or PREMIOS)[fase])
+            clubes[jogo["vencedor"]].lancar("receita_premiacao", premios[fase])
 
-        proxima = FASES.index(fase) + 1
-        if proxima < len(FASES):
+        proxima = self.ordem.index(fase) + 1
+        if proxima < len(self.ordem):
             vencedores = [j["vencedor"] for j in jogos]
-            self.fases[FASES[proxima]] = [
+            self.fases[self.ordem[proxima]] = [
                 self._confronto(vencedores[i], vencedores[i + 1])
                 for i in range(0, len(vencedores), 2)
             ]
         return jogos
 
     def _confronto(self, a, b):
-        """Joga em casa quem foi melhor na liga; empate de seed (o 1º de uma
-        liga contra o 1º da outra), quem vem antes na chave."""
+        """Joga em casa quem tem o melhor seed; no empate (a copa de antes
+        da v2.6, com o seed pela posição na liga), quem vem antes na chave."""
         return _jogo(a, b) if self.seed[a] <= self.seed[b] else _jogo(b, a)
 
 
-def campeao_de(dados):
-    """O campeão de uma copa (`Copa.para_dict`), ou None."""
-    final = (dados or {}).get("fases", {}).get("final")
+class Copas:
+    """As copas da temporada, jogadas pela chave "copa:fase"."""
+
+    def __init__(self, copas):
+        self.copas = list(copas)
+        self.partida_usuario = None
+
+    def __iter__(self):
+        return iter(self.copas)
+
+    def __len__(self):
+        return len(self.copas)
+
+    def copa(self, copa_id):
+        return next((c for c in self.copas if c.id == copa_id), None)
+
+    # --- estado ---------------------------------------------------------
+
+    def para_dict(self):
+        return {"copas": [c.para_dict() for c in self.copas]}
+
+    @classmethod
+    def de_dict(cls, dados):
+        return cls(Copa.de_dict(c) for c in normalizar(dados)["copas"])
+
+    # --- andamento ------------------------------------------------------
+
+    @property
+    def fases(self):
+        """{chave: jogos} de todas as copas (as listas são as delas)."""
+        return {chave(c.id, f): jogos for c in self.copas for f, jogos in c.fases.items()}
+
+    def chaves_da_rodada(self, rodada):
+        """As chaves das fases jogadas depois desta rodada (as nacionais
+        caem juntas)."""
+        return [chave(c.id, f) for c in self.copas if (f := c.fase_da_rodada(rodada))]
+
+    def fase_da_rodada(self, rodada, clube=None):
+        """A chave da fase desta rodada da copa em que o `clube` está (ou da
+        primeira), ou None."""
+        chaves = self.chaves_da_rodada(rodada)
+        if clube:
+            dele = [k for k in chaves if any(
+                clube in n for n in self.copa(dividir(k)[0]).classificados.values())]
+            chaves = dele or chaves
+        return chaves[0] if chaves else None
+
+    def rodada_da_chave(self, chave_):
+        copa_id, fase = dividir(chave_)
+        return self.copa(copa_id).datas[fase]
+
+    @property
+    def campeao(self):
+        """O campeão da copa entre as ligas."""
+        c = self.copa(CONTINENTAL)
+        return c.campeao if c else None
+
+    def jogar_fase(self, chave_, clubes, ao_vivo=None, economia=financas.ECONOMIA_ATUAL):
+        copa_id, fase = dividir(chave_)
+        c = self.copa(copa_id)
+        jogos = c.jogar_fase(fase, clubes, ao_vivo, premios(economia, c.tipo))
+        self.partida_usuario = c.partida_usuario
+        return jogos
+
+
+# --- o estado em dict (para os serviços, que não restauram nada) --------------
+
+def _normalizar_copa(dados):
+    """Uma copa em dict; a de antes da v2.6 ganha id, nome, datas e o seed
+    (a posição na liga)."""
+    if "id" in dados:
+        return dados
+    return {
+        "id": CONTINENTAL, "nome": NOME_CONTINENTAL, "tipo": CONTINENTAL,
+        "classificados": dados["classificados"],
+        "seed": {n: p for nomes in dados["classificados"].values()
+                 for p, n in enumerate(nomes, start=1)},
+        "ordem": list(DATAS_V1), "datas": dict(DATAS_V1), "fases": dados["fases"],
+    }
+
+
+def normalizar(dados):
+    """{"copas": [...]} de qualquer formato (o de antes da v2.6 é uma copa
+    só); None fica None."""
+    if not dados:
+        return dados
+    if "copas" in dados:
+        return {"copas": [_normalizar_copa(c) for c in dados["copas"]]}
+    return {"copas": [_normalizar_copa(dados)]}
+
+
+def copa_de(dados, copa_id):
+    dados = normalizar(dados)
+    return next((c for c in (dados or {}).get("copas", []) if c["id"] == copa_id), None)
+
+
+def jogos_da_chave(dados, chave_):
+    copa_id, fase = dividir(chave_)
+    c = copa_de(dados, copa_id)
+    return (c or {}).get("fases", {}).get(fase) or []
+
+
+def rodada_da_chave(dados, chave_):
+    copa_id, fase = dividir(chave_)
+    return copa_de(dados, copa_id)["datas"][fase]
+
+
+def chave_da_rodada(dados, rodada, clube=None):
+    """A chave da fase jogada depois desta rodada, ou None: a da copa em
+    que o `clube` está, se ele está em alguma; senão, a da primeira."""
+    chaves = []
+    for i, c in enumerate((normalizar(dados) or {}).get("copas", [])):
+        fase = next((f for f in c["ordem"] if c["datas"][f] == rodada), None)
+        if fase:
+            dele = any(clube in n for n in c["classificados"].values()) if clube else False
+            chaves.append((not dele, i, chave(c["id"], fase)))
+    return min(chaves)[2] if chaves else None
+
+
+def nome_da_chave(dados, chave_):
+    """"Copa do Brasil · Oitavas de final"."""
+    copa_id, fase = dividir(chave_)
+    c = copa_de(dados, copa_id)
+    return f"{c['nome'] if c else NOME_CONTINENTAL} · {nome_da_fase(fase)}"
+
+
+def jogos_de_todas(dados):
+    """[(copa, fase, jogo)] de todas as copas, na ordem das fases."""
+    return [
+        (c, fase, j)
+        for c in (normalizar(dados) or {}).get("copas", [])
+        for fase in c["ordem"]
+        for j in c["fases"].get(fase) or []
+    ]
+
+
+def campeao_de(dados, copa_id=CONTINENTAL):
+    """O campeão de uma copa (no dict de `Copas.para_dict`), ou None."""
+    c = copa_de(dados, copa_id)
+    final = (c or {}).get("fases", {}).get("final")
     return final[0]["vencedor"] if final and final[0]["vencedor"] else None
 
 
-def ate_onde(dados, clube):
+def campeoes_de(dados):
+    """{copa: campeão} das copas que já têm campeão."""
+    return {
+        c["id"]: campeao_de(dados, c["id"])
+        for c in (normalizar(dados) or {}).get("copas", [])
+        if campeao_de(dados, c["id"])
+    }
+
+
+def ate_onde(dados, clube, copa_id=CONTINENTAL):
     """Até onde o clube foi na copa: "campeao", a fase em que caiu (ou a
     que vai jogar, com a copa em andamento) ou None se não entrou."""
-    if not dados or not any(clube in n for n in dados["classificados"].values()):
+    c = copa_de(dados, copa_id)
+    if not c or not any(clube in n for n in c["classificados"].values()):
         return None
-    if campeao_de(dados) == clube:
+    if campeao_de(dados, copa_id) == clube:
         return "campeao"
-    alcancada = "oitavas"
-    for fase in FASES:
-        if any(clube in (j["mandante"], j["visitante"]) for j in dados["fases"].get(fase, [])):
+    alcancada = c["ordem"][0]
+    for fase in c["ordem"]:
+        if any(clube in (j["mandante"], j["visitante"]) for j in c["fases"].get(fase, [])):
             alcancada = fase
     return alcancada
 

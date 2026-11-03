@@ -183,7 +183,7 @@ function renderHub(info) {
       e.classico ? `<span class="chip chip-longe">Clássico</span>` : "",
       e.lotado ? `<span class="chip chip-batida">Lotado</span>` : "",
     ].join("") : "";
-    const comp = info.copa ? `Copa · ${info.copa.nome}` : `Rodada ${info.rodada}`;
+    const comp = info.copa ? info.copa.nome : `Rodada ${info.rodada}`;
     $("hub-jogo").innerHTML =
       `<div class="hub-cartaz">
          ${ladoHub(mandante, ctx(mandante), info.clube_usuario)}
@@ -239,7 +239,7 @@ export function renderRodadaAntes() {
 
   // o jogo da copa (v2.0) vem antes da próxima rodada, no meio da semana
   $("rodada-titulo").textContent = info.copa
-    ? `Copa · ${info.copa.nome}`
+    ? info.copa.nome
     : `Rodada ${info.rodada} de ${info.total_rodadas}`;
   if (info.adversario) {
     const loc = info.mando === "casa" ? "em casa" : "fora";
@@ -289,7 +289,7 @@ export function renderRodadaAntes() {
   const ligaDe = (lista, meu) =>
     lista.find((c) => c.mandante === meu || c.visitante === meu)?.liga;
   $("r-confrontos-titulo").textContent = info.copa
-    ? `Outros jogos da copa · ${info.copa.nome}` : "Outros jogos da rodada";
+    ? `Outros jogos · ${info.copa.nome}` : "Outros jogos da rodada";
   $("r-confrontos").innerHTML = porLiga(
     info.confrontos, ligaDe(info.confrontos, info.clube_usuario),
     (lista) => tabela(lista, [["mandante", "Mandante"], ["visitante", "Visitante"]], marcarEu)
@@ -305,7 +305,7 @@ export function renderRodadaAntes() {
     : !noDia
       ? rotuloContinuar(cal)
       : info.copa
-        ? `${icone("play")} Jogar a copa · ${info.copa.nome}`
+        ? `${icone("play")} Jogar · ${info.copa.nome}`
         : info.adversario
         ? `${icone("play")} Jogar a rodada ${info.rodada}`
         : `${icone("play")} Avançar a rodada ${info.rodada}`;
@@ -362,7 +362,7 @@ export function renderRodadaDepois() {
   $("rodada-titulo").textContent = res.concluida
     ? "Temporada encerrada"
     : res.copa_jogada
-      ? `Copa · ${res.copa.nome} — resultados`
+      ? `${res.copa.nome} — resultados`
       : `Rodada ${res.rodada_jogada} — resultados`;
   $("rodada-confronto").innerHTML = res.concluida
     ? `${res.campeao} é o campeão <span class="chip chip-batida">Fim de temporada</span>`
@@ -427,7 +427,7 @@ export async function enviarRodada() {
   $("r-contrato-msg").textContent = "";
   $("c-form").innerHTML = "";
   ocupado(true, estado.rodadaInfo.copa
-    ? `Jogando a copa · ${estado.rodadaInfo.copa.nome}…`
+    ? `Jogando · ${estado.rodadaInfo.copa.nome}…`
     : `Jogando a rodada ${estado.rodadaInfo.rodada}…`);
   const res = await pedir(`/simulacoes/${estado.simId}/rodadas`, {
     method: "POST",

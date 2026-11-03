@@ -1265,6 +1265,36 @@ bandeiras. O mesmo jogo desenha sempre o mesmo estádio.
 
 ---
 
+# 🏆 Copas e elenco de 52 (v2.6)
+
+* [x] Elenco do técnico de até **52 jogadores**, como no FIFA
+      (`mercado.ELENCO_MAX`); os clubes da CPU seguem com 25
+      (`ELENCO_MAX_CPU`), para não acumularem livres e jovens
+* [x] **Copa entre as ligas** com as 4 Séries A: os 8 melhores de cada uma,
+      32 clubes, 16 avos, oitavas, quartas, semi e final, no meio da semana
+      depois das rodadas 5, 12, 19, 26 e 34. Na primeira fase ninguém pega
+      um clube da própria liga; o seed é a posição (no empate, a ordem das
+      ligas) e o melhor seed joga em casa. O campeão soma 21 mi
+* [x] **Copas nacionais** — Taça Taldo, FA Cup, Copa del Rey e Copa do
+      Brasil: os 20 da Série A e os 12 melhores da B, 32 clubes, depois das
+      rodadas 3, 9, 16, 23 e 30 (todas no mesmo dia; a continental nunca cai
+      junto). Usam as divisões da temporada nova (quem subiu joga entre os
+      da A) e a ordem da anterior (quem caiu vem antes dos da B). O campeão
+      soma 8,1 mi
+* [x] Motor (`app/domain/copa.py`): `Copas` guarda as copas da temporada e
+      cada fase é chamada pela chave `"copa:fase"` (`"brasil:oitavas"`); o
+      jogo do técnico espera a quarta (`copa_adiada`) e as outras fases do
+      dia saem na hora. Saves de antes, com a copa Taldo x Premier, seguem
+      lidos (`copa.normalizar`) e a fase pendente vira `"continental:..."`
+* [x] Tela: a Copa ganha uma aba por copa (a do técnico primeiro); o card
+      do hub mostra a do próximo jogo; pré-jogo, transmissão e pós-jogo
+      dizem a copa ("FA Cup · 16 avos de final"); a diretoria avisa em
+      quais copas o clube entrou. Na Carreira, campeão e campanha da copa
+      nacional do país do técnico e a tabela de títulos dela; no Hall da
+      Fama toda copa vale 1 ponto de lenda
+
+---
+
 # 📁 Estrutura
 
 ```text

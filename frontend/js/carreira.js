@@ -35,7 +35,10 @@ export function mostrarCarreira() {
   $("carreira").hidden = false;
 
   const meus = c.titulos.find((t) => t.clube === c.clube_usuario)?.titulos ?? 0;
-  const copas = (c.titulos_copa || []).find((t) => t.clube === c.clube_usuario)?.titulos ?? 0;
+  // as copas: a entre as ligas e a nacional (v2.6)
+  const copas = [c.titulos_copa, c.titulos_copa_nacional]
+    .map((l) => (l || []).find((t) => t.clube === c.clube_usuario)?.titulos ?? 0)
+    .reduce((a, b) => a + b, 0);
   $("carreira-titulo").textContent = `Carreira — ${c.clube_usuario}`;
   $("carreira-info").textContent =
     `${c.temporadas.length} temporada${c.temporadas.length > 1 ? "s" : ""} · ` +
@@ -49,10 +52,10 @@ export function mostrarCarreira() {
   renderHall(c);
 }
 
-// até onde o técnico foi na copa entre as ligas (v1.6)
+// até onde o técnico foi numa copa (v1.6; v2.6, também a nacional)
 const CAMPANHA_COPA = {
   campeao: "campeão", final: "vice", semi: "semifinal", quartas: "quartas",
-  oitavas: "oitavas",
+  oitavas: "oitavas", "16-avos": "16 avos",
 };
 
 function destaque(d) {
@@ -75,14 +78,21 @@ function renderTemporadas(c) {
       : "",
     copa: t.campeao_copa ? `${icone("trofeu")} ${t.campeao_copa}` : "",
     sua_copa: t.copa_usuario ? CAMPANHA_COPA[t.copa_usuario] : (t.campeao_copa ? "fora" : ""),
+    nacional: t.campeao_copa_nacional
+      ? `${icone("trofeu")} ${t.campeao_copa_nacional} <small>(${t.copa_nacional})</small>` : "",
+    sua_nacional: t.copa_nacional_usuario ? CAMPANHA_COPA[t.copa_nacional_usuario]
+      : (t.campeao_copa_nacional ? "fora" : ""),
   }));
-  // a copa só existe nas carreiras com duas ligas (v1.6)
+  // a copa só existe nas carreiras com duas ligas (v1.6); a nacional, com a
+  // Série B do país (v2.6)
   const temCopa = c.temporadas.some((t) => t.campeao_copa);
+  const temNacional = c.temporadas.some((t) => t.campeao_copa_nacional);
   $("carreira-temporadas").innerHTML = tabela(
     linhas,
     [["t", "Temp."], ["camp", "Campeão"], ["vice", "Vice"],
       ["art", "Artilheiro (gols)"], ["mvpd", "MVP (melhor em campo)"], ["voce", "Você"],
-      ...(temCopa ? [["copa", "Copa"], ["sua_copa", "Sua copa"]] : [])],
+      ...(temCopa ? [["copa", "Copa entre as ligas"], ["sua_copa", "Sua campanha"]] : []),
+      ...(temNacional ? [["nacional", "Copa nacional"], ["sua_nacional", "Sua campanha"]] : [])],
     (t) => (t.campeao === c.clube_usuario ? "eu" : "")
   );
   $("carreira-temporadas").querySelectorAll("a.temporada").forEach((a) =>
@@ -100,15 +110,22 @@ function renderTitulos(c) {
     [["clube", "Clube"], ["titulos", "Títulos"], ["anos", "Temporadas"]],
     (t) => (t.clube === c.clube_usuario ? "eu" : "")
   );
-  const copa = (c.titulos_copa || []).map((t) => ({
-    ...t,
-    anos: t.temporadas.map((n) => `T${n}`).join(", "),
-  }));
-  $("carreira-titulos-copa").innerHTML = copa.length
-    ? `<h3 class="secao" style="margin-top: 1.2rem">${icone("trofeu")} Copa entre as ligas</h3>
-       ${tabela(copa, [["clube", "Clube"], ["titulos", "Copas"], ["anos", "Temporadas"]],
-         (t) => (t.clube === c.clube_usuario ? "eu" : ""))}`
-    : "";
+  const blocoCopa = (lista, titulo) => {
+    const linhas = (lista || []).map((t) => ({
+      ...t,
+      anos: t.temporadas.map((n) => `T${n}`).join(", "),
+    }));
+    return linhas.length
+      ? `<h3 class="secao" style="margin-top: 1.2rem">${icone("trofeu")} ${titulo}</h3>
+         ${tabela(linhas, [["clube", "Clube"], ["titulos", "Copas"], ["anos", "Temporadas"]],
+           (t) => (t.clube === c.clube_usuario ? "eu" : ""))}`
+      : "";
+  };
+  // a nacional: a do país do técnico em cada temporada (o nome, da última)
+  const nacional = [...c.temporadas].reverse().find((t) => t.copa_nacional)?.copa_nacional;
+  $("carreira-titulos-copa").innerHTML =
+    blocoCopa(c.titulos_copa, "Copa entre as ligas") +
+    blocoCopa(c.titulos_copa_nacional, nacional || "Copa nacional");
 }
 
 function renderLideres(c) {

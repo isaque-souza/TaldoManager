@@ -43,8 +43,8 @@ def ver(simulacao_id):
 
         da_liga = _ultimo_da_liga(conn, simulacao_id, meu)
         da_copa = _ultimo_da_copa(sim, meu)
-        # a fase da copa é jogada na quarta depois da rodada DATAS[fase]
-        if da_copa and (da_liga is None or copa.DATAS[da_copa[0]] >= da_liga["rodada"]):
+        # a fase da copa é jogada na quarta depois da rodada dela
+        if da_copa and (da_liga is None or da_copa[0]["datas"][da_copa[1]] >= da_liga["rodada"]):
             relatorio = _da_copa(conn, sim, clubes, *da_copa)
         elif da_liga is not None:
             relatorio = _da_liga(conn, sim, clubes, da_liga)
@@ -76,17 +76,14 @@ def _ultimo_da_liga(conn, simulacao_id, meu):
 
 
 def _ultimo_da_copa(sim, meu):
-    """(fase, jogo) do jogo mais recente do clube na copa já decidido, ou
-    None."""
+    """(copa, fase, jogo) do jogo mais recente do clube nas copas, já
+    decidido, ou None."""
     dados = copa_service.estado_da_copa(sim)
-    if not dados:
-        return None
-    ultimo = None
-    for fase in copa.FASES:
-        for j in dados["fases"].get(fase) or []:
-            if meu in (j["mandante"], j["visitante"]) and j["vencedor"]:
-                ultimo = (fase, j)
-    return ultimo
+    jogos = [
+        (c, fase, j) for c, fase, j in copa.jogos_de_todas(dados)
+        if meu in (j["mandante"], j["visitante"]) and j["vencedor"]
+    ]
+    return max(jogos, key=lambda x: x[0]["datas"][x[1]], default=None)
 
 
 # ---------------------------------------------------------------------------
@@ -219,7 +216,7 @@ def _outros_da_rodada(clubes, p, partidas):
 # copa
 # ---------------------------------------------------------------------------
 
-def _da_copa(conn, sim, clubes, fase, j):
+def _da_copa(conn, sim, clubes, c, fase, j):
     meu = sim["clube_usuario"]
     mandante, visitante = j["mandante"], j["visitante"]
     em_casa = mandante == meu
@@ -229,16 +226,18 @@ def _da_copa(conn, sim, clubes, fase, j):
         else (j["gols_visitante"], j["gols_mandante"])
     )
     res = pos_jogo.resultado(pro, contra)
-    rodada = copa.DATAS[fase]
+    rodada = c["datas"][fase]
 
     # jogos de saves anteriores à v2.2 só guardam os gols
     eventos = j.get("eventos") or [{**g, "detalhe": None} for g in j["gols"]]
     atuacoes = j.get("atuacoes") or []
     venceu = j["vencedor"] == meu
+    ordem = c["ordem"]
     proxima_fase = (
-        copa.FASES[copa.FASES.index(fase) + 1]
-        if venceu and fase != copa.FASES[-1] else None
+        ordem[ordem.index(fase) + 1]
+        if venceu and fase != ordem[-1] else None
     )
+    a_chave = copa.chave(c["id"], fase)
 
     return {
         "competicao": "copa",
@@ -246,15 +245,15 @@ def _da_copa(conn, sim, clubes, fase, j):
         "rodada": rodada,
         "total_rodadas": sim["rodadas"],
         "copa": {
-            "fase": fase,
-            "nome": copa_service.NOMES[fase],
+            **copa_service.fase_do_jogo({"copas": [c]}, a_chave),
             "penaltis": _penaltis_do_ponto_de_vista(j, em_casa),
             "classificado": venceu,
-            "campeao": venceu and fase == copa.FASES[-1],
+            "campeao": venceu and fase == ordem[-1],
             "proxima_fase": proxima_fase and {
-                "fase": proxima_fase, "nome": copa_service.NOMES[proxima_fase],
+                "fase": copa.chave(c["id"], proxima_fase),
+                "nome": copa.nome_da_fase(proxima_fase),
             },
-            "premio": copa.premios(copa_service.economia_do(sim))[fase] if venceu else 0,
+            "premio": copa.premios(copa_service.economia_do(sim), c["tipo"])[fase] if venceu else 0,
         },
         "data": calendario.data_da_copa(sim["temporada"], rodada).isoformat(),
         "partida_id": None,
@@ -271,7 +270,7 @@ def _da_copa(conn, sim, clubes, fase, j):
             {"partida_id": None, "mandante": o["mandante"], "visitante": o["visitante"],
              "gols_mandante": o["gols_mandante"], "gols_visitante": o["gols_visitante"],
              "penaltis": o["penaltis"]}
-            for o in copa_service.estado_da_copa(sim)["fases"].get(fase) or []
+            for o in c["fases"].get(fase) or []
             if o["vencedor"] and meu not in (o["mandante"], o["visitante"])
         ],
         "mensagens": _mensagens_do_dia(

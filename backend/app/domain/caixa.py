@@ -833,15 +833,15 @@ def virada(clube, movimentos, contratos_acabando, idolos=()):
     return mensagens
 
 
-# --- copa entre as ligas (v1.6) ---------------------------------------------
+# --- copas (v1.6; v2.6, várias) ----------------------------------------------
 
 _FASE = {
-    "oitavas": "as oitavas", "quartas": "as quartas", "semi": "a semifinal",
-    "final": "a final",
+    "16-avos": "os 16 avos", "oitavas": "as oitavas", "quartas": "as quartas",
+    "semi": "a semifinal", "final": "a final",
 }
 _NA_FASE = {
-    "oitavas": "nas oitavas", "quartas": "nas quartas", "semi": "na semifinal",
-    "final": "na final",
+    "16-avos": "nos 16 avos", "oitavas": "nas oitavas", "quartas": "nas quartas",
+    "semi": "na semifinal", "final": "na final",
 }
 
 
@@ -863,48 +863,52 @@ def _confronto_copa(fase, rodada, adversario, mando):
             f"pegamos o {adversario}, {onde}.")
 
 
-def copa_classificacao(situacao, rodada, premio_total):
-    """Início da temporada: entramos na copa ou não. `situacao` vem de
-    `copa_service.situacao`."""
+def copa_classificacao(situacao, rodada, premio_total, nome="Copa entre as ligas",
+                       tipo="continental"):
+    """Início da temporada: entramos na copa `nome` ou não. `situacao` vem
+    de `copa_service.situacao`."""
     if situacao["estado"] == "fora":
+        vaga = ("Não estamos entre os 8 da liga que disputam a copa contra as "
+                "outras ligas" if tipo == "continental"
+                else "Não estamos entre os clubes da Série B que disputam a copa")
         return _mensagem(
-            "Diretoria", "Fora da copa",
-            "Não estamos entre os 8 da liga que disputam a copa contra a "
-            "outra liga nesta temporada. Uma boa campanha agora garante a "
-            "vaga na próxima.",
+            "Diretoria", f"Fora da {nome}",
+            f"{vaga} nesta temporada. Uma boa campanha agora garante a vaga "
+            "na próxima.",
         )
     jogo = situacao["jogo"]
+    quem = ("os 8 melhores de cada Série A" if tipo == "continental"
+            else "os 20 da Série A e os 12 melhores da B")
     return _mensagem(
-        "Diretoria", "Estamos na copa",
-        "Vamos disputar a copa entre as ligas: mata-mata em jogo único, com "
+        "Diretoria", f"Estamos na {nome}",
+        f"Vamos disputar a {nome}, com {quem}: mata-mata em jogo único, com "
         "pênaltis no empate. "
         + _confronto_copa(situacao["fase"], rodada, jogo["adversario"], jogo["mando"])
         + f" Cada vitória rende prêmio; o campeão leva {_dinheiro(premio_total)}.",
     )
 
 
-def copa_resultado(fase, jogo, clube, premio, proxima=None):
-    """O jogo do técnico numa fase da copa. `proxima`: (fase, rodada,
-    adversário, mando) quando passou e ainda há fase."""
+def copa_resultado(fase, jogo, clube, premio, proxima=None, nome="Copa entre as ligas"):
+    """O jogo do técnico numa fase da copa `nome`. `proxima`: (fase,
+    rodada, adversário, mando) quando passou e ainda há fase."""
     adversario = jogo["visitante"] if jogo["mandante"] == clube else jogo["mandante"]
     placar = _placar_copa(jogo, clube)
     if jogo["vencedor"] != clube:
         return _mensagem(
-            "Diretoria", "Fora da copa",
-            f"Caímos {_NA_FASE[fase]} da copa: {placar} para o {adversario}. "
-            "Agora é a liga.",
+            "Diretoria", f"Fora da {nome}",
+            f"Caímos {_NA_FASE[fase]} da {nome}: {placar} para o {adversario}.",
         )
     if fase == "final":
         return _mensagem(
-            "Diretoria", "Campeões da copa!",
-            f"Vencemos o {adversario} por {placar} na final: a copa é nossa! "
+            "Diretoria", f"Campeões da {nome}!",
+            f"Vencemos o {adversario} por {placar} na final: a {nome} é nossa! "
             f"O título rendeu mais {_dinheiro(premio)} de prêmio.",
         )
-    corpo = (f"Passamos do {adversario} por {placar} {_NA_FASE[fase]} da copa "
+    corpo = (f"Passamos do {adversario} por {placar} {_NA_FASE[fase]} da {nome} "
              f"(prêmio de {_dinheiro(premio)}).")
     if proxima:
         corpo += " " + _confronto_copa(*proxima)
-    return _mensagem("Diretoria", "Avançamos na copa", corpo)
+    return _mensagem("Diretoria", f"Avançamos na {nome}", corpo)
 
 
 def _lista(nomes):
