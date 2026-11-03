@@ -44,6 +44,17 @@ def jogadores_com_oferta(conn, simulacao_id, rodada):
     }
 
 
+def jogadores_com_oferta_aberta(conn, simulacao_id, rodada):
+    """Ids de quem tem oferta esperando resposta nesta janela (v2.5)."""
+    return {
+        r["jogador_id"] for r in conn.execute(
+            "SELECT DISTINCT jogador_id FROM oferta_recebida "
+            "WHERE simulacao_id = ? AND rodada = ? AND status = 'aberta'",
+            (simulacao_id, rodada),
+        )
+    }
+
+
 def responder(conn, oferta_id, status, pedido=None):
     conn.execute(
         "UPDATE oferta_recebida SET status = ?, pedido = COALESCE(?, pedido) WHERE id = ?",
