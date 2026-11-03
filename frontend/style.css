@@ -2185,3 +2185,22 @@ a.ou-placar:hover, a.ou-placar:focus-visible { background: var(--linha-forte); c
 .es-cap-novo { background: var(--gramado-claro); }
 .es-cap-rotulo { display: block; margin-bottom: .5rem; font-size: .75rem; color: var(--texto-2); }
 .es-cap-rotulo strong { color: var(--texto); font-variant-numeric: tabular-nums; }
+
+/* ---------- marketing (v2.4): a capa é a do estádio (.es-capa) ---------- */
+.mk-numeros { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.es-numero strong.negativo { color: var(--ao-vivo); }
+.mk-turnos { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; }
+.mk-turno { padding: .15rem .55rem; border-radius: 999px; font-size: .75rem; background: rgba(9, 14, 21, .72); border: 1px solid var(--linha-forte); color: var(--texto-2); }
+.mk-turno-livre { color: var(--gramado-claro); border-color: color-mix(in srgb, var(--gramado-claro) 55%, transparent); }
+.mk-turno-feita { color: var(--refletor); border-color: color-mix(in srgb, var(--refletor) 50%, transparent); }
+.mk-comps { display: flex; flex-direction: column; gap: .3rem; margin: .2rem 0 .7rem; }
+.mk-comps small { font-size: .75rem; color: var(--texto-2); }
+.mk-comp { display: grid; grid-template-columns: 2.6rem 1fr; align-items: center; gap: .4rem; font-size: .75rem; color: var(--texto-2); }
+.mk-comp-trilho { display: block; height: 8px; border-radius: 3px; background: var(--superficie-2); overflow: hidden; }
+.mk-comp-trilho span { display: block; height: 100%; border-radius: 3px; }
+.mk-comp-ganho { background: var(--gramado-claro); }
+.mk-comp-custo { background: var(--ao-vivo); opacity: .8; }
+@media (max-width: 700px) { .mk-numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* o título da capa lê sobre a torcida (estádio e marketing) */
+.es-capa-titulo { align-self: flex-start; padding: .35rem .8rem .35rem .45rem; border-radius: 6px; background: rgba(5, 8, 13, .7); backdrop-filter: blur(3px); }
+.es-capa-titulo small { color: var(--texto); opacity: .8; }

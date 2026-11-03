@@ -4,6 +4,8 @@
 import { $, api, estado, limparAviso, ocupado, pedir } from "./nucleo.js";
 import { dinheiro, reais, tabela } from "./tabelas.js";
 import { icone } from "./icones.js";
+import { estadioNoturno } from "./atmosfera.js";
+import { escudo } from "./identidade.js";
 import { carregarCaixa } from "./caixa.js";
 import { carregarProximaRodada } from "./rodada.js";
 
@@ -35,13 +37,22 @@ function renderHubMarketing() {
     : `campanha do ${d.turno}º turno já feita`;
 }
 
-function cardCampanha(c) {
+const centavos = (v) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+function cardCampanha(c, maxNovos, maxCusto) {
+  const barra = (classe, rotulo, v, max) => `<div class="mk-comp"><span>${rotulo}</span>
+      <span class="mk-comp-trilho"><span class="${classe}" style="width:${((v / max) * 100).toFixed(1)}%"></span></span></div>`;
   const bloqueio = c.bloqueio
     ? `<small class="mk-bloqueio">${icone("cadeado")} ${c.bloqueio}</small>`
     : "";
   return `<article class="mk-campanha">
       <header><strong>${c.nome}</strong></header>
       <p>${c.descricao}</p>
+      <div class="mk-comps">
+        ${barra("mk-comp-ganho", "traz", c.torcedores_novos, maxNovos)}
+        ${barra("mk-comp-custo", "custa", c.custo, maxCusto)}
+        <small>${centavos(c.custo / (c.torcedores_novos || 1))} por torcedor novo</small>
+      </div>
       <dl class="mk-ficha">
         <div><dt>Torcida</dt><dd>+${c.ganho_pct.toLocaleString("pt-BR")}% <small>(+${dinheiro(c.torcedores_novos)})</small></dd></div>
         <div><dt>Custo</dt><dd>${reais(c.custo)}</dd></div>
@@ -74,23 +85,38 @@ function renderMarketing() {
       )
     : `<p class="vazio">Nenhuma campanha nesta temporada.</p>`;
 
+  const meu = estado.rodadaInfo && estado.rodadaInfo.clube_usuario;
+  // a torcida cheia de bandeiras: é a tela dela
+  const fundo = meu ? estadioNoturno({ mandante: meu, visitante: meu, ocupacao: 0.95, lotado: true, semente: "torcida" }) : "";
+  const numero = (rotulo, valor, detalhe, cls = "") =>
+    `<div class="es-numero"><span>${rotulo}</span><strong class="${cls}">${valor}</strong><small>${detalhe}</small></div>`;
+  // os dois turnos: o selo diz se a campanha deste já foi feita
+  const turnos = [1, 2].map((n) => {
+    const estado_ = n < d.turno ? "passou" : n > d.turno ? "depois" : d.disponivel ? "livre" : "feita";
+    const texto = { passou: "encerrado", depois: "ainda não", livre: "campanha disponível", feita: "campanha feita" }[estado_];
+    return `<span class="mk-turno mk-turno-${estado_}">${n}º turno · ${texto}</span>`;
+  }).join("");
+
   $("r-marketing").innerHTML = `
-    <div class="tiles">
-      <div class="tile"><span class="tile-rotulo">Torcida</span>
-        <span class="tile-valor">${dinheiro(d.torcedores)}</span>
-        <span class="tile-detalhe">${detalhe}</span></div>
-      <div class="tile"><span class="tile-rotulo">Força em casa</span>
-        <span class="tile-valor">+${mando}</span>
-        <span class="tile-detalhe">de overall no mando de campo</span></div>
-      <div class="tile"><span class="tile-rotulo">Caixa</span>
-        <span class="tile-valor${d.caixa < 0 ? " negativo" : ""}">${reais(d.caixa)}</span>
-        <span class="tile-detalhe">para investir</span></div>
+    <div class="cartaz es-capa">
+      <div class="cartaz-fundo">${fundo}</div>
+      <div class="es-capa-palco">
+        <p class="es-capa-titulo">${meu ? escudo(meu, 34) : ""}<span><small>A torcida do</small><b>${meu || "clube"}</b></span></p>
+        <p class="mk-turnos">${turnos}</p>
+        <div class="es-numeros mk-numeros">
+          ${numero("Torcedores", dinheiro(d.torcedores), detalhe, variacao < -0.05 ? "negativo" : "")}
+          ${numero("Força em casa", `+${mando}`, "de overall no mando de campo")}
+          ${numero("Caixa", reais(d.caixa), "para investir", d.caixa < 0 ? "negativo" : "")}
+        </div>
+      </div>
     </div>
     <p class="mk-intro">Uma campanha por turno. Torcida maior enche o estádio
       (bilheteria) e empurra o time em casa; vitórias e clássicos também a
       fazem crescer.</p>
     <p id="mk-msg" class="mk-msg${mk.ruim ? " ruim" : ""}" role="status">${mk.avisoRodada === rodadaAtual() ? mk.aviso : ""}</p>
-    <div class="mk-campanhas">${d.campanhas.map(cardCampanha).join("")}</div>
+    <div class="mk-campanhas">${d.campanhas.map((c) => cardCampanha(c,
+      Math.max(...d.campanhas.map((x) => x.torcedores_novos), 1),
+      Math.max(...d.campanhas.map((x) => x.custo), 1))).join("")}</div>
     <h3 class="secao">Campanhas da temporada</h3>
     ${feitas}`;
 
