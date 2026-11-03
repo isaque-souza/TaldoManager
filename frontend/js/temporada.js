@@ -49,6 +49,20 @@ export const COLUNAS = {
   ],
 };
 
+// as zonas da tabela (v2.4): o 1º é o campeão e os 8 primeiros de cada
+// liga jogam a copa da temporada seguinte (copa.VAGAS_POR_LIGA no servidor)
+export const VAGAS_COPA = 8;
+
+export function classeClassificacao(c, meu) {
+  const zona = c.posicao === 1 ? "zona-titulo" : c.posicao <= VAGAS_COPA ? "zona-copa" : "";
+  return [zona, c.clube === meu ? "eu" : ""].filter(Boolean).join(" ");
+}
+
+export function legendaZonas() {
+  return `<p class="zonas-legenda"><span><i class="zl-titulo"></i> Campeão (prêmio de R$ 10 mi)</span>
+    <span><i class="zl-copa"></i> Do 1º ao ${VAGAS_COPA}º: Copa da próxima temporada</span></p>`;
+}
+
 export const ABAS = [
   ["classificacao", "Classificação"], ["evolucao", "Evolução"],
   ["financas", "Finanças"],
@@ -97,6 +111,13 @@ export function renderPainel() {
       : undefined;
   if (estado.abaAtual === "financas") {
     painel.innerHTML = tabelaFinancasLiga(estado.temporada.financas || [], marcarEu);
+    ligarLinks(painel);
+    return;
+  }
+  if (estado.abaAtual === "classificacao") {
+    const meu = estado.temporada.clube_usuario;
+    painel.innerHTML = tabela(estado.temporada.classificacao, COLUNAS.classificacao,
+      (c) => classeClassificacao(c, meu)) + legendaZonas();
     ligarLinks(painel);
     return;
   }

@@ -374,6 +374,21 @@ class FaseDoJogo(BaseModel):
     nome: str                              # "Oitavas de final"
 
 
+class VagaDaFormacao(BaseModel):
+    funcao: str
+    x: float
+    y: float
+    rotulo: str
+
+
+class FormacaoInfo(BaseModel):
+    """v2.4: uma formação na galeria da escalação."""
+    formacao: str
+    ataque: float     # peso no motor: > 1 cria mais
+    defesa: float     # > 1 concede menos
+    vagas: list[VagaDaFormacao]   # as 10 de linha (o goleiro é sempre o mesmo)
+
+
 class ProximaRodada(BaseModel):
     concluida: bool
     rodada: int | None
@@ -385,12 +400,17 @@ class ProximaRodada(BaseModel):
     formacao: str | None
     xi_preferido: list[str] | None
     formacoes: list[str]
+    formacoes_info: list[FormacaoInfo] = []   # v2.4
     confrontos: list[ConfrontoRodada]
     elenco: list[ElencoSituacao]
     transmissao_ativa: bool = False   # v1.2: a partida já começou
     escalacao: "EscalacaoPreJogo | None" = None   # v1.2: como o motor vai escalar
     calendario: Calendario | None = None   # v2.0
     copa: FaseDoJogo | None = None         # v2.0: o próximo jogo é da copa
+    # v2.4: o contexto do próximo jogo, para o card do Início (None na folga)
+    contexto_mandante: "ContextoPreJogo | None" = None
+    contexto_visitante: "ContextoPreJogo | None" = None
+    estadio: "EstadioPreJogo | None" = None
 
 
 class ResultadoRodada(BaseModel):
@@ -918,6 +938,8 @@ class JogadorInfo(BaseModel):
     clube_id: int
     posicao: str
     funcao: str | None = None              # v1.3
+    numero: int | None = None              # v2.4: camisa (None em saves antigos)
+    secundarias: list[str] = []            # v2.4
     atributos: dict[str, int] = {}         # v1.3
     overall: int
     idade: int

@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from app.db.conexao import conectar
 from app.domain import caixa, calendario, contrato, copa, disputa, emprestimo, fama, mercado, mercado_cpu, posicoes
 from app.domain import vontade
+from app.domain.clube import Clube
 from app.domain.temporada import (
     livres_para_json, restaurar_estado, snapshot_estado,
 )
@@ -285,7 +286,18 @@ def proxima_rodada(simulacao_id):
                 for m, v in campeonato.calendario[r - 1]
             ]
 
+        # v2.4: o contexto do próximo jogo para o card do Início (estádio,
+        # público, forma e posição dos dois); o mesmo do pré-jogo, sem o
+        # confronto direto
+        contexto = {}
+        if adversario is not None:
+            rival = _achar_clube(campeonato, adversario)
+            mandante, visitante = (alvo, rival) if mando == "casa" else (rival, alvo)
+            contexto = pre_jogo_service.contexto(conn, sim, mandante, visitante)
+            contexto.pop("confronto_direto", None)
+
         return {
+            **contexto,
             "concluida": False,
             "rodada": r,
             "total_rodadas": total,
@@ -296,6 +308,8 @@ def proxima_rodada(simulacao_id):
             "formacao": alvo.formacao,
             "xi_preferido": sorted(j.nome for j in alvo.xi_preferido) or None,
             "formacoes": list(alvo.FORMACOES),
+            # v2.4: a galeria de formações (desenho e peso no motor)
+            "formacoes_info": formacoes_info(),
             # a partida já começou (v1.2): a tela retoma a transmissão
             "transmissao_ativa": transmissao_ativa(sim),
             # o time como o motor vai escalar (editor no campo, v1.2)
@@ -324,6 +338,24 @@ def proxima_rodada(simulacao_id):
         }
     finally:
         conn.close()
+
+
+def formacoes_info():
+    """v2.4: cada formação com o desenho (vagas de linha, goleiro fora) e o
+    peso dela no motor (ataque, defesa: 1.0 = neutra), para a galeria da
+    escalação."""
+    return [
+        {
+            "formacao": f,
+            "ataque": Clube._MODS_FORMACAO.get(f, (1.0, 1.0))[0],
+            "defesa": Clube._MODS_FORMACAO.get(f, (1.0, 1.0))[1],
+            "vagas": [
+                {"funcao": funcao, "x": x, "y": y, "rotulo": rotulo}
+                for funcao, x, y, rotulo in posicoes.desenho(f)[1:]
+            ],
+        }
+        for f in Clube.FORMACOES
+    ]
 
 
 # ---------------------------------------------------------------------------
