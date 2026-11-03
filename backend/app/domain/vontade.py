@@ -85,9 +85,10 @@ def _escolher(opcoes, prest, sorte):
     return opcoes[-1]
 
 
-def formador_inicial(jogador, clube, clubes):
-    """O clube formador de quem já está na liga (`clube` None = livre)."""
-    ordem = sorted(clubes, key=lambda c: c.nome)
+def formador_inicial(jogador, clube, clubes, ordem=None):
+    """O clube formador de quem já está na liga (`clube` None = livre).
+    `ordem`: os `clubes` por nome, se quem chama já tem (`completar`)."""
+    ordem = ordem or sorted(clubes, key=lambda c: c.nome)
     sorte = _sorte(jogador.nome, "formador")
     faixa = sorte % 100
     if clube is not None:
@@ -100,11 +101,13 @@ def formador_inicial(jogador, clube, clubes):
     return ordem[(sorte // 100) % len(ordem)].nome
 
 
-def sonho(jogador, clubes, prest):
-    """O clube do sonho do jogador agora (None sem clubes)."""
+def sonho(jogador, clubes, prest, _cache=None):
+    """O clube do sonho do jogador agora (None sem clubes). `_cache`: as
+    ordens por prestígio já calculadas (`completar` dá a mesma para todos)."""
     if not clubes:
         return None
-    por_nome = {c.nome: c for c in clubes}
+    cache = _cache if _cache is not None else {}
+    por_nome = cache.get("por_nome") or cache.setdefault("por_nome", {c.nome: c for c in clubes})
     sorte = _sorte(jogador.nome, "sonho")
 
     if jogador.idade >= IDADE_APOSENTADORIA:
@@ -122,12 +125,17 @@ def sonho(jogador, clubes, prest):
     formador = por_nome.get(jogador.formador)
     nacionais = []
     if formador is not None:
-        nacionais = _por_prestigio(
-            [c for c in clubes if c.pais == formador.pais], prest
-        )[:GRANDES_DO_PAIS]
+        chave = ("pais", formador.pais)
+        if chave not in cache:
+            cache[chave] = _por_prestigio(
+                [c for c in clubes if c.pais == formador.pais], prest
+            )[:GRANDES_DO_PAIS]
+        nacionais = cache[chave]
     if nacionais and sorte % 100 < CHANCE_SONHO_NACIONAL:
         return _escolher(nacionais, prest, sorte // 100).nome
-    melhores = _por_prestigio(clubes, prest)[:MELHORES_DO_MUNDO]
+    if "melhores" not in cache:
+        cache["melhores"] = _por_prestigio(clubes, prest)[:MELHORES_DO_MUNDO]
+    melhores = cache["melhores"]
     return _escolher(melhores, prest, sorte // 100).nome
 
 
@@ -151,11 +159,15 @@ def completar(campeonato):
     como está."""
     marcar_historia(campeonato)
     prest = prestigio(campeonato.clubes)
+    # as ordens dos clubes são as mesmas para todos: calculadas uma vez (com
+    # 8 ligas, eram 160 clubes ordenados para cada um dos ~3.800 jogadores)
+    ordem = sorted(campeonato.clubes, key=lambda c: c.nome)
+    cache = {}
     for jogador, clube in _todos(campeonato):
         if jogador.formador is None:
-            jogador.formador = formador_inicial(jogador, clube, campeonato.clubes)
+            jogador.formador = formador_inicial(jogador, clube, campeonato.clubes, ordem)
         if jogador.sonho is None:
-            jogador.sonho = sonho(jogador, campeonato.clubes, prest)
+            jogador.sonho = sonho(jogador, campeonato.clubes, prest, cache)
 
 
 def virada(campeonato):

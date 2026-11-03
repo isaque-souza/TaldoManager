@@ -127,7 +127,7 @@ class Jogador:
         return atributos.de(self)
 
     def atributo(self, nome):
-        return self.atributos[nome]
+        return atributos.valor(self, nome)
 
     def overall_por_posicao(self):
         """{posição: overall nela}, para a tela mostrar quanto rende em cada
