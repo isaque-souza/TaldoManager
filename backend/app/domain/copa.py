@@ -18,6 +18,9 @@ from .estadio import publico
 from .partida import Partida
 
 VAGAS_POR_LIGA = 8
+# as ligas da copa (v2.5): a chave é de duas ligas; as outras Séries A
+# esperam a copa de N ligas
+LIGAS_DA_COPA = ("taldo", "premier")
 
 # a fase é jogada no meio da semana, depois desta rodada da liga
 DATAS = {"oitavas": 8, "quartas": 17, "semi": 26, "final": 35}

@@ -185,9 +185,9 @@ class Campeonato:
     def iniciar_copa(self, classificados):
         """Monta a copa com {liga: [nomes do 1º ao 8º]}. Só com duas
         Séries A; com uma, fica sem copa. As Séries B (v2.5) não jogam."""
-        primeiras = divisoes.primeiras(self.ligas)
+        primeiras = [l for l in divisoes.primeiras(self.ligas) if l in copa_.LIGAS_DA_COPA]
         classificados = {l: n for l, n in classificados.items() if l in primeiras}
-        self.copa = copa_.Copa(classificados) if len(primeiras) == 2 else None
+        self.copa = copa_.Copa(classificados) if len(classificados) == 2 else None
         return self.copa
 
     def mostrar_cabecalho(self):

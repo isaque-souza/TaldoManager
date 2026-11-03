@@ -1,0 +1,6419 @@
+{
+  "fonte": "en.wikipedia.org (revisões de 15/11/2017) e Wikidata",
+  "licenca": "CC BY-SA 4.0 (Wikipédia) / CC0 (Wikidata)",
+  "clubes": {
+    "Corinthians": {
+      "titulo": "Sport Club Corinthians Paulista",
+      "revisao": 810305716,
+      "data": "2017-11-14T13:14:35Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Matheus Vidotto",
+          "artigo": "Matheus Caldeira Vidotto",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1993-04-10"
+        },
+        {
+          "numero": 2,
+          "nome": "Léo Príncipe",
+          "artigo": "Léo Príncipe",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-08-13"
+        },
+        {
+          "numero": 4,
+          "nome": "Fabián Balbuena",
+          "artigo": "Fabián Balbuena",
+          "nacionalidade": "PAR",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-08-23"
+        },
+        {
+          "numero": 5,
+          "nome": "Gabriel",
+          "artigo": "Gabriel Girotto Franco",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-07-10"
+        },
+        {
+          "numero": 6,
+          "nome": "Moisés",
+          "artigo": "Moisés Roberto Barbosa",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-03-11"
+        },
+        {
+          "numero": 7,
+          "nome": "Jô",
+          "artigo": "Jô",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1987-03-20"
+        },
+        {
+          "numero": 8,
+          "nome": "Maycon",
+          "artigo": "Maycon de Andrade Barberan",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-07-13"
+        },
+        {
+          "numero": 10,
+          "nome": "Jádson",
+          "artigo": "Jádson",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1983-10-05"
+        },
+        {
+          "numero": 11,
+          "nome": "Ángel Romero",
+          "artigo": "Ángel Romero (footballer)",
+          "nacionalidade": "PAR",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1992-07-04"
+        },
+        {
+          "numero": 12,
+          "nome": "Cássio",
+          "artigo": "Cássio Ramos",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1987-06-06"
+        },
+        {
+          "numero": 13,
+          "nome": "Guilherme Arana",
+          "artigo": "Guilherme Arana",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-04-14"
+        },
+        {
+          "numero": 14,
+          "nome": "Léo Santos",
+          "artigo": "Leonardo Rodrigues dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1998-12-09"
+        },
+        {
+          "numero": 15,
+          "nome": "Vilson",
+          "artigo": "Vilson Xavier de Menezes Júnior",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1989-04-03"
+        },
+        {
+          "numero": 16,
+          "nome": "Guilherme Mantuan",
+          "artigo": "Guilherme Mantuan",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-08-02"
+        },
+        {
+          "numero": 17,
+          "nome": "Giovanni Augusto",
+          "artigo": "Giovanni Augusto",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-09-05"
+        },
+        {
+          "numero": 18,
+          "nome": "Colin Kazim-Richards",
+          "artigo": "Colin Kazim-Richards",
+          "nacionalidade": "TUR",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1986-08-26"
+        },
+        {
+          "numero": 20,
+          "nome": "Danilo",
+          "artigo": "Danilo Gabriel de Andrade",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1979-06-11"
+        },
+        {
+          "numero": 21,
+          "nome": "Fellipe Bastos",
+          "artigo": "Fellipe Bastos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1990-02-01"
+        },
+        {
+          "numero": 22,
+          "nome": "Marciel",
+          "artigo": "Marciel Silva da Silva",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-03-08"
+        },
+        {
+          "numero": 23,
+          "nome": "Fagner",
+          "artigo": "Fagner Conserva Lemos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1989-06-11"
+        },
+        {
+          "numero": 25,
+          "nome": "Clayson",
+          "artigo": "Clayson Henrique da Silva Vieira",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1995-03-19"
+        },
+        {
+          "numero": 26,
+          "nome": "Rodriguinho",
+          "artigo": "Rodriguinho Marinho",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1988-03-27"
+        },
+        {
+          "numero": 27,
+          "nome": "Walter",
+          "artigo": "Walter Leandro Capeloza Artune",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1987-11-18"
+        },
+        {
+          "numero": 28,
+          "nome": "Paulo Roberto",
+          "artigo": "Paulo Roberto da Silva",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1987-03-06"
+        },
+        {
+          "numero": 29,
+          "nome": "Camacho",
+          "artigo": "Guilherme Camacho",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1990-03-02"
+        },
+        {
+          "numero": 31,
+          "nome": "Marquinhos Gabriel",
+          "artigo": "Marquinhos Gabriel",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1990-07-21"
+        },
+        {
+          "numero": 32,
+          "nome": "Rodrigo Figueiredo",
+          "artigo": "Rodrigo Figueiredo",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-03-27"
+        },
+        {
+          "numero": 33,
+          "nome": "Warian",
+          "artigo": "Warian Santos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-06-14"
+        },
+        {
+          "numero": 34,
+          "nome": "Pedro Henrique",
+          "artigo": "Pedro Henrique Ribeiro Gonçalves",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-10-02"
+        },
+        {
+          "numero": 35,
+          "nome": "Carlinhos",
+          "artigo": "Carlos Moisés de Lima",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1997-02-12"
+        },
+        {
+          "numero": 38,
+          "nome": "Pedrinho",
+          "artigo": "Pedro Victor Delmino da Silva",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-04-13"
+        },
+        {
+          "numero": 40,
+          "nome": "Caíque França",
+          "artigo": "Caíque França",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1995-06-03"
+        }
+      ]
+    },
+    "Palmeiras": {
+      "titulo": "Sociedade Esportiva Palmeiras",
+      "revisao": 809976037,
+      "data": "2017-11-12T18:01:48Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Fernando Prass",
+          "artigo": "Fernando Prass",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1978-07-09"
+        },
+        {
+          "numero": 2,
+          "nome": "Jean",
+          "artigo": "Jean (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 3,
+          "nome": "Edu Dracena",
+          "artigo": "Edu Dracena",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1981-05-18"
+        },
+        {
+          "numero": 4,
+          "nome": "Juninho",
+          "artigo": "José Carlos Ferreira Júnior",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-02-01"
+        },
+        {
+          "numero": 5,
+          "nome": "Arouca",
+          "artigo": "Arouca (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1986-08-11"
+        },
+        {
+          "numero": 6,
+          "nome": "Egídio",
+          "artigo": "Egídio Pereira Júnior",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-06-16"
+        },
+        {
+          "numero": 7,
+          "nome": "Dudu",
+          "artigo": "Dudu (footballer, born 1992)",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1992-01-07"
+        },
+        {
+          "numero": 8,
+          "nome": "Tchê Tchê",
+          "artigo": "Tchê Tchê",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-08-30"
+        },
+        {
+          "numero": 9,
+          "nome": "Miguel Borja",
+          "artigo": "Miguel Borja",
+          "nacionalidade": "Colombia",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1993-01-26"
+        },
+        {
+          "numero": 10,
+          "nome": "Moisés",
+          "artigo": "Moisés Lima Magalhães",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1988-03-07"
+        },
+        {
+          "numero": 11,
+          "nome": "Zé Roberto",
+          "artigo": "Zé Roberto",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1974-07-06"
+        },
+        {
+          "numero": 12,
+          "nome": "Mayke",
+          "artigo": "Mayke",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1992-11-10"
+        },
+        {
+          "numero": 13,
+          "nome": "Luan",
+          "artigo": "Luan Garcia",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-05-10"
+        },
+        {
+          "numero": 14,
+          "nome": "Jailson",
+          "artigo": "Jailson Marcelino dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1981-07-20"
+        },
+        {
+          "numero": 15,
+          "nome": "Michel Bastos",
+          "artigo": "Michel Bastos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1983-08-02"
+        },
+        {
+          "numero": 16,
+          "nome": "Deyverson",
+          "artigo": "Deyverson",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1991-05-08"
+        },
+        {
+          "numero": 17,
+          "nome": "Erik",
+          "artigo": "Erik Lima",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1994-07-18"
+        },
+        {
+          "numero": 18,
+          "nome": "Alejandro Guerra",
+          "artigo": "Alejandro Guerra",
+          "nacionalidade": "Venezuela",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-07-09"
+        },
+        {
+          "numero": 19,
+          "nome": "Bruno Henrique",
+          "artigo": "Bruno Henrique Corsini",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-10-21"
+        },
+        {
+          "numero": 20,
+          "nome": "Raphael Veiga",
+          "artigo": "Raphael Veiga",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-06-19"
+        },
+        {
+          "numero": 21,
+          "nome": "Thiago Santos",
+          "artigo": "Thiago dos Santos (footballer, born 1989)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-09-05"
+        },
+        {
+          "numero": 22,
+          "nome": "Fabiano",
+          "artigo": "Fabiano Leismann",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-11-18"
+        },
+        {
+          "numero": 23,
+          "nome": "Róger Guedes",
+          "artigo": "Róger Guedes",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1996-10-02"
+        },
+        {
+          "numero": 25,
+          "nome": "Antônio Carlos",
+          "artigo": "Antônio Carlos Cunha Capocasali Júnior",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1993-03-07"
+        },
+        {
+          "numero": 26,
+          "nome": "Yerry Mina",
+          "artigo": "Yerry Mina",
+          "nacionalidade": "Colombia",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1994-09-23"
+        },
+        {
+          "numero": 27,
+          "nome": "Keno",
+          "artigo": "Keno (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1991-09-10"
+        },
+        {
+          "numero": 28,
+          "nome": "Hyoran",
+          "artigo": "Hyoran",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-05-25"
+        },
+        {
+          "numero": 29,
+          "nome": "Willian",
+          "artigo": "Willian (footballer, born 1986)",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1986-11-19"
+        },
+        {
+          "numero": 30,
+          "nome": "Felipe Melo",
+          "artigo": "Felipe Melo",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1983-06-26"
+        },
+        {
+          "numero": 42,
+          "nome": "Vinicius Silvestre",
+          "artigo": "Vinicius Silvestre",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1994-03-28"
+        },
+        {
+          "numero": 51,
+          "nome": "Daniel Fuzato",
+          "artigo": "Daniel Fuzato",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1997-07-04"
+        }
+      ]
+    },
+    "Santos": {
+      "titulo": "Santos FC",
+      "revisao": 810323965,
+      "data": "2017-11-14T15:43:49Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Vanderlei",
+          "artigo": "Vanderlei Farias da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1984-01-02"
+        },
+        {
+          "numero": 2,
+          "nome": "Luiz Felipe",
+          "artigo": "Luiz Felipe do Nascimento dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-09-09"
+        },
+        {
+          "numero": 4,
+          "nome": "Victor Ferraz",
+          "artigo": "Victor Ferraz",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-01-14"
+        },
+        {
+          "numero": 5,
+          "nome": "Alison",
+          "artigo": "Alison Lopes Ferreira",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-03-01"
+        },
+        {
+          "numero": 6,
+          "nome": "Gustavo Henrique",
+          "artigo": "Gustavo Henrique",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 7,
+          "nome": "Vitor Bueno",
+          "artigo": "Vitor Bueno",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-09-05"
+        },
+        {
+          "numero": 8,
+          "nome": "Renato",
+          "artigo": "Renato (footballer, born 1979)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1979-05-15"
+        },
+        {
+          "numero": 9,
+          "nome": "Ricardo Oliveira",
+          "artigo": "Ricardo Oliveira",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1980-05-06"
+        },
+        {
+          "numero": 10,
+          "nome": "Lucas Lima",
+          "artigo": "Lucas Lima",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 11,
+          "nome": "Kayke",
+          "artigo": "Kayke Rodrigues",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1988-04-01"
+        },
+        {
+          "numero": 12,
+          "nome": "Vladimir",
+          "artigo": "Vladimir Orlando Cardoso de Araújo Filho",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1989-07-16"
+        },
+        {
+          "numero": 13,
+          "nome": "Matheus Ribeiro",
+          "artigo": "Matheus Antunes Ribeiro",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-02-23"
+        },
+        {
+          "numero": 14,
+          "nome": "David Braz",
+          "artigo": "David Braz",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1987-05-21"
+        },
+        {
+          "numero": 15,
+          "nome": "Orinho",
+          "artigo": "Edilson Barbosa de Aquino",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-05-24"
+        },
+        {
+          "numero": 16,
+          "nome": "Vladimir Hernández",
+          "artigo": "Vladimir Hernández",
+          "nacionalidade": "Colombia",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1989-02-08"
+        },
+        {
+          "numero": 18,
+          "nome": "Nilmar",
+          "artigo": "Nilmar",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1984-07-14"
+        },
+        {
+          "numero": 19,
+          "nome": "Léo Cittadini",
+          "artigo": "Léo Cittadini",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-02-27"
+        },
+        {
+          "numero": 20,
+          "nome": "Emiliano Vecchio",
+          "artigo": "Emiliano Vecchio",
+          "nacionalidade": "Argentina",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1988-11-16"
+        },
+        {
+          "numero": 21,
+          "nome": "Matheus Oliveira",
+          "artigo": "Matheus Oliveira Santos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-09-28"
+        },
+        {
+          "numero": 22,
+          "nome": "Caju",
+          "artigo": "Caju (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 23,
+          "nome": "Arthur Gomes",
+          "artigo": "Arthur Gomes Lourenço",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1998-07-03"
+        },
+        {
+          "numero": 25,
+          "nome": "Yuri",
+          "artigo": "Yuri Oliveira Lima",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1994-08-05"
+        },
+        {
+          "numero": 26,
+          "nome": "Thiago Ribeiro",
+          "artigo": "Thiago Ribeiro",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1986-02-24"
+        },
+        {
+          "numero": 27,
+          "nome": "Bruno Henrique",
+          "artigo": "Bruno Henrique Pinto",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1990-12-30"
+        },
+        {
+          "numero": 28,
+          "nome": "Lucas Veríssimo",
+          "artigo": "Lucas Veríssimo",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-07-07"
+        },
+        {
+          "numero": 29,
+          "nome": "Yuri Alberto",
+          "artigo": "Yuri Alberto",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "2001-03-18"
+        },
+        {
+          "numero": 30,
+          "nome": "Leandro Donizete",
+          "artigo": "Leandro Donizete",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1982-05-18"
+        },
+        {
+          "numero": 32,
+          "nome": "Fabián Noguera",
+          "artigo": "Fabián Noguera",
+          "nacionalidade": "Argentina",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-03-20"
+        },
+        {
+          "numero": 33,
+          "nome": "John Victor",
+          "artigo": "John Victor Maciel Furtado",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1996-02-13"
+        },
+        {
+          "numero": 34,
+          "nome": "João Paulo",
+          "artigo": "João Paulo Silva Martins",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1995-06-29"
+        },
+        {
+          "numero": 35,
+          "nome": "Lucas Crispim",
+          "artigo": "Lucas Crispim",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1994-06-19"
+        },
+        {
+          "numero": 36,
+          "nome": "Jonathan Copete",
+          "artigo": "Jonathan Copete",
+          "nacionalidade": "Colombia",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1988-01-23"
+        },
+        {
+          "numero": 37,
+          "nome": "Zeca",
+          "artigo": "José Carlos Cracco Neto",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1994-05-16"
+        },
+        {
+          "numero": 38,
+          "nome": "Daniel Guedes",
+          "artigo": "Daniel Guedes",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1994-04-02"
+        },
+        {
+          "numero": 39,
+          "nome": "Jean Mota",
+          "artigo": "Jean Mota",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-10-15"
+        },
+        {
+          "numero": 41,
+          "nome": "Serginho",
+          "artigo": "Serginho (footballer, born 1995)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 43,
+          "nome": "Rodrygo",
+          "artigo": "Rodrygo Goes",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "2001-01-09"
+        },
+        {
+          "numero": 44,
+          "nome": "Matheus Jesus",
+          "artigo": "Matheus Sousa de Jesus",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-04-10"
+        }
+      ]
+    },
+    "Grêmio": {
+      "titulo": "Grêmio Foot-Ball Porto Alegrense",
+      "revisao": 808950420,
+      "data": "2017-11-06T06:13:51Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Marcelo Grohe",
+          "artigo": "Marcelo Grohe",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1987-01-13"
+        },
+        {
+          "numero": 2,
+          "nome": "Edílson",
+          "artigo": "Edílson Mendes",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-07-27"
+        },
+        {
+          "numero": 3,
+          "nome": "Pedro Geromel",
+          "artigo": "Pedro Geromel",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1985-09-21"
+        },
+        {
+          "numero": 4,
+          "nome": "Walter Kannemann",
+          "artigo": "Walter Kannemann",
+          "nacionalidade": "ARG",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-03-14"
+        },
+        {
+          "numero": 5,
+          "nome": "Michel",
+          "artigo": "Michel Ferreira dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1990-03-22"
+        },
+        {
+          "numero": 6,
+          "nome": "Leonardo Gomes",
+          "artigo": "Leonardo Gomes da Conceição Silva",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-06-30"
+        },
+        {
+          "numero": 7,
+          "nome": "Luan",
+          "artigo": "Luan Vieira",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1993-03-27"
+        },
+        {
+          "numero": 8,
+          "nome": "Maicon",
+          "artigo": "Maicon Souza",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-09-14"
+        },
+        {
+          "numero": 9,
+          "nome": "Michael Arroyo",
+          "artigo": "Michael Arroyo",
+          "nacionalidade": "ECU",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1987-04-23"
+        },
+        {
+          "numero": 10,
+          "nome": "Douglas",
+          "artigo": "Douglas dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 11,
+          "nome": "Everton",
+          "artigo": "Everton Soares",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1996-03-22"
+        },
+        {
+          "numero": 12,
+          "nome": "Bruno Cortez",
+          "artigo": "Bruno Cortez",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1987-03-11"
+        },
+        {
+          "numero": 15,
+          "nome": "Rafael Thyere",
+          "artigo": "Rafael Thyere",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-03-27"
+        },
+        {
+          "numero": 17,
+          "nome": "Ramiro",
+          "artigo": "Ramiro Benetti",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-05-22"
+        },
+        {
+          "numero": 18,
+          "nome": "Lucas Barrios",
+          "artigo": "Lucas Barrios",
+          "nacionalidade": "PAR",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1984-11-13"
+        },
+        {
+          "numero": 19,
+          "nome": "Beto da Silva",
+          "artigo": "Beto da Silva",
+          "nacionalidade": "PER",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1996-12-28"
+        },
+        {
+          "numero": 20,
+          "nome": "Leo",
+          "artigo": "Leonardo César Jardim",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1995-03-20"
+        },
+        {
+          "numero": 21,
+          "nome": "Fernandinho",
+          "artigo": "Fernandinho (footballer, born 1985)",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 22,
+          "nome": "Bressan",
+          "artigo": "Bressan (footballer)",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-01-15"
+        },
+        {
+          "numero": 25,
+          "nome": "Jailson",
+          "artigo": "Jailson Siqueira",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-09-07"
+        },
+        {
+          "numero": 26,
+          "nome": "Marcelo Oliveira",
+          "artigo": "Marcelo Oliveira (footballer, born 1987)",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1987-03-29"
+        },
+        {
+          "numero": 27,
+          "nome": "Cícero",
+          "artigo": "Cícero Santos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1984-08-26"
+        },
+        {
+          "numero": 28,
+          "nome": "Kaio",
+          "artigo": "Kaio Mendes",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-03-18"
+        },
+        {
+          "numero": 29,
+          "nome": "Arthur",
+          "artigo": "Arthur Melo",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-08-12"
+        },
+        {
+          "numero": 30,
+          "nome": "Bruno Grassi",
+          "artigo": "Bruno Grassi",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1987-03-05"
+        },
+        {
+          "numero": 31,
+          "nome": "Jael",
+          "artigo": "Jael Ferreira",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1988-10-30"
+        },
+        {
+          "numero": 33,
+          "nome": "Bruno Rodrigo",
+          "artigo": "Bruno Rodrigo",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1985-04-12"
+        },
+        {
+          "numero": 35,
+          "nome": "Machado",
+          "artigo": "Luiz Filipe da Rosa Machado",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-01-20"
+        },
+        {
+          "numero": 48,
+          "nome": "Paulo Victor",
+          "artigo": "Paulo Victor Vidotti",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1987-01-12"
+        },
+        {
+          "numero": 66,
+          "nome": "Cristian",
+          "artigo": "Cristian Baroni",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1983-06-25"
+        },
+        {
+          "numero": 88,
+          "nome": "Léo Moura",
+          "artigo": "Léo Moura",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1978-10-23"
+        },
+        {
+          "numero": null,
+          "nome": "Gabriel",
+          "artigo": "Gabriel Blos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1989-02-28"
+        }
+      ]
+    },
+    "Cruzeiro": {
+      "titulo": "Cruzeiro Esporte Clube",
+      "revisao": 809584211,
+      "data": "2017-11-10T02:02:58Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Fábio",
+          "artigo": "Fábio Deivison Lopes Maciel",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1980-09-30"
+        },
+        {
+          "numero": 2,
+          "nome": "Ezequiel",
+          "artigo": "Ezequiel Jacinto de Biasi",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-02-22"
+        },
+        {
+          "numero": 3,
+          "nome": "Léo",
+          "artigo": "Leonardo Renan Simões de Lacerda",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-01-30"
+        },
+        {
+          "numero": 5,
+          "nome": "Ariel Cabral",
+          "artigo": "Ariel Cabral",
+          "nacionalidade": "Argentina",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1987-09-11"
+        },
+        {
+          "numero": 6,
+          "nome": "Diogo Barbosa",
+          "artigo": "Diogo Barbosa Mendanha",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1992-08-17"
+        },
+        {
+          "numero": 7,
+          "nome": "Rafael Sóbis",
+          "artigo": "Rafael Sóbis",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1985-06-17"
+        },
+        {
+          "numero": 8,
+          "nome": "Henrique",
+          "artigo": "Henrique Pacheco Lima",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-05-16"
+        },
+        {
+          "numero": 10,
+          "nome": "De Arrascaeta",
+          "artigo": "Giorgian De Arrascaeta",
+          "nacionalidade": "Uruguay",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-06-01"
+        },
+        {
+          "numero": 11,
+          "nome": "Alisson",
+          "artigo": "Alisson",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-10-02"
+        },
+        {
+          "numero": 12,
+          "nome": "Rafael",
+          "artigo": "Rafael Pires",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1989-06-26"
+        },
+        {
+          "numero": 14,
+          "nome": "Judivan",
+          "artigo": "Judivan",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1995-05-21"
+        },
+        {
+          "numero": 15,
+          "nome": "Rafael Marques",
+          "artigo": "Rafael Marques Mariano",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1983-05-27"
+        },
+        {
+          "numero": 16,
+          "nome": "Lucas Silva",
+          "artigo": "Lucas Silva (footballer, born 1993)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1993-02-16"
+        },
+        {
+          "numero": 17,
+          "nome": "Bryan",
+          "artigo": "Bryan Silva Garcia",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-03-28"
+        },
+        {
+          "numero": 18,
+          "nome": "Messidoro",
+          "artigo": "Alexis Messidoro",
+          "nacionalidade": "Argentina",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1997-05-13"
+        },
+        {
+          "numero": 19,
+          "nome": "Robinho",
+          "artigo": "Robinho (footballer, born 1987)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 21,
+          "nome": "Lennon",
+          "artigo": "John Lennon (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-12-29"
+        },
+        {
+          "numero": 22,
+          "nome": "Galhardo",
+          "artigo": "Rafael Galhardo",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-10-30"
+        },
+        {
+          "numero": 23,
+          "nome": "Élber",
+          "artigo": "José Élber Pimentel da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1992-05-27"
+        },
+        {
+          "numero": 25,
+          "nome": "Hudson",
+          "artigo": "Hudson Rodrigues dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1988-01-30"
+        },
+        {
+          "numero": 26,
+          "nome": "Dedé",
+          "artigo": "Dedé (footballer born 1988)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-07-01"
+        },
+        {
+          "numero": 27,
+          "nome": "Manoel",
+          "artigo": "Manoel Messias Silva Carvalho",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-02-26"
+        },
+        {
+          "numero": 28,
+          "nome": "Digão",
+          "artigo": "Digão (footballer, born 1988)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-05-07"
+        },
+        {
+          "numero": 29,
+          "nome": "Lucas Romero",
+          "artigo": "Lucas Romero",
+          "nacionalidade": "Argentina",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-04-18"
+        },
+        {
+          "numero": 30,
+          "nome": "Thiago Neves",
+          "artigo": "Thiago Neves",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-02-27"
+        },
+        {
+          "numero": 32,
+          "nome": "Arthur",
+          "artigo": "Arthur Henrique Vieira Araújo",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1999-06-17"
+        },
+        {
+          "numero": 34,
+          "nome": "Nonoca",
+          "artigo": "Lucas de Souza Ventura",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-05-19"
+        },
+        {
+          "numero": 35,
+          "nome": "Murilo Cerqueira",
+          "artigo": "Murilo Cerqueira",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-03-27"
+        },
+        {
+          "numero": 36,
+          "nome": "Raniel",
+          "artigo": "Raniel Santana de Vasconcelos",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1996-06-11"
+        },
+        {
+          "numero": 37,
+          "nome": "Lucas França",
+          "artigo": "Lucas Oliveira de França",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1996-01-19"
+        },
+        {
+          "numero": 38,
+          "nome": "Alex",
+          "artigo": "Alex Sandro dos Santos Apolinário",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-11-07"
+        },
+        {
+          "numero": 39,
+          "nome": "Lucão",
+          "artigo": "Lucas Emanoel Leite Romão",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 70,
+          "nome": "Rafinha",
+          "artigo": "Rafael da Silva Francisco",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1983-08-04"
+        },
+        {
+          "numero": 99,
+          "nome": "Sassá",
+          "artigo": "Sassá (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1994-01-11"
+        }
+      ]
+    },
+    "Flamengo": {
+      "titulo": "Clube de Regatas do Flamengo",
+      "revisao": 810378121,
+      "data": "2017-11-14T21:59:33Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Diego Alves",
+          "artigo": "Diego Alves",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1985-06-24"
+        },
+        {
+          "numero": 2,
+          "nome": "Rodinei",
+          "artigo": "Rodinei",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-01-29"
+        },
+        {
+          "numero": 4,
+          "nome": "Juan",
+          "artigo": "Juan Silveira dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1979-02-01"
+        },
+        {
+          "numero": 5,
+          "nome": "Willian Arão",
+          "artigo": "Willian Arão",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-12-03"
+        },
+        {
+          "numero": 6,
+          "nome": "Renê",
+          "artigo": "Renê Rodrigues Martins",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-09-14"
+        },
+        {
+          "numero": 7,
+          "nome": "Everton Ribeiro",
+          "artigo": "Everton Ribeiro",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-04-10"
+        },
+        {
+          "numero": 8,
+          "nome": "Márcio Araújo",
+          "artigo": "Márcio Rodrigues Araújo",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1984-06-11"
+        },
+        {
+          "numero": 9,
+          "nome": "Paolo Guerrero",
+          "artigo": "Paolo Guerrero",
+          "nacionalidade": "Peru",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1984-01-01"
+        },
+        {
+          "numero": 10,
+          "nome": "Ederson",
+          "artigo": "Ederson Honorato Campos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1986-01-13"
+        },
+        {
+          "numero": 11,
+          "nome": "Federico Mancuello",
+          "artigo": "Federico Mancuello",
+          "nacionalidade": "Argentina",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-03-26"
+        },
+        {
+          "numero": 13,
+          "nome": "Miguel Trauco",
+          "artigo": "Miguel Trauco",
+          "nacionalidade": "Peru",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-08-25"
+        },
+        {
+          "numero": 15,
+          "nome": "Réver",
+          "artigo": "Réver",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1985-01-04"
+        },
+        {
+          "numero": 17,
+          "nome": "Gabriel",
+          "artigo": "Gabriel Santana Pinto",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1990-01-06"
+        },
+        {
+          "numero": 19,
+          "nome": "Darío Conca",
+          "artigo": "Darío Conca",
+          "nacionalidade": "Argentina",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1983-05-11"
+        },
+        {
+          "numero": 20,
+          "nome": "Vinícius Jr.",
+          "artigo": "Vinícius Júnior",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "2000-07-12"
+        },
+        {
+          "numero": 21,
+          "nome": "Pará",
+          "artigo": "Pará (footballer, born 1986)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-02-14"
+        },
+        {
+          "numero": 22,
+          "nome": "Éverton",
+          "artigo": "Éverton Cardoso da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1988-12-11"
+        },
+        {
+          "numero": 23,
+          "nome": "Geuvânio",
+          "artigo": "Geuvânio",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1992-04-05"
+        },
+        {
+          "numero": 26,
+          "nome": "Gustavo Cuéllar",
+          "artigo": "Gustavo Cuéllar",
+          "nacionalidade": "Colombia",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-10-14"
+        },
+        {
+          "numero": 27,
+          "nome": "Rômulo",
+          "artigo": "Rômulo (footballer, born 1990)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1990-09-19"
+        },
+        {
+          "numero": 28,
+          "nome": "Orlando Berrío",
+          "artigo": "Orlando Berrío",
+          "nacionalidade": "Colombia",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1991-02-14"
+        },
+        {
+          "numero": 30,
+          "nome": "Thiago",
+          "artigo": "Thiago Rodrigues da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1996-06-12"
+        },
+        {
+          "numero": 33,
+          "nome": "Rafael Vaz",
+          "artigo": "Rafael Vaz",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-09-17"
+        },
+        {
+          "numero": 35,
+          "nome": "Diego",
+          "artigo": "Diego Ribas da Cunha",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-02-28"
+        },
+        {
+          "numero": 38,
+          "nome": "Alex Muralha",
+          "artigo": "Alex Muralha",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1989-11-10"
+        },
+        {
+          "numero": 39,
+          "nome": "Lucas Paquetá",
+          "artigo": "Lucas Paquetá",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-08-27"
+        },
+        {
+          "numero": 40,
+          "nome": "Thiago Santos",
+          "artigo": "Thiago Nascimento dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-04-15"
+        },
+        {
+          "numero": 42,
+          "nome": "Matheus Sávio",
+          "artigo": "Matheus Sávio",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-04-15"
+        },
+        {
+          "numero": 43,
+          "nome": "Léo Duarte",
+          "artigo": "Léo Duarte",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-07-17"
+        },
+        {
+          "numero": 44,
+          "nome": "Rhodolfo",
+          "artigo": "Rhodolfo",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-08-11"
+        },
+        {
+          "numero": 45,
+          "nome": "Gabriel Batista",
+          "artigo": null,
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 47,
+          "nome": "Felipe Vizeu",
+          "artigo": "Felipe Vizeu",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1997-03-12"
+        },
+        {
+          "numero": 49,
+          "nome": "César",
+          "artigo": "César Bernardo Dutra",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1992-01-27"
+        }
+      ]
+    },
+    "Vasco": {
+      "titulo": "CR Vasco da Gama",
+      "revisao": 809589068,
+      "data": "2017-11-10T02:58:11Z",
+      "jogadores": [
+        {
+          "numero": null,
+          "nome": "Gabriel Félix",
+          "artigo": "Gabriel Félix dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1995-04-04"
+        },
+        {
+          "numero": null,
+          "nome": "João Pedro",
+          "artigo": "João Pedro Soares Borges",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Jordi",
+          "artigo": "Jordi Almeida",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1993-09-03"
+        },
+        {
+          "numero": null,
+          "nome": "Martín Silva",
+          "artigo": "Martín Silva",
+          "nacionalidade": "URU",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1983-03-25"
+        },
+        {
+          "numero": null,
+          "nome": "Anderson Martins",
+          "artigo": "Anderson Martins",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1987-08-21"
+        },
+        {
+          "numero": null,
+          "nome": "Breno",
+          "artigo": "Breno Borges",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1989-10-13"
+        },
+        {
+          "numero": null,
+          "nome": "Jomar",
+          "artigo": "Jomar",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-09-28"
+        },
+        {
+          "numero": null,
+          "nome": "Lucas Rocha",
+          "artigo": "Lucas da Silva Rocha",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1995-06-19"
+        },
+        {
+          "numero": null,
+          "nome": "Rafael Marques",
+          "artigo": "Rafael Marques Pinto",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1983-09-21"
+        },
+        {
+          "numero": null,
+          "nome": "Paulão",
+          "artigo": "Paulo Marcos de Jesus Ribeiro",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1986-02-25"
+        },
+        {
+          "numero": null,
+          "nome": "Ricardo",
+          "artigo": "Ricardo Queiroz de Alencastro Graça",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-02-16"
+        },
+        {
+          "numero": null,
+          "nome": "Alan Cardoso",
+          "artigo": "Alan Cardoso de Andrade",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1998-01-05"
+        },
+        {
+          "numero": null,
+          "nome": "Gilberto",
+          "artigo": "Gilberto (footballer, born 1993)",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1993-03-07"
+        },
+        {
+          "numero": null,
+          "nome": "Henrique Silva",
+          "artigo": "Henrique Silva Milagres",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1994-04-25"
+        },
+        {
+          "numero": null,
+          "nome": "Mádson",
+          "artigo": "Mádson",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-01-13"
+        },
+        {
+          "numero": null,
+          "nome": "Ramon",
+          "artigo": "Ramon Motta",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-05-06"
+        },
+        {
+          "numero": null,
+          "nome": "Yago Pikachu",
+          "artigo": "Yago Pikachu",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-06-05"
+        },
+        {
+          "numero": null,
+          "nome": "Andrey",
+          "artigo": "Andrey Ramos do Nascimento",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-02-15"
+        },
+        {
+          "numero": null,
+          "nome": "Bruno Cosendey",
+          "artigo": "Bruno Cosendey Lobo Pinto",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-01-25"
+        },
+        {
+          "numero": null,
+          "nome": "Bruno Paulista",
+          "artigo": "Bruno Paulista",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1995-08-21"
+        },
+        {
+          "numero": null,
+          "nome": "Damián Escudero",
+          "artigo": "Damián Escudero",
+          "nacionalidade": "ARG",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1987-04-20"
+        },
+        {
+          "numero": null,
+          "nome": "Evander",
+          "artigo": "Evander da Silva Ferreira",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-06-09"
+        },
+        {
+          "numero": null,
+          "nome": "Guilherme",
+          "artigo": "Guilherme Costa Machado Silveira",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-03-31"
+        },
+        {
+          "numero": null,
+          "nome": "Jean",
+          "artigo": "Jean Carlos de Souza Irmer",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1994-09-26"
+        },
+        {
+          "numero": null,
+          "nome": "Marcelo Mattos",
+          "artigo": "Marcelo Mattos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1984-02-10"
+        },
+        {
+          "numero": null,
+          "nome": "Mateus Vital",
+          "artigo": "Matheus Pet",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-02-12"
+        },
+        {
+          "numero": null,
+          "nome": "Nenê",
+          "artigo": "Nenê (footballer, born 1981)",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1981-07-19"
+        },
+        {
+          "numero": null,
+          "nome": "Wágner",
+          "artigo": "Wágner Ferreira dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-01-29"
+        },
+        {
+          "numero": null,
+          "nome": "Wellington",
+          "artigo": "Wellington Martins",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1991-01-28"
+        },
+        {
+          "numero": null,
+          "nome": "Caio Monteiro",
+          "artigo": "Caio Monteiro Costa",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1997-02-10"
+        },
+        {
+          "numero": null,
+          "nome": "Éder Luís",
+          "artigo": "Éder Luís",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1985-04-19"
+        },
+        {
+          "numero": null,
+          "nome": "Manga Escobar",
+          "artigo": "Andrés Ramiro Escobar",
+          "nacionalidade": "COL",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1991-05-14"
+        },
+        {
+          "numero": null,
+          "nome": "Kelvin",
+          "artigo": "Kelvin Mateus de Oliveira",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1993-06-01"
+        },
+        {
+          "numero": null,
+          "nome": "Luís Fabiano",
+          "artigo": "Luís Fabiano",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1980-11-08"
+        },
+        {
+          "numero": null,
+          "nome": "Paulinho",
+          "artigo": "Paulinho (footballer, born 2000)",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Paulo Vitor",
+          "artigo": "Paulo Vitor Fernandes Pereira",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1999-06-24"
+        },
+        {
+          "numero": null,
+          "nome": "Andrés Ríos",
+          "artigo": "Andrés Ríos",
+          "nacionalidade": "ARG",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Thalles",
+          "artigo": "Thalles",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        }
+      ]
+    },
+    "Chapecoense": {
+      "titulo": "Associação Chapecoense de Futebol",
+      "revisao": 809967415,
+      "data": "2017-11-12T17:03:13Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Artur Moraes",
+          "artigo": "Artur Moraes",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1981-01-25"
+        },
+        {
+          "numero": 2,
+          "nome": "João Pedro",
+          "artigo": "João Pedro Maturano dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1996-11-15"
+        },
+        {
+          "numero": 3,
+          "nome": "Grolli",
+          "artigo": "Douglas Grolli",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1989-10-05"
+        },
+        {
+          "numero": 4,
+          "nome": "Neto",
+          "artigo": "Neto (footballer, born 1985)",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1985-08-16"
+        },
+        {
+          "numero": 5,
+          "nome": "Moisés Ribeiro",
+          "artigo": "Moisés Ribeiro Santos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-03-03"
+        },
+        {
+          "numero": 6,
+          "nome": "Reinaldo",
+          "artigo": "Reinaldo Manoel da Silva",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1989-09-28"
+        },
+        {
+          "numero": 7,
+          "nome": "Cristian Penilla",
+          "artigo": "Cristian Penilla",
+          "nacionalidade": "ECU",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1991-05-02"
+        },
+        {
+          "numero": 9,
+          "nome": "Wellington Paulista",
+          "artigo": "Wellington Paulista",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1984-04-22"
+        },
+        {
+          "numero": 10,
+          "nome": "Túlio de Melo",
+          "artigo": "Túlio de Melo",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1985-01-31"
+        },
+        {
+          "numero": 11,
+          "nome": "Luiz Antônio",
+          "artigo": "Luiz Antônio de Souza Soares",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1991-03-11"
+        },
+        {
+          "numero": 12,
+          "nome": "Elias",
+          "artigo": "Elias Martello Curzel",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": true,
+          "nascimento": "1995-07-12"
+        },
+        {
+          "numero": 14,
+          "nome": "Fabrício Bruno",
+          "artigo": "Fabrício Bruno",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1996-02-12"
+        },
+        {
+          "numero": 16,
+          "nome": "Douglas",
+          "artigo": "Douglas Silva Bacelar",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1990-04-04"
+        },
+        {
+          "numero": 17,
+          "nome": "Arthur Caíke",
+          "artigo": "Arthur Caíke do Nascimento Cruz",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1992-06-15"
+        },
+        {
+          "numero": 19,
+          "nome": "Perotti",
+          "artigo": "Pedro Henrique Perotti",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1997-11-22"
+        },
+        {
+          "numero": 20,
+          "nome": "Héctor Canteros",
+          "artigo": "Héctor Canteros",
+          "nacionalidade": "ARG",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1989-03-15"
+        },
+        {
+          "numero": 21,
+          "nome": "Luiz Otávio",
+          "artigo": "Luiz Otávio",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": null
+        },
+        {
+          "numero": 22,
+          "nome": "Apodi",
+          "artigo": "Apodi",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 23,
+          "nome": "Fernando Guerrero",
+          "artigo": "Fernando Guerrero (footballer)",
+          "nacionalidade": "ECU",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 25,
+          "nome": "Lucas Mineiro",
+          "artigo": "Lucas Mineiro",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 26,
+          "nome": "Diego Renan",
+          "artigo": "Diego Renan",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-01-26"
+        },
+        {
+          "numero": 27,
+          "nome": "Bryan",
+          "artigo": "Bryan Mascarenhas",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1996-08-03"
+        },
+        {
+          "numero": 28,
+          "nome": "Alan Ruschel",
+          "artigo": "Alan Ruschel",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1989-08-23"
+        },
+        {
+          "numero": 30,
+          "nome": "Neném",
+          "artigo": "Odair Souza",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1982-02-04"
+        },
+        {
+          "numero": 31,
+          "nome": "Dodô",
+          "artigo": "Dodô (footballer, born 1994)",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1994-09-05"
+        },
+        {
+          "numero": 32,
+          "nome": "Lourency",
+          "artigo": "Lourency",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1996-01-02"
+        },
+        {
+          "numero": 33,
+          "nome": "Lucas Marques",
+          "artigo": "Lucas Marques de Oliveira",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-05-24"
+        },
+        {
+          "numero": 35,
+          "nome": "Hiago",
+          "artigo": "Hiago Corrêa Silveira Cena",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 37,
+          "nome": "Moisés",
+          "artigo": "Moisés Wolschick",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1994-09-24"
+        },
+        {
+          "numero": 40,
+          "nome": "Luis Manuel Seijas",
+          "artigo": "Luis Manuel Seijas",
+          "nacionalidade": "VEN",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1986-06-23"
+        },
+        {
+          "numero": 55,
+          "nome": "Amaral",
+          "artigo": "Amaral (footballer, born 1986)",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1986-10-07"
+        },
+        {
+          "numero": 70,
+          "nome": "Nádson",
+          "artigo": "Nádson da Silva Almeida",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-07-22"
+        },
+        {
+          "numero": 73,
+          "nome": "Júlio César",
+          "artigo": "Júlio César Czarneski",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1994-08-12"
+        },
+        {
+          "numero": 77,
+          "nome": "Osman",
+          "artigo": "Osman Menezes Venâncio Júnior",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1992-10-29"
+        },
+        {
+          "numero": 80,
+          "nome": "Victor Ramos",
+          "artigo": "Victor Ramos Ferreira",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1989-05-05"
+        },
+        {
+          "numero": 87,
+          "nome": "Khevin",
+          "artigo": "Khevin Rodrigo Fraga",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 90,
+          "nome": "Roberto",
+          "artigo": "Roberto Heuchayer Santos de Araújo",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-12-04"
+        },
+        {
+          "numero": 92,
+          "nome": "Emilio Zeballos",
+          "artigo": "Emilio Zeballos",
+          "nacionalidade": "URU",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1992-08-05"
+        },
+        {
+          "numero": 93,
+          "nome": "Jandrei",
+          "artigo": "Jandrei",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": true,
+          "nascimento": "1993-03-01"
+        },
+        {
+          "numero": 95,
+          "nome": "Pelézinho",
+          "artigo": "Rodrigo Alves da Cruz",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1995-09-10"
+        },
+        {
+          "numero": 98,
+          "nome": "Tiepo",
+          "artigo": "Giovanni Silva Tiepo",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1998-02-08"
+        }
+      ]
+    },
+    "Atlético Mineiro": {
+      "titulo": "Clube Atlético Mineiro",
+      "revisao": 809402303,
+      "data": "2017-11-08T21:50:16Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Victor",
+          "artigo": "Victor Leandro Bagy",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1983-01-21"
+        },
+        {
+          "numero": 2,
+          "nome": "Marcos Rocha",
+          "artigo": "Marcos Rocha",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-12-11"
+        },
+        {
+          "numero": 3,
+          "nome": "Leonardo Silva",
+          "artigo": "Leonardo Silva",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 4,
+          "nome": "Frickson Erazo",
+          "artigo": "Frickson Erazo",
+          "nacionalidade": "Ecuador",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-05-05"
+        },
+        {
+          "numero": 6,
+          "nome": "Fábio Santos",
+          "artigo": "Fábio Santos (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 7,
+          "nome": "Robinho",
+          "artigo": "Robinho",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1984-01-25"
+        },
+        {
+          "numero": 8,
+          "nome": "Elias",
+          "artigo": "Elias Mendes Trindade",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-05-16"
+        },
+        {
+          "numero": 9,
+          "nome": "Fred",
+          "artigo": "Fred (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 10,
+          "nome": "Juan Cazares",
+          "artigo": "Juan Cazares",
+          "nacionalidade": "Ecuador",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-04-03"
+        },
+        {
+          "numero": 11,
+          "nome": "Rómulo Otero",
+          "artigo": "Rómulo Otero",
+          "nacionalidade": "Venezuela",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-11-09"
+        },
+        {
+          "numero": 13,
+          "nome": "Rafael Moura",
+          "artigo": "Rafael Moura",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1983-05-23"
+        },
+        {
+          "numero": 14,
+          "nome": "Mansur",
+          "artigo": "Mansur (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-04-17"
+        },
+        {
+          "numero": 15,
+          "nome": "Ralph",
+          "artigo": "Ralph Machado Dias",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-01-01"
+        },
+        {
+          "numero": 16,
+          "nome": "Rodrigão",
+          "artigo": "Rodrigo de Souza Prado",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-09-11"
+        },
+        {
+          "numero": 17,
+          "nome": "Capixaba",
+          "artigo": "João Victor da Vitória Fernandes",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1997-01-09"
+        },
+        {
+          "numero": 18,
+          "nome": "Thalis",
+          "artigo": "Thalis Henrique Cantanhede",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-03-19"
+        },
+        {
+          "numero": 19,
+          "nome": "Carlos César",
+          "artigo": "Carlos César Neves",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1987-04-21"
+        },
+        {
+          "numero": 20,
+          "nome": "Valdívia",
+          "artigo": "Valdívia (Brazilian footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1994-10-04"
+        },
+        {
+          "numero": 21,
+          "nome": "Adílson",
+          "artigo": "Adílson Warken",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1987-01-16"
+        },
+        {
+          "numero": 23,
+          "nome": "Matheus Mancini",
+          "artigo": "Matheus Mancini",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1994-09-14"
+        },
+        {
+          "numero": 25,
+          "nome": "Yago",
+          "artigo": "Yago Henrique Severino dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-07-07"
+        },
+        {
+          "numero": 26,
+          "nome": "Felipe Santana",
+          "artigo": "Felipe Santana",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-03-17"
+        },
+        {
+          "numero": 27,
+          "nome": "Luan",
+          "artigo": "Luan Madson Gedeão de Paiva",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1990-08-11"
+        },
+        {
+          "numero": 28,
+          "nome": "Jesiel",
+          "artigo": "Jesiel Cardoso Miranda",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1994-05-03"
+        },
+        {
+          "numero": 29,
+          "nome": "Alex Silva",
+          "artigo": "Alex Silva (footballer, born 1994)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1994-05-15"
+        },
+        {
+          "numero": 30,
+          "nome": "Gabriel",
+          "artigo": "Gabriel Costa França",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-03-14"
+        },
+        {
+          "numero": 31,
+          "nome": "Leonan",
+          "artigo": "Leonan",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 32,
+          "nome": "Uilson",
+          "artigo": "Uilson Pedruzzi de Oliveira",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1994-04-28"
+        },
+        {
+          "numero": 33,
+          "nome": "Elder Santana",
+          "artigo": "Elder Santana",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1993-04-07"
+        },
+        {
+          "numero": 36,
+          "nome": "Bremer",
+          "artigo": "Gleison Bremer Silva Nascimento",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-03-18"
+        },
+        {
+          "numero": 40,
+          "nome": "Cleiton",
+          "artigo": "Cleiton Schwengber",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1997-08-19"
+        },
+        {
+          "numero": 85,
+          "nome": "Roger Bernardo",
+          "artigo": "Roger de Oliveira Bernardo",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-08-10"
+        },
+        {
+          "numero": 87,
+          "nome": "Giovanni",
+          "artigo": "Giovanni Aparecido Adriano dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1987-02-05"
+        },
+        {
+          "numero": 92,
+          "nome": "Marlone",
+          "artigo": "Marlone",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1992-04-02"
+        },
+        {
+          "numero": 94,
+          "nome": "Gustavo Blanco",
+          "artigo": "Gustavo Blanco",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-10-03"
+        },
+        {
+          "numero": 99,
+          "nome": "Clayton",
+          "artigo": "Clayton da Silveira da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1995-10-23"
+        },
+        {
+          "numero": null,
+          "nome": "Lucas Cândido",
+          "artigo": "Lucas Cândido",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-12-25"
+        }
+      ]
+    },
+    "Botafogo": {
+      "titulo": "Botafogo de Futebol e Regatas",
+      "revisao": 809056510,
+      "data": "2017-11-06T21:43:01Z",
+      "jogadores": [
+        {
+          "numero": null,
+          "nome": "Gatito Fernández",
+          "artigo": "Roberto Junior Fernández",
+          "nacionalidade": "Paraguay",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1988-03-29"
+        },
+        {
+          "numero": null,
+          "nome": "Helton Leite",
+          "artigo": "Helton Leite",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1990-11-02"
+        },
+        {
+          "numero": null,
+          "nome": "Jefferson",
+          "artigo": "Jefferson (footballer, born 1983)",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1983-01-02"
+        },
+        {
+          "numero": null,
+          "nome": "Saulo",
+          "artigo": "Saulo Ferreira Silva",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1995-04-20"
+        },
+        {
+          "numero": null,
+          "nome": "Joel Carli",
+          "artigo": "Joel Carli",
+          "nacionalidade": "Argentina",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-10-19"
+        },
+        {
+          "numero": null,
+          "nome": "Emerson",
+          "artigo": "Emerson Raymundo Santos",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-04-05"
+        },
+        {
+          "numero": null,
+          "nome": "Emerson Silva",
+          "artigo": "Emerson dos Santos da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1983-05-03"
+        },
+        {
+          "numero": null,
+          "nome": "Igor Rabello",
+          "artigo": "Igor Rabello da Costa",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-04-28"
+        },
+        {
+          "numero": null,
+          "nome": "Marcelo",
+          "artigo": "Marcelo da Conceição Benevenuto Malaquias",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-01-07"
+        },
+        {
+          "numero": null,
+          "nome": "Arnaldo",
+          "artigo": "Arnaldo Manoel de Almeida",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-04-15"
+        },
+        {
+          "numero": null,
+          "nome": "Gilson",
+          "artigo": "Gilson Gomes do Nascimento",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-05-14"
+        },
+        {
+          "numero": null,
+          "nome": "Jonas",
+          "artigo": "Jonas Jessue da Silva Júnior",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1987-02-10"
+        },
+        {
+          "numero": null,
+          "nome": "Luis Ricardo",
+          "artigo": "Luis Ricardo",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1984-01-21"
+        },
+        {
+          "numero": null,
+          "nome": "Marcinho",
+          "artigo": "Márcio Almeida de Oliveira",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-05-16"
+        },
+        {
+          "numero": null,
+          "nome": "Renan Fonseca",
+          "artigo": "Renan Fonseca",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-08-13"
+        },
+        {
+          "numero": null,
+          "nome": "Victor Luis",
+          "artigo": "Victor Luis",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1993-06-23"
+        },
+        {
+          "numero": null,
+          "nome": "Airton",
+          "artigo": "Airton Ribeiro Santos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1990-02-21"
+        },
+        {
+          "numero": null,
+          "nome": "Bruno Silva",
+          "artigo": "Bruno Silva (footballer, born 1986)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1986-08-03"
+        },
+        {
+          "numero": null,
+          "nome": "Dudu Cearense",
+          "artigo": "Dudu Cearense",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1983-04-15"
+        },
+        {
+          "numero": null,
+          "nome": "Fernandes",
+          "artigo": "Jonathan da Silveira Fernandes",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-02-21"
+        },
+        {
+          "numero": null,
+          "nome": "Gustavo Bochecha",
+          "artigo": "Gustavo Costa da Silva Machado",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-06-08"
+        },
+        {
+          "numero": null,
+          "nome": "João Paulo",
+          "artigo": "João Paulo Mior",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-03-08"
+        },
+        {
+          "numero": null,
+          "nome": "Rodrigo Lindoso",
+          "artigo": "Rodrigo Lindoso",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-06-06"
+        },
+        {
+          "numero": null,
+          "nome": "Leandro",
+          "artigo": "Leandro Alves de Carvalho",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-09-21"
+        },
+        {
+          "numero": null,
+          "nome": "Marcos Vinícius",
+          "artigo": "Marcos Vinícius de Jesus Araújo",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-12-24"
+        },
+        {
+          "numero": null,
+          "nome": "Matheus Fernandes",
+          "artigo": "Matheus Fernandes Siqueira",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-06-30"
+        },
+        {
+          "numero": null,
+          "nome": "Brenner",
+          "artigo": "Brenner Marlos Varanda de Oliveira",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1994-03-01"
+        },
+        {
+          "numero": null,
+          "nome": "Guilherme",
+          "artigo": "Guilherme Augusto Vieira dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1995-04-13"
+        },
+        {
+          "numero": null,
+          "nome": "Roger",
+          "artigo": "Roger Rodrigues da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1985-01-07"
+        },
+        {
+          "numero": null,
+          "nome": "Rodrigo Pimpão",
+          "artigo": "Rodrigo Pimpão",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1987-10-23"
+        },
+        {
+          "numero": null,
+          "nome": "Leonardo Valencia",
+          "artigo": "Leonardo Valencia",
+          "nacionalidade": "Chile",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1991-04-25"
+        },
+        {
+          "numero": null,
+          "nome": "Vinicius Tanque",
+          "artigo": "Vinicius Tanque",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1995-03-27"
+        }
+      ]
+    },
+    "Atlético Paranaense": {
+      "titulo": "Club Athletico Paranaense",
+      "revisao": 809471336,
+      "data": "2017-11-09T09:18:43Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Santos",
+          "artigo": "Aderbar Melo dos Santos Neto",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1990-03-17"
+        },
+        {
+          "numero": 2,
+          "nome": "Jonathan",
+          "artigo": "Jonathan Cicero Moreira",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-02-27"
+        },
+        {
+          "numero": 3,
+          "nome": "Lucho González",
+          "artigo": "Lucho González",
+          "nacionalidade": "Argentina",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1981-01-19"
+        },
+        {
+          "numero": 4,
+          "nome": "Cleberson",
+          "artigo": "Cleberson Martins de Souza",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-08-17"
+        },
+        {
+          "numero": 5,
+          "nome": "Deivid",
+          "artigo": "Deivid Willian da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-01-18"
+        },
+        {
+          "numero": 6,
+          "nome": "Eduardo Henrique",
+          "artigo": "Eduardo Henrique",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1995-05-17"
+        },
+        {
+          "numero": 8,
+          "nome": "Sidcley",
+          "artigo": "Sidcley Ferreira Pereira",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-05-13"
+        },
+        {
+          "numero": 9,
+          "nome": "Ribamar",
+          "artigo": "Ribamar",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1997-05-21"
+        },
+        {
+          "numero": 10,
+          "nome": "Felipe Gedoz",
+          "artigo": "Felipe Gedoz",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-07-12"
+        },
+        {
+          "numero": 11,
+          "nome": "Nikão",
+          "artigo": "Nikão",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-07-29"
+        },
+        {
+          "numero": 12,
+          "nome": "Wéverton",
+          "artigo": "Wéverton Pereira da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1987-12-13"
+        },
+        {
+          "numero": 13,
+          "nome": "Paulo André",
+          "artigo": "Paulo André Cren Benini",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1983-08-20"
+        },
+        {
+          "numero": 17,
+          "nome": "Guilherme",
+          "artigo": "Guilherme Milhomem Gusmão",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1988-10-22"
+        },
+        {
+          "numero": 20,
+          "nome": "Matheus Rossetto",
+          "artigo": "Matheus Rossetto",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-06-03"
+        },
+        {
+          "numero": 21,
+          "nome": "Esteban Pavez",
+          "artigo": "Esteban Pavez",
+          "nacionalidade": "Chile",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1990-05-01"
+        },
+        {
+          "numero": 22,
+          "nome": "Eduardo",
+          "artigo": "Eduardo da Silva",
+          "nacionalidade": "Croatia",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1983-02-25"
+        },
+        {
+          "numero": 23,
+          "nome": "Lucas Fernandes",
+          "artigo": "Lucas Fernandes (footballer, born 1994)",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1994-04-24"
+        },
+        {
+          "numero": 25,
+          "nome": "Wanderson",
+          "artigo": "Wanderson Santos Pereira",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-02-07"
+        },
+        {
+          "numero": 27,
+          "nome": "Zé Ivaldo",
+          "artigo": "José Ivaldo Almeida Silva",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-02-21"
+        },
+        {
+          "numero": 32,
+          "nome": "Giovanny",
+          "artigo": "Giovanny",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 39,
+          "nome": "Bruno Guimarães",
+          "artigo": "Bruno Guimarães Rodriguez Moura",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1997-11-16"
+        },
+        {
+          "numero": 44,
+          "nome": "Thiago Heleno",
+          "artigo": "Thiago Heleno",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-09-17"
+        },
+        {
+          "numero": 47,
+          "nome": "Gustavo Cascardo",
+          "artigo": "Gustavo Cascardo",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-03-24"
+        },
+        {
+          "numero": 49,
+          "nome": "Warleson",
+          "artigo": "Warleson Stellon Lisboa Oliveira",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 55,
+          "nome": "Matheus Anjos",
+          "artigo": "Matheus Aleksander dos Anjos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-12-21"
+        },
+        {
+          "numero": 77,
+          "nome": "Douglas Coutinho",
+          "artigo": "Douglas Coutinho",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1994-02-08"
+        },
+        {
+          "numero": 87,
+          "nome": "Fabrício",
+          "artigo": "Fabrício dos Santos Silva",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1987-01-11"
+        },
+        {
+          "numero": 91,
+          "nome": "Éderson",
+          "artigo": "Éderson Alves Ribeiro Silva",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1989-03-13"
+        },
+        {
+          "numero": 92,
+          "nome": "Pablo",
+          "artigo": "Pablo Felipe Teixeira",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1992-06-23"
+        },
+        {
+          "numero": 94,
+          "nome": "Lucas Macanhan",
+          "artigo": "Lucas Macanhan Ferreira",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 97,
+          "nome": "Nicolas",
+          "artigo": "Nicolas Vichiatto da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-02-24"
+        },
+        {
+          "numero": 98,
+          "nome": "Renan Lodi",
+          "artigo": "Renan Lodi",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1998-04-08"
+        },
+        {
+          "numero": 99,
+          "nome": "Léo",
+          "artigo": "Léo (footballer, born 1990)",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": true,
+          "nascimento": "1990-09-22"
+        }
+      ]
+    },
+    "Bahia": {
+      "titulo": "Esporte Clube Bahia",
+      "revisao": 809611254,
+      "data": "2017-11-10T07:12:37Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Jean",
+          "artigo": "Jean Paulo Fernandes Filho",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1995-10-26"
+        },
+        {
+          "numero": 3,
+          "nome": "Tiago",
+          "artigo": "Tiago Pagnussat",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1990-06-17"
+        },
+        {
+          "numero": 4,
+          "nome": "Jackson",
+          "artigo": "Jackson de Souza",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-05-01"
+        },
+        {
+          "numero": 5,
+          "nome": "Juninho",
+          "artigo": "Paulo Roberto Valoura Júnior",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1986-03-20"
+        },
+        {
+          "numero": 6,
+          "nome": "Matheus Reis",
+          "artigo": "Matheus Reis",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1995-02-18"
+        },
+        {
+          "numero": 7,
+          "nome": "Pablo Armero",
+          "artigo": "Pablo Armero",
+          "nacionalidade": "COL",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-11-02"
+        },
+        {
+          "numero": 8,
+          "nome": "Agustín Allione",
+          "artigo": "Agustín Allione",
+          "nacionalidade": "ARG",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1994-10-28"
+        },
+        {
+          "numero": 9,
+          "nome": "Hernane",
+          "artigo": "Hernane",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1986-08-04"
+        },
+        {
+          "numero": 11,
+          "nome": "Edigar Junio",
+          "artigo": "Edigar Junio",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1990-11-30"
+        },
+        {
+          "numero": 12,
+          "nome": "Gustavo Ferrareis",
+          "artigo": "Gustavo Ferrareis",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1996-01-02"
+        },
+        {
+          "numero": 13,
+          "nome": "Matheus Sales",
+          "artigo": "Matheus Sales",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1995-05-13"
+        },
+        {
+          "numero": 14,
+          "nome": "Yuri",
+          "artigo": "Yuri Lima Lara",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-04-20"
+        },
+        {
+          "numero": 15,
+          "nome": "Feijão",
+          "artigo": "Antonio Felipe Gonzaga de Aquino",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-04-08"
+        },
+        {
+          "numero": 16,
+          "nome": "Rodrigo Becão",
+          "artigo": "Rodrigo Nascimento França",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-01-19"
+        },
+        {
+          "numero": 17,
+          "nome": "Stiven Mendoza",
+          "artigo": "Stiven Mendoza",
+          "nacionalidade": "COL",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1992-06-27"
+        },
+        {
+          "numero": 18,
+          "nome": "Zé Rafael",
+          "artigo": "Zé Rafael",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-06-16"
+        },
+        {
+          "numero": 19,
+          "nome": "Edson",
+          "artigo": "Edson Felipe da Cruz",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1991-07-01"
+        },
+        {
+          "numero": 20,
+          "nome": "Régis",
+          "artigo": "Régis Augusto Salmazzo",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-11-30"
+        },
+        {
+          "numero": 22,
+          "nome": "Eduardo",
+          "artigo": "Carlos Eduardo Santos Oliveira",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1986-11-20"
+        },
+        {
+          "numero": 23,
+          "nome": "Renê Júnior",
+          "artigo": "Renê Júnior",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-09-16"
+        },
+        {
+          "numero": 25,
+          "nome": "Wellington Silva",
+          "artigo": "Wellington Silva (footballer, born 1988)",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1988-03-06"
+        },
+        {
+          "numero": 27,
+          "nome": "Maikon Leite",
+          "artigo": "Maikon Leite",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1988-08-03"
+        },
+        {
+          "numero": 28,
+          "nome": "Lucas Fonseca",
+          "artigo": "Lucas Fonseca",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1985-08-02"
+        },
+        {
+          "numero": 29,
+          "nome": "Vinícius",
+          "artigo": "Vinícius Goes Barbosa de Souza",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-04-15"
+        },
+        {
+          "numero": 30,
+          "nome": "Eder",
+          "artigo": "Eder Ferreira Graminho",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-04-05"
+        },
+        {
+          "numero": 32,
+          "nome": "Rafael Santos",
+          "artigo": "Rafael de Carvalho Santos",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1989-03-14"
+        },
+        {
+          "numero": 33,
+          "nome": "Anderson",
+          "artigo": "Anderson Pedro da Silva Nunes Campos",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1983-11-20"
+        },
+        {
+          "numero": 36,
+          "nome": "Juninho Capixaba",
+          "artigo": "Luis Antonio da Rocha Junior",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 39,
+          "nome": "Rodrigão",
+          "artigo": "Rodrigo Gomes dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1993-10-13"
+        },
+        {
+          "numero": 40,
+          "nome": "João Paulo",
+          "artigo": "João Paulo Queiroz de Moraes",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1996-11-28"
+        }
+      ]
+    },
+    "São Paulo": {
+      "titulo": "São Paulo FC",
+      "revisao": 809682331,
+      "data": "2017-11-10T18:49:28Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Denis",
+          "artigo": "Denis César de Matos",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1987-04-14"
+        },
+        {
+          "numero": 2,
+          "nome": "Bruno",
+          "artigo": "Bruno Vieira",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1985-08-30"
+        },
+        {
+          "numero": 3,
+          "nome": "Rodrigo Caio",
+          "artigo": "Rodrigo Caio",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-08-17"
+        },
+        {
+          "numero": 4,
+          "nome": "Robert Arboleda",
+          "artigo": "Robert Arboleda",
+          "nacionalidade": "ECU",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-10-22"
+        },
+        {
+          "numero": 5,
+          "nome": "Diego Lugano",
+          "artigo": "Diego Lugano",
+          "nacionalidade": "URU",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1980-11-02"
+        },
+        {
+          "numero": 6,
+          "nome": "Petros",
+          "artigo": "Petros Matheus dos Santos Araújo",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-05-29"
+        },
+        {
+          "numero": 7,
+          "nome": "Maicosuel",
+          "artigo": "Maicosuel",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1986-06-16"
+        },
+        {
+          "numero": 9,
+          "nome": "Lucas Pratto",
+          "artigo": "Lucas Pratto",
+          "nacionalidade": "ARG",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1988-06-04"
+        },
+        {
+          "numero": 10,
+          "nome": "Christian Cueva",
+          "artigo": "Christian Cueva",
+          "nacionalidade": "PER",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-11-23"
+        },
+        {
+          "numero": 11,
+          "nome": "Lucas Fernandes",
+          "artigo": "Lucas Fernandes (footballer, born 1997)",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-09-20"
+        },
+        {
+          "numero": 12,
+          "nome": "Sidão",
+          "artigo": "Sidão (footballer)",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1982-12-24"
+        },
+        {
+          "numero": 13,
+          "nome": "Éder Militão",
+          "artigo": "Éder Militão",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-01-18"
+        },
+        {
+          "numero": 15,
+          "nome": "Hernanes",
+          "artigo": "Hernanes",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1985-05-29"
+        },
+        {
+          "numero": 16,
+          "nome": "Edimar",
+          "artigo": "Edimar Fraga",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1986-05-21"
+        },
+        {
+          "numero": 17,
+          "nome": "Gilberto",
+          "artigo": "Gilberto Oliveira Souza Júnior",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1989-06-05"
+        },
+        {
+          "numero": 18,
+          "nome": "Julio Buffarini",
+          "artigo": "Julio Buffarini",
+          "nacionalidade": "ARG",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-08-18"
+        },
+        {
+          "numero": 19,
+          "nome": "Thomaz",
+          "artigo": "Thomaz (footballer)",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1986-05-02"
+        },
+        {
+          "numero": 20,
+          "nome": "Shaylon",
+          "artigo": "Shaylon",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-04-27"
+        },
+        {
+          "numero": 21,
+          "nome": "Wellington Nem",
+          "artigo": "Wellington Nem",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1992-02-06"
+        },
+        {
+          "numero": 22,
+          "nome": "Júnior Tavares",
+          "artigo": "Júnior Tavares",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-08-07"
+        },
+        {
+          "numero": 23,
+          "nome": "Marcos Guilherme",
+          "artigo": "Marcos Guilherme",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1995-08-05"
+        },
+        {
+          "numero": 25,
+          "nome": "Jucilei",
+          "artigo": "Jucilei",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1988-04-06"
+        },
+        {
+          "numero": 28,
+          "nome": "Felipe Araruna",
+          "artigo": "Felipe Araruna",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-03-12"
+        },
+        {
+          "numero": 30,
+          "nome": "Renan Ribeiro",
+          "artigo": "Renan Ribeiro",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1990-03-23"
+        },
+        {
+          "numero": 32,
+          "nome": "Aderlan",
+          "artigo": "Aderlan Santos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1989-04-09"
+        },
+        {
+          "numero": 33,
+          "nome": "Jonathan Gómez",
+          "artigo": "Jonathan David Gómez",
+          "nacionalidade": "ARG",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-12-21"
+        },
+        {
+          "numero": 34,
+          "nome": "Bruno Alves",
+          "artigo": "Bruno Fabiano Alves",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-04-16"
+        },
+        {
+          "numero": 35,
+          "nome": "Brenner",
+          "artigo": "Brenner Souza da Silva",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "2000-01-16"
+        },
+        {
+          "numero": 38,
+          "nome": "Morato",
+          "artigo": "Morato (footballer)",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": null
+        },
+        {
+          "numero": 39,
+          "nome": "Marcinho",
+          "artigo": "Marcio Antonio de Sousa Junior",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1995-06-08"
+        },
+        {
+          "numero": 40,
+          "nome": "Lucas Perri",
+          "artigo": "Lucas Perri",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1997-12-10"
+        },
+        {
+          "numero": 41,
+          "nome": "Denílson",
+          "artigo": "Denílson Pereira Júnior",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1995-07-18"
+        }
+      ]
+    },
+    "Fluminense": {
+      "titulo": "Fluminense FC",
+      "revisao": 809469621,
+      "data": "2017-11-09T09:01:34Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Marcos Felipe",
+          "artigo": "Marcos Felipe de Freitas Monteiro",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1996-04-13"
+        },
+        {
+          "numero": 2,
+          "nome": "Lucas",
+          "artigo": "Lucas Marques",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": null
+        },
+        {
+          "numero": 3,
+          "nome": "Gum",
+          "artigo": "Gum (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-01-04"
+        },
+        {
+          "numero": 4,
+          "nome": "Renato Chaves",
+          "artigo": "Renato Chaves",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-05-04"
+        },
+        {
+          "numero": 5,
+          "nome": "Pierre",
+          "artigo": "Lucas Pierre Santos Oliveira",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1982-01-19"
+        },
+        {
+          "numero": 6,
+          "nome": "Marlon",
+          "artigo": "Marlon Rodrigues Xavier",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1997-05-20"
+        },
+        {
+          "numero": 7,
+          "nome": "Marquinho",
+          "artigo": "Marquinho (footballer, born 1986)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 8,
+          "nome": "Douglas",
+          "artigo": "Douglas Augusto Soares Gomes",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-01-13"
+        },
+        {
+          "numero": 9,
+          "nome": "Henrique Dourado",
+          "artigo": "Henrique Dourado",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1989-09-15"
+        },
+        {
+          "numero": 10,
+          "nome": "Gustavo Scarpa",
+          "artigo": "Gustavo Scarpa",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-01-05"
+        },
+        {
+          "numero": 11,
+          "nome": "Wellington Silva",
+          "artigo": "Wellington Silva (footballer, born 1993)",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1993-01-06"
+        },
+        {
+          "numero": 12,
+          "nome": "Diego Cavalieri",
+          "artigo": "Diego Cavalieri",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1982-12-01"
+        },
+        {
+          "numero": 13,
+          "nome": "Frazan",
+          "artigo": "Wesley Frazan Bernardo",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-06-05"
+        },
+        {
+          "numero": 15,
+          "nome": "Léo",
+          "artigo": "Léo Pelé",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-03-06"
+        },
+        {
+          "numero": 16,
+          "nome": "Renato",
+          "artigo": "José Renato da Silva Júnior",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-01-19"
+        },
+        {
+          "numero": 17,
+          "nome": "Robinho",
+          "artigo": "Robson Azevedo da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1995-07-21"
+        },
+        {
+          "numero": 18,
+          "nome": "Jefferson Orejuela",
+          "artigo": "Jefferson Orejuela",
+          "nacionalidade": "Ecuador",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-02-14"
+        },
+        {
+          "numero": 19,
+          "nome": "Romarinho",
+          "artigo": "Romarinho (footballer, born 1994)",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1994-03-01"
+        },
+        {
+          "numero": 20,
+          "nome": "Junior Sornoza",
+          "artigo": "Junior Sornoza",
+          "nacionalidade": "Ecuador",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1994-01-28"
+        },
+        {
+          "numero": 21,
+          "nome": "Robert",
+          "artigo": "Robert Gonçalves Santos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-09-28"
+        },
+        {
+          "numero": 22,
+          "nome": "Júlio César",
+          "artigo": "Júlio César (footballer, born 1986)",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1986-09-02"
+        },
+        {
+          "numero": 23,
+          "nome": "Marlon Freitas",
+          "artigo": "Marlon Freitas",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-03-27"
+        },
+        {
+          "numero": 25,
+          "nome": "Richard",
+          "artigo": "Richard Candido Coelho",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1994-02-18"
+        },
+        {
+          "numero": 26,
+          "nome": "Mateus Norton",
+          "artigo": "Mateus Norton",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-07-19"
+        },
+        {
+          "numero": 27,
+          "nome": "Peu",
+          "artigo": "Peterson Silvino Da Cruz",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1993-04-24"
+        },
+        {
+          "numero": 28,
+          "nome": "Matheus Alessandro",
+          "artigo": "Matheus Alessandro",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1996-07-10"
+        },
+        {
+          "numero": 29,
+          "nome": "Luiz Fernando",
+          "artigo": "Luiz Fernando Ferreira Maximiniano",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-05-08"
+        },
+        {
+          "numero": 30,
+          "nome": "Marquinhos Calazans",
+          "artigo": "Marquinhos Calazans",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1996-06-14"
+        },
+        {
+          "numero": 31,
+          "nome": "Patrick",
+          "artigo": "Patrick Luan dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 32,
+          "nome": "Pedro",
+          "artigo": "Pedro Guilherme Abreu dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1997-06-20"
+        },
+        {
+          "numero": 33,
+          "nome": "Henrique",
+          "artigo": "Henrique Adriano Buss",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-10-14"
+        },
+        {
+          "numero": 34,
+          "nome": "Matheus",
+          "artigo": "Matheus Phillipe Coutinho Gomes",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1995-10-02"
+        },
+        {
+          "numero": 35,
+          "nome": "Marcos Júnior",
+          "artigo": "Marcos Júnior",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1993-01-19"
+        },
+        {
+          "numero": 36,
+          "nome": "Luquinha",
+          "artigo": "Lucas Henrique dos Santos",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 37,
+          "nome": "Wendel",
+          "artigo": "Marcus Wendel Valle da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-08-28"
+        },
+        {
+          "numero": 38,
+          "nome": "Mascarenhas",
+          "artigo": "Matheus Mascarenhas",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1998-07-27"
+        },
+        {
+          "numero": 39,
+          "nome": "Felipe",
+          "artigo": "Felipe Souza Moreno Sampaio",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 40,
+          "nome": "Reginaldo",
+          "artigo": "Reginaldo Manoel da Silva Junior",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-07-08"
+        },
+        {
+          "numero": 41,
+          "nome": "Roger Ibañez",
+          "artigo": "Roger Ibañez da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1998-11-23"
+        },
+        {
+          "numero": 44,
+          "nome": "Nogueira",
+          "artigo": "Ygor Nogueira de Paula",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-03-27"
+        }
+      ]
+    },
+    "Sport": {
+      "titulo": "Sport Club do Recife",
+      "revisao": 809585363,
+      "data": "2017-11-10T02:15:43Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Magrão",
+          "artigo": "Alessandro Beti Rosa",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1977-04-09"
+        },
+        {
+          "numero": 2,
+          "nome": "Oswaldo Henríquez",
+          "artigo": "Oswaldo Henríquez",
+          "nacionalidade": "COL",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1989-03-10"
+        },
+        {
+          "numero": 3,
+          "nome": "Ronaldo Alves",
+          "artigo": "Ronaldo Alves",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1989-07-09"
+        },
+        {
+          "numero": 4,
+          "nome": "Durval",
+          "artigo": "Durval",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1980-07-11"
+        },
+        {
+          "numero": 5,
+          "nome": "Rodrigo",
+          "artigo": "Rodrigo Vasconcelos Oliveira",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1994-02-11"
+        },
+        {
+          "numero": 6,
+          "nome": "Eugenio Mena",
+          "artigo": "Eugenio Mena",
+          "nacionalidade": "CHI",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1988-07-18"
+        },
+        {
+          "numero": 7,
+          "nome": "Reinaldo Lenis",
+          "artigo": "Reinaldo Lenis",
+          "nacionalidade": "COL",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-07-20"
+        },
+        {
+          "numero": 8,
+          "nome": "Anselmo",
+          "artigo": "Anselmo de Moraes",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1989-02-20"
+        },
+        {
+          "numero": 9,
+          "nome": "Leandro Pereira",
+          "artigo": "Leandro Pereira",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1991-07-03"
+        },
+        {
+          "numero": 10,
+          "nome": "Osvaldo",
+          "artigo": "Osvaldo Lourenço Filho",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1987-04-11"
+        },
+        {
+          "numero": 11,
+          "nome": "Marquinhos",
+          "artigo": "Marquinhos (footballer, born October 1989)",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1989-10-17"
+        },
+        {
+          "numero": 15,
+          "nome": "Bruno Xavier",
+          "artigo": "Bruno César Xavier Sislo",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 17,
+          "nome": "Rogério",
+          "artigo": "José Rogério de Oliveira Melo",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1990-12-24"
+        },
+        {
+          "numero": 19,
+          "nome": "Agenor",
+          "artigo": "Agenor Detofol",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1989-12-11"
+        },
+        {
+          "numero": 20,
+          "nome": "Thomás",
+          "artigo": "Thomás Jaguaribe",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-02-24"
+        },
+        {
+          "numero": 21,
+          "nome": "Rithely",
+          "artigo": "Rithely",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-01-27"
+        },
+        {
+          "numero": 22,
+          "nome": "Neris",
+          "artigo": "Hueglo dos Santos Neris",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-06-17"
+        },
+        {
+          "numero": 23,
+          "nome": "Raul Prata",
+          "artigo": "Raul Prata",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1987-07-14"
+        },
+        {
+          "numero": 27,
+          "nome": "Samuel Xavier",
+          "artigo": "Samuel Xavier Brito",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-06-06"
+        },
+        {
+          "numero": 28,
+          "nome": "Wesley",
+          "artigo": "Wesley Lopes Beltrame",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1987-06-24"
+        },
+        {
+          "numero": 31,
+          "nome": "Lucas Ferreira",
+          "artigo": "Lucas Ferreira Amaral",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 32,
+          "nome": "Mailson Tenório",
+          "artigo": "Mailson Tenório dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1996-08-20"
+        },
+        {
+          "numero": 37,
+          "nome": "Juninho",
+          "artigo": "Edimar Ribeiro da Costa Junior",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1999-02-26"
+        },
+        {
+          "numero": 40,
+          "nome": "Evandro",
+          "artigo": "Evandro Lima de Oliveira Filho",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 44,
+          "nome": "Thallyson",
+          "artigo": "Thallyson Gabriel Lobo Seabra",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-03-24"
+        },
+        {
+          "numero": 56,
+          "nome": "Sander",
+          "artigo": "Sander Henrique Bortolotto",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-10-03"
+        },
+        {
+          "numero": 63,
+          "nome": "Índio",
+          "artigo": "Wildson Silva de Melo",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 87,
+          "nome": "Diego Souza",
+          "artigo": "Diego Souza (footballer, born 1985)",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-06-17"
+        },
+        {
+          "numero": 88,
+          "nome": "Patrick",
+          "artigo": "Patrick Bezerra do Nascimento",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-07-29"
+        },
+        {
+          "numero": 89,
+          "nome": "Igor Ribeiro",
+          "artigo": "Igor Ribeiro de Jesus",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 90,
+          "nome": "André",
+          "artigo": "André Felipe Ribeiro de Souza",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1990-09-27"
+        },
+        {
+          "numero": 97,
+          "nome": "Everton Felipe",
+          "artigo": "Everton Felipe",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-07-28"
+        }
+      ]
+    },
+    "Vitória": {
+      "titulo": "Esporte Clube Vitória",
+      "revisao": 809589311,
+      "data": "2017-11-10T03:00:46Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Fernando Miguel",
+          "artigo": "Fernando Miguel Kaufmann",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1985-02-02"
+        },
+        {
+          "numero": 3,
+          "nome": "Wallace Reis",
+          "artigo": "Wallace Reis",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1987-12-26"
+        },
+        {
+          "numero": 4,
+          "nome": "Alan Costa",
+          "artigo": "Alan Henrique Costa",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1990-10-31"
+        },
+        {
+          "numero": 5,
+          "nome": "Willian Farias",
+          "artigo": "Willian Farias",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-06-06"
+        },
+        {
+          "numero": 6,
+          "nome": "Geferson",
+          "artigo": "Geferson Cerqueira Teles",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1994-05-13"
+        },
+        {
+          "numero": 7,
+          "nome": "Uillian Correia",
+          "artigo": "Uillian Correia",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1989-09-27"
+        },
+        {
+          "numero": 8,
+          "nome": "Carlos Eduardo",
+          "artigo": "Carlos Eduardo Marques",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1987-07-18"
+        },
+        {
+          "numero": 9,
+          "nome": "Kieza",
+          "artigo": "Kieza",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1986-09-24"
+        },
+        {
+          "numero": 10,
+          "nome": "Neílton",
+          "artigo": "Neílton",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1994-02-17"
+        },
+        {
+          "numero": 11,
+          "nome": "Cleiton Xavier",
+          "artigo": "Cleiton Xavier",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1983-03-23"
+        },
+        {
+          "numero": 12,
+          "nome": "Ronaldo",
+          "artigo": "Ronaldo de Oliveira Strada",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1996-08-22"
+        },
+        {
+          "numero": 14,
+          "nome": "José Welison",
+          "artigo": "José Welison da Silva",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-03-11"
+        },
+        {
+          "numero": 16,
+          "nome": "Juninho",
+          "artigo": "Evanildo Borges Barbosa Júnior",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-01-11"
+        },
+        {
+          "numero": 17,
+          "nome": "Jhemerson",
+          "artigo": "Jhemerson Guimarães Gaigher",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-01-27"
+        },
+        {
+          "numero": 20,
+          "nome": "Rafaelson",
+          "artigo": "Rafaelson",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1997-03-30"
+        },
+        {
+          "numero": 21,
+          "nome": "René Santos",
+          "artigo": "René Santos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-04-21"
+        },
+        {
+          "numero": 22,
+          "nome": "Santiago Tréllez",
+          "artigo": "Santiago Tréllez",
+          "nacionalidade": "COL",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1990-01-17"
+        },
+        {
+          "numero": 23,
+          "nome": "Caíque",
+          "artigo": "Caíque Luiz Santos da Purificação",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1997-07-31"
+        },
+        {
+          "numero": 25,
+          "nome": "Kanu",
+          "artigo": "António Eduardo Pereira dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1984-05-13"
+        },
+        {
+          "numero": 27,
+          "nome": "David",
+          "artigo": "David Corrêa da Fonseca",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1995-10-17"
+        },
+        {
+          "numero": 28,
+          "nome": "Fred",
+          "artigo": "Frederico Burgel Xavier",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1986-01-15"
+        },
+        {
+          "numero": 29,
+          "nome": "Patric",
+          "artigo": "Patric Cabral Lalau",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1989-03-25"
+        },
+        {
+          "numero": 31,
+          "nome": "Thallyson",
+          "artigo": "Thallyson",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 32,
+          "nome": "Júnior",
+          "artigo": "Geremias Ribeiro Junior",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1993-12-13"
+        },
+        {
+          "numero": 34,
+          "nome": "Wallace",
+          "artigo": "Wallace Ribeiro Barato",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 35,
+          "nome": "Caíque Sá",
+          "artigo": "Caíque Silva Sá",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-05-23"
+        },
+        {
+          "numero": 37,
+          "nome": "Bruno Bispo",
+          "artigo": "Bruno Bispo dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 40,
+          "nome": "Ramon",
+          "artigo": "Ramon Menezes Roma",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-05-03"
+        },
+        {
+          "numero": 49,
+          "nome": "Cedric",
+          "artigo": "Cedric Borges de Acácio Lima",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 57,
+          "nome": "Fillipe Soutto",
+          "artigo": "Fillipe Soutto",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-03-11"
+        },
+        {
+          "numero": 70,
+          "nome": "Danilinho",
+          "artigo": "Danilinho",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 77,
+          "nome": "Yago",
+          "artigo": "Yago Felipe da Costa Rocha",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-02-13"
+        },
+        {
+          "numero": 99,
+          "nome": "André Lima",
+          "artigo": "André Lima",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        }
+      ]
+    },
+    "Coritiba": {
+      "titulo": "Coritiba Foot Ball Club",
+      "revisao": 809583896,
+      "data": "2017-11-10T01:59:43Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Rafael Martins",
+          "artigo": "Rafael Martins Claro dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1991-11-29"
+        },
+        {
+          "numero": 3,
+          "nome": "Thalisson Kelven",
+          "artigo": "Thalisson Kelven",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1998-05-07"
+        },
+        {
+          "numero": 4,
+          "nome": "Romércio",
+          "artigo": "Romércio",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-02-25"
+        },
+        {
+          "numero": 5,
+          "nome": "Alan Santos",
+          "artigo": "Alan Santos da Silva",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-04-24"
+        },
+        {
+          "numero": 6,
+          "nome": "Edinho",
+          "artigo": "Edimo Ferreira Campos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1983-01-15"
+        },
+        {
+          "numero": 7,
+          "nome": "Iago Dias",
+          "artigo": "Iago Dias",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1993-04-06"
+        },
+        {
+          "numero": 8,
+          "nome": "Tiago Real",
+          "artigo": "Tiago Real",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-01-26"
+        },
+        {
+          "numero": 9,
+          "nome": "Neto Berola",
+          "artigo": "Neto Berola",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1987-11-18"
+        },
+        {
+          "numero": 11,
+          "nome": "Rildo",
+          "artigo": "Rildo de Andrade Felicissimo",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1989-03-20"
+        },
+        {
+          "numero": 12,
+          "nome": "Bruno",
+          "artigo": "Bruno Brigido",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1991-03-09"
+        },
+        {
+          "numero": 13,
+          "nome": "Rodrigo Ramos",
+          "artigo": "Rodrigo de Oliveira Ramos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-05-24"
+        },
+        {
+          "numero": 14,
+          "nome": "Júlio Rusch",
+          "artigo": "Júlio Rusch",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-06-22"
+        },
+        {
+          "numero": 16,
+          "nome": "Léo Santos",
+          "artigo": "Leonardo Araujo dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 17,
+          "nome": "Daniel",
+          "artigo": "Daniel Correa Freitas",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1994-01-24"
+        },
+        {
+          "numero": 18,
+          "nome": "Anderson",
+          "artigo": "Anderson (footballer, born 1988)",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1988-04-13"
+        },
+        {
+          "numero": 20,
+          "nome": "Matheus Galdezani",
+          "artigo": "Matheus Galdezani",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-03-13"
+        },
+        {
+          "numero": 21,
+          "nome": "Walisson Maia",
+          "artigo": "Walisson Moreira Farias Maia",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-08-21"
+        },
+        {
+          "numero": 22,
+          "nome": "Léo",
+          "artigo": "Leonardo Moreira Morais",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1991-10-03"
+        },
+        {
+          "numero": 23,
+          "nome": "Geovane",
+          "artigo": "Geovane Henrique Pereira de Souza",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-10-17"
+        },
+        {
+          "numero": 26,
+          "nome": "Tomás Bastos",
+          "artigo": "Tomás Bastos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1992-04-30"
+        },
+        {
+          "numero": 27,
+          "nome": "Jonas",
+          "artigo": "Jonas Gomes de Sousa",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1991-10-03"
+        },
+        {
+          "numero": 30,
+          "nome": "Vitor Carvalho",
+          "artigo": "Vitor Carvalho Vieira",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-05-27"
+        },
+        {
+          "numero": 31,
+          "nome": "João Paulo",
+          "artigo": "João Paulo da Silva",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1985-02-22"
+        },
+        {
+          "numero": 33,
+          "nome": "Getterson",
+          "artigo": "Getterson",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1991-05-16"
+        },
+        {
+          "numero": 34,
+          "nome": "Werley",
+          "artigo": "Werley",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1988-09-05"
+        },
+        {
+          "numero": 37,
+          "nome": "Rafael Longuine",
+          "artigo": "Rafael Longuine",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1990-05-30"
+        },
+        {
+          "numero": 50,
+          "nome": "Cléber Reis",
+          "artigo": "Cléber Reis",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1990-12-05"
+        },
+        {
+          "numero": 66,
+          "nome": "William Matheus",
+          "artigo": "William Matheus",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-04-02"
+        },
+        {
+          "numero": 70,
+          "nome": "Yan Sasse",
+          "artigo": "Yan Sasse",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-06-24"
+        },
+        {
+          "numero": 71,
+          "nome": "Henrique",
+          "artigo": "Henrique Gelain Custodio",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1995-01-05"
+        },
+        {
+          "numero": 73,
+          "nome": "Luizão",
+          "artigo": "Walter Luiz de Araújo",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-06-23"
+        },
+        {
+          "numero": 76,
+          "nome": "Márcio",
+          "artigo": "Márcio Marcelo Leite Júnior",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1993-01-14"
+        },
+        {
+          "numero": 83,
+          "nome": "Kléber",
+          "artigo": "Kléber Giacomance de Souza Freitas",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1983-08-12"
+        },
+        {
+          "numero": 84,
+          "nome": "Wilson",
+          "artigo": "Wilson Rodrigues de Moura Júnior",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1984-01-31"
+        },
+        {
+          "numero": 85,
+          "nome": "Alecsandro",
+          "artigo": "Alecsandro",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1981-02-04"
+        },
+        {
+          "numero": 87,
+          "nome": "Alexander Baumjohann",
+          "artigo": "Alexander Baumjohann",
+          "nacionalidade": "GER",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1987-01-23"
+        },
+        {
+          "numero": 88,
+          "nome": "Thiago Carleto",
+          "artigo": "Thiago Carleto",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1989-03-24"
+        },
+        {
+          "numero": 89,
+          "nome": "William Menezes",
+          "artigo": "William Amorim Martins de Menezes",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1989-04-05"
+        },
+        {
+          "numero": 90,
+          "nome": "Yílmar Filigrana",
+          "artigo": "Yílmar Filigrana",
+          "nacionalidade": "COL",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1990-11-08"
+        },
+        {
+          "numero": 91,
+          "nome": "Henrique Almeida",
+          "artigo": "Henrique Almeida",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1991-05-27"
+        },
+        {
+          "numero": 97,
+          "nome": "Índio",
+          "artigo": "Gustavo Marcelo Cardoso Soares",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 98,
+          "nome": "Dodô",
+          "artigo": "Domilson Cordeiro dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1998-11-17"
+        },
+        {
+          "numero": 99,
+          "nome": "Keirrison",
+          "artigo": "Keirrison",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1988-12-03"
+        }
+      ]
+    },
+    "Avaí": {
+      "titulo": "Avaí FC",
+      "revisao": 809474460,
+      "data": "2017-11-09T10:01:09Z",
+      "jogadores": [
+        {
+          "numero": 1,
+          "nome": "Kozlinski",
+          "artigo": "Maurício Kozlinski",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1991-06-18"
+        },
+        {
+          "numero": 2,
+          "nome": "Leandro Silva",
+          "artigo": "Leandro Silva",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 3,
+          "nome": "Betão",
+          "artigo": "Betão",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 4,
+          "nome": "Alemão",
+          "artigo": "Fagner Ironi Daponte",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-10-18"
+        },
+        {
+          "numero": 5,
+          "nome": "Luan",
+          "artigo": "Luan Scapolan",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1988-12-30"
+        },
+        {
+          "numero": 6,
+          "nome": "Capa",
+          "artigo": "Edson Carlos Santos Lima Junior",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-12-07"
+        },
+        {
+          "numero": 7,
+          "nome": "Wellington Simião",
+          "artigo": "Wellington Simião",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1987-02-23"
+        },
+        {
+          "numero": 8,
+          "nome": "Renanzinho",
+          "artigo": "Renan Martins Pereira",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-09-19"
+        },
+        {
+          "numero": 9,
+          "nome": "Júnior Dutra",
+          "artigo": "Júnior Dutra",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1988-04-25"
+        },
+        {
+          "numero": 10,
+          "nome": "Marquinhos",
+          "artigo": "Marquinhos (footballer, born 1981)",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1981-09-29"
+        },
+        {
+          "numero": 11,
+          "nome": "Rômulo",
+          "artigo": "Rômulo dos Santos de Souza",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1995-04-28"
+        },
+        {
+          "numero": 13,
+          "nome": "Maicon",
+          "artigo": "Maicon Douglas Sisenando",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1981-07-26"
+        },
+        {
+          "numero": 14,
+          "nome": "Léo Felipe",
+          "artigo": "Leonardo Felipe Santos da Silva",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 15,
+          "nome": "Maurício",
+          "artigo": "Maurício Tomazi Pinheiro",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 16,
+          "nome": "Henrique",
+          "artigo": "Junior Henrique Eichelberge",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 19,
+          "nome": "Léo Lopes",
+          "artigo": "Leonardo Thomas Lopes",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 20,
+          "nome": "Bryan Urueña",
+          "artigo": "Bryan Urueña",
+          "nacionalidade": "Colombia",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 21,
+          "nome": "Luanzinho",
+          "artigo": "Luan Martins Pereira",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "2000-04-21"
+        },
+        {
+          "numero": 22,
+          "nome": "Douglas",
+          "artigo": "Douglas Friedrich",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": true,
+          "nascimento": "1988-12-12"
+        },
+        {
+          "numero": 23,
+          "nome": "Toshi",
+          "artigo": "Toshiya Tojo",
+          "nacionalidade": "Japan",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1992-10-13"
+        },
+        {
+          "numero": 26,
+          "nome": "Pedro Castro",
+          "artigo": "Pedro Castro",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": null
+        },
+        {
+          "numero": 28,
+          "nome": "Willians Santana",
+          "artigo": "Willians dos Santos Santana",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1988-05-22"
+        },
+        {
+          "numero": 30,
+          "nome": "Maurinho",
+          "artigo": "Mauro Job Pontes Júnior",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1989-12-10"
+        },
+        {
+          "numero": 31,
+          "nome": "Diego Tavares",
+          "artigo": "Diego Barbosa Tavares",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1991-07-06"
+        },
+        {
+          "numero": 32,
+          "nome": "Ferdinando",
+          "artigo": "Ferdinando Leda",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1980-04-22"
+        },
+        {
+          "numero": 32,
+          "nome": "Matheus",
+          "artigo": "Matheus Gutz",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 33,
+          "nome": "Gustavo",
+          "artigo": "Gustavo Franchin Schiavolin",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1982-02-19"
+        },
+        {
+          "numero": 36,
+          "nome": "Lucas Lovat",
+          "artigo": "Lucas Lovat",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-01-15"
+        },
+        {
+          "numero": 38,
+          "nome": "Vitor Prada",
+          "artigo": "Vitor Prada Maçaneiro",
+          "nacionalidade": "Brazil",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 51,
+          "nome": "Luis Salazar",
+          "artigo": "Luis Ángel Salazar Cuesta",
+          "nacionalidade": "Colombia",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 55,
+          "nome": "Juan",
+          "artigo": "Juan Maldonado Jaimez",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1982-02-06"
+        },
+        {
+          "numero": 77,
+          "nome": "Caio César",
+          "artigo": "Caio César da Silva Silveira",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1995-07-27"
+        },
+        {
+          "numero": 80,
+          "nome": "Airton",
+          "artigo": "Airton Tirabassi",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-03-12"
+        },
+        {
+          "numero": 81,
+          "nome": "Vitor",
+          "artigo": "Vitor da Silva Vieira",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 87,
+          "nome": "Gustavo Santos",
+          "artigo": "Gustavo Santos (footballer)",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "2002-04-23"
+        },
+        {
+          "numero": 90,
+          "nome": "João Paulo",
+          "artigo": "João Paulo Purcino de Almeida",
+          "nacionalidade": "Brazil",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1990-07-20"
+        },
+        {
+          "numero": 93,
+          "nome": "Judson",
+          "artigo": "Judson Silva Tavares",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-05-25"
+        },
+        {
+          "numero": 94,
+          "nome": "Lucas Otávio",
+          "artigo": "Lucas Otávio",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1994-10-09"
+        },
+        {
+          "numero": 96,
+          "nome": "Deivid",
+          "artigo": "Deivid de Santana Silva",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 97,
+          "nome": "Lourenço",
+          "artigo": "João Paulo Ferreira Lourenço",
+          "nacionalidade": "Brazil",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1997-09-07"
+        },
+        {
+          "numero": 98,
+          "nome": "Santarém",
+          "artigo": "Carlos Vitor da Silva Nascimento",
+          "nacionalidade": "Brazil",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": 99,
+          "nome": "Joel",
+          "artigo": "Diederrick Joel",
+          "nacionalidade": "Cameroon",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1993-12-06"
+        }
+      ]
+    },
+    "Ponte Preta": {
+      "titulo": "Associação Atlética Ponte Preta",
+      "revisao": 809584582,
+      "data": "2017-11-10T02:07:15Z",
+      "jogadores": [
+        {
+          "numero": null,
+          "nome": "Aranha",
+          "artigo": "Aranha (footballer)",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Ivan",
+          "artigo": "Ivan Quaresma da Silva",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1997-02-07"
+        },
+        {
+          "numero": null,
+          "nome": "João Carlos",
+          "artigo": "João Carlos Heidemann",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1988-04-06"
+        },
+        {
+          "numero": null,
+          "nome": "Fábio Ferreira",
+          "artigo": "Fábio Ferreira (Brazilian footballer)",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1984-10-23"
+        },
+        {
+          "numero": null,
+          "nome": "Kadu",
+          "artigo": "Kadu (footballer)",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Luan Peres",
+          "artigo": "Luan Peres Petroni",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1994-07-19"
+        },
+        {
+          "numero": null,
+          "nome": "Marllon",
+          "artigo": "Marllon Borges",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-04-16"
+        },
+        {
+          "numero": null,
+          "nome": "Rodrigo",
+          "artigo": "Rodrigo Baldasso da Costa",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1980-08-27"
+        },
+        {
+          "numero": null,
+          "nome": "Reynaldo",
+          "artigo": "Reynaldo Cesar Moraes",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1997-01-03"
+        },
+        {
+          "numero": null,
+          "nome": "Yago",
+          "artigo": "Yago Fernando da Silva",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1992-08-29"
+        },
+        {
+          "numero": null,
+          "nome": "Artur",
+          "artigo": "Artur Sérgio Batista de Souza",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1994-08-05"
+        },
+        {
+          "numero": null,
+          "nome": "Danilo Barcelos",
+          "artigo": "Danilo Barcelos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1991-08-17"
+        },
+        {
+          "numero": null,
+          "nome": "Emerson",
+          "artigo": "Emerson Aparecido Leite de Souza Junior",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1999-01-14"
+        },
+        {
+          "numero": null,
+          "nome": "Fernandinho",
+          "artigo": "Fernando Galhardo Borges",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1985-08-31"
+        },
+        {
+          "numero": null,
+          "nome": "Jeferson",
+          "artigo": "Jeferson de Araújo de Carvalho",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1996-06-22"
+        },
+        {
+          "numero": null,
+          "nome": "Nino Paraíba",
+          "artigo": "Nino Paraíba",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1986-01-10"
+        },
+        {
+          "numero": null,
+          "nome": "Elton",
+          "artigo": "Elton Júnior Melo Ataíde",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1990-03-17"
+        },
+        {
+          "numero": null,
+          "nome": "Fábio Braga",
+          "artigo": "Fábio Braga",
+          "nacionalidade": "POR",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-09-06"
+        },
+        {
+          "numero": null,
+          "nome": "Fernando Bob",
+          "artigo": "Fernando Bob",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1988-01-07"
+        },
+        {
+          "numero": null,
+          "nome": "Jádson",
+          "artigo": "Jadson Alves dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1993-08-30"
+        },
+        {
+          "numero": null,
+          "nome": "João Vitor",
+          "artigo": "João Vitor Lima Gomes",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1988-06-01"
+        },
+        {
+          "numero": null,
+          "nome": "Naldo",
+          "artigo": "Marinaldo dos Santos Oliveira",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1990-05-13"
+        },
+        {
+          "numero": null,
+          "nome": "Wendel",
+          "artigo": "Wendel Geraldo Maurício e Silva",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1982-04-08"
+        },
+        {
+          "numero": null,
+          "nome": "Felipe Saraiva",
+          "artigo": "Felipe Saraiva de Souza Silva",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1998-03-09"
+        },
+        {
+          "numero": null,
+          "nome": "Jean Patrick",
+          "artigo": "Jean Patrick Reis",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1992-06-25"
+        },
+        {
+          "numero": null,
+          "nome": "Jorge Mendoza",
+          "artigo": "Jorge Mendoza",
+          "nacionalidade": "PAR",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-05-15"
+        },
+        {
+          "numero": null,
+          "nome": "Maranhão",
+          "artigo": "Maranhão (footballer, born 1990)",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1990-05-03"
+        },
+        {
+          "numero": null,
+          "nome": "Renato Cajá",
+          "artigo": "Renato Cajá",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1984-09-15"
+        },
+        {
+          "numero": null,
+          "nome": "Luis Alí",
+          "artigo": "Luis Alí",
+          "nacionalidade": "BOL",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1994-04-17"
+        },
+        {
+          "numero": null,
+          "nome": "Claudinho",
+          "artigo": "Cláudio Luiz Rodrigues Parise Leonel",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1997-01-28"
+        },
+        {
+          "numero": null,
+          "nome": "Emerson",
+          "artigo": "Emerson Sheik",
+          "nacionalidade": "QAT",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1978-12-06"
+        },
+        {
+          "numero": null,
+          "nome": "Léo Artur",
+          "artigo": "Leonardo Artur de Melo",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1995-03-23"
+        },
+        {
+          "numero": null,
+          "nome": "Léo Gamalho",
+          "artigo": "Léo Gamalho",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1986-01-30"
+        },
+        {
+          "numero": null,
+          "nome": "Lucca",
+          "artigo": "Lucca Borges de Brito",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1990-02-14"
+        },
+        {
+          "numero": null,
+          "nome": "Yuri",
+          "artigo": "Yuri Jonathan Vitor Coelho",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": false,
+          "nascimento": "1998-06-12"
+        }
+      ]
+    },
+    "Atlético Goianiense": {
+      "titulo": "Atlético Clube Goianiense",
+      "revisao": 809470953,
+      "data": "2017-11-09T09:13:32Z",
+      "jogadores": [
+        {
+          "numero": null,
+          "nome": "Kléver",
+          "artigo": "Kléver",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1989-07-20"
+        },
+        {
+          "numero": null,
+          "nome": "Lucas Frigeri",
+          "artigo": "Lucas Frigeri",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": "1989-06-15"
+        },
+        {
+          "numero": null,
+          "nome": "Marcos",
+          "artigo": "Marcos de Paula Dutra",
+          "nacionalidade": "BRA",
+          "setor": "GK",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Dedé Silva",
+          "artigo": "Diney Silva da Costa",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Eduardo Bauermann",
+          "artigo": "Eduardo Gabriel dos Santos Bauermann",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1996-02-13"
+        },
+        {
+          "numero": null,
+          "nome": "Gilvan",
+          "artigo": "Gilvan Souza Correa",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1989-11-10"
+        },
+        {
+          "numero": null,
+          "nome": "Ricardo Silva",
+          "artigo": "Ricardo César Dantas da Silva",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1992-08-13"
+        },
+        {
+          "numero": null,
+          "nome": "Rodrigo Milanez",
+          "artigo": "Rodrigo Milanez",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Roger Carvalho",
+          "artigo": "Roger Carvalho",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": "1986-12-10"
+        },
+        {
+          "numero": null,
+          "nome": "William Alves",
+          "artigo": "William Alves (footballer, born 1987)",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1987-04-29"
+        },
+        {
+          "numero": null,
+          "nome": "Breno Lopes",
+          "artigo": "Breno Lopes",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": true,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Bruno Pacheco",
+          "artigo": "Bruno de Jesus Pacheco",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1991-12-08"
+        },
+        {
+          "numero": null,
+          "nome": "Jonathan",
+          "artigo": "Jonathan Francisco Lemos",
+          "nacionalidade": "BRA",
+          "setor": "DF",
+          "emprestado": false,
+          "nascimento": "1992-08-25"
+        },
+        {
+          "numero": null,
+          "nome": "André Castro",
+          "artigo": "André Andrade de Castro",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-11-02"
+        },
+        {
+          "numero": null,
+          "nome": "Everton Heleno",
+          "artigo": "Everton Heleno dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1990-11-25"
+        },
+        {
+          "numero": null,
+          "nome": "Igor",
+          "artigo": "Igor Henrique Martins Machado",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1991-12-20"
+        },
+        {
+          "numero": null,
+          "nome": "João Victor",
+          "artigo": "João Victor da Silva Fonseca",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Marcão Silva",
+          "artigo": "Marcos Antonio Almeida Silva",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-01-14"
+        },
+        {
+          "numero": null,
+          "nome": "Paulinho",
+          "artigo": "Paulo Sérgio de Oliveira",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1989-05-10"
+        },
+        {
+          "numero": null,
+          "nome": "Ronaldo",
+          "artigo": "Ronaldo da Silva Souza",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1996-10-23"
+        },
+        {
+          "numero": null,
+          "nome": "Silva",
+          "artigo": "Adniellyson da Silva Oliveira",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1995-09-07"
+        },
+        {
+          "numero": null,
+          "nome": "Andrigo",
+          "artigo": "Andrigo",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": "1995-02-27"
+        },
+        {
+          "numero": null,
+          "nome": "Diego Rosa",
+          "artigo": "Diego Rosa (footballer)",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": true,
+          "nascimento": null
+        },
+        {
+          "numero": null,
+          "nome": "Jorginho",
+          "artigo": "Jorge de Moura Xavier",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1991-01-05"
+        },
+        {
+          "numero": null,
+          "nome": "Luiz Fernando",
+          "artigo": "Luiz Fernando Moraes dos Santos",
+          "nacionalidade": "BRA",
+          "setor": "MF",
+          "emprestado": false,
+          "nascimento": "1996-10-16"
+        },
+        {
+          "numero": null,
+          "nome": "Alison",
+          "artigo": "Alison Henrique Mira",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1995-12-01"
+        },
+        {
+          "numero": null,
+          "nome": "Jefferson Nem",
+          "artigo": "Jefferson Vasconcelos Bras da Silva",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1996-04-10"
+        },
+        {
+          "numero": null,
+          "nome": "Niltinho",
+          "artigo": "Nilton Soares Rodrigues",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1993-09-11"
+        },
+        {
+          "numero": null,
+          "nome": "Walter",
+          "artigo": "Walter Henrique da Silva",
+          "nacionalidade": "BRA",
+          "setor": "FW",
+          "emprestado": true,
+          "nascimento": "1989-07-22"
+        }
+      ]
+    }
+  }
+}

@@ -174,9 +174,9 @@ def proxima_temporada(simulacao_id):
             else:
                 random.seed()
 
-            # as ligas seguem as da temporada anterior (v1.6), mais a Série B
-            # de cada país que o save ainda não tem (v2.5)
-            ligas = divisoes.com_as_series_b(ligas_do_save(sim))
+            # as ligas seguem as da temporada anterior (v1.6); o mundo cresce
+            # na virada (v2.5): as Séries B e as ligas novas
+            ligas = divisoes.do_save_na_virada(ligas_do_save(sim), TODAS_AS_LIGAS)
             campeonato = carregar_campeonato(ligas)
             campeonato.economia = financas.economia_do_save(sim)
             _sem_nomes_repetidos(campeonato, clubes_finais, jogadores_finais,

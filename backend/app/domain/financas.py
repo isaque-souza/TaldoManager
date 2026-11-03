@@ -35,7 +35,8 @@ PREMIO_DEGRAU_V1 = 500_000
 
 # o tamanho de cada liga: multiplica a TV e o mérito (Premier = 1,0)
 # as Séries B (v2.5) ganham perto de um quinto da A, como a Championship
-PESO_LIGA = {"premier": 1.0, "taldo": 0.8, "championship": 0.2, "taldo_b": 0.16}
+PESO_LIGA = {"premier": 1.0, "taldo": 0.8, "championship": 0.2, "taldo_b": 0.16,
+             "laliga": 0.7, "segunda": 0.16, "brasileirao": 0.4, "brasileirao_b": 0.16}
 PESO_PADRAO = 0.6                  # liga sem peso definido
 
 # na liga de peso 1,0, por temporada

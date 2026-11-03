@@ -67,14 +67,15 @@ def test_carreira_segue_com_as_duas_ligas():
     nova = carreira_service.proxima_temporada(sid)["simulacao_id"]
 
     sim = _linhas("SELECT ligas FROM simulacao WHERE id = ?", nova)[0]
-    # o save de antes da v2.5 ganha as Séries B na virada
-    assert json.loads(sim["ligas"]) == ["taldo", "premier", "taldo_b", "championship"]
+    # o save de antes da v2.5 ganha as Séries B e as ligas novas na virada
+    from app.domain import divisoes
+    assert json.loads(sim["ligas"]) == divisoes.ordenar(TODAS_AS_LIGAS)
     m = mercado_service.ver_mercado(nova)
     assert len(m["livres"]) >= 100     # a lista cresce com as ligas
     porliga = collections.Counter(
         r["liga"] for r in _linhas("SELECT liga FROM clube WHERE simulacao_id = ?", nova)
     )
-    assert porliga == {"taldo": 20, "premier": 20, "taldo_b": 20, "championship": 20}
+    assert porliga == {l: 20 for l in TODAS_AS_LIGAS}
 
 
 def test_listar_clubes_das_duas_ligas_com_ranking_por_liga():
@@ -217,6 +218,6 @@ def test_carreira_com_as_series_b_sobe_4_e_cai_4():
         partidas = partida_repo.listar_por_simulacao(conn, nova)
     finally:
         conn.close()
-    assert len(partidas) == 40
+    assert len(partidas) == 10 * len(TODAS_AS_LIGAS)
     for p in partidas:
         assert agora[p["mandante_nome"]] == agora[p["visitante_nome"]]

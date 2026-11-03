@@ -8,12 +8,16 @@ export const NOME_LIGA = {
   taldo: "Liga Taldo", premier: "Premier League",
   // as Séries B (v2.5)
   taldo_b: "Liga Taldo B", championship: "Championship",
+  laliga: "La Liga", segunda: "Segunda División",
+  brasileirao: "Brasileirão", brasileirao_b: "Brasileirão Série B",
 };
 
 export const nomeLiga = (id) => NOME_LIGA[id] || id;
 
 // divisões (v2.5; app.domain.divisoes no servidor): a Série B de cada A
-const SERIE_B_DA_A = { taldo: "taldo_b", premier: "championship" };
+const SERIE_B_DA_A = {
+  taldo: "taldo_b", premier: "championship", laliga: "segunda", brasileirao: "brasileirao_b",
+};
 const SERIE_B = new Set(Object.values(SERIE_B_DA_A));
 export const SOBEM = 4;
 export const VAGAS_COPA = 8;   // copa.VAGAS_POR_LIGA no servidor

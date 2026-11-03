@@ -1,0 +1,895 @@
+[
+    {
+        "id": 1,
+        "nome": "América Mineiro",
+        "pais": "Brasil",
+        "dinheiro": 2000000,
+        "torcedores": 500000,
+        "titulares": [
+            70001,
+            70002,
+            70003,
+            70004,
+            70005,
+            70006,
+            70007,
+            70008,
+            70009,
+            70010,
+            70011
+        ],
+        "reservas": [
+            70012,
+            70013,
+            70014,
+            70015,
+            70016,
+            70017,
+            70018,
+            70019,
+            70020,
+            70021,
+            70022,
+            70023
+        ],
+        "rivais": [
+            "Atlético Mineiro",
+            "Boa Esporte",
+            "Cruzeiro"
+        ],
+        "identidade": {
+            "cor_primaria": "#006F3C",
+            "cor_secundaria": "#000000",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "AME"
+        }
+    },
+    {
+        "id": 2,
+        "nome": "Internacional",
+        "pais": "Brasil",
+        "dinheiro": 8000000,
+        "torcedores": 4000000,
+        "titulares": [
+            70024,
+            70025,
+            70026,
+            70027,
+            70028,
+            70029,
+            70030,
+            70031,
+            70032,
+            70033,
+            70034
+        ],
+        "reservas": [
+            70035,
+            70036,
+            70037,
+            70038,
+            70039,
+            70040,
+            70041,
+            70042,
+            70043,
+            70044,
+            70045,
+            70046
+        ],
+        "rivais": [
+            "Grêmio"
+        ],
+        "identidade": {
+            "cor_primaria": "#E30613",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "INT"
+        }
+    },
+    {
+        "id": 3,
+        "nome": "Ceará",
+        "pais": "Brasil",
+        "dinheiro": 2000000,
+        "torcedores": 800000,
+        "titulares": [
+            70047,
+            70048,
+            70049,
+            70050,
+            70051,
+            70052,
+            70053,
+            70054,
+            70055,
+            70056,
+            70057
+        ],
+        "reservas": [
+            70058,
+            70059,
+            70060,
+            70061,
+            70062,
+            70063,
+            70064,
+            70065,
+            70066,
+            70067,
+            70068,
+            70069
+        ],
+        "rivais": [
+            "ABC"
+        ],
+        "identidade": {
+            "cor_primaria": "#000000",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "CEA"
+        }
+    },
+    {
+        "id": 4,
+        "nome": "Paraná",
+        "pais": "Brasil",
+        "dinheiro": 1500000,
+        "torcedores": 300000,
+        "titulares": [
+            70070,
+            70071,
+            70072,
+            70073,
+            70074,
+            70075,
+            70076,
+            70077,
+            70078,
+            70079,
+            70080
+        ],
+        "reservas": [
+            70081,
+            70082,
+            70083,
+            70084,
+            70085,
+            70086,
+            70087,
+            70088,
+            70089,
+            70090,
+            70091,
+            70092
+        ],
+        "rivais": [
+            "Atlético Paranaense",
+            "Coritiba",
+            "Londrina"
+        ],
+        "identidade": {
+            "cor_primaria": "#0033A0",
+            "cor_secundaria": "#C8102E",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "PAR"
+        }
+    },
+    {
+        "id": 5,
+        "nome": "Londrina",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 150000,
+        "titulares": [
+            70093,
+            70094,
+            70095,
+            70096,
+            70097,
+            70098,
+            70099,
+            70100,
+            70101,
+            70102,
+            70103
+        ],
+        "reservas": [
+            70104,
+            70105,
+            70106,
+            70107,
+            70108,
+            70109,
+            70110,
+            70111,
+            70112,
+            70113,
+            70114,
+            70115
+        ],
+        "rivais": [
+            "Paraná"
+        ],
+        "identidade": {
+            "cor_primaria": "#87CEEB",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "LON"
+        }
+    },
+    {
+        "id": 6,
+        "nome": "Oeste",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 50000,
+        "titulares": [
+            70116,
+            70117,
+            70118,
+            70119,
+            70120,
+            70121,
+            70122,
+            70123,
+            70124,
+            70125,
+            70126
+        ],
+        "reservas": [
+            70127,
+            70128,
+            70129,
+            70130,
+            70131,
+            70132,
+            70133,
+            70134,
+            70135,
+            70136,
+            70137,
+            70138
+        ],
+        "rivais": [
+            "Guarani"
+        ],
+        "identidade": {
+            "cor_primaria": "#C8102E",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "redondo",
+            "sigla": "OES"
+        }
+    },
+    {
+        "id": 7,
+        "nome": "Vila Nova",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 200000,
+        "titulares": [
+            70139,
+            70140,
+            70141,
+            70142,
+            70143,
+            70144,
+            70145,
+            70146,
+            70147,
+            70148,
+            70149
+        ],
+        "reservas": [
+            70150,
+            70151,
+            70152,
+            70153,
+            70154,
+            70155,
+            70156,
+            70157,
+            70158,
+            70159,
+            70160,
+            70161
+        ],
+        "rivais": [
+            "Goiás"
+        ],
+        "identidade": {
+            "cor_primaria": "#C8102E",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "VNO"
+        }
+    },
+    {
+        "id": 8,
+        "nome": "Brasil de Pelotas",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 150000,
+        "titulares": [
+            70162,
+            70163,
+            70164,
+            70165,
+            70166,
+            70167,
+            70168,
+            70169,
+            70170,
+            70171,
+            70172
+        ],
+        "reservas": [
+            70173,
+            70174,
+            70175,
+            70176,
+            70177,
+            70178,
+            70179,
+            70180,
+            70181,
+            70182,
+            70183,
+            70184
+        ],
+        "rivais": [
+            "Juventude"
+        ],
+        "identidade": {
+            "cor_primaria": "#C8102E",
+            "cor_secundaria": "#000000",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "BRP"
+        }
+    },
+    {
+        "id": 9,
+        "nome": "Juventude",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 200000,
+        "titulares": [
+            70185,
+            70186,
+            70187,
+            70188,
+            70189,
+            70190,
+            70191,
+            70192,
+            70193,
+            70194,
+            70195
+        ],
+        "reservas": [
+            70196,
+            70197,
+            70198,
+            70199,
+            70200,
+            70201,
+            70202,
+            70203,
+            70204,
+            70205,
+            70206,
+            70207
+        ],
+        "rivais": [
+            "Brasil de Pelotas"
+        ],
+        "identidade": {
+            "cor_primaria": "#00843D",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "JUV"
+        }
+    },
+    {
+        "id": 10,
+        "nome": "Boa Esporte",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 50000,
+        "titulares": [
+            70208,
+            70209,
+            70210,
+            70211,
+            70212,
+            70213,
+            70214,
+            70215,
+            70216,
+            70217,
+            70218
+        ],
+        "reservas": [
+            70219,
+            70220,
+            70221,
+            70222,
+            70223,
+            70224,
+            70225,
+            70226,
+            70227,
+            70228,
+            70229,
+            70230
+        ],
+        "rivais": [
+            "América Mineiro"
+        ],
+        "identidade": {
+            "cor_primaria": "#000000",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "BOA"
+        }
+    },
+    {
+        "id": 11,
+        "nome": "Paysandu",
+        "pais": "Brasil",
+        "dinheiro": 1500000,
+        "torcedores": 700000,
+        "titulares": [
+            70231,
+            70232,
+            70233,
+            70234,
+            70235,
+            70236,
+            70237,
+            70238,
+            70239,
+            70240,
+            70241
+        ],
+        "reservas": [
+            70242,
+            70243,
+            70244,
+            70245,
+            70246,
+            70247,
+            70248,
+            70249,
+            70250,
+            70251,
+            70252,
+            70253
+        ],
+        "rivais": [
+            "CRB"
+        ],
+        "identidade": {
+            "cor_primaria": "#87CEEB",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "PAY"
+        }
+    },
+    {
+        "id": 12,
+        "nome": "Figueirense",
+        "pais": "Brasil",
+        "dinheiro": 1500000,
+        "torcedores": 300000,
+        "titulares": [
+            70254,
+            70255,
+            70256,
+            70257,
+            70258,
+            70259,
+            70260,
+            70261,
+            70262,
+            70263,
+            70264
+        ],
+        "reservas": [
+            70265,
+            70266,
+            70267,
+            70268,
+            70269,
+            70270,
+            70271,
+            70272,
+            70273,
+            70274,
+            70275,
+            70276
+        ],
+        "rivais": [
+            "Avaí",
+            "Chapecoense",
+            "Criciúma"
+        ],
+        "identidade": {
+            "cor_primaria": "#000000",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "FIG"
+        }
+    },
+    {
+        "id": 13,
+        "nome": "Criciúma",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 200000,
+        "titulares": [
+            70277,
+            70278,
+            70279,
+            70280,
+            70281,
+            70282,
+            70283,
+            70284,
+            70285,
+            70286,
+            70287
+        ],
+        "reservas": [
+            70288,
+            70289,
+            70290,
+            70291,
+            70292,
+            70293,
+            70294,
+            70295,
+            70296,
+            70297,
+            70298,
+            70299
+        ],
+        "rivais": [
+            "Figueirense"
+        ],
+        "identidade": {
+            "cor_primaria": "#FFD100",
+            "cor_secundaria": "#000000",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "CRI"
+        }
+    },
+    {
+        "id": 14,
+        "nome": "Goiás",
+        "pais": "Brasil",
+        "dinheiro": 2000000,
+        "torcedores": 500000,
+        "titulares": [
+            70300,
+            70301,
+            70302,
+            70303,
+            70304,
+            70305,
+            70306,
+            70307,
+            70308,
+            70309,
+            70310
+        ],
+        "reservas": [
+            70311,
+            70312,
+            70313,
+            70314,
+            70315,
+            70316,
+            70317,
+            70318,
+            70319,
+            70320,
+            70321,
+            70322
+        ],
+        "rivais": [
+            "Atlético Goianiense",
+            "Luverdense",
+            "Vila Nova"
+        ],
+        "identidade": {
+            "cor_primaria": "#00843D",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "GOI"
+        }
+    },
+    {
+        "id": 15,
+        "nome": "CRB",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 200000,
+        "titulares": [
+            70323,
+            70324,
+            70325,
+            70326,
+            70327,
+            70328,
+            70329,
+            70330,
+            70331,
+            70332,
+            70333
+        ],
+        "reservas": [
+            70334,
+            70335,
+            70336,
+            70337,
+            70338,
+            70339,
+            70340,
+            70341,
+            70342,
+            70343,
+            70344,
+            70345
+        ],
+        "rivais": [
+            "Paysandu"
+        ],
+        "identidade": {
+            "cor_primaria": "#C8102E",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "CRB"
+        }
+    },
+    {
+        "id": 16,
+        "nome": "Guarani",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 300000,
+        "titulares": [
+            70346,
+            70347,
+            70348,
+            70349,
+            70350,
+            70351,
+            70352,
+            70353,
+            70354,
+            70355,
+            70356
+        ],
+        "reservas": [
+            70357,
+            70358,
+            70359,
+            70360,
+            70361,
+            70362,
+            70363,
+            70364,
+            70365,
+            70366,
+            70367,
+            70368
+        ],
+        "rivais": [
+            "Oeste",
+            "Ponte Preta"
+        ],
+        "identidade": {
+            "cor_primaria": "#00843D",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "GUA"
+        }
+    },
+    {
+        "id": 17,
+        "nome": "Luverdense",
+        "pais": "Brasil",
+        "dinheiro": 500000,
+        "torcedores": 50000,
+        "titulares": [
+            70369,
+            70370,
+            70371,
+            70372,
+            70373,
+            70374,
+            70375,
+            70376,
+            70377,
+            70378,
+            70379
+        ],
+        "reservas": [
+            70380,
+            70381,
+            70382,
+            70383,
+            70384,
+            70385,
+            70386,
+            70387,
+            70388,
+            70389,
+            70390,
+            70391
+        ],
+        "rivais": [
+            "Goiás"
+        ],
+        "identidade": {
+            "cor_primaria": "#00843D",
+            "cor_secundaria": "#FFD100",
+            "camisa": "lisa",
+            "escudo": "moderno",
+            "sigla": "LUV"
+        }
+    },
+    {
+        "id": 18,
+        "nome": "Santa Cruz",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 800000,
+        "titulares": [
+            70392,
+            70393,
+            70394,
+            70395,
+            70396,
+            70397,
+            70398,
+            70399,
+            70400,
+            70401,
+            70402
+        ],
+        "reservas": [
+            70403,
+            70404,
+            70405,
+            70406,
+            70407,
+            70408,
+            70409,
+            70410,
+            70411,
+            70412,
+            70413,
+            70414
+        ],
+        "rivais": [
+            "Náutico",
+            "Sport"
+        ],
+        "identidade": {
+            "cor_primaria": "#C8102E",
+            "cor_secundaria": "#000000",
+            "camisa": "aros",
+            "escudo": "classico",
+            "sigla": "STA"
+        }
+    },
+    {
+        "id": 19,
+        "nome": "ABC",
+        "pais": "Brasil",
+        "dinheiro": 500000,
+        "torcedores": 200000,
+        "titulares": [
+            70415,
+            70416,
+            70417,
+            70418,
+            70419,
+            70420,
+            70421,
+            70422,
+            70423,
+            70424,
+            70425
+        ],
+        "reservas": [
+            70426,
+            70427,
+            70428,
+            70429,
+            70430,
+            70431,
+            70432,
+            70433,
+            70434,
+            70435,
+            70436,
+            70437
+        ],
+        "rivais": [
+            "Ceará",
+            "Náutico"
+        ],
+        "identidade": {
+            "cor_primaria": "#000000",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "lisa",
+            "escudo": "classico",
+            "sigla": "ABC"
+        }
+    },
+    {
+        "id": 20,
+        "nome": "Náutico",
+        "pais": "Brasil",
+        "dinheiro": 1000000,
+        "torcedores": 400000,
+        "titulares": [
+            70438,
+            70439,
+            70440,
+            70441,
+            70442,
+            70443,
+            70444,
+            70445,
+            70446,
+            70447,
+            70448
+        ],
+        "reservas": [
+            70449,
+            70450,
+            70451,
+            70452,
+            70453,
+            70454,
+            70455,
+            70456,
+            70457,
+            70458,
+            70459,
+            70460
+        ],
+        "rivais": [
+            "ABC",
+            "Santa Cruz",
+            "Sport"
+        ],
+        "identidade": {
+            "cor_primaria": "#C8102E",
+            "cor_secundaria": "#FFFFFF",
+            "camisa": "listras",
+            "escudo": "classico",
+            "sigla": "NAU"
+        }
+    }
+]

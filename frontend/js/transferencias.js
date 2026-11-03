@@ -26,7 +26,8 @@ const ABAS = [
   ["negociacoes", "Negociações"], ["historico", "Histórico"], ["olheiro", "Olheiro"],
 ];
 const LIMITE_LINHAS = 40;   // linhas da busca (o resto pede filtro)
-const SIGLA_LIGA = { taldo: "TAL", premier: "PL", taldo_b: "TAL B", championship: "CHA" };
+const SIGLA_LIGA = { taldo: "TAL", premier: "PL", taldo_b: "TAL B", championship: "CHA", laliga: "LL", segunda: "LL2",
+  brasileirao: "BR", brasileirao_b: "BR B" };
 const POSICOES = [["", "todas"], ["Goleiro", "Goleiro"], ["Defesa", "Defesa"],
                   ["Meio-Campo", "Meio-campo"], ["Atacante", "Atacante"]];
 const IDADES = [["", "todas"], ["jovem", "até 21"], ["auge", "22 a 29"], ["veterano", "30 ou mais"]];

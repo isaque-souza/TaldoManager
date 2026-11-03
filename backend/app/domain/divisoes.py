@@ -12,8 +12,12 @@ SOBEM = 4      # sobem 4 da B e caem 4 da A
 DIVISOES = {
     "taldo": ("taldo", 1),
     "premier": ("inglaterra", 1),
+    "laliga": ("espanha", 1),
+    "brasileirao": ("brasil", 1),
     "taldo_b": ("taldo", 2),
     "championship": ("inglaterra", 2),
+    "segunda": ("espanha", 2),
+    "brasileirao_b": ("brasil", 2),
 }
 
 
@@ -61,6 +65,15 @@ def com_as_series_b(ligas):
         if b and b not in todas:
             todas.append(b)
     return ordenar(todas)
+
+
+def do_save_na_virada(ligas, todas):
+    """As ligas que um save joga depois da virada (v2.5): o que já tem
+    Premier (o mundo da v1.6) ganha todas as `todas`; o que só tem a Taldo
+    ganha a Série B dela. Na ordem das tabelas."""
+    if len(primeiras(set(ligas))) > 1:
+        return ordenar(list(ligas) + list(todas))
+    return com_as_series_b(ligas)
 
 
 def acesso_e_rebaixamento(clubes_finais):

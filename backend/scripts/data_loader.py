@@ -16,6 +16,12 @@ LIGAS = {
     # as Séries B (v2.5; ver app.domain.divisoes)
     "taldo_b": ("Liga Taldo B", SEEDS_DIR / "taldo_b"),
     "championship": ("Championship", SEEDS_DIR / "championship"),
+    # a Espanha (v2.5)
+    "laliga": ("La Liga", SEEDS_DIR / "laliga"),
+    "segunda": ("Segunda División", SEEDS_DIR / "segunda"),
+    # o Brasil de 2017, o ano do hepta do Corinthians (v2.5)
+    "brasileirao": ("Brasileirão", SEEDS_DIR / "brasileirao"),
+    "brasileirao_b": ("Brasileirão Série B", SEEDS_DIR / "brasileirao_b"),
 }
 LIGA_PADRAO = ("taldo",)   # saves de antes da v1.6
 TODAS_AS_LIGAS = tuple(LIGAS)   # todo jogo novo (v1.6)

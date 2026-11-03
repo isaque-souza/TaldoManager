@@ -306,7 +306,8 @@ class NovaSimulacao(BaseModel):
     xi: list[str] | None = None        # nomes do XI titular preferido
     modo: Literal["completa", "rodada_a_rodada"] = "completa"
     # ligas que rodam juntas (v1.6); sem dizer, todas
-    ligas: list[Literal["taldo", "premier", "taldo_b", "championship"]] | None = None
+    ligas: list[Literal["taldo", "premier", "laliga", "brasileirao", "taldo_b",
+                        "championship", "segunda", "brasileirao_b"]] | None = None
 
 
 class Posicionamento(BaseModel):
