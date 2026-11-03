@@ -16,7 +16,7 @@ Os sorteios são próprios (`base.rng_da_peneira`): não mexem nas partidas.
 
 from datetime import timedelta
 
-from app.domain import base
+from app.domain import base, financas
 
 DURACOES = (1, 3, 6)                    # meses
 DIAS_POR_RELATORIO = 30
@@ -142,12 +142,13 @@ def limite(nivel_base):
     return LIMITE[nivel_base]
 
 
-def custo(regiao, meses):
+def custo(regiao, meses, liga=None):
     """A missão inteira, paga no envio."""
-    return REGIOES[regiao]["custo_mes"] * meses
+    # pelo peso da liga, como o olheiro e a base (v2.6)
+    return financas.custo_da_liga(REGIOES[regiao]["custo_mes"], liga) * meses
 
 
-def motivo_envio_bloqueado(regiao, meses, em_missao, nivel_base, caixa):
+def motivo_envio_bloqueado(regiao, meses, em_missao, nivel_base, caixa, liga=None):
     """Por que não dá para mandar o olheiro agora. `em_missao`: as regiões
     das missões em andamento."""
     if len(em_missao) >= limite(nivel_base):
@@ -156,7 +157,7 @@ def motivo_envio_bloqueado(regiao, meses, em_missao, nivel_base, caixa):
                 "e todos estão em missão")
     if regiao in em_missao:
         return f"Já há um olheiro em missão: {REGIOES[regiao]['nome']}"
-    if custo(regiao, meses) > caixa:
+    if custo(regiao, meses, liga) > caixa:
         return "Sem caixa para pagar a missão"
     return None
 
@@ -165,15 +166,15 @@ def primeiro_relatorio(enviado_em):
     return enviado_em + timedelta(days=DIAS_POR_RELATORIO)
 
 
-def resumo_regioes():
-    """As regiões para a tela: perfil e números."""
+def resumo_regioes(liga=None):
+    """As regiões para a tela: perfil e números (o custo, o da `liga`)."""
     return [
         {
             "id": rid,
             "nome": r["nome"],
             "perfil": r["perfil"],
             "paises": r["paises"],
-            "custo_mes": r["custo_mes"],
+            "custo_mes": financas.custo_da_liga(r["custo_mes"], liga),
             "por_relatorio": list(r["por_relatorio"]),
             "idades": list(r["idades"]),
         }

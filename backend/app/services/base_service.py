@@ -168,6 +168,7 @@ def trocar_nivel(simulacao_id, nivel):
         clube = ctx.alvo
         custo = base.custo_da_troca(
             clube.nivel_base, nivel, ctx.rodada - 1, len(ctx.campeonato.calendario),
+            clube.liga,
         )
         motivo = base.motivo_troca_bloqueada(clube, nivel, custo)
         if motivo:

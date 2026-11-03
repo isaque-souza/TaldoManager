@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from datetime import timedelta
 from itertools import product
 
-from app.domain import mercado, posicoes
+from app.domain import financas, mercado, posicoes
 from app.domain.evolucao import revisar_potencial
 from app.domain.jogador import Jogador
 from app.domain.nomes import NOMES, SOBRENOMES
@@ -187,17 +187,19 @@ def validar(nivel):
     return nivel
 
 
-def custo_temporada(nivel):
-    return NIVEIS[nivel][3]
+def custo_temporada(nivel, liga=None):
+    """O custo do nível por temporada, pelo peso da liga (v2.6; ver
+    `financas.custo_da_liga`)."""
+    return financas.custo_da_liga(NIVEIS[nivel][3], liga)
 
 
-def custo_da_troca(de, para, rodadas_jogadas, total_rodadas):
+def custo_da_troca(de, para, rodadas_jogadas, total_rodadas, liga=None):
     """Como no olheiro: subir paga a diferença pelo resto da temporada,
     descer é de graça."""
     if para <= de:
         return 0
     restantes = max(0, total_rodadas - rodadas_jogadas)
-    return round((custo_temporada(para) - custo_temporada(de)) * restantes / total_rodadas)
+    return round((custo_temporada(para, liga) - custo_temporada(de, liga)) * restantes / total_rodadas)
 
 
 def motivo_troca_bloqueada(clube, para, custo):
@@ -210,14 +212,14 @@ def motivo_troca_bloqueada(clube, para, custo):
 
 def resumo_niveis(clube, rodadas_jogadas, total_rodadas):
     niveis = []
-    for nivel, (_, margem, ritmo, custo, por_peneira) in NIVEIS.items():
-        agora = custo_da_troca(clube.nivel_base, nivel, rodadas_jogadas, total_rodadas)
+    for nivel, (_, margem, ritmo, _custo, por_peneira) in NIVEIS.items():
+        agora = custo_da_troca(clube.nivel_base, nivel, rodadas_jogadas, total_rodadas, clube.liga)
         niveis.append({
             "nivel": nivel,
             "ritmo": ritmo,
             "margem_max": margem[1],
             "por_peneira": list(por_peneira),
-            "custo_temporada": custo,
+            "custo_temporada": custo_temporada(nivel, clube.liga),
             "custo_agora": agora,
             "bloqueio": motivo_troca_bloqueada(clube, nivel, agora),
         })

@@ -140,3 +140,16 @@ def test_premiacao_so_sai_no_fim_da_temporada():
     campeonato = carregar_campeonato()
     campeonato.jogar_rodada()
     assert all(c.receita_premiacao == 0 for c in campeonato.clubes)
+
+
+def test_olheiro_e_base_custam_pelo_peso_da_liga_com_piso():
+    """v2.6: o nível 5 da base custa 4 mi na Premier e 1,6 mi no
+    Brasileirão; a Série B paga o piso (25% do preço cheio)."""
+    from app.domain import base, olheiro, olheiro_base
+    assert base.custo_temporada(5, "premier") == base.custo_temporada(5) == 4_000_000
+    assert base.custo_temporada(5, "brasileirao") == 1_600_000
+    assert olheiro.custo_temporada(5, "brasileirao_b") == 1_000_000
+    assert base.custo_da_troca(1, 5, 19, 38, "brasileirao") == 800_000
+    regiao = next(iter(olheiro_base.REGIOES))
+    cheio = olheiro_base.custo(regiao, 3)
+    assert olheiro_base.custo(regiao, 3, "laliga") == round(cheio / 3 * 0.7 / 10_000) * 10_000 * 3

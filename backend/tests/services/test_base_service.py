@@ -222,8 +222,8 @@ def test_trocar_nivel_cobra_a_diferenca():
     caixa = base_service.ver(sid)["caixa"]
     dados = base_service.trocar_nivel(sid, 3)
     assert dados["nivel"] == 3
-    assert dados["gasto_temporada"] == base.custo_temporada(3)   # rodada 1: a temporada toda
-    assert dados["caixa"] == caixa - base.custo_temporada(3)
+    assert dados["gasto_temporada"] == base.custo_temporada(3, "taldo")   # rodada 1: a temporada toda
+    assert dados["caixa"] == caixa - base.custo_temporada(3, "taldo")
     # descer é de graça
     assert base_service.trocar_nivel(sid, 1)["caixa"] == dados["caixa"]
     with pytest.raises(AcaoInvalida):

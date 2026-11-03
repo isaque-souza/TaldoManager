@@ -23,6 +23,7 @@ para contratar o melhor só para olhar o mercado e dispensar antes de pagar.
 
 import zlib
 
+from app.domain import financas
 from app.domain.evolucao import IDADE_DECLINIO
 
 # nível: (meia largura da faixa, custo por temporada)
@@ -47,17 +48,19 @@ def validar(nivel):
     return nivel
 
 
-def custo_temporada(nivel):
-    return NIVEIS[nivel][1]
+def custo_temporada(nivel, liga=None):
+    """O custo do nível por temporada, pelo peso da liga (v2.6; ver
+    `financas.custo_da_liga`)."""
+    return financas.custo_da_liga(NIVEIS[nivel][1], liga)
 
 
-def custo_da_troca(de, para, rodadas_jogadas, total_rodadas):
+def custo_da_troca(de, para, rodadas_jogadas, total_rodadas, liga=None):
     """Quanto o clube paga agora para trocar o olheiro de nível `de` pelo de
     `para`: a diferença pelo resto da temporada (descer é de graça)."""
     if para <= de:
         return 0
     restantes = max(0, total_rodadas - rodadas_jogadas)
-    return round((custo_temporada(para) - custo_temporada(de)) * restantes / total_rodadas)
+    return round((custo_temporada(para, liga) - custo_temporada(de, liga)) * restantes / total_rodadas)
 
 
 def motivo_troca_bloqueada(clube, para, custo):
@@ -71,12 +74,12 @@ def motivo_troca_bloqueada(clube, para, custo):
 def resumo(clube, rodadas_jogadas, total_rodadas):
     """O olheiro do clube e quanto custa trocar por cada nível agora."""
     niveis = []
-    for nivel, (meia, custo) in NIVEIS.items():
-        agora = custo_da_troca(clube.nivel_olheiro, nivel, rodadas_jogadas, total_rodadas)
+    for nivel, (meia, _) in NIVEIS.items():
+        agora = custo_da_troca(clube.nivel_olheiro, nivel, rodadas_jogadas, total_rodadas, clube.liga)
         niveis.append({
             "nivel": nivel,
             "faixa": meia,
-            "custo_temporada": custo,
+            "custo_temporada": custo_temporada(nivel, clube.liga),
             "custo_agora": agora,
             "bloqueio": motivo_troca_bloqueada(clube, nivel, agora),
         })
