@@ -184,3 +184,6 @@ backend/data/database/*.db
 
 # artefatos de teste de browser (playwright MCP)
 .playwright-mcp/
+
+# Claude Code: preferências locais (plugins, permissões pessoais) não vão para o repositório
+.claude/settings.local.json
