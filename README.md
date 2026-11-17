@@ -48,7 +48,9 @@ O projeto está sendo construído do zero para estudar lógica de programação,
 * ✅ Identidade visual (cores, escudo e camisa)
 * ✅ Finanças (TV, bilheteria, salários, premiação)
 * ✅ Rivais (clássicos)
-* ✅ Categorias de base
+* ✅ Categorias de base e olheiros
+* ✅ Estádio (público, ingresso e ampliação)
+* ✅ Torcida, fama e ídolos
 
 ---
 
@@ -86,8 +88,10 @@ O projeto está sendo construído do zero para estudar lógica de programação,
 ## Campeonato
 
 * ✅ Cadastro de campeonatos
-* ✅ Calendário turno e returno
-* ✅ Sorteio automático de rodadas
+* ✅ 8 ligas em 4 países (Séries A e B), com acesso e rebaixamento
+* ✅ Calendário turno e returno, dia a dia
+* ✅ Sorteio automático de rodadas (ordem nova a cada temporada)
+* ✅ Copas nacionais e copa entre as ligas
 * ✅ Histórico de partidas
 * ✅ Classificação
 * ✅ Critérios de desempate
@@ -143,12 +147,12 @@ Este projeto tem como objetivo estudar:
 
 # 🗺️ Roadmap
 
-## 📌 Status atual (2026-10-18)
+## 📌 Status atual (2026-11-17)
 
 O projeto passou do script único para **backend + frontend**:
 
 * **Backend** (`backend/`) — API FastAPI + engine de simulação + SQLite puro
-  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. 782 testes.
+  (sem ORM). `uvicorn app.main:app --reload`, docs em `/docs`. ~960 testes.
 * **Frontend** (`frontend/`) — HTML + CSS + JS puro em módulos ES (sem build), consome a API.
 
 Já dá pra:
@@ -195,8 +199,17 @@ escudos e camisas, tema de transmissão noturna, pré-jogo no campo e jogo ao
 vivo), v1.2 (Modo técnico: hub do clube, simulação interativa, planos de
 jogo e formação no meio do jogo), v1.3 (Atributos e posições: posições
 específicas, formações desenhadas, caixa de entrada e atributos nos lances)
-e v1.4 (Torcida: crescimento, mando de campo, marketing, rival, fama e
-ídolos) concluídas** — ver as seções abaixo.
+v1.4 (Torcida: crescimento, mando de campo, marketing, rival, fama e
+ídolos), v1.5 (Estádio), v1.6 (Elencos e segunda liga), v1.7 (Central de
+Transferências), v1.8 (Visual), v1.9 (Vontade do jogador), v2.0 (Olheiros
+e Base), v2.1 (Contas e jogo online), v2.2 (Relatório pós-jogo), v2.3
+(Pré-jogo completo), v2.4 (Visual com atmosfera), v2.5 (Mundo de 8 ligas)
+e v2.6 (Copas e elenco de 52) concluídas** — ver as seções abaixo.
+
+Hoje todo jogo novo roda **8 ligas em 4 países** (Liga Taldo e Liga Taldo
+B, Premier League e Championship, La Liga e Segunda División, Brasileirão
+e Série B), com acesso e rebaixamento, uma copa nacional por país e a copa
+entre as ligas com as 4 Séries A.
 
 ![Gráfico de pontos acumulados por rodada dos 20 clubes](screenshots/evolucao.png)
 
@@ -671,8 +684,8 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       `data/fontes/estrelas-premier.json` corrige à mão ~60 estrelas
       (Haaland 91, Salah 89, Saka 86...). Cores, caixa, torcida e clássicos
       numa tabela do importador. Nomes iguais aos da Taldo ganham o nome
-      completo de verdade ("João Victor Gomes", v2.5.1). XI de ~73 (Sheffield) a ~87 (City).
-      Ainda não aparece no jogo: é o próximo passo
+      completo de verdade ("João Victor Gomes", v2.5). XI de ~73 (Sheffield) a ~87 (City).
+      Entra no jogo no item seguinte
 * [x] Várias ligas no banco e no motor — todo jogo novo tem as duas
       ligas rodando juntas
       - [x] motor — cada clube tem a sua `liga`; `carregar_campeonato(ligas)`
@@ -701,7 +714,8 @@ League 2023/24, dados abertos do OpenFootball) para uma copa entre as ligas:
       League; na temporada, abas para ver a tabela, os rankings e os
       gráficos de cada liga; na rodada, os jogos da sua liga primeiro e os
       da outra recolhidos (`js/ligas.js`); o mercado já lista as duas
-* [x] Copa entre as ligas — 16 clubes (os 8 melhores de cada liga), em
+* [x] Copa entre as ligas — (formato da v1.6; desde a v2.6 são 32 clubes
+      das 4 Séries A, ver abaixo) 16 clubes (os 8 melhores de cada liga), em
       mata-mata de jogo único no meio da semana, depois das rodadas 8, 17,
       26 e 35 da liga (o calendário de 38 rodadas não muda). Oitavas sempre
       Taldo × Premier, cruzadas (1º de uma × 8º da outra); o 1º de cada liga
@@ -1151,7 +1165,7 @@ olheiros que buscam jovens pelo mundo. Regras em `app/domain/olheiro.py`
 
 ---
 
-# 🌐 Contas e jogo online (v2.1)
+# ✅ Contas e jogo online (v2.1) — Concluída
 
 Cada técnico tem a própria conta, e um não vê nem mexe nos saves do outro.
 
@@ -1190,7 +1204,7 @@ O banco fica no volume `taldo_dados` (atualizar não apaga os saves);
 
 ---
 
-# ⚽ Relatório pós-jogo (v2.2)
+# ✅ Relatório pós-jogo (v2.2) — Concluída
 
 O apito final do jogo do técnico (liga ou copa) leva a um relatório da
 partida, montado só com o que a rodada já gravou: abrir de novo, ou depois
@@ -1219,7 +1233,7 @@ nem elenco (`GET /simulacoes/{id}/pos-jogo`).
 
 ---
 
-# 🏟️ Pré-jogo completo (v2.3)
+# ✅ Pré-jogo completo (v2.3) — Concluída
 
 Antes do apito, o pré-jogo mostra como os dois times chegam ao jogo, além
 das escalações. Tudo é lido do save: abrir a tela não mexe em nada nem
@@ -1240,7 +1254,7 @@ muda o resultado da rodada (`GET /simulacoes/{id}/pre-jogo`).
 
 ---
 
-# 🌃 Pré-jogo e pós-jogo com atmosfera (v2.4)
+# ✅ Visual com atmosfera (v2.4) — Concluída
 
 As duas telas em volta do jogo ganharam o estádio à noite e mais contexto,
 sem mudar nada no motor. O estádio é um desenho em SVG feito a partir do
@@ -1263,13 +1277,66 @@ bandeiras. O mesmo jogo desenha sempre o mesmo estádio.
       quem caiu na rodada
 * [x] Outros resultados da rodada (na copa, os outros jogos da fase)
 
+Depois, o mesmo cuidado no resto das telas:
+
+* [x] Início — o card do próximo jogo com o estádio do mandante à noite,
+      escudos, posição, forma, selos Clássico e Lotado e o público
+      previsto; nos outros cards, o XI num campinho (anel âmbar em quem
+      está cansado), a forma e a ocupação do estádio. Cabe numa tela de
+      1366×768 sem rolar
+* [x] Jogador e elenco — a ficha nas cores do clube (camisa, OVR/POT,
+      campinho com onde ele joga), radar dos atributos, as notas da
+      temporada jogo a jogo e o game log com escudos
+* [x] Tabela — faixa do campeão e das vagas na copa, forma em
+      quadradinhos e a evolução com a linha do técnico em destaque
+* [x] Finanças — projeção do caixa no fim da temporada (ritmo das últimas
+      rodadas + prêmio da posição), "Entrou × Saiu" por categoria
+* [x] Estádio e marketing — capas noturnas com a ocupação média, faixas
+      de ingresso em fileiras de cadeiras e campanhas em "traz × custa"
+* [x] Escalação — 14 formações novas (11 → 25: 4-1-4-1, 4-2-2-2, 3-4-2-1,
+      5-2-3...) e uma galeria com cada uma num mini campinho e o peso de
+      ataque e defesa
+
 ---
 
-# 🏆 Copas e elenco de 52 (v2.6)
+# ✅ Mundo de 8 ligas (v2.5) — Concluída
 
-* [x] Elenco do técnico de até **52 jogadores**, como no FIFA
-      (`mercado.ELENCO_MAX`); os clubes da CPU seguem com 25
-      (`ELENCO_MAX_CPU`), para não acumularem livres e jovens
+O jogo sai de duas ligas para um mundo com Séries A e B em 4 países, e a
+economia passa a respeitar o tamanho de cada liga:
+
+* [x] Calendário sorteado — a ordem dos jogos muda a cada temporada (a
+      ordem dos clubes é embaralhada antes do método do círculo, com
+      gerador próprio). Reproduzível com a seed; saves em andamento
+      seguem no calendário em que começaram
+* [x] Finanças por liga (economia v2) — TV em parte igual + audiência,
+      patrocínio pela força e pela torcida, premiação linear pela posição
+      e salários de mercado ~3×. Cada liga paga pelo seu peso
+      (`financas.PESO_LIGA`): Premier 1,0, Taldo 0,8, La Liga 0,7,
+      Brasileirão 0,4, Championship 0,2 e as outras Séries B 0,16. Saves
+      antigos terminam a temporada nas regras velhas e migram na virada
+* [x] Séries A e B — Championship (clubes reais de 2023/24) e Liga Taldo B;
+      **4 sobem e 4 caem** na virada (`app/domain/divisoes.py`). A tabela
+      mostra as zonas, a diretoria avisa o acesso ou o rebaixamento e a
+      carreira guarda a liga de cada temporada
+* [x] La Liga e Segunda División (clubes reais, jogadores fictícios,
+      `scripts/gerar_ligas.py`), **Brasileirão 2017** com os elencos reais
+      (Wikipédia, overall estimado) e a Série B de 2017: 8 ligas, 4
+      países, acesso e rebaixamento por país
+* [x] Nomes reais — quem repete o nome de outro ganha o sobrenome de
+      verdade ("Gabriel Girotto", "João Victor Gomes") em vez do clube entre
+      parênteses; no campo, o nome curto é o sobrenome e, se dois empatam,
+      ganham a inicial ("L. Lima"). Saves antigos são migrados
+* [x] Ofertas pela lista de transferências — o sorteio só considera quem
+      tem vaga e caixa, e a cada dia de janela aberta há nova chance de
+      oferta
+
+---
+
+# ✅ Copas e elenco de 52 (v2.6) — Concluída
+
+* [x] Elenco de até **52 jogadores** para todos, como no FIFA
+      (`mercado.ELENCO_MAX`); a CPU, por conta própria, monta até 30
+      (`ELENCO_ALVO_CPU`), para ter profundidade sem inchar a folha
 * [x] **Copa entre as ligas** com as 4 Séries A: os 8 melhores de cada uma,
       32 clubes, 16 avos, oitavas, quartas, semi e final, no meio da semana
       depois das rodadas 5, 12, 19, 26 e 34. Na primeira fase ninguém pega
@@ -1300,6 +1367,9 @@ bandeiras. O mesmo jogo desenha sempre o mesmo estádio.
       (`financas.custo_da_liga`), com piso de 25% nas Séries B: o nível 5 da
       base é 4 mi na Premier e 1,6 mi no Brasileirão. Na virada, conta a
       liga da temporada nova (quem subiu paga o preço da A)
+* [x] Rodada ~4× mais rápida com as 8 ligas (índice no banco e cache dos
+      atributos): avançar uma rodada caiu de ~3 s para ~0,75 s, com os
+      mesmos resultados
 
 ---
 
@@ -1317,9 +1387,9 @@ TaldoManager/
 │   │   ├── repositories/   # acesso a cada tabela
 │   │   ├── services/       # simulacao_service (orquestra tudo)
 │   │   └── main.py         # app FastAPI
-│   ├── data/               # seed JSON + banco local (gerado)
+│   ├── data/               # seeds JSON das 8 ligas + banco local (gerado)
 │   ├── scripts/            # data_loader
-│   └── tests/              # 912 testes (domain, db, repositories, services, api)
+│   └── tests/              # ~960 testes (domain, db, repositories, services, api)
 │
 ├── deploy/                 # docker compose, atualizar e backup na VPS
 │
@@ -1384,7 +1454,7 @@ Criar um Football Manager totalmente jogável contendo:
 * ✅ Temporadas infinitas
 * ✅ Versão jogável pelo navegador
 * ✅ Torcida, fama e ídolos
-* ⏳ Vontade dos jogadores e disputa por contratações
+* ✅ Vontade dos jogadores e disputa por contratações
 
 ---
 
