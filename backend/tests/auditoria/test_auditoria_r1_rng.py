@@ -20,7 +20,8 @@ depender da sorte do escalonador):
 Esse é um entrelaçamento que o escalonador de threads pode produzir sozinho
 (o GIL troca de thread a cada ~5 ms; uma rodada leva centenas de ms).
 
-Os testes que mostram o defeito estão em `xfail(strict=True)`: eles afirmam
+Os testes que mostram o defeito estão em `xfail(strict=True, raises=DefeitoReproduzido)`:
+só a falha do comportamento afirmado conta como reprodução (ver `roteiro.py`). Eles afirmam
 o comportamento correto, falham hoje e, quando o R1 for corrigido, passam —
 o `strict` faz a suíte acusar, para tirar a marca. Para ver a diferença
 encontrada: `pytest tests/auditoria --runxfail`.
@@ -32,7 +33,9 @@ import pytest
 
 from app.domain.partida import Partida
 from app.services import simulacao_service, temporada_service, transmissao_service
-from tests.auditoria.roteiro import Fio, esperar, juntar, nome_do_fio
+from tests.auditoria.roteiro import (
+    DefeitoReproduzido, Fio, RoteiroTravado, esperar, exigir, juntar, nome_do_fio,
+)
 
 R1 = (
     "R1 reproduzido: uma leitura de outro save, no meio da rodada, troca o "
@@ -102,7 +105,8 @@ def _intercalar(acao_a, acao_b):
         if f.erro:
             raise f.erro
     # o roteiro aconteceu inteiro (senão o teste não prova nada)
-    assert a_restaurou.is_set() and b_dentro.is_set() and a_jogou.is_set()
+    if not (a_restaurou.is_set() and b_dentro.is_set() and a_jogou.is_set()):
+        raise RoteiroTravado("o roteiro do R1 não aconteceu inteiro")
     return fio_a, fio_b
 
 
@@ -143,7 +147,7 @@ def test_controle_leitura_em_outra_thread_sem_sobrepor_nao_muda_nada():
 # R1: leitura de outro save no meio da rodada
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason=R1)
+@pytest.mark.xfail(strict=True, raises=DefeitoReproduzido, reason=R1)
 def test_r1_pre_jogo_de_outro_save_no_meio_da_rodada_muda_o_resultado():
     meu, outro = _clubes()
     x1 = temporada_service.iniciar(seed=5, clube_usuario=meu)
@@ -159,13 +163,13 @@ def test_r1_pre_jogo_de_outro_save_no_meio_da_rodada_muda_o_resultado():
     diferentes = [
         (r, i) for r, i in zip(_placares(ref), _placares(a.resultado)) if r != i
     ]
-    assert not diferentes, (
+    exigir(not diferentes, (
         f"{len(diferentes)} de {len(_placares(ref))} jogos mudaram "
         f"(referência → intercalado): {diferentes}"
-    )
+    ))
 
 
-@pytest.mark.xfail(strict=True, reason=R1)
+@pytest.mark.xfail(strict=True, raises=DefeitoReproduzido, reason=R1)
 def test_r1_a_corrente_errada_fica_gravada_e_muda_as_rodadas_seguintes():
     """`avancar` grava `random.getstate()` no blob no fim da rodada: depois
     de uma interferência, as rodadas seguintes — jogadas sem ninguém por
@@ -184,10 +188,10 @@ def test_r1_a_corrente_errada_fica_gravada_e_muda_as_rodadas_seguintes():
     for _ in range(3):   # rodadas 2 a 4, cada save sozinho
         r1, r2 = temporada_service.avancar(x1), temporada_service.avancar(x2)
         seguintes.append(sum(a != b for a, b in zip(_placares(r1), _placares(r2))))
-    assert seguintes == [0, 0, 0], f"jogos diferentes nas rodadas 2, 3 e 4: {seguintes}"
+    exigir(seguintes == [0, 0, 0], f"jogos diferentes nas rodadas 2, 3 e 4: {seguintes}")
 
 
-@pytest.mark.xfail(strict=True, reason=R1)
+@pytest.mark.xfail(strict=True, raises=DefeitoReproduzido, reason=R1)
 def test_r1_proxima_rodada_de_outro_save_no_meio_da_rodada_muda_o_resultado():
     """A tela da rodada (`GET /rodadas/proxima`) é a leitura mais comum."""
     meu, outro = _clubes()
@@ -200,10 +204,11 @@ def test_r1_proxima_rodada_de_outro_save_no_meio_da_rodada_muda_o_resultado():
         lambda: temporada_service.avancar(x2),
         lambda: temporada_service.proxima_rodada(y),
     )
-    assert _placares(a.resultado) == _placares(ref)
+    exigir(_placares(a.resultado) == _placares(ref),
+           f"intercalado {_placares(a.resultado)} × referência {_placares(ref)}")
 
 
-@pytest.mark.xfail(strict=True, reason=R1)
+@pytest.mark.xfail(strict=True, raises=DefeitoReproduzido, reason=R1)
 def test_r1_o_jogo_gravado_deixa_de_ser_o_que_a_transmissao_mostrou():
     """O invariante de `test_transmissao.py`: sem decisões, a transmissão é
     exatamente a partida que vale. Com outra leitura no meio da rodada, o
@@ -223,10 +228,10 @@ def test_r1_o_jogo_gravado_deixa_de_ser_o_que_a_transmissao_mostrou():
     eventos_gravados = [(e["minuto"], e["tipo"], e["jogador"]) for e in det["eventos"]]
     eventos_transmitidos = [(e["minuto"], e["tipo"], e["jogador"]) for e in t["eventos"]]
 
-    assert (gravado, eventos_gravados) == (t["minutos"][-1]["placar"], eventos_transmitidos), (
+    exigir((gravado, eventos_gravados) == (t["minutos"][-1]["placar"], eventos_transmitidos), (
         f"transmissão {t['minutos'][-1]['placar']} × gravado {gravado}; "
         f"eventos transmitidos {len(eventos_transmitidos)}, gravados {len(eventos_gravados)}"
-    )
+    ))
 
 
 def test_controle_transmissao_sem_interferencia_e_o_jogo_gravado():

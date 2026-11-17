@@ -12,7 +12,9 @@ Roteiro (fixo, sem depender da sorte):
   o R1 não se misturar ao que se mede aqui;
 - depois da barreira, os dois gravam como gravariam em produção.
 
-Os testes afirmam o comportamento correto e estão em `xfail(strict=True)`
+Os testes afirmam o comportamento correto e estão em
+`xfail(strict=True, raises=DefeitoReproduzido)` (só a falha do comportamento
+afirmado conta; roteiro travado é falha de verdade — ver `roteiro.py`)
 enquanto o defeito existir. Detalhes: `pytest tests/auditoria --runxfail`.
 """
 
@@ -24,7 +26,9 @@ from app.db.conexao import conectar
 from app.repositories import carreira_repository as carreira_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import carreira_service, simulacao_service, temporada_service
-from tests.auditoria.roteiro import ESPERA, Fio, juntar
+from tests.auditoria.roteiro import (
+    ESPERA, DefeitoReproduzido, Fio, RoteiroTravado, conferir_roteiro, exigir, juntar,
+)
 
 R2 = "R2 reproduzido: dois pedidos simultâneos processam o mesmo turno"
 R2_VIRADA = "R2 reproduzido: duas viradas simultâneas criam duas temporadas seguintes"
@@ -65,7 +69,8 @@ def _sincronizar_avanco(monkeypatch):
     serializar_original = simulacao_service._serializar
 
     def restaurar(campeonato, blob):
-        assert trava.acquire(timeout=ESPERA), "a trava da simulação travou"
+        if not trava.acquire(timeout=ESPERA):
+            raise RoteiroTravado("a trava da simulação travou")
         return restaurar_original(campeonato, blob)
 
     def serializar(*args, **kwargs):
@@ -102,7 +107,7 @@ def test_controle_dois_avancos_em_sequencia_jogam_rodadas_diferentes():
 # R2: a mesma rodada jogada duas vezes
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason=R2)
+@pytest.mark.xfail(strict=True, raises=DefeitoReproduzido, reason=R2)
 def test_r2_dois_avancos_simultaneos_nao_duplicam_a_rodada():
     ref = _referencia_uma_rodada()
     sid = temporada_service.iniciar(seed=5, clube_usuario=_clube())
@@ -116,6 +121,7 @@ def test_r2_dois_avancos_simultaneos_nao_duplicam_a_rodada():
         a.start()
         b.start()
         juntar(a, b)
+    conferir_roteiro(a, b)
 
     c = _contagens(sid)
     erros = [repr(f.erro) for f in (a, b) if f.erro]
@@ -124,8 +130,8 @@ def test_r2_dois_avancos_simultaneos_nao_duplicam_a_rodada():
 
     # correto: cada rodada aparece uma vez só e o save anda uma rodada por
     # rodada gravada (ou o segundo pedido é recusado, ou joga a rodada 2)
-    assert all(n == ref["partidas_por_rodada"][1] for n in c["partidas_por_rodada"].values()), detalhe
-    assert c["rodada_atual"] == 1 + len(c["partidas_por_rodada"]), detalhe
+    exigir(all(n == ref["partidas_por_rodada"][1] for n in c["partidas_por_rodada"].values()), detalhe)
+    exigir(c["rodada_atual"] == 1 + len(c["partidas_por_rodada"]), detalhe)
 
 
 # ---------------------------------------------------------------------------
@@ -152,6 +158,7 @@ def _viradas_simultaneas(sid):
         a.start()
         b.start()
         juntar(a, b)
+    conferir_roteiro(a, b)
     return a, b
 
 
@@ -177,7 +184,7 @@ def _resumo(a, b):
     ]
 
 
-@pytest.mark.xfail(strict=True, reason=R2_VIRADA)
+@pytest.mark.xfail(strict=True, raises=DefeitoReproduzido, reason=R2_VIRADA)
 def test_r2_virada_dupla_da_temporada_1_cria_uma_carreira_so():
     """Primeira virada: o save ainda não tem carreira, então nem a checagem
     de `sucessora()` existe — cada pedido cria a sua carreira."""
@@ -188,11 +195,11 @@ def test_r2_virada_dupla_da_temporada_1_cria_uma_carreira_so():
     detalhe = (f"temporadas 2: {filhas} | carreiras no banco: {carreiras} | "
                f"carreira do save: {carreira_do_save} | pedidos: {_resumo(a, b)}")
 
-    assert len(filhas) == 1, detalhe
-    assert carreiras == 1, detalhe
+    exigir(len(filhas) == 1, detalhe)
+    exigir(carreiras == 1, detalhe)
 
 
-@pytest.mark.xfail(strict=True, reason=R2_VIRADA)
+@pytest.mark.xfail(strict=True, raises=DefeitoReproduzido, reason=R2_VIRADA)
 def test_r2_virada_dupla_dentro_de_uma_carreira_cria_uma_temporada_so():
     """Save que já é a temporada 1 de uma carreira: a checagem de
     `sucessora()` existe, mas roda antes da transação de escrita."""
@@ -212,9 +219,9 @@ def test_r2_virada_dupla_dentro_de_uma_carreira_cria_uma_temporada_so():
     detalhe = (f"temporadas 2 da carreira {carreira_id}: {da_carreira} | "
                f"pedidos: {_resumo(a, b)}")
 
-    assert len(da_carreira) == 1, detalhe
+    exigir(len(da_carreira) == 1, detalhe)
     perdedor = [f for f in (a, b) if f.erro]
-    assert len(perdedor) == 1 and isinstance(perdedor[0].erro, carreira_service.CarreiraInvalida), detalhe
+    exigir(len(perdedor) == 1 and isinstance(perdedor[0].erro, carreira_service.CarreiraInvalida), detalhe)
 
 
 def test_controle_segunda_virada_em_sequencia_e_recusada(cargo_garantido):

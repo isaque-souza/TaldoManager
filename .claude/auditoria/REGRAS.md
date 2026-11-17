@@ -48,9 +48,14 @@ docker run --rm -v "$PWD":/repo:ro -e PYTHONDONTWRITEBYTECODE=1 -w /repo/backend
 
 ## Testes de reprodução
 
-- Um bug confirmado vira teste `@pytest.mark.xfail(strict=True, reason="Rn reproduzido: ...")`.
-  Quando a correção chegar, o xfail passa a "XPASS", e o `strict` obriga a
-  removê-lo **conscientemente**.
+- Um bug confirmado vira teste
+  `@pytest.mark.xfail(strict=True, raises=DefeitoReproduzido, reason="Rn reproduzido: ...")`,
+  com a afirmação final em `exigir(condição, detalhe)` (`roteiro.py`). Só essa
+  falha conta como reprodução: espera vencida ou barreira quebrada levantam
+  `RoteiroTravado` e deixam a suíte vermelha. Quando a correção chegar, o
+  xfail passa a "XPASS", e o `strict` obriga a removê-lo **conscientemente**.
+- Testes de diagnóstico não dependem de o bug existir: a anomalia é montada
+  por SQL no banco temporário (ver `test_auditoria_diagnostico.py`).
 - Para ver a evidência: `pytest --runxfail -s`.
 - Cada reprodução tem um **controle** que passa (o mesmo cenário sem a interferência).
 - Concorrência: roteiro determinístico com `threading.Event`/`Barrier`

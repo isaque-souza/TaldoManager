@@ -340,77 +340,143 @@ CAMPOS_JOGADOR = ("gols", "assistencias", "partidas", "amarelos", "vermelhos",
 
 
 def _colunas(conn, tabela):
-    # PRAGMA é negado pelo authorizer: lê o esquema por um SELECT
-    sql = conn.execute(
-        "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?", (tabela,)
+    """Nomes reais das colunas (Auditoria 03, achado 9).
+
+    PRAGMA é negado pelo authorizer; `SELECT * ... LIMIT 0` só lê o esquema e
+    devolve os nomes em `cursor.description`, sem confundir `idade` com
+    `cidade` nem com texto de um CHECK. Tabela ausente → conjunto vazio."""
+    if not tabela.isidentifier():
+        raise ValueError(f"nome de tabela inesperado: {tabela!r}")
+    existe = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", (tabela,)
     ).fetchone()
-    return sql[0] if sql else ""
+    if not existe:
+        return set()
+    cur = conn.execute(f'SELECT * FROM "{tabela}" LIMIT 0')
+    return {d[0] for d in cur.description}
+
+
+def _rng_ok(rng):
+    return (isinstance(rng, list) and len(rng) == 3
+            and isinstance(rng[1], (list, tuple)) and len(rng[1]) == 625)
+
+
+def _blob_de_um_save(conn, s, tem, temj, tem_livre):
+    sid = s["id"]
+    achados = []
+    try:
+        blob = json.loads(s["estado_json"])
+    except ValueError as e:
+        return [{"simulacao_id": sid, "tipo": "blob ilegível", "detalhe": str(e)[:120]}]
+    if not isinstance(blob, dict):
+        return [{"simulacao_id": sid, "tipo": "blob ilegível",
+                 "detalhe": f"o topo do JSON é {type(blob).__name__}, não objeto"}]
+
+    if blob.get("rodada") != s["rodada_atual"]:
+        achados.append({"simulacao_id": sid, "tipo": "rodada",
+                        "blob": blob.get("rodada"), "tabela": s["rodada_atual"]})
+
+    if not _rng_ok(blob.get("rng")):
+        achados.append({"simulacao_id": sid, "tipo": "rng malformado"})
+
+    clubes = {r["nome"]: r for r in conn.execute(
+        "SELECT * FROM clube WHERE simulacao_id = ?", (sid,))}
+    clubes_blob = blob.get("clubes", {})
+    if not isinstance(clubes_blob, dict):
+        achados.append({"simulacao_id": sid, "tipo": "blob ilegível",
+                        "detalhe": "'clubes' não é objeto"})
+        return achados
+    nomes_blob = set(clubes_blob)
+    if nomes_blob != set(clubes):
+        achados.append({"simulacao_id": sid, "tipo": "clubes",
+                        "so_no_blob": sorted(nomes_blob - set(clubes))[:10],
+                        "so_na_tabela": sorted(set(clubes) - nomes_blob)[:10]})
+
+    # chave (clube, nome): homônimos em clubes diferentes não se confundem
+    # (Auditoria 03, achado 10). Homônimos no MESMO clube não têm como ser
+    # casados com o blob (lá o jogador é chave de um objeto): ficam como
+    # "jogador ambíguo", sem comparação — e o C11 já os acusa.
+    filtro = " AND j.livre = 0" if tem_livre else ""
+    elenco_tab = {}
+    jogadores_tab = {}
+    ambiguos = set()
+    for r in conn.execute(
+        "SELECT j.*, c.nome AS clube FROM jogador j JOIN clube c ON c.id = j.clube_id "
+        "WHERE j.simulacao_id = ?" + filtro, (sid,)
+    ):
+        chave = (r["clube"], r["nome"])
+        elenco_tab.setdefault(r["clube"], set()).add(r["nome"])
+        if chave in jogadores_tab:
+            ambiguos.add(chave)
+        jogadores_tab[chave] = r
+    for clube, nome in sorted(ambiguos):
+        achados.append({"simulacao_id": sid, "tipo": "jogador ambíguo", "clube": clube,
+                        "jogador": nome, "detalhe": "mesmo nome duas vezes no clube; não comparado"})
+
+    for nome, dados in clubes_blob.items():
+        c = clubes.get(nome)
+        if not isinstance(dados, dict):   # 3ª revisão: não some do relatório
+            achados.append({"simulacao_id": sid, "tipo": "blob ilegível", "clube": nome,
+                            "detalhe": f"o clube é {type(dados).__name__}, não objeto"})
+            continue
+        if c is None:
+            continue
+        for campo in CAMPOS_CLUBE:
+            if tem[campo] and campo in dados and dados[campo] != c[campo]:
+                achados.append({"simulacao_id": sid, "tipo": "clube", "clube": nome,
+                                "campo": campo, "blob": dados[campo], "tabela": c[campo]})
+        # tipo errado num clube vira achado desse clube; o resto do save segue
+        # sendo comparado (2ª revisão)
+        elenco_blob, jogadores_blob = dados.get("elenco"), dados.get("jogadores", {})
+        for chave_blob, valor, tipo in (("elenco", elenco_blob, list), ("jogadores", jogadores_blob, dict)):
+            if valor is not None and not isinstance(valor, tipo):
+                achados.append({"simulacao_id": sid, "tipo": "blob ilegível", "clube": nome,
+                                "detalhe": f"'{chave_blob}' não é {tipo.__name__}"})
+        if not isinstance(elenco_blob, list):
+            elenco_blob = None
+        if not isinstance(jogadores_blob, dict):
+            jogadores_blob = {}
+        if elenco_blob is not None and set(map(str, elenco_blob)) != elenco_tab.get(nome, set()):
+            no_blob = set(map(str, elenco_blob))
+            na_tab = elenco_tab.get(nome, set())
+            achados.append({"simulacao_id": sid, "tipo": "elenco", "clube": nome,
+                            "so_no_blob": sorted(no_blob - na_tab)[:10],
+                            "so_na_tabela": sorted(na_tab - no_blob)[:10]})
+        for jnome, campos in jogadores_blob.items():
+            chave = (nome, jnome)
+            if chave in ambiguos:
+                continue
+            j = jogadores_tab.get(chave)
+            if j is None or not isinstance(campos, dict):
+                continue
+            for campo in CAMPOS_JOGADOR:
+                if temj[campo] and campo in campos and campos[campo] != j[campo]:
+                    achados.append({"simulacao_id": sid, "tipo": "jogador", "clube": nome,
+                                    "jogador": jnome, "campo": campo,
+                                    "blob": campos[campo], "tabela": j[campo]})
+    return achados
 
 
 def blob_x_tabelas(conn):
     achados = []
-    tem = {c: c in _colunas(conn, "clube") for c in CAMPOS_CLUBE}
-    temj = {c: c in _colunas(conn, "jogador") for c in CAMPOS_JOGADOR}
-    tem_livre = "livre" in _colunas(conn, "jogador")
-    for s in conn.execute(
-        "SELECT id, rodada_atual, estado_json FROM simulacao "
-        "WHERE estado = 'em_andamento' AND estado_json IS NOT NULL"
-    ):
-        sid = s["id"]
+    col_clube, col_jogador = _colunas(conn, "clube"), _colunas(conn, "jogador")
+    tem = {c: c in col_clube for c in CAMPOS_CLUBE}
+    temj = {c: c in col_jogador for c in CAMPOS_JOGADOR}
+    tem_livre = "livre" in col_jogador
+    # um blob por vez (2ª revisão): um backup com muitos saves grandes não
+    # vai inteiro para a memória
+    ids = [r[0] for r in conn.execute(
+        "SELECT id FROM simulacao WHERE estado = 'em_andamento' AND estado_json IS NOT NULL")]
+    for sid in ids:
+        s = conn.execute("SELECT id, rodada_atual, estado_json FROM simulacao WHERE id = ?",
+                         (sid,)).fetchone()
         try:
-            blob = json.loads(s["estado_json"])
-        except ValueError as e:
-            achados.append({"simulacao_id": sid, "tipo": "blob ilegível", "detalhe": str(e)[:120]})
-            continue
-
-        if blob.get("rodada") != s["rodada_atual"]:
-            achados.append({"simulacao_id": sid, "tipo": "rodada",
-                            "blob": blob.get("rodada"), "tabela": s["rodada_atual"]})
-
-        rng = blob.get("rng")
-        if not (isinstance(rng, list) and len(rng) == 3 and len(rng[1]) == 625):
-            achados.append({"simulacao_id": sid, "tipo": "rng malformado"})
-
-        clubes = {r["nome"]: r for r in conn.execute(
-            "SELECT * FROM clube WHERE simulacao_id = ?", (sid,))}
-        nomes_blob = set(blob.get("clubes", {}))
-        if nomes_blob != set(clubes):
-            achados.append({"simulacao_id": sid, "tipo": "clubes",
-                            "so_no_blob": sorted(nomes_blob - set(clubes))[:10],
-                            "so_na_tabela": sorted(set(clubes) - nomes_blob)[:10]})
-
-        filtro = " AND j.livre = 0" if tem_livre else ""
-        elenco_tab = {}
-        jogadores_tab = {}
-        for r in conn.execute(
-            "SELECT j.*, c.nome AS clube FROM jogador j JOIN clube c ON c.id = j.clube_id "
-            "WHERE j.simulacao_id = ?" + filtro, (sid,)
-        ):
-            elenco_tab.setdefault(r["clube"], set()).add(r["nome"])
-            jogadores_tab[r["nome"]] = r
-
-        for nome, dados in blob.get("clubes", {}).items():
-            c = clubes.get(nome)
-            if c is None:
-                continue
-            for campo in CAMPOS_CLUBE:
-                if tem[campo] and campo in dados and dados[campo] != c[campo]:
-                    achados.append({"simulacao_id": sid, "tipo": "clube", "clube": nome,
-                                    "campo": campo, "blob": dados[campo], "tabela": c[campo]})
-            if "elenco" in dados and set(dados["elenco"]) != elenco_tab.get(nome, set()):
-                no_blob = set(dados["elenco"])
-                na_tab = elenco_tab.get(nome, set())
-                achados.append({"simulacao_id": sid, "tipo": "elenco", "clube": nome,
-                                "so_no_blob": sorted(no_blob - na_tab)[:10],
-                                "so_na_tabela": sorted(na_tab - no_blob)[:10]})
-            for jnome, campos in dados.get("jogadores", {}).items():
-                j = jogadores_tab.get(jnome)
-                if j is None:
-                    continue
-                for campo in CAMPOS_JOGADOR:
-                    if temj[campo] and campo in campos and campos[campo] != j[campo]:
-                        achados.append({"simulacao_id": sid, "tipo": "jogador", "jogador": jnome,
-                                        "campo": campo, "blob": campos[campo], "tabela": j[campo]})
+            achados += _blob_de_um_save(conn, s, tem, temj, tem_livre)
+        except sqlite3.DatabaseError:
+            raise   # problema do banco (tabela/coluna ausente, authorizer): a checagem toda
+        except Exception as e:   # noqa: BLE001 — um save estranho não derruba os outros (achado 8)
+            achados.append({"simulacao_id": s["id"], "tipo": "blob inesperado",
+                            "detalhe": f"{type(e).__name__}: {e}"[:160]})
     return achados
 
 
@@ -448,6 +514,8 @@ def executar(conn, checagens=TODAS):
         except sqlite3.DatabaseError as e:
             # banco antigo sem a tabela/coluna, ou o authorizer negou
             res.erro = f"{type(e).__name__}: {e}"
+        except Exception as e:   # noqa: BLE001 — uma checagem quebrada não derruba as outras (achado 8)
+            res.erro = f"erro na checagem: {type(e).__name__}: {e}"
         resultados.append(res)
     return resultados
 
