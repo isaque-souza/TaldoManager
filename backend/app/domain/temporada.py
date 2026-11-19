@@ -45,6 +45,8 @@ _JOGADOR_CAMPOS = (
     "emprestimo",
     # vontade (v1.9): formador, clube da história e sonho
     "formador", "clube_historia", "sonho",
+    # nome de exibição (v2.7, mundos da API); no v1 não vai no snapshot
+    "exibicao",
 )
 
 # campos acumulados de Clube (penalidade_expulsao é zerada a cada jogo)
@@ -106,12 +108,16 @@ def snapshot_estado(campeonato):
 def campos_jogador(jogador):
     """O que o snapshot guarda de um jogador. `posicao` (e a específica,
     v1.3) vai junto para recriar quem não está na seed (base, v0.8)."""
-    return {
+    campos = {
         **{c: getattr(jogador, c) for c in _JOGADOR_CAMPOS},
         "posicao": jogador.posicao,
         "funcao": jogador.funcao,
         "secundarias": list(jogador.secundarias),
     }
+    # sem exibição (o v1 inteiro), o snapshot fica como sempre foi
+    if campos["exibicao"] is None:
+        del campos["exibicao"]
+    return campos
 
 
 def restaurar_estado(campeonato, blob):
@@ -227,4 +233,5 @@ def criar_jogador(nome, campos):
         potencial=campos["potencial"],
         funcao=campos.get("funcao"),
         secundarias=secundarias,
+        exibicao=campos.get("exibicao"),
     )

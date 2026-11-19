@@ -95,8 +95,10 @@ def carregar_jogadores(liga="taldo", mundo=MUNDO_INICIAL):
 
         # quem já está na liga começa com fama e tempo de casa (v1.4)
         fama_inicial, temporadas = fama.inicial(j["nome"], j["idade"], j["overall"])
+        # mundos da API (v2.7): `ref` ("apif:12345") é a chave e `nome` é o
+        # de exibição; no v1 não há `ref` e a chave é o nome
         jogadores[j["id"]] = Jogador(
-            j["nome"],
+            j.get("ref") or j["nome"],
             j["idade"],
             j["posicao"],
             j["overall"],
@@ -107,6 +109,7 @@ def carregar_jogadores(liga="taldo", mundo=MUNDO_INICIAL):
             secundarias=j.get("secundarias"),
             fama=fama_inicial,
             temporadas_no_clube=temporadas,
+            exibicao=j["nome"] if j.get("ref") else None,
         )
         # a camisa de verdade (Premier, v1.6); a Taldo não traz e o clube dá
         jogadores[j["id"]].numero = j.get("numero")

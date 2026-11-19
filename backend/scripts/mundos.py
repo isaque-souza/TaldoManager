@@ -140,10 +140,25 @@ def verificar(mundo):
     return True
 
 
+@lru_cache(maxsize=None)
+def exibicoes(mundo):
+    """{chave: nome de exibição} dos jogadores com `ref` (mundos da API,
+    v2.7) — o que o técnico vê no lugar de "apif:<id>". Vazio no v1."""
+    verificar(mundo)
+    nomes = {}
+    for liga in manifesto(mundo)["ligas"]:
+        for arquivo in ("jogadores.json", "livres.json"):
+            for j in _ler(pasta_da_liga(mundo, liga) / arquivo):
+                if j.get("ref"):
+                    nomes[j["ref"]] = j["nome"]
+    return nomes
+
+
 def limpar_cache():
     """Para os testes, que montam mundos em pastas temporárias."""
     manifesto.cache_clear()
     verificar.cache_clear()
+    exibicoes.cache_clear()
 
 
 def exigir_fora_dos_mundos(destino):

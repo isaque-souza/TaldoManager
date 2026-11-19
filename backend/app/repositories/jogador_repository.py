@@ -12,6 +12,7 @@ CAMPOS = (
     "fama", "temporadas_no_clube", "a_venda",
     "papel", "humor", "titularidades", "jogos_disponivel",
     "formador", "clube_historia", "sonho",
+    "exibicao",
 )
 
 # campos que dados de antes da v1.3 (posição), da v1.4 (fama) e da v1.9
@@ -19,6 +20,7 @@ CAMPOS = (
 _OPCIONAIS = (
     "funcao", "secundarias", "fama", "temporadas_no_clube",
     "formador", "clube_historia", "sonho",
+    "exibicao",   # v2.7: NULL = o nome é o de exibição (o v1 inteiro)
 )
 
 
