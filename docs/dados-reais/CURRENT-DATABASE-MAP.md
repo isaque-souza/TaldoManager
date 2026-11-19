@@ -51,7 +51,7 @@ com `ON DELETE CASCADE`. Não há catálogo global de clubes/jogadores no banco.
 | Tabela | Papel |
 |---|---|
 | `carreira` | agrupa as temporadas de um save (clube do técnico, seed da 1ª) |
-| `simulacao` | **a temporada** (27 colunas): seed, estado (`em_andamento`/`concluida`), `rodada_atual`, `data_atual`, `ligas` (JSON), `economia` (versão das regras de dinheiro), dono (`usuario_id`), e os blobs de estado (abaixo) |
+| `simulacao` | **a temporada** (27 colunas; 28 com `mundo` na v2.7): seed, estado (`em_andamento`/`concluida`), `rodada_atual`, `data_atual`, `ligas` (JSON), `economia` (versão das regras de dinheiro), `mundo` (versão das seeds, ver [MUNDOS.md](MUNDOS.md)), dono (`usuario_id`), e os blobs de estado (abaixo) |
 
 Blobs JSON em `simulacao` — o estado vivo **não** está nas tabelas:
 

@@ -50,6 +50,11 @@ cópia isolada), seeds atuais intocadas, sem importação completa por ora.
 
 ## Fase 1 — Mundos versionados ⚠ (antes de qualquer importação)
 
+> **Feita** (branch `feat/mundos-versionados`). Como ficou: [MUNDOS.md](MUNDOS.md).
+> Diferenças do desenho abaixo: o manifesto do v1 fica em
+> `data/mundos/v1/manifesto.json` (raiz `seeds`), como todo mundo; o v1 não
+> tem histórico de alterações (é o começo); erro de mundo responde 503.
+
 O objetivo: um save nascido no mundo X carrega **exatamente** os arquivos de X,
 para sempre, e é impossível alterar X sem o teste acusar.
 
