@@ -5,4 +5,5 @@ pydantic==2.13.5
 
 # testes
 pytest==9.1.1
+pytest-xdist==3.8.0   # pytest -n auto: a suíte em ~3 min em vez de ~12
 httpx2==2.12.0
