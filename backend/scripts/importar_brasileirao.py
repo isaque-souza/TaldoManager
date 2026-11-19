@@ -25,6 +25,7 @@ from datetime import date
 from pathlib import Path
 
 from app.domain import livres
+from scripts import mundos
 from scripts.importar_premier import (
     CORTE, _ficha, _rng, cortar, dar_funcoes, overall, potencial, xi,
 )
@@ -329,6 +330,8 @@ def _sigla_pais(nome):
 
 def main():
     clubes, jogadores, livres_seed = importar()
+    # v2.7: data/seeds/ é o mundo v1, imutável — scripts/mundos.py
+    mundos.exigir_fora_dos_mundos(DESTINO)
     DESTINO.mkdir(parents=True, exist_ok=True)
     for arquivo, dados in (("clubes.json", clubes), ("jogadores.json", jogadores),
                            ("livres.json", livres_seed)):

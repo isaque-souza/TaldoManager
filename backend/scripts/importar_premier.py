@@ -36,6 +36,7 @@ import zlib
 from pathlib import Path
 
 from app.domain import base, livres, posicoes
+from scripts import mundos
 
 DADOS = Path(__file__).resolve().parent.parent / "data"
 FONTE = DADOS / "fontes" / "openfootball" / "premier-2023-24"
@@ -370,6 +371,8 @@ def importar():
 
 def main():
     clubes, jogadores, livres_seed = importar()
+    # v2.7: data/seeds/ é o mundo v1, imutável — scripts/mundos.py
+    mundos.exigir_fora_dos_mundos(DESTINO)
     DESTINO.mkdir(parents=True, exist_ok=True)
     for arquivo, dados in (("clubes.json", clubes), ("jogadores.json", jogadores),
                            ("livres.json", livres_seed)):

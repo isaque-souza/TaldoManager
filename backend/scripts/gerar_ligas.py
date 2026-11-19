@@ -31,6 +31,7 @@ from app.domain import livres, posicoes
 from app.domain.jogador import Jogador
 from scripts.importar_brasileirao import RIVAIS_NA_SERIE_B
 from scripts.importar_premier import RIVAIS_NA_CHAMPIONSHIP, dar_funcoes, potencial, xi
+from scripts import mundos
 
 SEEDS = Path(__file__).resolve().parent.parent / "data" / "seeds"
 
@@ -455,6 +456,8 @@ def main():
     for id_liga, liga in LIGAS.items():
         clubes, jogadores = gerar(id_liga, ocupados)
         destino = SEEDS / liga["pasta"]
+        # v2.7: data/seeds/ é o mundo v1, imutável — scripts/mundos.py
+        mundos.exigir_fora_dos_mundos(destino)
         destino.mkdir(parents=True, exist_ok=True)
         for arquivo, dados in (("clubes.json", clubes), ("jogadores.json", jogadores)):
             (destino / arquivo).write_text(json.dumps(dados, ensure_ascii=False, indent=4),
