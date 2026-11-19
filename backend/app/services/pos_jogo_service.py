@@ -21,7 +21,7 @@ from app.repositories import mensagem_repository as mensagem_repo
 from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.services import copa_service, simulacao_service
-from scripts.data_loader import carregar_campeonato_do_save, rivais_do_seed
+from scripts.data_loader import carregar_campeonato_do_save, mundo_do_save, rivais_do_seed
 
 
 class SemJogo(Exception):
@@ -134,7 +134,7 @@ def _da_liga(conn, sim, clubes, p):
         "partida_id": p["id"],
         **_placar(meu, rival, em_casa, mandante, visitante, p["gols_mandante"],
                   p["gols_visitante"], res, p["publico"]),
-        **_atmosfera(clubes, mandante, visitante, p["publico"]),
+        **_atmosfera(clubes, mandante, visitante, p["publico"], mundo_do_save(sim)),
         "eventos": eventos,
         "estatisticas": estatisticas,
         "atuacoes": atuacoes,
@@ -259,7 +259,7 @@ def _da_copa(conn, sim, clubes, c, fase, j):
         "partida_id": None,
         **_placar(meu, rival, em_casa, mandante, visitante, j["gols_mandante"],
                   j["gols_visitante"], res, j["publico"]),
-        **_atmosfera(clubes, mandante, visitante, j["publico"]),
+        **_atmosfera(clubes, mandante, visitante, j["publico"], mundo_do_save(sim)),
         "eventos": eventos,
         "estatisticas": j.get("estatisticas"),
         "atuacoes": atuacoes,
@@ -308,12 +308,12 @@ def _placar(meu, rival, em_casa, mandante, visitante, gm, gv, res, publico):
     }
 
 
-def _atmosfera(clubes, mandante, visitante, publico):
+def _atmosfera(clubes, mandante, visitante, publico, mundo):
     """Para o desenho do estádio (v2.4): a ocupação do jogo (None sem
     público ou sem estádio registrado) e se foi clássico."""
     casa = next((c for c in clubes if c["nome"] == mandante), None)
     capacidade = casa["capacidade"] if casa else 0
-    rivais = rivais_do_seed()
+    rivais = rivais_do_seed(mundo)   # os clássicos do mundo do save (v2.7)
     return {
         "ocupacao": (round(min(1, publico / capacidade), 3)
                      if publico and capacidade else None),

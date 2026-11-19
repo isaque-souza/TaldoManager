@@ -12,10 +12,11 @@ def criar(conn, seed, campeao, rodadas, criada_em,
           clube_usuario=None, tatica=None, formacao=None, xi_preferido=None,
           estado="concluida", rodada_atual=None, estado_json=None,
           carreira_id=None, temporada=1, meta_posicao=None, ranking_forca=None,
-          ligas=None, data_atual=None, economia=None):
+          ligas=None, data_atual=None, economia=None, mundo="v1"):
     """`ligas`: as ligas do save (v1.6), lista; None = só a Taldo.
     `data_atual`: o dia do calendário (v2.0), ISO. `economia`: a versão das
-    regras de dinheiro (v2.5); None = a atual."""
+    regras de dinheiro (v2.5); None = a atual. `mundo`: a versão das seeds
+    (v2.7) — o save carrega sempre esse mundo."""
     if economia is None:
         from app.domain.financas import ECONOMIA_ATUAL
         economia = ECONOMIA_ATUAL
@@ -26,14 +27,15 @@ def criar(conn, seed, campeao, rodadas, criada_em,
              clube_usuario, tatica, formacao, xi_preferido,
              estado, rodada_atual, estado_json, carreira_id, temporada,
              atualizada_em, meta_posicao, ranking_forca, ligas, data_atual,
-             economia)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             economia, mundo)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (seed, criada_em, campeao, rodadas,
          clube_usuario, tatica, formacao, xi_preferido,
          estado, rodada_atual, estado_json, carreira_id, temporada,
          criada_em, meta_posicao, ranking_forca,
-         json.dumps(list(ligas)) if ligas else None, data_atual, economia),
+         json.dumps(list(ligas)) if ligas else None, data_atual, economia,
+         mundo),
     )
     return cur.lastrowid
 

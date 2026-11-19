@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
 from app.api.schemas import (
     CessaoFeita,
+    Mundo,
     NovaCessao,
     CaixaDeEntrada,
     CarreiraDetalhe,
@@ -116,7 +117,8 @@ from app.services.plano_service import PlanoInvalido
 from app.services.pos_jogo_service import SemJogo
 from app.services.temporada_service import PartidaEmAndamento, TemporadaConcluida
 from app.services.transmissao_service import TransmissaoInvalida
-from scripts.data_loader import TODAS_AS_LIGAS
+from scripts import mundos
+from scripts.data_loader import MUNDO_PADRAO, todas_as_ligas
 
 router = APIRouter()
 
@@ -135,22 +137,47 @@ def _erro_de_valor(e):
     return HTTPException(status_code=400, detail=str(e))
 
 
+def _mundo_pedido(mundo):
+    """O mundo de jogo novo (v2.7): o pedido ou o padrão. 400 se não existir."""
+    mundo = mundo or MUNDO_PADRAO
+    if not mundos.existe(mundo):
+        raise HTTPException(status_code=400, detail=f"O mundo '{mundo}' não existe")
+    return mundo
+
+
+@router.get("/mundos", response_model=list[Mundo], tags=["infra"])
+def listar_mundos():
+    """As versões das seeds instaladas (v2.7). Cada save joga para sempre no
+    mundo em que nasceu; `padrao` é o de jogo novo."""
+    resposta = []
+    for mundo in mundos.ids():
+        m = mundos.manifesto(mundo)
+        resposta.append({
+            "id": m["id"], "nome": m["nome"], "criado_em": m["criado_em"],
+            "base": m["base"], "padrao": mundo == MUNDO_PADRAO,
+            "ligas": [{"id": liga, **dados} for liga, dados in m["ligas"].items()],
+            "totais": m["totais"],
+        })
+    return resposta
+
+
 @router.get("/health", response_model=HealthResponse, tags=["infra"])
 def health():
     return {"status": "ok"}
 
 
 @router.get("/clubes", response_model=list[ClubeSeed], tags=["infra"])
-def listar_clubes():
-    """Os clubes do seed, de todas as ligas (v1.6) — para o usuário escolher
-    qual dirigir."""
-    return simulacao_service.listar_clubes(TODAS_AS_LIGAS)
+def listar_clubes(mundo: str | None = Query(default=None)):
+    """Os clubes do seed, de todas as ligas (v1.6) do mundo (v2.7; sem
+    dizer, o de jogo novo) — para o usuário escolher qual dirigir."""
+    mundo = _mundo_pedido(mundo)
+    return simulacao_service.listar_clubes(todas_as_ligas(mundo), mundo)
 
 
 @router.get("/clubes/{nome}", response_model=ClubeComElenco, tags=["infra"])
-def obter_clube_do_seed(nome: str):
+def obter_clube_do_seed(nome: str, mundo: str | None = Query(default=None)):
     """Elenco e formações disponíveis — para montar a escalação."""
-    clube = simulacao_service.elenco_do_clube(nome)
+    clube = simulacao_service.elenco_do_clube(nome, _mundo_pedido(mundo))
     if clube is None:
         raise HTTPException(status_code=404, detail="Clube não encontrado")
     return clube
@@ -205,8 +232,12 @@ def criar_simulacao(
             detail=f"Limite de {conta_service.LIMITE_JOGOS} jogos por conta: "
                    "apague um para começar outro",
         ) from e
-    # todo jogo novo tem todas as ligas (v1.6), na ordem de LIGAS
-    ligas = tuple(l for l in TODAS_AS_LIGAS if l in (cfg.ligas or TODAS_AS_LIGAS))
+    # o mundo do save (v2.7) e todas as ligas dele (v1.6), na ordem das tabelas
+    mundo = _mundo_pedido(cfg.mundo)
+    todas = todas_as_ligas(mundo)
+    ligas = tuple(l for l in todas if l in (cfg.ligas or todas))
+    if not ligas:
+        raise HTTPException(status_code=400, detail=f"Nenhuma dessas ligas existe no mundo '{mundo}'")
     try:
         if cfg.modo == "rodada_a_rodada":
             sim_id = temporada_service.iniciar(
@@ -216,6 +247,7 @@ def criar_simulacao(
                 formacao=cfg.formacao,
                 xi_preferido=cfg.xi,
                 ligas=ligas,
+                mundo=mundo,
             )
         else:
             sim_id = simulacao_service.salvar_temporada(
@@ -225,6 +257,7 @@ def criar_simulacao(
                 formacao=cfg.formacao,
                 xi_preferido=cfg.xi,
                 ligas=ligas,
+                mundo=mundo,
             )
     except ValueError as e:
         raise _erro_de_valor(e) from e
