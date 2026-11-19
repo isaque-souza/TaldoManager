@@ -170,6 +170,8 @@ repositório.
 
 ## Fase 2 — Identidade do jogador (requisito A) ⚠
 
+> **Backend feito** (branch `feat/identidade-jogador`), caminho A com tradução na saída da API: [IDENTIDADE.md](IDENTIDADE.md). Falta o frontend mandar a `chave`.
+
 Hoje o nome é a chave do jogador dentro do save: `estado_json` (elencos por
 nome), `xi_preferido`, `plano.xi`, `negociacao.jogador`, `emprestimo.jogador`,
 `observado.nome`, `movimento_virada.jogador`, mensagens — e o frontend manda
