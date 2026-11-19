@@ -15,6 +15,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.contas import exigir_dono
+from app.api.exibicao import ExibicaoMiddleware
 from app.api.contas import router as contas_router
 from app.api.routes import router
 from app.core.config import FRONTEND_DIR
@@ -67,6 +68,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+# nomes de exibição no lugar das chaves "apif:<id>" (v2.7); o v1 passa igual
+app.add_middleware(ExibicaoMiddleware)
 
 
 @app.exception_handler(mundos.MundoIndisponivel)
