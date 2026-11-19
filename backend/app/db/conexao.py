@@ -147,6 +147,9 @@ _COLUNAS_NOVAS = {
         ("formador", "TEXT"),
         ("clube_historia", "TEXT"),
         ("sonho", "TEXT"),
+        # nome de exibição (v2.7, mundos da API: o `nome` é a chave
+        # "apif:<id>"); NULL = o nome é o de exibição (o v1 inteiro)
+        ("exibicao", "TEXT"),
     ),
     # onde o técnico pôs cada titular no plano (v1.3), JSON
     "plano": (("posicionamento", "TEXT"),),

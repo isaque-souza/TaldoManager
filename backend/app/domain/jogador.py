@@ -30,8 +30,13 @@ class Jogador:
     def __init__(self, nome, idade, posicao, overall,
                  potencial=None, contrato_anos=3, multa_rescisoria=None,
                  salario=None, funcao=None, secundarias=None,
-                 fama=0, temporadas_no_clube=0):
+                 fama=0, temporadas_no_clube=0, exibicao=None):
+        # identidade (v2.7): `nome` é a CHAVE do jogador — o jogo inteiro o
+        # acha por ela (snapshot, escalação, mercado). No v1 a chave é o
+        # próprio nome; nos mundos da API é o id externo ("apif:12345"), e o
+        # nome que aparece fica em `exibicao`. Ver `nome_exibicao`.
         self.nome = nome
+        self.exibicao = exibicao
         self.idade = idade
         self.posicao = posicao   # setor (Goleiro, Defesa...): o motor usa
         # posição específica (v1.3): zagueiro, lateral, volante... Sem ela
@@ -114,6 +119,12 @@ class Jogador:
         self.jogos_suspensao = 0   # jogos que ainda vai cumprir de fora
         self.amarelos_ciclo = 0    # amarelos rumo à próxima suspensão
         self.rodadas_lesao = 0     # rodadas que ainda fica fora por lesão
+
+    @property
+    def nome_exibicao(self):
+        """O nome que aparece para o técnico (v2.7): `exibicao` nos mundos da
+        API, o próprio `nome` (a chave) no v1."""
+        return self.exibicao or self.nome
 
     def overall_em(self, vaga):
         """Quanto o jogador rende jogando na `vaga` (ver app.domain.posicoes)."""

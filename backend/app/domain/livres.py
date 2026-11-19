@@ -65,13 +65,15 @@ def gerar(funcao, perfil, proibidos, rng):
 
 
 def para_jogador(dados):
-    """O dict de `gerar` (ou do livres.json) como `Jogador`, sem contrato."""
+    """O dict de `gerar` (ou do livres.json) como `Jogador`, sem contrato.
+    Mundos da API (v2.7): `ref` é a chave e `nome` é o de exibição."""
     return Jogador(
-        dados["nome"], dados["idade"], dados["posicao"], dados["overall"],
+        dados.get("ref") or dados["nome"], dados["idade"], dados["posicao"], dados["overall"],
         potencial=dados["potencial"],
         contrato_anos=0,
         funcao=dados["funcao"],
         secundarias=dados["secundarias"],
+        exibicao=dados["nome"] if dados.get("ref") else None,
     )
 
 

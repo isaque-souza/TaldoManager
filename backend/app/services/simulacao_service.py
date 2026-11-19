@@ -213,6 +213,7 @@ def _serializar_jogador(jogador, clube_nome):
         "formador": jogador.formador,
         "clube_historia": jogador.clube_historia,
         "sonho": jogador.sonho,
+        "exibicao": jogador.exibicao,
     }
 
 
