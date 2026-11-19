@@ -6,25 +6,42 @@ from app.domain import estadio, fama, financas, livres, vontade
 from app.domain.jogador import Jogador
 from app.domain.clube import Clube
 from app.domain.campeonato import Campeonato
+from scripts import mundos
+from scripts.mundos import MUNDO_INICIAL, MUNDO_PADRAO  # noqa: F401 (reexporta)
 
 SEEDS_DIR = Path(__file__).resolve().parent.parent / "data" / "seeds"
 
-# ligas (v1.6): id -> (nome, pasta da seed). A ordem é a das tabelas.
-LIGAS = {
-    "taldo": ("Liga Taldo", SEEDS_DIR),
-    "premier": ("Premier League", SEEDS_DIR / "premier"),
-    # as Séries B (v2.5; ver app.domain.divisoes)
-    "taldo_b": ("Liga Taldo B", SEEDS_DIR / "taldo_b"),
-    "championship": ("Championship", SEEDS_DIR / "championship"),
-    # a Espanha (v2.5)
-    "laliga": ("La Liga", SEEDS_DIR / "laliga"),
-    "segunda": ("Segunda División", SEEDS_DIR / "segunda"),
-    # o Brasil de 2017, o ano do hepta do Corinthians (v2.5)
-    "brasileirao": ("Brasileirão", SEEDS_DIR / "brasileirao"),
-    "brasileirao_b": ("Brasileirão Série B", SEEDS_DIR / "brasileirao_b"),
-}
+# Mundos versionados (v2.7): as seeds de cada liga saem do manifesto do
+# mundo (scripts/mundos.py). Todo save carrega o mundo em que nasceu; sem
+# dizer o mundo, é o v1 — as 8 ligas da v2.6, em data/seeds/, que nunca
+# mudam. Por isso o padrão das funções abaixo é o v1, e não o de jogo novo.
+
+
+def ligas_do_mundo(mundo=MUNDO_INICIAL):
+    """{id: (nome, pasta da seed)}, na ordem das tabelas."""
+    return {liga: (nome, mundos.pasta_da_liga(mundo, liga))
+            for liga, nome in mundos.ligas(mundo).items()}
+
+
+def todas_as_ligas(mundo=MUNDO_INICIAL):
+    """As ligas do mundo, na ordem das tabelas (jogo novo tem todas)."""
+    return tuple(mundos.ligas(mundo))
+
+
+# ligas (v1.6) do v1: id -> (nome, pasta da seed). A ordem é a das tabelas.
+LIGAS = ligas_do_mundo(MUNDO_INICIAL)
 LIGA_PADRAO = ("taldo",)   # saves de antes da v1.6
-TODAS_AS_LIGAS = tuple(LIGAS)   # todo jogo novo (v1.6)
+TODAS_AS_LIGAS = tuple(LIGAS)   # todo jogo novo do v1 (v1.6)
+
+
+def nome_da_liga(liga, mundo=None):
+    """O nome de exibição da liga: do mundo dado; sem mundo, do primeiro que
+    a tiver (o mesmo id tem o mesmo nome em todo mundo)."""
+    for m in ([mundo] if mundo else [MUNDO_INICIAL, *mundos.ids()]):
+        nome = mundos.ligas(m).get(liga)
+        if nome:
+            return nome
+    return liga
 
 
 def ligas_do_save(sim):
@@ -33,22 +50,40 @@ def ligas_do_save(sim):
     return tuple(json.loads(sim["ligas"])) if sim["ligas"] else LIGA_PADRAO
 
 
-@lru_cache(maxsize=1)
-def rivais_do_seed():
-    """{nome do clube: frozenset dos rivais} de todas as ligas, lido uma vez
-    (os clássicos não mudam com o save)."""
+def mundo_do_save(sim):
+    """O mundo de uma simulação (v2.7); saves de antes, e linhas sem a
+    coluna, são do v1."""
+    try:
+        mundo = sim["mundo"]
+    except (KeyError, IndexError):
+        mundo = None
+    return mundo or MUNDO_INICIAL
+
+
+def _pasta(liga, mundo):
+    """A pasta da liga no mundo, conferido (hashes) uma vez por processo."""
+    mundos.verificar(mundo)
+    if liga not in mundos.manifesto(mundo)["ligas"]:
+        raise ValueError(f"A liga '{liga}' não existe no mundo '{mundo}'")
+    return mundos.pasta_da_liga(mundo, liga)
+
+
+@lru_cache(maxsize=None)
+def rivais_do_seed(mundo=MUNDO_INICIAL):
+    """{nome do clube: frozenset dos rivais} de todas as ligas do mundo, lido
+    uma vez (os clássicos não mudam com o save)."""
     rivais = {}
-    for _, pasta in LIGAS.values():
-        with open(pasta / "clubes.json", encoding="utf-8") as arquivo:
+    for liga in todas_as_ligas(mundo):
+        with open(_pasta(liga, mundo) / "clubes.json", encoding="utf-8") as arquivo:
             for c in json.load(arquivo):
                 rivais[c["nome"]] = frozenset(c.get("rivais", []))
     return rivais
 
 
-def carregar_jogadores(liga="taldo"):
+def carregar_jogadores(liga="taldo", mundo=MUNDO_INICIAL):
 
     with open(
-        LIGAS[liga][1] / "jogadores.json",
+        _pasta(liga, mundo) / "jogadores.json",
         encoding="utf-8"
     ) as arquivo:
 
@@ -79,10 +114,10 @@ def carregar_jogadores(liga="taldo"):
     return jogadores
 
 
-def carregar_clubes(jogadores, liga="taldo"):
+def carregar_clubes(jogadores, liga="taldo", mundo=MUNDO_INICIAL):
 
     with open(
-        LIGAS[liga][1] / "clubes.json",
+        _pasta(liga, mundo) / "clubes.json",
         encoding="utf-8"
     ) as arquivo:
 
@@ -129,11 +164,11 @@ def carregar_clubes(jogadores, liga="taldo"):
     return clubes
 
 
-def carregar_livres(liga="taldo"):
+def carregar_livres(liga="taldo", mundo=MUNDO_INICIAL):
     """Os jogadores sem clube do começo da temporada (v1.6). Sem contrato:
     quem contrata define (mercado.contratar_livre)."""
 
-    caminho = LIGAS[liga][1] / "livres.json"
+    caminho = _pasta(liga, mundo) / "livres.json"
     if not caminho.exists():
         return []
     with open(caminho, encoding="utf-8") as arquivo:
@@ -147,29 +182,31 @@ def carregar_livres(liga="taldo"):
     return jogadores
 
 
-def carregar_campeonato(ligas=LIGA_PADRAO):
-    """O campeonato com os clubes das `ligas` (v1.6): cada liga tem a sua
-    tabela e o seu calendário, jogados na mesma rodada. Os livres das ligas
-    formam uma lista só."""
+def carregar_campeonato(ligas=LIGA_PADRAO, mundo=MUNDO_INICIAL):
+    """O campeonato com os clubes das `ligas` (v1.6) do `mundo` (v2.7):
+    cada liga tem a sua tabela e o seu calendário, jogados na mesma rodada.
+    Os livres das ligas formam uma lista só."""
 
     clubes, sem_clube = [], []
     for liga in ligas:
-        clubes += carregar_clubes(carregar_jogadores(liga), liga)
-        sem_clube += carregar_livres(liga)
+        clubes += carregar_clubes(carregar_jogadores(liga, mundo), liga, mundo)
+        sem_clube += carregar_livres(liga, mundo)
 
     campeonato = Campeonato(
         "Taldo",
         clubes
     )
     campeonato.livres = sem_clube
+    campeonato.mundo = mundo
     # formador e sonho de todo mundo (v1.9)
     vontade.completar(campeonato)
     return campeonato
 
 
 def carregar_campeonato_do_save(sim):
-    """O campeonato com as ligas do save, pronto para `restaurar_estado`,
-    com as regras de dinheiro em que o save está (v2.5)."""
-    campeonato = carregar_campeonato(ligas_do_save(sim))
+    """O campeonato com as ligas do save, no mundo do save (v2.7), pronto
+    para `restaurar_estado`, com as regras de dinheiro em que o save está
+    (v2.5)."""
+    campeonato = carregar_campeonato(ligas_do_save(sim), mundo_do_save(sim))
     campeonato.economia = financas.economia_do_save(sim)
     return campeonato

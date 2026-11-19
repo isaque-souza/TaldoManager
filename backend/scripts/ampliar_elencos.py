@@ -25,6 +25,7 @@ from pathlib import Path
 
 from app.domain import base, posicoes
 from app.domain.jogador import Jogador
+from scripts import mundos
 
 SEEDS_DIR = Path(__file__).resolve().parent.parent / "data" / "seeds"
 
@@ -145,6 +146,8 @@ def main():
             clube["reservas"].append(j["id"])
             proximo_id += 1
 
+    # v2.7: data/seeds/ é o mundo v1, imutável — scripts/mundos.py
+    mundos.exigir_fora_dos_mundos(SEEDS_DIR)
     with open(SEEDS_DIR / "jogadores.json", "w", encoding="utf-8") as f:
         json.dump(jogadores, f, ensure_ascii=False, indent=4)
     with open(SEEDS_DIR / "clubes.json", "w", encoding="utf-8") as f:

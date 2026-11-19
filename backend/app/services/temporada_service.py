@@ -38,7 +38,7 @@ from app.services import (
     copa_service, oferta_service, pre_jogo_service, relatorio_service, simulacao_service,
 )
 from scripts.data_loader import (
-    LIGA_PADRAO, carregar_campeonato, carregar_campeonato_do_save,
+    LIGA_PADRAO, MUNDO_PADRAO, carregar_campeonato, carregar_campeonato_do_save,
 )
 
 
@@ -162,9 +162,11 @@ def _confronto_do_clube(rodada, nome):
 # ---------------------------------------------------------------------------
 
 def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
-            formacao=None, xi_preferido=None, ligas=LIGA_PADRAO):
+            formacao=None, xi_preferido=None, ligas=LIGA_PADRAO,
+            mundo=MUNDO_PADRAO):
     """Cria uma temporada em andamento, parada antes da rodada 1. Devolve o
-    id. `ligas` (v1.6): as que rodam juntas — sem dizer, só a Taldo."""
+    id. `ligas` (v1.6): as que rodam juntas — sem dizer, só a Taldo.
+    `mundo` (v2.7): a versão das seeds; o save fica nela para sempre."""
 
     if not clube_usuario:
         raise ValueError("Simular rodada a rodada exige um clube dirigido")
@@ -174,7 +176,7 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
     else:
         random.seed()
 
-    campeonato = carregar_campeonato(ligas)
+    campeonato = carregar_campeonato(ligas, mundo)
     # a ordem dos jogos é sorteada por temporada (v3)
     campeonato.sortear_calendario(semente_do_calendario(seed, 1))
     campeonato.iniciar_copa(copa.classificados_de_inicio(campeonato))
@@ -213,6 +215,7 @@ def iniciar(seed=None, clube_usuario=None, tatica="equilibrado",
                 ligas=ligas if tuple(ligas) != LIGA_PADRAO else None,
                 # o save começa no primeiro dia da pré-temporada (v2.0)
                 data_atual=calendario.inicio(1).isoformat(),
+                mundo=mundo,
                 **meta,
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])

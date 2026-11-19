@@ -314,6 +314,31 @@ class NovaSimulacao(BaseModel):
     # ligas que rodam juntas (v1.6); sem dizer, todas
     ligas: list[Literal["taldo", "premier", "laliga", "brasileirao", "taldo_b",
                         "championship", "segunda", "brasileirao_b"]] | None = None
+    # o mundo (versão das seeds, v2.7); sem dizer, o padrão de jogo novo.
+    # O save fica nele para sempre — ver GET /mundos
+    mundo: str | None = None
+
+
+class LigaDoMundo(BaseModel):
+    id: str
+    nome: str
+    pais: str | None = None
+    divisao: int | None = None
+    temporada: str | None = None
+    origem: str | None = None
+    clubes: int
+    jogadores: int
+
+
+class Mundo(BaseModel):
+    """Uma versão congelada das seeds (v2.7). `padrao`: o de jogo novo."""
+    id: str
+    nome: str
+    criado_em: str
+    base: str | None = None
+    padrao: bool
+    ligas: list[LigaDoMundo]
+    totais: dict[str, int]
 
 
 class Posicionamento(BaseModel):

@@ -1,0 +1,134 @@
+{
+  "id": "v1",
+  "formato": 1,
+  "nome": "Base histórica",
+  "criado_em": "2026-11-19T01:54:57+00:00",
+  "base": null,
+  "raiz": "seeds",
+  "ligas": {
+    "taldo": {
+      "nome": "Liga Taldo",
+      "pasta": ".",
+      "pais": "taldo",
+      "divisao": 1,
+      "origem": "fictícia (scripts/gerar_dados.py e seguintes)",
+      "temporada": null,
+      "clubes": 20,
+      "jogadores": 460,
+      "livres": 50
+    },
+    "premier": {
+      "nome": "Premier League",
+      "pasta": "premier",
+      "pais": "inglaterra",
+      "divisao": 1,
+      "origem": "OpenFootball, CC0 (scripts/importar_premier.py)",
+      "temporada": "2023/24",
+      "clubes": 20,
+      "jogadores": 460,
+      "livres": 50
+    },
+    "taldo_b": {
+      "nome": "Liga Taldo B",
+      "pasta": "taldo_b",
+      "pais": "taldo",
+      "divisao": 2,
+      "origem": "fictícia (scripts/gerar_ligas.py)",
+      "temporada": null,
+      "clubes": 20,
+      "jogadores": 460,
+      "livres": 0
+    },
+    "championship": {
+      "nome": "Championship",
+      "pasta": "championship",
+      "pais": "inglaterra",
+      "divisao": 2,
+      "origem": "clubes reais, jogadores fictícios (scripts/gerar_ligas.py)",
+      "temporada": "2023/24",
+      "clubes": 20,
+      "jogadores": 460,
+      "livres": 0
+    },
+    "laliga": {
+      "nome": "La Liga",
+      "pasta": "laliga",
+      "pais": "espanha",
+      "divisao": 1,
+      "origem": "clubes reais, jogadores fictícios (scripts/gerar_ligas.py)",
+      "temporada": "2023/24",
+      "clubes": 20,
+      "jogadores": 460,
+      "livres": 0
+    },
+    "segunda": {
+      "nome": "Segunda División",
+      "pasta": "segunda",
+      "pais": "espanha",
+      "divisao": 2,
+      "origem": "clubes reais, jogadores fictícios (scripts/gerar_ligas.py)",
+      "temporada": "2023/24",
+      "clubes": 20,
+      "jogadores": 460,
+      "livres": 0
+    },
+    "brasileirao": {
+      "nome": "Brasileirão",
+      "pasta": "brasileirao",
+      "pais": "brasil",
+      "divisao": 1,
+      "origem": "Wikipédia, elencos de 15/11/2017 (scripts/importar_brasileirao.py)",
+      "temporada": "2017",
+      "clubes": 20,
+      "jogadores": 459,
+      "livres": 50
+    },
+    "brasileirao_b": {
+      "nome": "Brasileirão Série B",
+      "pasta": "brasileirao_b",
+      "pais": "brasil",
+      "divisao": 2,
+      "origem": "clubes reais, jogadores fictícios (scripts/gerar_ligas.py)",
+      "temporada": "2017",
+      "clubes": 20,
+      "jogadores": 460,
+      "livres": 0
+    }
+  },
+  "totais": {
+    "ligas": 8,
+    "clubes": 160,
+    "jogadores": 3679,
+    "livres": 150
+  },
+  "arquivos": {
+    "brasileirao/clubes.json": "sha256:55e8ea165bc1de30ae3fc4ae3f3300174bf14783dbb5a5052a659e45175c843e",
+    "brasileirao/jogadores.json": "sha256:2f0242cc7651bb6fa3370a93095632bcdb5ceacb81a054eb2d01d4968428cd60",
+    "brasileirao/livres.json": "sha256:fec3f6298464bb6bc882605e5bd9eeb3db052dabb8010d9403a78b3039d95515",
+    "brasileirao_b/clubes.json": "sha256:57fe1f4d16f4a3d328d9d4e4b06c0ad6c15ef5eeb45f7824d68e05000cd4f3a6",
+    "brasileirao_b/jogadores.json": "sha256:5a56d968a16adfc99e6690e053465be3b4ef2b668eab600603bf5aaf80b8c727",
+    "championship/clubes.json": "sha256:1fa004a1530bfd3c50c6bbebae9e300c997e5ccc37a0dbf2af464edba1ca2390",
+    "championship/jogadores.json": "sha256:f84ef39675e819e58589c57e43ed2a04995d44ac8a9b1ff31ed2584631c7ad09",
+    "clubes.json": "sha256:64aaf94da6c5a8da0f933c78ba6ede4caead140808816a4264192dda6a309219",
+    "jogadores.json": "sha256:5f29810f572a6c9f1dcfaf188dcc38cc998e371945ea5cf6f39fea2e8a83aad2",
+    "laliga/clubes.json": "sha256:6d2da205488c959f6f2b203061ac7be8defe52ab37df389aa063b97a9550697c",
+    "laliga/jogadores.json": "sha256:894ca556285f9933f2b10384689e9fec1f076fd0356e649a382b3332f775a811",
+    "livres.json": "sha256:27f6393e3a8016decb92b2cdd90dbf81f495d3fc0936ff45067b404231be8ec0",
+    "premier/clubes.json": "sha256:6f843a8dd26d5c8fcfcae646fede2d9cc52ae46d549f28b93e148cdbb1058570",
+    "premier/jogadores.json": "sha256:f0e7738f55d9dd4bc2d808aee1a16ca18c4dc887c21269d4e54447d85213f581",
+    "premier/livres.json": "sha256:b8da949cb3bd5788aebe77a26c20116886d2ab7ba458fba4f193d25e208a282f",
+    "segunda/clubes.json": "sha256:6f6a044dad24059f98d63cbb92f687447d3e6f050fa53e10d65fd64c911b35d1",
+    "segunda/jogadores.json": "sha256:8ed610f79c61cb8289987aacf846a834734c2a5a008e83baa17d9e15efa4ca3e",
+    "taldo_b/clubes.json": "sha256:cbb22e0e8d523ca11ded11ba7af6e0fa3abcea43f9efc05d466fb999dae18adc",
+    "taldo_b/jogadores.json": "sha256:84b66b100e52ca3e9e54dd8b841199c8b61a4c6e990d161de89adbe6aa70a667"
+  },
+  "gerado_por": {
+    "script": "scripts.mundos.montar_manifesto",
+    "commit": "c6767fc",
+    "nota": "descreve as seeds de data/seeds/ como estavam, sem alterá-las"
+  },
+  "midia": {},
+  "alteracoes": {
+    "resumo": "o mundo inicial: as 8 ligas da v2.6 (Premier 23/24, Brasileirão 2017)"
+  }
+}

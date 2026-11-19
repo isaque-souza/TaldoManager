@@ -7,16 +7,21 @@ Jogo:              http://localhost:8000
 Docs interativas:  http://localhost:8000/docs
 """
 
+import logging
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.contas import exigir_dono
 from app.api.contas import router as contas_router
 from app.api.routes import router
 from app.core.config import FRONTEND_DIR
-from app.db.conexao import init_db
+from app.db.conexao import conectar, init_db
+from scripts import mundos
+
+log = logging.getLogger("taldo")
 
 
 class FrontendSempreAtual(StaticFiles):
@@ -30,9 +35,28 @@ class FrontendSempreAtual(StaticFiles):
         return resposta
 
 
+def conferir_mundos():
+    """Os mundos (v2.7) que algum save usa e não estão íntegros no disco —
+    o save não abriria. Só avisa no log: o resto do jogo segue."""
+    conn = conectar()
+    try:
+        usados = {r[0] for r in conn.execute("SELECT DISTINCT mundo FROM simulacao")}
+    finally:
+        conn.close()
+    ruins = {}
+    for mundo in sorted(usados | {mundos.MUNDO_PADRAO}):
+        try:
+            mundos.verificar(mundo)
+        except mundos.MundoIndisponivel as e:
+            ruins[mundo] = str(e)
+            log.error("Mundo indisponível: %s", e)
+    return ruins
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    conferir_mundos()
     yield
 
 
@@ -42,6 +66,15 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+
+
+@app.exception_handler(mundos.MundoIndisponivel)
+async def mundo_indisponivel(request: Request, exc: mundos.MundoIndisponivel):
+    """Save cujo mundo (v2.7) sumiu ou foi alterado: erro claro, nunca um
+    500 genérico — e nunca carregar outro mundo no lugar."""
+    return JSONResponse(status_code=503, content={"detail": str(exc)})
+
 
 app.include_router(contas_router)
 # toda rota do jogo pede login e confere o dono do save (v2.1)

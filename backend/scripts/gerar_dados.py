@@ -14,6 +14,7 @@ from pathlib import Path
 
 from app.domain.jogador import Jogador
 from app.domain.nomes import NOMES, SOBRENOMES
+from scripts import mundos
 
 # reprodutível: rodar de novo gera exatamente a mesma seed
 random.seed(42)
@@ -250,6 +251,8 @@ for clube in clubes:
     )
 
 
+# v2.7: data/seeds/ é o mundo v1, imutável — scripts/mundos.py
+mundos.exigir_fora_dos_mundos(SEEDS_DIR)
 SEEDS_DIR.mkdir(parents=True, exist_ok=True)
 
 with open(SEEDS_DIR / "jogadores.json", "w", encoding="utf-8") as f:

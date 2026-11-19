@@ -15,6 +15,7 @@ import random
 from pathlib import Path
 
 from app.domain import base, livres
+from scripts import mundos
 
 SEEDS_DIR = Path(__file__).resolve().parent.parent / "data" / "seeds"
 
@@ -53,6 +54,8 @@ def main():
 
     gerados = [livres.gerar(f, p, nomes, rng) for f, p in zip(funcoes(), perfis())]
 
+    # v2.7: data/seeds/ é o mundo v1, imutável — scripts/mundos.py
+    mundos.exigir_fora_dos_mundos(SEEDS_DIR)
     with open(SEEDS_DIR / "livres.json", "w", encoding="utf-8") as f:
         json.dump(gerados, f, ensure_ascii=False, indent=4)
 

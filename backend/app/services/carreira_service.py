@@ -37,8 +37,8 @@ from app.services import (
     simulacao_service,
 )
 from scripts.data_loader import (
-    LIGA_PADRAO, LIGAS, TODAS_AS_LIGAS, carregar_campeonato, carregar_jogadores,
-    carregar_livres, ligas_do_save,
+    LIGA_PADRAO, carregar_campeonato, carregar_jogadores, carregar_livres,
+    ligas_do_save, mundo_do_save, nome_da_liga, todas_as_ligas,
 )
 
 
@@ -47,13 +47,13 @@ class CarreiraInvalida(Exception):
     ou já continuada)."""
 
 
-def _nomes_usados(conn, carreira_id):
-    """Seed (com os livres, v1.6) + todos que já jogaram em alguma
-    temporada da carreira."""
+def _nomes_usados(conn, carreira_id, mundo):
+    """Seed do mundo do save (com os livres, v1.6) + todos que já jogaram em
+    alguma temporada da carreira."""
     seed = set()
-    for liga in TODAS_AS_LIGAS:
-        seed |= {j.nome for j in carregar_jogadores(liga).values()}
-        seed |= {j.nome for j in carregar_livres(liga)}
+    for liga in todas_as_ligas(mundo):
+        seed |= {j.nome for j in carregar_jogadores(liga, mundo).values()}
+        seed |= {j.nome for j in carregar_livres(liga, mundo)}
     rows = conn.execute(
         "SELECT DISTINCT j.nome FROM jogador j"
         " JOIN simulacao s ON s.id = j.simulacao_id"
@@ -93,7 +93,7 @@ def _mensagem_das_divisoes(clube_usuario, liga_antes, liga_depois, subidas):
         clube_usuario, divisoes.divisao(liga_antes or liga_depois), divisoes.divisao(liga_depois),
         sorted(n for n, l in subidas.items() if l == a),
         sorted(n for n, l in subidas.items() if l == b),
-        LIGAS[a][0], LIGAS[b][0],
+        nome_da_liga(a), nome_da_liga(b),
     )
 
 
@@ -174,10 +174,13 @@ def proxima_temporada(simulacao_id):
             else:
                 random.seed()
 
-            # as ligas seguem as da temporada anterior (v1.6); o mundo cresce
-            # na virada (v2.5): as Séries B e as ligas novas
-            ligas = divisoes.do_save_na_virada(ligas_do_save(sim), TODAS_AS_LIGAS)
-            campeonato = carregar_campeonato(ligas)
+            # a carreira fica no mundo em que nasceu (v2.7): as seeds da
+            # temporada nova são as dele, nunca as de um mundo mais novo
+            mundo = mundo_do_save(sim)
+            # as ligas seguem as da temporada anterior (v1.6); o save cresce
+            # na virada (v2.5) com as Séries B e as ligas que o MUNDO dele tem
+            ligas = divisoes.do_save_na_virada(ligas_do_save(sim), todas_as_ligas(mundo))
+            campeonato = carregar_campeonato(ligas, mundo)
             campeonato.economia = financas.economia_do_save(sim)
             _sem_nomes_repetidos(campeonato, clubes_finais, jogadores_finais,
                                  livres_finais, carreira["seed"])
@@ -207,7 +210,7 @@ def proxima_temporada(simulacao_id):
             # a CPU olha os livres antes da base (v1.6)
             movimentos += livres.cpu_contrata(campeonato, clube_usuario, random)
             # a base repõe quem saiu; nomes não se repetem na carreira
-            usados = _nomes_usados(conn, carreira_id) | {
+            usados = _nomes_usados(conn, carreira_id, mundo) | {
                 j.nome for j in campeonato.livres
             } | jovem_repo.nomes(conn, simulacao_id)
             # o clube do técnico promove da base dele (v2.0): só ganha
@@ -276,6 +279,7 @@ def proxima_temporada(simulacao_id):
                 # a nova temporada começa na pré-temporada (v2.0)
                 data_atual=calendario.inicio(temporada).isoformat(),
                 ligas=(list(ligas) if tuple(ligas) != LIGA_PADRAO else None),
+                mundo=mundo,
                 # a meta nasce do elenco depois da virada (base, saídas...)
                 **simulacao_service.meta_inicial(campeonato, clube_usuario),
             )
@@ -383,7 +387,7 @@ def detalhe_carreira(carreira_id):
                 # a temporada do técnico na Série B (v2.5): aparece, mas o
                 # título dela não entra na conta dos títulos
                 linha["liga"] = liga
-                linha["liga_nome"] = LIGAS[liga][0] if liga in LIGAS else liga
+                linha["liga_nome"] = nome_da_liga(liga)
                 linha["serie_b"] = not divisoes.eh_primeira(liga)
                 dados_copa = copa.normalizar(json.loads(t["copa_json"]) if t["copa_json"] else None)
                 resumo["campeao_copa"] = copa.campeao_de(dados_copa)

@@ -82,6 +82,9 @@ _COLUNAS_NOVAS = {
         # versão das regras de dinheiro (v2.5): 1 = antes do dinheiro por
         # liga; a temporada termina com a dela e a virada passa para a atual
         ("economia", "INTEGER NOT NULL DEFAULT 1"),
+        # o mundo (versão congelada das seeds) em que o save nasceu (v2.7):
+        # todo save de antes é do v1 — ver scripts/mundos.py
+        ("mundo", "TEXT NOT NULL DEFAULT 'v1'"),
     ),
     "clube": tuple(
         (c, "INTEGER NOT NULL DEFAULT 0")

@@ -34,7 +34,8 @@ from app.repositories import partida_repository as partida_repo
 from app.repositories import simulacao_repository as simulacao_repo
 from app.repositories import transferencia_repository as transferencia_repo
 from scripts.data_loader import (
-    LIGA_PADRAO, LIGAS, TODAS_AS_LIGAS, carregar_campeonato,
+    LIGA_PADRAO, MUNDO_INICIAL, MUNDO_PADRAO, carregar_campeonato, nome_da_liga,
+    todas_as_ligas,
 )
 
 NOME_CAMPEONATO = "Taldo"
@@ -128,13 +129,14 @@ def meta_inicial(campeonato, clube_usuario):
 
 
 def _rodar(seed, clube_usuario=None, tatica="equilibrado",
-           formacao=None, xi_preferido=None, ligas=LIGA_PADRAO):
+           formacao=None, xi_preferido=None, ligas=LIGA_PADRAO,
+           mundo=MUNDO_INICIAL):
     if seed is not None:
         random.seed(seed)
     else:
         random.seed()
 
-    campeonato = carregar_campeonato(ligas)
+    campeonato = carregar_campeonato(ligas, mundo)
     campeonato.sortear_calendario(semente_do_calendario(seed, 1))
     campeonato.iniciar_copa(copa.classificados_de_inicio(campeonato))
 
@@ -476,10 +478,10 @@ def _montar_visao(cru, liga=None):
     ]
 
     return {
-        "campeonato": NOME_CAMPEONATO if liga == "taldo" else LIGAS[liga][0],
+        "campeonato": NOME_CAMPEONATO if liga == "taldo" else nome_da_liga(liga),
         # ligas do save (v1.6): a mostrada e as que dá para escolher
         "liga": liga,
-        "ligas": [{"id": l, "nome": LIGAS[l][0]} for l in ligas],
+        "ligas": [{"id": l, "nome": nome_da_liga(l)} for l in ligas],
         "seed": cru["seed"],
         "rodadas": cru["rodadas"],
         # o campeão do save é o da liga do técnico; o da outra, o 1º dela
@@ -557,7 +559,7 @@ def _montar_visao(cru, liga=None):
 # ---------------------------------------------------------------------------
 
 def _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido,
-                ligas=LIGA_PADRAO):
+                ligas=LIGA_PADRAO, mundo=MUNDO_INICIAL):
     """Roda e serializa. As escolhas do técnico (tática/formação/XI) só
     valem quando há um `clube_usuario`."""
     if clube_usuario:
@@ -566,7 +568,7 @@ def _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido,
     else:
         tatica_ef = formacao_ef = xi_ef = None
 
-    campeonato = _rodar(seed, clube_usuario, tatica, formacao, xi_preferido, ligas)
+    campeonato = _rodar(seed, clube_usuario, tatica, formacao, xi_preferido, ligas, mundo)
     cru = _serializar(
         campeonato, seed, clube_usuario, tatica_ef, formacao_ef, xi_ef
     )
@@ -587,13 +589,15 @@ def simular_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
 
 
 def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
-                     formacao=None, xi_preferido=None, ligas=LIGA_PADRAO):
+                     formacao=None, xi_preferido=None, ligas=LIGA_PADRAO,
+                     mundo=MUNDO_PADRAO):
     """Roda a temporada, grava no banco e devolve o id da simulação.
-    `ligas` (v1.6): as que rodam juntas — sem dizer, só a Taldo."""
-    cru = _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido, ligas)
+    `ligas` (v1.6): as que rodam juntas — sem dizer, só a Taldo.
+    `mundo` (v2.7): a versão das seeds; o save fica nela para sempre."""
+    cru = _visao_crua(seed, clube_usuario, tatica, formacao, xi_preferido, ligas, mundo)
     # a seed não muda: o campeonato recém-carregado é o do início (e o
     # clube já foi validado por _visao_crua)
-    meta = meta_inicial(carregar_campeonato(ligas), clube_usuario)
+    meta = meta_inicial(carregar_campeonato(ligas, mundo), clube_usuario)
 
     conn = conectar()
     try:
@@ -613,6 +617,7 @@ def salvar_temporada(seed=None, clube_usuario=None, tatica="equilibrado",
                     else None
                 ),
                 ligas=ligas if tuple(ligas) != LIGA_PADRAO else None,
+                mundo=mundo,
                 **meta,
             )
             mapa = clube_repo.inserir(conn, sim_id, cru["clubes"])
@@ -712,11 +717,11 @@ def _fim_de_carreira(conn, sim, cargo):
     }
 
 
-def listar_clubes(ligas=LIGA_PADRAO):
+def listar_clubes(ligas=LIGA_PADRAO, mundo=MUNDO_INICIAL):
     """Os clubes do seed (para o usuário escolher qual dirigir), com a
     força do elenco, a posição no ranking de força da liga dele (v1.6) e a
-    meta que a diretoria daria."""
-    campeonato = carregar_campeonato(ligas)
+    meta que a diretoria daria. `mundo` (v2.7): de qual versão das seeds."""
+    campeonato = carregar_campeonato(ligas, mundo)
     ranking = {}
     for liga in campeonato.ligas:
         ranking.update(diretoria.ranking_de_forca(campeonato.clubes_da_liga(liga)))
@@ -738,10 +743,10 @@ def listar_clubes(ligas=LIGA_PADRAO):
     return clubes
 
 
-def elenco_do_clube(nome):
-    """Clube do seed + elenco (para montar a escalação), de qualquer liga.
-    None se não existir."""
-    campeonato = carregar_campeonato(TODAS_AS_LIGAS)
+def elenco_do_clube(nome, mundo=MUNDO_PADRAO):
+    """Clube do seed + elenco (para montar a escalação), de qualquer liga
+    do `mundo` (v2.7). None se não existir."""
+    campeonato = carregar_campeonato(todas_as_ligas(mundo), mundo)
     clube = next((c for c in campeonato.clubes if c.nome == nome), None)
     if clube is None:
         return None
